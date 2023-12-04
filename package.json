@@ -32,6 +32,8 @@
     "style-loader": "^3.0.0"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "nedb": "^1.8.0",
+    "ws": "^8.14.2"
   }
 }
