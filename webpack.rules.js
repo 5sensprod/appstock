@@ -7,12 +7,12 @@ module.exports = [
     use: 'node-loader',
   },
   {
-    test: /[/\\]node_modules[/\\].+\.(m?js|node)$/,
-    parser: { amd: false },
+    test: /\.jsx?$/,
     use: {
-      loader: '@vercel/webpack-asset-relocator-loader',
+      loader: 'babel-loader',
       options: {
-        outputAssetBase: 'native_modules',
+        exclude: /node_modules/,
+        presets: ['@babel/preset-react'],
       },
     },
   },
@@ -32,4 +32,4 @@ module.exports = [
    *   }]
    * }
    */
-];
+]

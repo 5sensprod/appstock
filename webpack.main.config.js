@@ -9,4 +9,8 @@ module.exports = {
   module: {
     rules: require('./webpack.rules'),
   },
-};
+  resolve: {
+    extensions: ['.js', '.jsx', '.json'],
+    // Vous pouvez également ajouter d'autres configurations de résolution ici, si nécessaire
+  },
+}

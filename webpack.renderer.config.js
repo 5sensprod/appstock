@@ -1,9 +1,9 @@
-const rules = require('./webpack.rules');
+const rules = require('./webpack.rules')
 
 rules.push({
   test: /\.css$/,
   use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
-});
+})
 
 module.exports = {
   devtool: false,
@@ -11,4 +11,8 @@ module.exports = {
   module: {
     rules,
   },
-};
+  resolve: {
+    extensions: ['.js', '.jsx', '.json'],
+    // Vous pouvez également ajouter d'autres configurations de résolution ici, si nécessaire
+  },
+}
