@@ -49,7 +49,7 @@ app.on('ready', async () => {
       responseHeaders: {
         ...details.responseHeaders,
         'Content-Security-Policy': [
-          `default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://${currentIp}:5000;`,
+          `default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://${currentIp}:5000 ws://${currentIp}:5000;`,
         ],
       },
     })

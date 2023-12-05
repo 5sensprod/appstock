@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 const useSearch = (products, searchTerm) => {
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      const lowerCaseSearchTerm = searchTerm.toLowerCase()
+      const lowerCaseSearchTerm = searchTerm.toString().toLowerCase()
 
       // Vérifier si le SKU est un tableau et utiliser .some() si c'est le cas
       const skuArrayIncludes =

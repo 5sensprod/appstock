@@ -7,7 +7,7 @@ const { Server } = require('ws')
 const http = require('http')
 const cors = require('cors')
 const { getLocalIPv4Address } = require('./networkUtils')
-
+const WebSocket = require('ws')
 // Chemin du dossier contenant les fichiers statiques
 const staticFilesPath = path.join(__dirname, '..', 'renderer', 'main_window')
 
@@ -70,17 +70,18 @@ const wss = new Server({ server })
 wss.on('connection', (ws) => {
   console.log('Client WebSocket connecté')
 
-  ws.on('message', (message) => {
-    console.log('Message reçu: %s', message)
-    // Traiter le message reçu
+  ws.on('message', function incoming(message) {
+    console.log('received: %s', message)
+    wss.clients.forEach(function each(client) {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(message)
+      }
+    })
   })
 
   ws.on('close', () => {
     console.log('Client WebSocket déconnecté')
   })
-
-  // Envoyer un message au client
-  ws.send('Bienvenue sur le serveur WebSocket!')
 })
 
 server.listen(port, () => {
