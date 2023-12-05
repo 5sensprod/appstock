@@ -1,13 +1,13 @@
 import React from 'react'
 import MyComponent from './MyComponent'
-import ProductsComponent from './components/ProductsComponent'
+import ProductSearch from './components/product/ProductSearch'
 
 const App = () => {
   return (
     <div>
       <h2>Hello from React é!</h2>
       <MyComponent />
-      <ProductsComponent />
+      <ProductSearch />
     </div>
   )
 }

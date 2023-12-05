@@ -1,15 +1,15 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import useProducts from './hooks/useProducts'
-import useSearch from './hooks/useSearch'
-import useWebSocket from './hooks/useWebSocket'
-import useGlobalScannedDataHandler from './hooks/useGlobalScannedDataHandler'
+import useProducts from '../hooks/useProducts'
+import useSearch from '../hooks/useSearch'
+import useWebSocket from '../hooks/useWebSocket'
+import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
 import {
   fetchApi,
   getApiBaseUrl,
   isRunningInElectron,
-} from '../api/axiosConfig'
+} from '../../api/axiosConfig'
 
-const ProductsComponent = () => {
+const ProductSearch = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const products = useProducts()
   const filteredProducts = useSearch(products, searchTerm)
@@ -127,4 +127,4 @@ const ProductsComponent = () => {
   )
 }
 
-export default ProductsComponent
+export default ProductSearch
