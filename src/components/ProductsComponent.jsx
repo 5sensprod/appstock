@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import fetchProducts from '../api/productsService'
+import getProducts from '../api/productService'
 import { getLocalIp } from '../ipcHelper'
 
 const ProductsComponent = () => {
@@ -7,7 +7,7 @@ const ProductsComponent = () => {
 
   useEffect(() => {
     getLocalIp().then((localIp) => {
-      fetchProducts(localIp)
+      getProducts(localIp)
         .then((data) => {
           setProducts(data)
         })

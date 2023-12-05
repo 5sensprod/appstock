@@ -1,6 +1,6 @@
 import { fetchApi } from './axiosConfig' // Assurez-vous que le chemin est correct
 
-async function fetchProducts() {
+async function getProducts() {
   try {
     return await fetchApi('products')
   } catch (error) {
@@ -9,4 +9,4 @@ async function fetchProducts() {
   }
 }
 
-export default fetchProducts
+export default getProducts

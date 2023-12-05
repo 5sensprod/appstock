@@ -2,7 +2,9 @@
 export const getLocalIp = async () => {
   if (window.electron) {
     try {
-      return await window.electron.getLocalIp()
+      // Utiliser la méthode IPC exposée pour récupérer l'adresse IP stockée
+      const storedIp = await window.electron.getStoredIp()
+      return storedIp || 'default-local-ip' // Utiliser une valeur par défaut si 'storedIp' est null ou undefined
     } catch (error) {
       console.error(
         "Erreur lors de la récupération de l'adresse IP locale:",

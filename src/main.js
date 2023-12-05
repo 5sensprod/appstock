@@ -19,33 +19,47 @@ const createWindow = () => {
     return getLocalIPv4Address()
   })
 
+  ipcMain.handle('get-stored-ip', (event) => {
+    return store.get('localIp') // Récupérer l'adresse IP depuis electron-store
+  })
+
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
 
   mainWindow.webContents.openDevTools()
 }
-app.on('ready', () => {
+app.on('ready', async () => {
   createWindow()
+
+  // Récupération de l'adresse IP actuelle
+  const currentIp = await getLocalIPv4Address()
+  // Récupération de l'adresse IP stockée dans electron-store
+  const storedIp = store.get('localIp')
+
+  // Vérification si l'adresse IP actuelle est différente de celle stockée
+  if (currentIp !== storedIp) {
+    store.set('localIp', currentIp)
+    console.log(`Adresse IP mise à jour dans electron-store: ${currentIp}`)
+  } else {
+    console.log(`Adresse IP deja stockee dans electron-store: ${storedIp}`)
+  }
+
+  // Mise à jour de la politique de sécurité du contenu avec l'adresse IP actuelle
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
         'Content-Security-Policy': [
-          `default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://${localIp}:5000;`,
+          `default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://${currentIp}:5000;`,
         ],
       },
     })
   })
 
-  const localIp = getLocalIPv4Address()
-  // Stocker l'adresse IP locale dans electron-store
-  store.set('localIp', localIp)
-  console.log(`Adresse IP stockée dans electron-store: ${store.get('localIp')}`)
-
+  // Envoi de l'adresse IP au processus de rendu
   mainWindow.webContents.once('dom-ready', () => {
-    mainWindow.webContents.send('localIp', localIp)
+    mainWindow.webContents.send('localIp', currentIp)
   })
 })
-
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
