@@ -12,6 +12,19 @@ module.exports = (db) => {
     })
   })
 
+  router.post('/', (req, res) => {
+    const newProduct = req.body
+
+    // Valider et traiter les données du nouveau produit ici
+    // ...
+
+    // Enregistrer le nouveau produit dans la base de données
+    products.insert(newProduct, (err, doc) => {
+      if (err) res.status(500).send(err)
+      else res.status(201).json(doc)
+    })
+  })
+
   // Ajoutez ici d'autres routes liées aux utilisateurs
 
   return router
