@@ -1,18 +1,35 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import useProducts from './hooks/useProducts'
 import useSearch from './hooks/useSearch'
+import useWebSocket from './hooks/useWebSocket'
+import {
+  fetchApi,
+  getApiBaseUrl,
+  isRunningInElectron,
+} from '../api/axiosConfig'
 
 const ProductsComponent = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const products = useProducts()
   const filteredProducts = useSearch(products, searchTerm)
-  const [wsUrl, setWsUrl] = useState(null)
+  const [wsUrl, setWsUrl] = useState('')
 
   useEffect(() => {
-    getApiBaseUrl().then((baseUrl) => {
-      const wsBaseUrl = baseUrl.replace(/^http/, 'ws')
-      setWsUrl(`${wsBaseUrl.replace('/api', '')}`)
-    })
+    if (isRunningInElectron()) {
+      getApiBaseUrl().then((baseUrl) => {
+        const wsBaseUrl = baseUrl.replace(/^http/, 'ws').replace('/api', '')
+        setWsUrl(wsBaseUrl)
+      })
+    } else {
+      fetchApi('getLocalIp')
+        .then((data) => {
+          const wsUrl = `ws://${data.ip}:5000`
+          setWsUrl(wsUrl)
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la récupération de l'IP:", error)
+        })
+    }
   }, [])
 
   // Définir les fonctions de rappel pour les événements WebSocket
@@ -46,25 +63,18 @@ const ProductsComponent = () => {
     console.log('Connexion WebSocket fermée')
   }, [])
 
-  // Utiliser useWebSocket avec l'URL de votre serveur WebSocket
   useEffect(() => {
-    let ws
-    if (wsUrl) {
-      // Créer une nouvelle instance de WebSocket
-      ws = new WebSocket(wsUrl)
-      ws.onmessage = handleWsMessage
-      ws.onerror = handleWsError
-      ws.onopen = handleWsOpen
-      ws.onclose = handleWsClose
-    }
+    console.log('searchTerm a changé:', searchTerm)
+  }, [searchTerm])
 
-    // Effectuer le nettoyage
-    return () => {
-      if (ws) {
-        ws.close()
-      }
-    }
-  }, [wsUrl, handleWsMessage, handleWsError, handleWsOpen, handleWsClose])
+  // Utiliser useWebSocket avec l'URL de votre serveur WebSocket
+  useWebSocket(
+    wsUrl,
+    handleWsMessage,
+    handleWsError,
+    handleWsOpen,
+    handleWsClose,
+  )
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)

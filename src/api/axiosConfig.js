@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { getLocalIp } from '../ipcHelper' // Assurez-vous que le chemin est correct
 
-const isRunningInElectron = () => {
+export const isRunningInElectron = () => {
   return (
     typeof window !== 'undefined' && (window.electronAPI || window.electron)
   )
