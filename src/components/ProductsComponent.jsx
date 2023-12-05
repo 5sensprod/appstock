@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react'
 import useProducts from './hooks/useProducts'
 import useSearch from './hooks/useSearch'
 import useWebSocket from './hooks/useWebSocket'
+import useGlobalScannedDataHandler from './hooks/useGlobalScannedDataHandler'
 import {
   fetchApi,
   getApiBaseUrl,
@@ -13,6 +14,9 @@ const ProductsComponent = () => {
   const products = useProducts()
   const filteredProducts = useSearch(products, searchTerm)
   const [wsUrl, setWsUrl] = useState('')
+
+  const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
+  useGlobalScannedDataHandler(setSearchTerm)
 
   useEffect(() => {
     if (isRunningInElectron()) {
@@ -79,9 +83,19 @@ const ProductsComponent = () => {
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
   }
+
+  const handleScanClick = () => {
+    if (window.Android && isAndroidWebView) {
+      window.Android.performScan() // Appeler la méthode de l'app Android
+    }
+  }
+
   return (
     <div>
       <h1>Produits</h1>
+      {isAndroidWebView && (
+        <button onClick={handleScanClick}>Scanner un code-barres</button>
+      )}
       <input
         id="search-input"
         placeholder="Rechercher un produit"
