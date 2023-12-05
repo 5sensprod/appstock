@@ -18,6 +18,7 @@ const createWindow = () => {
   ipcMain.handle('get-local-ip', async () => {
     return getLocalIPv4Address()
   })
+
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
 
   mainWindow.webContents.openDevTools()
@@ -36,14 +37,11 @@ app.on('ready', () => {
   })
 
   const localIp = getLocalIPv4Address()
-  console.log(`Adresse IP locale: ${localIp}`)
-
   // Stocker l'adresse IP locale dans electron-store
   store.set('localIp', localIp)
   console.log(`Adresse IP stockée dans electron-store: ${store.get('localIp')}`)
 
   mainWindow.webContents.once('dom-ready', () => {
-    const localIp = getLocalIPv4Address() // Assurez-vous que cette fonction renvoie l'adresse IP locale
     mainWindow.webContents.send('localIp', localIp)
   })
 })

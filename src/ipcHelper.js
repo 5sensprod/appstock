@@ -14,6 +14,6 @@ export const getLocalIp = async () => {
     console.log(
       "Contexte Electron non disponible. Utilisation d'une adresse IP de secours.",
     )
-    return 'fallback-ip-address' // Une adresse IP de secours ou une autre logique
+    return 'localhost' // Une adresse IP de secours ou une autre logique
   }
 }
