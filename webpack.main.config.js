@@ -12,8 +12,5 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
     // Vous pouvez également ajouter d'autres configurations de résolution ici, si nécessaire
-    fallback: {
-      os: require.resolve('os-browserify/browser'),
-    },
   },
 }

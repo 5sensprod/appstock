@@ -5,12 +5,21 @@ const path = require('path')
 const initializeDatabases = require('../database/database')
 const { Server } = require('ws')
 const http = require('http')
+const cors = require('cors')
+const { getLocalIPv4Address } = require('./networkUtils')
 
 // Chemin du dossier contenant les fichiers statiques
 const staticFilesPath = path.join(__dirname, '..', 'renderer', 'main_window')
 
 // Définir le dossier pour les fichiers statiques
 app.use(express.static(staticFilesPath))
+
+app.use(cors())
+
+app.get('/api/getLocalIp', (req, res) => {
+  const localIp = getLocalIPv4Address()
+  res.json({ ip: localIp })
+})
 
 // Créer un serveur HTTP à partir de l'instance Express
 const server = http.createServer(app)
