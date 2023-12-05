@@ -1,32 +1,45 @@
 import React, { useState, useEffect } from 'react'
-import getProducts from '../api/productService'
-import { getLocalIp } from '../ipcHelper'
+import useProducts from './hooks/useProducts'
+import useSearch from './hooks/useSearch'
 
 const ProductsComponent = () => {
-  const [products, setProducts] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const products = useProducts()
+  const filteredProducts = useSearch(products, searchTerm)
 
-  useEffect(() => {
-    getLocalIp().then((localIp) => {
-      getProducts(localIp)
-        .then((data) => {
-          setProducts(data)
-        })
-        .catch((error) => {
-          console.error('Erreur lors de la récupération des produits:', error)
-        })
-    })
-  }, [])
-
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value)
+  }
   return (
     <div>
       <h1>Produits</h1>
-      <ul>
-        {products.map((product) => (
-          <li key={product._id}>
-            {product.reference} - {product.description}
-          </li>
-        ))}
-      </ul>
+      <input
+        id="search-input"
+        placeholder="Rechercher un produit"
+        type="search"
+        value={searchTerm}
+        onChange={handleSearchChange}
+      />
+      <table>
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Marque</th>
+            <th>Gencode</th>
+            <th>Prix de vente</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredProducts.map((product) => (
+            <tr key={product._id} style={{ cursor: 'pointer' }}>
+              <td>{product.reference}</td>
+              <td>{product.marque}</td>
+              <td>{product.gencode}</td>
+              <td>{product.prixVente} €</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
