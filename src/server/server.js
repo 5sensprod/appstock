@@ -12,7 +12,7 @@ const staticFilesPath = path.join(__dirname, '..', 'renderer', 'main_window')
 const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const cataloguePath = path.join(userDataPath, 'catalogue')
 app.use('/catalogue', express.static(cataloguePath))
-
+app.use(express.json())
 app.use(express.static(staticFilesPath))
 app.use(cors())
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import getProducts from '../../api/productService'
+import { getProducts } from '../../api/productService'
 import { getLocalIp } from '../../ipcHelper'
 
 const useProducts = () => {

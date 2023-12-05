@@ -18,10 +18,16 @@ export const getApiBaseUrl = async () => {
 
 const axiosInstance = axios.create()
 
-export const fetchApi = async (endpoint) => {
+export const fetchApi = async (endpoint, method = 'GET', data = null) => {
   const baseUrl = await getApiBaseUrl()
-  const response = await axiosInstance.get(`${baseUrl}/${endpoint}`)
-  return response.data
-}
+  const url = `${baseUrl}/${endpoint}`
 
+  console.log(`Envoi d'une requête ${method} à ${url}`, data) // Log de la requête
+
+  if (method === 'POST') {
+    return (await axiosInstance.post(url, data)).data
+  } else {
+    return (await axiosInstance.get(url)).data
+  }
+}
 export default axiosInstance

@@ -9,4 +9,13 @@ async function getProducts() {
   }
 }
 
-export default getProducts
+async function addProduct(productData) {
+  try {
+    return await fetchApi('products', 'POST', productData)
+  } catch (error) {
+    console.error("Erreur lors de l'ajout du produit:", error)
+    throw error
+  }
+}
+
+export { getProducts, addProduct }

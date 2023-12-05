@@ -1,14 +1,14 @@
 import React from 'react'
 import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
-import { addProduct } from '../api/productService'
+import { addProduct } from '../../api/productService'
 
 // Schéma de validation Yup
 const ProductSchema = Yup.object().shape({
-  reference: Yup.string().required('La référence est requise'),
-  prixVente: Yup.number()
-    .required('Le prix de vente est requis')
-    .positive('Le prix de vente doit être un nombre positif'),
+  // reference: Yup.string().required('La référence est requise'),
+  // prixVente: Yup.number()
+  //   .required('Le prix de vente est requis')
+  //   .positive('Le prix de vente doit être un nombre positif'),
   // Ajoutez des champs supplémentaires selon la structure de votre produit
 })
 
