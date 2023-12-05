@@ -1,4 +1,5 @@
 const express = require('express')
+const electron = require('electron')
 const app = express()
 const port = 5000
 const path = require('path')
@@ -7,6 +8,10 @@ const http = require('http')
 const cors = require('cors')
 const { getLocalIPv4Address } = require('./networkUtils')
 const staticFilesPath = path.join(__dirname, '..', 'renderer', 'main_window')
+
+const userDataPath = (electron.app || electron.remote.app).getPath('userData')
+const cataloguePath = path.join(userDataPath, 'catalogue')
+app.use('/catalogue', express.static(cataloguePath))
 
 app.use(express.static(staticFilesPath))
 app.use(cors())

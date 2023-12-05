@@ -14,9 +14,16 @@ const ProductSearch = () => {
   const products = useProducts()
   const filteredProducts = useSearch(products, searchTerm)
   const [wsUrl, setWsUrl] = useState('')
+  const [baseUrl, setBaseUrl] = useState('')
 
   const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
   useGlobalScannedDataHandler(setSearchTerm)
+
+  useEffect(() => {
+    getApiBaseUrl().then((url) => {
+      setBaseUrl(url.replace('/api', '')) // Enlever '/api' pour obtenir l'URL de base
+    })
+  }, [])
 
   useEffect(() => {
     if (isRunningInElectron()) {
@@ -106,6 +113,7 @@ const ProductSearch = () => {
       <table>
         <thead>
           <tr>
+            <th>Photo</th>
             <th>Référence</th>
             <th>Marque</th>
             <th>Gencode</th>
@@ -115,6 +123,15 @@ const ProductSearch = () => {
         <tbody>
           {filteredProducts.map((product) => (
             <tr key={product._id} style={{ cursor: 'pointer' }}>
+              <td>
+                {product.photos && product.photos.length > 0 && (
+                  <img
+                    src={`${baseUrl}/${product.photos[0]}`}
+                    alt={product.reference}
+                    style={{ width: '100px', height: 'auto' }}
+                  />
+                )}
+              </td>
               <td>{product.reference}</td>
               <td>{product.marque}</td>
               <td>{product.gencode}</td>

@@ -1,4 +1,4 @@
-import { fetchApi } from './axiosConfig' // Assurez-vous que le chemin est correct
+import { fetchApi } from './axiosConfig'
 
 async function getProducts() {
   try {
