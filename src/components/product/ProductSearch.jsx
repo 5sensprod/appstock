@@ -1,4 +1,3 @@
-// src/components/product/ProductSearch.jsx
 import React, { useState, useEffect } from 'react'
 import useProducts from '../hooks/useProducts'
 import useSearch from '../hooks/useSearch'
@@ -7,16 +6,33 @@ import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
 import { getApiBaseUrl } from '../../api/axiosConfig'
 import AddProductForm from './AddProductForm'
 import ProductTable from './ProductTable'
+import { getCategories } from '../../api/categoryService'
+import SelectCategory from '../category/SelectCategory'
+import NoMatchButton from '../ui/NoMatchButton'
 
 const ProductSearch = () => {
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategoryId, setSelectedCategoryId] = useState('')
+  const [categories, setCategories] = useState([])
   const [productAdded, setProductAdded] = useState(false)
-  const products = useProducts(productAdded)
-  const filteredProducts = useSearch(products, searchTerm)
+
   const [baseUrl, setBaseUrl] = useState('')
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const retrievedCategories = await getCategories()
+      setCategories(retrievedCategories)
+    }
+
+    fetchCategories()
+  }, [])
+
+  const products = useProducts(productAdded)
+  const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
+  const showAddProductButton =
+    !showAddProductForm && filteredProducts.length === 0
   const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
   useGlobalScannedDataHandler(setSearchTerm)
 
@@ -55,7 +71,7 @@ const ProductSearch = () => {
 
   const handleCancel = () => {
     setShowAddProductForm(false)
-    setSearchTerm('') // Réinitialiser le champ de recherche
+    setSearchTerm('')
   }
 
   return (
@@ -71,14 +87,21 @@ const ProductSearch = () => {
         value={searchTerm}
         onChange={handleSearchChange}
       />
+      <SelectCategory
+        categories={categories}
+        selectedCategoryId={selectedCategoryId}
+        onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
+      />
       {filteredProducts.length > 0 ? (
         <ProductTable products={filteredProducts} baseUrl={baseUrl} />
       ) : (
         <div>
           <p>Aucun produit trouvé.</p>
-          {!showAddProductForm && (
-            <button onClick={handleShowAddForm}>Ajouter</button>
-          )}
+          <NoMatchButton
+            show={showAddProductButton}
+            buttonText="Ajouter"
+            onClick={handleShowAddForm}
+          />
           {showAddProductForm && (
             <>
               <AddProductForm

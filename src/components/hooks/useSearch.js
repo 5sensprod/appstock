@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-const useSearch = (products, searchTerm) => {
+const useSearch = (products, searchTerm, selectedCategoryId) => {
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const lowerCaseSearchTerm = searchTerm.toString().toLowerCase()
@@ -17,6 +17,10 @@ const useSearch = (products, searchTerm) => {
         ? product.gencode.toString().includes(lowerCaseSearchTerm)
         : false
 
+      const categoryMatches = selectedCategoryId
+        ? product.categorie === selectedCategoryId ||
+          product.sousCategorie === selectedCategoryId
+        : true
       let skuArrayIncludes = false
       if (Array.isArray(product.SKU)) {
         skuArrayIncludes = product.SKU.some((skuItem) => {
@@ -36,14 +40,15 @@ const useSearch = (products, searchTerm) => {
         product.SKU.includes(lowerCaseSearchTerm)
 
       return (
-        referenceIncludes ||
-        marqueIncludes ||
-        gencodeIncludes ||
-        skuArrayIncludes ||
-        skuStringIncludes
+        categoryMatches &&
+        (referenceIncludes ||
+          marqueIncludes ||
+          gencodeIncludes ||
+          skuArrayIncludes ||
+          skuStringIncludes)
       )
     })
-  }, [products, searchTerm])
+  }, [products, searchTerm, selectedCategoryId])
 
   return filteredProducts
 }
