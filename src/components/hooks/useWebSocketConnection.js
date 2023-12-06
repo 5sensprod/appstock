@@ -6,8 +6,10 @@ import {
   getApiBaseUrl,
   isRunningInElectron,
 } from '../../api/axiosConfig'
+import { useProductContext } from '../../contexts/ProductContext'
 
-const useWebSocketConnection = (setSearchTerm) => {
+const useWebSocketConnection = () => {
+  const { setSearchTerm } = useProductContext()
   const [wsUrl, setWsUrl] = useState('')
 
   // Configuration initiale de l'URL WebSocket

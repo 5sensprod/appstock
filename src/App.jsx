@@ -1,14 +1,17 @@
 import React from 'react'
+import { ProductProvider } from './contexts/ProductContext'
 import MyComponent from './MyComponent'
-import ProductSearch from './components/product/ProductSearch'
+import ProductManager from './components/product/ProductManager'
 
 const App = () => {
   return (
-    <div>
-      <h2>Hello from React é!</h2>
-      <MyComponent />
-      <ProductSearch />
-    </div>
+    <ProductProvider>
+      <div>
+        <h2>Hello from React é!</h2>
+        <MyComponent />
+        <ProductManager />
+      </div>
+    </ProductProvider>
   )
 }
 
