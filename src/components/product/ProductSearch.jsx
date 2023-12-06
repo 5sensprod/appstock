@@ -17,6 +17,8 @@ const ProductSearch = () => {
   const filteredProducts = useSearch(products, searchTerm)
   const [wsUrl, setWsUrl] = useState('')
   const [baseUrl, setBaseUrl] = useState('')
+  const [showAddProductForm, setShowAddProductForm] = useState(false)
+  const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
 
   const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
   useGlobalScannedDataHandler(setSearchTerm)
@@ -26,6 +28,12 @@ const ProductSearch = () => {
       setBaseUrl(url.replace('/api', ''))
     })
   }, [])
+
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setShowAddProductForm(false)
+    }
+  }, [searchTerm])
 
   useEffect(() => {
     if (isRunningInElectron()) {
@@ -99,6 +107,15 @@ const ProductSearch = () => {
     setProductAdded((prevState) => !prevState) // Inverser l'état pour déclencher le rechargement
   }
 
+  const handleShowAddForm = () => {
+    setShowAddProductForm(true)
+  }
+
+  const handleCancel = () => {
+    setShowAddProductForm(false)
+    setSearchTerm('') // Réinitialise le champ de recherche
+  }
+
   return (
     <div>
       <h1>Produits</h1>
@@ -145,11 +162,20 @@ const ProductSearch = () => {
         </table>
       ) : (
         <div>
-          <p>Aucun produit trouvé. Vous pouvez ajouter un nouveau produit :</p>
-          <AddProductForm
-            initialGencode={searchTerm}
-            onProductAdd={handleProductSubmit}
-          />
+          <p>Aucun produit trouvé.</p>
+          {!showAddProductForm && (
+            <button onClick={handleShowAddForm}>Ajouter</button>
+          )}
+          {showAddProductForm && (
+            <>
+              <AddProductForm
+                initialGencode={isGencode ? searchTerm : ''}
+                initialReference={!isGencode ? searchTerm : ''}
+                onProductAdd={handleProductSubmit}
+              />
+              <button onClick={handleCancel}>Annuler</button>
+            </>
+          )}
         </div>
       )}
     </div>
