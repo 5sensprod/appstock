@@ -3,7 +3,6 @@ import useProducts from '../hooks/useProducts'
 import useSearch from '../hooks/useSearch'
 import useWebSocketConnection from '../hooks/useWebSocketConnection'
 import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
-import { getApiBaseUrl } from '../../api/axiosConfig'
 import AddProductForm from './AddProductForm'
 import ProductTable from './ProductTable'
 import { getCategories } from '../../api/categoryService'
@@ -22,7 +21,6 @@ const ProductManager = () => {
     setSearchTerm,
   } = useProductContext()
   const [productAdded, setProductAdded] = useState(false)
-  // const [baseUrl, setBaseUrl] = useState('')
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
 
@@ -46,21 +44,11 @@ const ProductManager = () => {
   // Utilisation du hook useWebSocketConnection
   useWebSocketConnection(setSearchTerm)
 
-  // useEffect(() => {
-  //   getApiBaseUrl().then((url) => {
-  //     setBaseUrl(url.replace('/api', ''))
-  //   })
-  // }, [])
-
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setShowAddProductForm(false)
     }
   }, [searchTerm])
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value)
-  }
 
   const handleScanClick = () => {
     if (window.Android && isAndroidWebView) {
