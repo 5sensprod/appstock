@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import useProducts from '../hooks/useProducts'
 import useSearch from '../hooks/useSearch'
 import useWebSocketConnection from '../hooks/useWebSocketConnection'
@@ -10,13 +10,18 @@ import { getCategories } from '../../api/categoryService'
 import SelectCategory from '../category/SelectCategory'
 import NoMatchButton from '../ui/NoMatchButton'
 import ProductSearch from './ProductSearch'
+import { useProductContext } from '../../contexts/ProductContext'
 
 const ProductManager = () => {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategoryId, setSelectedCategoryId] = useState('')
-  const [categories, setCategories] = useState([])
+  const {
+    searchTerm,
+    selectedCategoryId,
+    categories,
+    setCategories,
+    setSelectedCategoryId,
+    setSearchTerm,
+  } = useProductContext()
   const [productAdded, setProductAdded] = useState(false)
-
   const [baseUrl, setBaseUrl] = useState('')
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
@@ -32,6 +37,7 @@ const ProductManager = () => {
 
   const products = useProducts(productAdded)
   const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
+
   const showAddProductButton =
     !showAddProductForm && filteredProducts.length === 0
   const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
@@ -81,10 +87,7 @@ const ProductManager = () => {
       {isAndroidWebView && (
         <button onClick={handleScanClick}>Scanner un code-barres</button>
       )}
-      <ProductSearch
-        searchTerm={searchTerm}
-        handleSearchChange={handleSearchChange}
-      />
+      <ProductSearch />
       <SelectCategory
         categories={categories}
         selectedCategoryId={selectedCategoryId}

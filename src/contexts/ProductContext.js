@@ -9,11 +9,17 @@ export const useProductContext = () => useContext(ProductContext)
 // Provider du contexte
 export const ProductProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategoryId, setSelectedCategoryId] = useState('')
+  const [categories, setCategories] = useState([])
 
   // Toutes les données et fonctions à partager
   const contextValue = {
     searchTerm,
     setSearchTerm,
+    selectedCategoryId,
+    setSelectedCategoryId,
+    categories,
+    setCategories,
   }
 
   return (
