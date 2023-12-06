@@ -5,7 +5,7 @@ import {
   fetchApi,
   getApiBaseUrl,
   isRunningInElectron,
-} from '../../../api/axiosConfig'
+} from '../../api/axiosConfig'
 
 const useWebSocketConnection = (setSearchTerm) => {
   const [wsUrl, setWsUrl] = useState('')

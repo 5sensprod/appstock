@@ -1,4 +1,3 @@
-// src/api/categoryService.js
 import { fetchApi } from './axiosConfig'
 
 async function getCategories() {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import useProducts from '../hooks/useProducts'
 import useSearch from '../hooks/useSearch'
-import useWebSocketConnection from './hooks/useWebSocketConnection'
+import useWebSocketConnection from '../hooks/useWebSocketConnection'
 import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
 import { getApiBaseUrl } from '../../api/axiosConfig'
 import AddProductForm from './AddProductForm'
