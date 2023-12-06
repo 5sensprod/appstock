@@ -12,7 +12,8 @@ import AddProductForm from './AddProductForm'
 
 const ProductSearch = () => {
   const [searchTerm, setSearchTerm] = useState('')
-  const products = useProducts()
+  const [productAdded, setProductAdded] = useState(false)
+  const products = useProducts(productAdded)
   const filteredProducts = useSearch(products, searchTerm)
   const [wsUrl, setWsUrl] = useState('')
   const [baseUrl, setBaseUrl] = useState('')
@@ -22,7 +23,7 @@ const ProductSearch = () => {
 
   useEffect(() => {
     getApiBaseUrl().then((url) => {
-      setBaseUrl(url.replace('/api', '')) // Enlever '/api' pour obtenir l'URL de base
+      setBaseUrl(url.replace('/api', ''))
     })
   }, [])
 
@@ -75,10 +76,6 @@ const ProductSearch = () => {
     console.log('Connexion WebSocket fermée')
   }, [])
 
-  useEffect(() => {
-    console.log('searchTerm a changé:', searchTerm)
-  }, [searchTerm])
-
   // Utiliser useWebSocket avec l'URL de votre serveur WebSocket
   useWebSocket(
     wsUrl,
@@ -96,6 +93,10 @@ const ProductSearch = () => {
     if (window.Android && isAndroidWebView) {
       window.Android.performScan() // Appeler la méthode de l'app Android
     }
+  }
+
+  const handleProductSubmit = () => {
+    setProductAdded((prevState) => !prevState) // Inverser l'état pour déclencher le rechargement
   }
 
   return (
@@ -145,7 +146,10 @@ const ProductSearch = () => {
       ) : (
         <div>
           <p>Aucun produit trouvé. Vous pouvez ajouter un nouveau produit :</p>
-          <AddProductForm />
+          <AddProductForm
+            initialGencode={searchTerm}
+            onProductAdd={handleProductSubmit}
+          />
         </div>
       )}
     </div>

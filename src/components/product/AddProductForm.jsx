@@ -5,38 +5,65 @@ import { addProduct } from '../../api/productService'
 
 // Schéma de validation Yup
 const ProductSchema = Yup.object().shape({
-  // reference: Yup.string().required('La référence est requise'),
-  // prixVente: Yup.number()
-  //   .required('Le prix de vente est requis')
-  //   .positive('Le prix de vente doit être un nombre positif'),
   // Ajoutez des champs supplémentaires selon la structure de votre produit
 })
 
-const AddProductForm = () => {
-  const handleSubmit = async (values, { setSubmitting }) => {
+const AddProductForm = ({ initialGencode, onProductAdd }) => {
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       await addProduct(values)
-      alert('Produit ajouté avec succès !')
-      // Gérer le succès de la soumission ici (ex. nettoyer le formulaire, afficher un message, etc.)
+      resetForm()
+      // Appeler onProductAdd pour signaler que le produit a été ajouté
+      if (onProductAdd) {
+        onProductAdd()
+      }
     } catch (error) {
-      alert("Erreur lors de l'ajout du produit.")
       // Gérer les erreurs ici
     }
-
     setSubmitting(false)
   }
 
   return (
     <Formik
-      initialValues={{ reference: '', prixVente: '' }}
-      validationSchema={ProductSchema}
+      initialValues={{
+        reference: '',
+        prixVente: '',
+        gencode: initialGencode || '',
+        description: null,
+        descriptionCourte: null,
+        photos: [],
+        videos: [],
+        marque: null,
+        SKU: null,
+        categorie: null,
+        sousCategorie: null,
+        prixAchat: null,
+        variable: true,
+        stock: null,
+        ficheTechnique: null,
+      }}
       onSubmit={handleSubmit}
     >
       {({ isSubmitting }) => (
         <Form>
           <Field name="reference" type="text" placeholder="Référence" />
           <Field name="prixVente" type="number" placeholder="Prix de Vente" />
-          {/* Ajoutez d'autres champs de formulaire ici */}
+          <Field name="gencode" type="text" placeholder="Gencode" />
+
+          {/* Champs cachés */}
+          <input type="hidden" name="description" />
+          <input type="hidden" name="descriptionCourte" />
+          <input type="hidden" name="photos" />
+          <input type="hidden" name="videos" />
+          <input type="hidden" name="marque" />
+          <input type="hidden" name="SKU" />
+          <input type="hidden" name="categorie" />
+          <input type="hidden" name="sousCategorie" />
+          <input type="hidden" name="prixAchat" />
+          <input type="hidden" name="variable" />
+          <input type="hidden" name="stock" />
+          <input type="hidden" name="ficheTechnique" />
+
           <button type="submit" disabled={isSubmitting}>
             Ajouter Produit
           </button>
