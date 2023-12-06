@@ -1,13 +1,10 @@
-import React, { useState, useCallback, useEffect } from 'react'
+// src/components/product/ProductSearch.jsx
+import React, { useState, useEffect } from 'react'
 import useProducts from '../hooks/useProducts'
 import useSearch from '../hooks/useSearch'
-import useWebSocket from './hooks/useWebSocket'
+import useWebSocketConnection from './hooks/useWebSocketConnection'
 import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
-import {
-  fetchApi,
-  getApiBaseUrl,
-  isRunningInElectron,
-} from '../../api/axiosConfig'
+import { getApiBaseUrl } from '../../api/axiosConfig'
 import AddProductForm from './AddProductForm'
 import ProductTable from './ProductTable'
 
@@ -16,13 +13,15 @@ const ProductSearch = () => {
   const [productAdded, setProductAdded] = useState(false)
   const products = useProducts(productAdded)
   const filteredProducts = useSearch(products, searchTerm)
-  const [wsUrl, setWsUrl] = useState('')
   const [baseUrl, setBaseUrl] = useState('')
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
 
   const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
   useGlobalScannedDataHandler(setSearchTerm)
+
+  // Utilisation du hook useWebSocketConnection
+  useWebSocketConnection(setSearchTerm)
 
   useEffect(() => {
     getApiBaseUrl().then((url) => {
@@ -35,64 +34,6 @@ const ProductSearch = () => {
       setShowAddProductForm(false)
     }
   }, [searchTerm])
-
-  useEffect(() => {
-    if (isRunningInElectron()) {
-      getApiBaseUrl().then((baseUrl) => {
-        const wsBaseUrl = baseUrl.replace(/^http/, 'ws').replace('/api', '')
-        setWsUrl(wsBaseUrl)
-      })
-    } else {
-      fetchApi('getLocalIp')
-        .then((data) => {
-          const wsUrl = `ws://${data.ip}:5000`
-          setWsUrl(wsUrl)
-        })
-        .catch((error) => {
-          console.error("Erreur lors de la récupération de l'IP:", error)
-        })
-    }
-  }, [])
-
-  // Définir les fonctions de rappel pour les événements WebSocket
-  const handleWsMessage = useCallback((event) => {
-    if (event.data instanceof Blob) {
-      // Utiliser FileReader pour lire le contenu du Blob
-      const reader = new FileReader()
-      reader.onload = () => {
-        // Une fois lu, le contenu du Blob se trouve dans reader.result
-        setSearchTerm(reader.result)
-      }
-      reader.onerror = (error) => {
-        console.error('Erreur lors de la lecture du Blob:', error)
-      }
-      reader.readAsText(event.data) // Commencer à lire le contenu du Blob en tant que texte
-    } else {
-      // Si ce n'est pas un Blob, on suppose que c'est une chaîne
-      setSearchTerm(event.data)
-    }
-  }, [])
-
-  const handleWsOpen = useCallback(() => {
-    console.log('Connexion WebSocket établie')
-  }, [])
-
-  const handleWsError = useCallback((error) => {
-    console.error('Erreur WebSocket:', error)
-  }, [])
-
-  const handleWsClose = useCallback(() => {
-    console.log('Connexion WebSocket fermée')
-  }, [])
-
-  // Utiliser useWebSocket avec l'URL de votre serveur WebSocket
-  useWebSocket(
-    wsUrl,
-    handleWsMessage,
-    handleWsError,
-    handleWsOpen,
-    handleWsClose,
-  )
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
@@ -114,7 +55,7 @@ const ProductSearch = () => {
 
   const handleCancel = () => {
     setShowAddProductForm(false)
-    setSearchTerm('') // Réinitialise le champ de recherche
+    setSearchTerm('') // Réinitialiser le champ de recherche
   }
 
   return (

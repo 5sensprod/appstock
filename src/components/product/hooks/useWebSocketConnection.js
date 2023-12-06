@@ -1,5 +1,5 @@
 // src/hooks/useWebSocketConnection.js
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import useWebSocket from './useWebSocket'
 import {
   fetchApi,
