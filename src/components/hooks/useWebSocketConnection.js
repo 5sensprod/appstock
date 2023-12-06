@@ -1,34 +1,31 @@
 import { useState, useCallback, useEffect } from 'react'
 import useWebSocket from './useWebSocket'
-import {
-  fetchApi,
-  getApiBaseUrl,
-  isRunningInElectron,
-} from '../../api/axiosConfig'
+import { isRunningInElectron, fetchApi } from '../../api/axiosConfig'
 import { useProductContext } from '../../contexts/ProductContext'
 
 const useWebSocketConnection = () => {
-  const { setSearchTerm } = useProductContext()
+  const { setSearchTerm, baseUrl } = useProductContext()
   const [wsUrl, setWsUrl] = useState('')
 
-  // Configuration initiale de l'URL WebSocket
   useEffect(() => {
+    const updateWsUrl = (url) => {
+      setWsUrl(url)
+    }
+
     if (isRunningInElectron()) {
-      getApiBaseUrl().then((baseUrl) => {
-        const wsBaseUrl = baseUrl.replace(/^http/, 'ws').replace('/api', '')
-        setWsUrl(wsBaseUrl)
-      })
+      const wsBaseUrl = baseUrl.replace(/^http/, 'ws').replace('/api', '')
+      updateWsUrl(wsBaseUrl)
     } else {
       fetchApi('getLocalIp')
         .then((data) => {
           const newWsUrl = `ws://${data.ip}:5000`
-          setWsUrl(newWsUrl)
+          updateWsUrl(newWsUrl)
         })
         .catch((error) => {
           console.error("Erreur lors de la récupération de l'IP:", error)
         })
     }
-  }, [])
+  }, [baseUrl])
 
   // Gestion des événements WebSocket
   const handleWsMessage = useCallback(

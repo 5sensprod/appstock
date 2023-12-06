@@ -1,6 +1,8 @@
 import React from 'react'
+import { useProductContext } from '../../contexts/ProductContext'
 
-const ProductTable = ({ products, baseUrl }) => {
+const ProductTable = ({ products }) => {
+  const { baseUrl } = useProductContext()
   return (
     <table>
       <thead>

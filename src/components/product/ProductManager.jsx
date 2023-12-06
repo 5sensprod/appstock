@@ -22,7 +22,7 @@ const ProductManager = () => {
     setSearchTerm,
   } = useProductContext()
   const [productAdded, setProductAdded] = useState(false)
-  const [baseUrl, setBaseUrl] = useState('')
+  // const [baseUrl, setBaseUrl] = useState('')
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
 
@@ -46,11 +46,11 @@ const ProductManager = () => {
   // Utilisation du hook useWebSocketConnection
   useWebSocketConnection(setSearchTerm)
 
-  useEffect(() => {
-    getApiBaseUrl().then((url) => {
-      setBaseUrl(url.replace('/api', ''))
-    })
-  }, [])
+  // useEffect(() => {
+  //   getApiBaseUrl().then((url) => {
+  //     setBaseUrl(url.replace('/api', ''))
+  //   })
+  // }, [])
 
   useEffect(() => {
     if (searchTerm.trim() === '') {
@@ -94,7 +94,7 @@ const ProductManager = () => {
         onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
       />
       {filteredProducts.length > 0 ? (
-        <ProductTable products={filteredProducts} baseUrl={baseUrl} />
+        <ProductTable products={filteredProducts} />
       ) : (
         <div>
           <p>Aucun produit trouvé.</p>

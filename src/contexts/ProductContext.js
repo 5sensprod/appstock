@@ -1,18 +1,22 @@
-import React, { createContext, useState, useContext } from 'react'
+import React, { createContext, useState, useContext, useEffect } from 'react'
+import { getApiBaseUrl } from '../api/axiosConfig' // Assurez-vous que le chemin d'importation est correct
 
-// Création du contexte
 const ProductContext = createContext()
 
-// Hook personnalisé pour un accès facile au contexte
 export const useProductContext = () => useContext(ProductContext)
 
-// Provider du contexte
 export const ProductProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
   const [categories, setCategories] = useState([])
+  const [baseUrl, setBaseUrl] = useState('')
 
-  // Toutes les données et fonctions à partager
+  useEffect(() => {
+    getApiBaseUrl().then((url) => {
+      setBaseUrl(url.replace('/api', ''))
+    })
+  }, [])
+
   const contextValue = {
     searchTerm,
     setSearchTerm,
@@ -20,6 +24,7 @@ export const ProductProvider = ({ children }) => {
     setSelectedCategoryId,
     categories,
     setCategories,
+    baseUrl,
   }
 
   return (
@@ -28,3 +33,5 @@ export const ProductProvider = ({ children }) => {
     </ProductContext.Provider>
   )
 }
+
+export default ProductProvider
