@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import useProducts from '../hooks/useProducts'
 import useSearch from '../hooks/useSearch'
-import useWebSocket from '../hooks/useWebSocket'
+import useWebSocket from './hooks/useWebSocket'
 import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
 import {
   fetchApi,
