@@ -33,9 +33,9 @@ const EditProductForm = ({ product, categories, onProductUpdate }) => {
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={(values, actions) => {
+      onSubmit={(values, { setSubmitting }) => {
         onProductUpdate(product._id, values)
-        setSubmitting(false)
+        setSubmitting(false) // Cette fonction doit être définie ici
       }}
     >
       {({ isSubmitting, setFieldValue, values }) => (
