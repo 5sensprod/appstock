@@ -16,34 +16,6 @@ app.use(express.json())
 app.use(express.static(staticFilesPath))
 app.use(cors())
 
-const sseClients = new Map() // Stocker les clients SSE
-
-app.get('/api/events', (req, res) => {
-  res.setHeader('Content-Type', 'text/event-stream')
-  res.setHeader('Cache-Control', 'no-cache')
-  res.setHeader('Connection', 'keep-alive')
-
-  // Générer un ID unique pour chaque client
-  const clientId = Date.now()
-  const newClient = {
-    id: clientId,
-    res,
-  }
-  sseClients.set(clientId, newClient)
-
-  req.on('close', () => {
-    console.log(`Client ${clientId} déconnecté`)
-    sseClients.delete(clientId)
-  })
-})
-
-// Fonction pour envoyer des événements à tous les clients SSE
-const sendSseEvent = (data) => {
-  sseClients.forEach((client) => {
-    client.res.write(`data: ${JSON.stringify(data)}\n\n`)
-  })
-}
-
 // Route pour obtenir l'IP locale
 app.get('/api/getLocalIp', (req, res) => {
   const localIp = getLocalIPv4Address()
@@ -67,7 +39,7 @@ const invoicesRoutes = require('./routes/invoicesRoutes')
 
 initializeDatabases().then((db) => {
   app.use('/api/users', usersRoutes(db))
-  app.use('/api/products', productsRoutes(db, sendSseEvent))
+  app.use('/api/products', productsRoutes(db))
   app.use('/api/categories', categoriesRoutes(db))
   app.use('/api/invoices', invoicesRoutes(db))
 })

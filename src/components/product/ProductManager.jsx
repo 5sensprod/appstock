@@ -21,7 +21,6 @@ const ProductManager = () => {
     setCategories,
     setSelectedCategoryId,
     setSearchTerm,
-    baseUrl,
   } = useProductContext()
   const [productAdded, setProductAdded] = useState(false)
   const [showAddProductForm, setShowAddProductForm] = useState(false)
@@ -36,29 +35,6 @@ const ProductManager = () => {
 
     fetchCategories()
   }, [])
-
-  useEffect(() => {
-    // Établir la connexion SSE
-    const sseUrl = `${baseUrl}/api/events`
-    const eventSource = new EventSource(sseUrl)
-
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-      if (data.type === 'product-added' || data.type === 'product-updated') {
-        console.log('Mise à jour du produit reçue:', data.product)
-        setProductAdded((prevState) => !prevState) // Alterner pour déclencher le rechargement
-      }
-    }
-
-    eventSource.onerror = (error) => {
-      console.error('Erreur SSE:', error)
-      eventSource.close()
-    }
-
-    return () => {
-      eventSource.close()
-    }
-  }, [baseUrl])
 
   const products = useProducts(productAdded)
   const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)

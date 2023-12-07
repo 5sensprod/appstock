@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 // Ici, db doit être passé en tant que paramètre ou importé si nécessaire
-module.exports = (db, sendSseEvent) => {
+module.exports = (db) => {
   const { products } = db
 
   router.get('/', (req, res) => {
@@ -20,7 +20,6 @@ module.exports = (db, sendSseEvent) => {
         console.error("Erreur lors de l'insertion du produit:", err)
         return res.status(500).send(err)
       }
-      sendSseEvent({ type: 'product-added', product: doc }) // Envoyer l'événement SSE
       res.status(201).json(doc)
     })
   })
@@ -29,12 +28,13 @@ module.exports = (db, sendSseEvent) => {
     const id = req.params.id
     const updatedProduct = req.body
 
+    // Mettre à jour le produit dans la base de données
+    // Cette logique dépend de la façon dont votre base de données est configurée
     products.update({ _id: id }, updatedProduct, {}, (err, numReplaced) => {
       if (err) {
         console.error('Erreur lors de la mise à jour du produit:', err)
         return res.status(500).send(err)
       }
-      sendSseEvent({ type: 'product-updated', product: updatedProduct }) // Envoyer l'événement SSE
       res.status(200).json({ message: 'Produit mis à jour' })
     })
   })
