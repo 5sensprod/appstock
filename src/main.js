@@ -45,7 +45,7 @@ app.on('ready', async () => {
 
   // Mise à jour de la politique de sécurité du contenu avec l'adresse IP actuelle
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    const policy = `default-src 'self'; img-src 'self' http://localhost:5000 http://${currentIp}:5000; style-src 'self' 'unsafe-inline'; connect-src 'self' http://${currentIp}:5000 ws://${currentIp}:5000;`
+    const policy = `default-src 'self'; img-src 'self' http://localhost:5000 http://${currentIp}:5000; style-src 'self' 'unsafe-inline'; connect-src 'self' http://${currentIp}:5000 ws://${currentIp}:5000 http://localhost:5000;`
 
     callback({
       responseHeaders: {
