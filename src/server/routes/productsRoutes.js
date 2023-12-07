@@ -24,6 +24,21 @@ module.exports = (db) => {
     })
   })
 
+  router.put('/:id', (req, res) => {
+    const id = req.params.id
+    const updatedProduct = req.body
+
+    // Mettre à jour le produit dans la base de données
+    // Cette logique dépend de la façon dont votre base de données est configurée
+    products.update({ _id: id }, updatedProduct, {}, (err, numReplaced) => {
+      if (err) {
+        console.error('Erreur lors de la mise à jour du produit:', err)
+        return res.status(500).send(err)
+      }
+      res.status(200).json({ message: 'Produit mis à jour' })
+    })
+  })
+
   // Ajoutez ici d'autres routes liées aux utilisateurs
 
   return router

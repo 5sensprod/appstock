@@ -18,4 +18,13 @@ async function addProduct(productData) {
   }
 }
 
-export { getProducts, addProduct }
+async function updateProduct(productId, productData) {
+  try {
+    return await fetchApi(`products/${productId}`, 'PUT', productData)
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du produit:', error)
+    throw error
+  }
+}
+
+export { getProducts, addProduct, updateProduct }

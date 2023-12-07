@@ -24,10 +24,15 @@ export const fetchApi = async (endpoint, method = 'GET', data = null) => {
 
   console.log(`Envoi d'une requête ${method} à ${url}`, data) // Log de la requête
 
-  if (method === 'POST') {
-    return (await axiosInstance.post(url, data)).data
-  } else {
-    return (await axiosInstance.get(url)).data
+  switch (method) {
+    case 'POST':
+      return (await axiosInstance.post(url, data)).data
+    case 'PUT':
+      return (await axiosInstance.put(url, data)).data
+    case 'GET':
+    default:
+      return (await axiosInstance.get(url)).data
   }
 }
+
 export default axiosInstance

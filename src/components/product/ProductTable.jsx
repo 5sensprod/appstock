@@ -1,7 +1,7 @@
 import React from 'react'
 import { useProductContext } from '../../contexts/ProductContext'
 
-const ProductTable = ({ products }) => {
+const ProductTable = ({ products, onEdit }) => {
   const { baseUrl } = useProductContext()
   return (
     <table>
@@ -30,6 +30,9 @@ const ProductTable = ({ products }) => {
             <td>{product.marque}</td>
             <td>{product.gencode}</td>
             <td>{product.prixVente} €</td>
+            <td>
+              <button onClick={() => onEdit(product)}>Modifier</button>
+            </td>
           </tr>
         ))}
       </tbody>

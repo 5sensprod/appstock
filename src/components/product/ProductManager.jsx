@@ -5,6 +5,8 @@ import useWebSocketConnection from '../hooks/useWebSocketConnection'
 import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
 import AddProductForm from './AddProductForm'
 import ProductTable from './ProductTable'
+import { updateProduct } from '../../api/productService'
+import EditProductForm from './EditProductForm'
 import { getCategories } from '../../api/categoryService'
 import SelectCategory from '../category/SelectCategory'
 import NoMatchButton from '../ui/NoMatchButton'
@@ -22,6 +24,7 @@ const ProductManager = () => {
   } = useProductContext()
   const [productAdded, setProductAdded] = useState(false)
   const [showAddProductForm, setShowAddProductForm] = useState(false)
+  const [editingProduct, setEditingProduct] = useState(null)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
 
   useEffect(() => {
@@ -69,6 +72,16 @@ const ProductManager = () => {
     setSearchTerm('')
   }
 
+  const handleEdit = (product) => {
+    setEditingProduct(product)
+  }
+
+  const handleUpdateProduct = async (productId, productData) => {
+    await updateProduct(productId, productData)
+    setEditingProduct(null)
+    setProductAdded(!productAdded) // Toggle pour rafraîchir la liste des produits
+  }
+
   return (
     <div>
       <h1>Produits</h1>
@@ -81,27 +94,37 @@ const ProductManager = () => {
         selectedCategoryId={selectedCategoryId}
         onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
       />
-      {filteredProducts.length > 0 ? (
-        <ProductTable products={filteredProducts} />
+      {editingProduct ? (
+        <EditProductForm
+          product={editingProduct}
+          categories={categories}
+          onProductUpdate={handleUpdateProduct}
+        />
       ) : (
-        <div>
-          <p>Aucun produit trouvé.</p>
-          <NoMatchButton
-            show={showAddProductButton}
-            buttonText="Ajouter"
-            onClick={handleShowAddForm}
-          />
-          {showAddProductForm && (
-            <>
-              <AddProductForm
-                initialGencode={isGencode ? searchTerm : ''}
-                initialReference={!isGencode ? searchTerm : ''}
-                onProductAdd={handleProductSubmit}
+        <>
+          {filteredProducts.length > 0 ? (
+            <ProductTable products={filteredProducts} onEdit={handleEdit} />
+          ) : (
+            <div>
+              <p>Aucun produit trouvé.</p>
+              <NoMatchButton
+                show={showAddProductButton}
+                buttonText="Ajouter"
+                onClick={handleShowAddForm}
               />
-              <button onClick={handleCancel}>Annuler</button>
-            </>
+              {showAddProductForm && (
+                <>
+                  <AddProductForm
+                    initialGencode={isGencode ? searchTerm : ''}
+                    initialReference={!isGencode ? searchTerm : ''}
+                    onProductAdd={handleProductSubmit}
+                  />
+                  <button onClick={handleCancel}>Annuler</button>
+                </>
+              )}
+            </div>
           )}
-        </div>
+        </>
       )}
     </div>
   )
