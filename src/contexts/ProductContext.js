@@ -12,6 +12,9 @@ export const ProductProvider = ({ children }) => {
   const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([]) // Ajout d'un état pour les produits
   const [baseUrl, setBaseUrl] = useState('')
+  const [isBulkEditActive, setIsBulkEditActive] = useState(false)
+  const [selectedProducts, setSelectedProducts] = useState(new Set())
+  const [fieldsToEdit, setFieldsToEdit] = useState({})
 
   useEffect(() => {
     getApiBaseUrl().then((url) => {
@@ -46,6 +49,35 @@ export const ProductProvider = ({ children }) => {
     }
   }, [baseUrl]) // Dépend de baseUrl
 
+  // Fonction pour activer/désactiver la modification en masse
+  const toggleBulkEdit = () => {
+    setIsBulkEditActive((prevState) => !prevState)
+    if (!isBulkEditActive) {
+      setSelectedProducts(new Set()) // Réinitialiser la sélection quand on quitte le mode modification en masse
+    }
+  }
+
+  // Fonction pour gérer la sélection des produits
+  const handleProductSelect = (productId) => {
+    setSelectedProducts((prevSelected) => {
+      const newSelected = new Set(prevSelected)
+      if (newSelected.has(productId)) {
+        newSelected.delete(productId)
+      } else {
+        newSelected.add(productId)
+      }
+      return newSelected
+    })
+  }
+
+  // Fonction pour gérer la sélection des champs à modifier
+  const handleFieldSelect = (fieldName) => {
+    setFieldsToEdit((prevFields) => ({
+      ...prevFields,
+      [fieldName]: !prevFields[fieldName],
+    }))
+  }
+
   const contextValue = {
     searchTerm,
     setSearchTerm,
@@ -55,6 +87,13 @@ export const ProductProvider = ({ children }) => {
     setCategories,
     products,
     baseUrl,
+    isBulkEditActive,
+    setIsBulkEditActive,
+    toggleBulkEdit,
+    selectedProducts,
+    handleProductSelect,
+    fieldsToEdit,
+    handleFieldSelect,
   }
 
   return (

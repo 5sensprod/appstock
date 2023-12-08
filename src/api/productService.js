@@ -27,4 +27,13 @@ async function updateProduct(productId, productData) {
   }
 }
 
-export { getProducts, addProduct, updateProduct }
+async function updateProductsBulk(productsData) {
+  try {
+    return await fetchApi('products/bulk-update', 'PUT', productsData)
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour en masse des produits:', error)
+    throw error
+  }
+}
+
+export { getProducts, addProduct, updateProduct, updateProductsBulk }
