@@ -53,7 +53,6 @@ module.exports = (db, sendSseEvent) => {
 
     Promise.all(updatePromises)
       .then((results) => {
-        // Envoyer un événement SSE ici
         sendSseEvent({
           type: 'products-bulk-updated',
           updatedCount: results.length,

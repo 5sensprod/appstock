@@ -28,10 +28,12 @@ const ProductManager = () => {
     setSelectedProducts,
     fieldsToEdit,
     handleProductSelect,
+    setFieldsToEdit,
+    showBulkEditForm,
+    setShowBulkEditForm,
   } = useProductContext()
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
-  const [showBulkEditForm, setShowBulkEditForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
 
   useEffect(() => {
@@ -94,28 +96,24 @@ const ProductManager = () => {
       changes: formValues,
     }))
 
-    // API call pour la mise à jour en masse
     try {
       const response = await updateProductsBulk(updates)
-      // Gérez la réponse ici (par exemple, affichez un message de succès ou d'erreur)
+
+      // Si la mise à jour réussit, réinitialisez l'état
+      setShowBulkEditForm(false)
+      setIsBulkEditActive(false)
+      setSelectedProducts(new Set())
+      setFieldsToEdit({})
+
+      // Ici un message de succès ou d'autres actions nécessaires après la mise à jour réussie
     } catch (error) {
       // Gérez les erreurs ici
       console.error(
         'Erreur lors de la mise à jour en masse des produits',
         error,
       )
+      // Gérer l'affichage d'un message d'erreur ou d'autres actions en cas d'échec
     }
-  }
-
-  // Activer/Désactiver le mode de sélection multiple
-  const toggleBulkEditMode = () => {
-    setIsBulkEditActive(!isBulkEditActive)
-    setShowBulkEditForm(false) // Masquer le formulaire de modification en masse si le mode est désactivé
-  }
-
-  // Afficher le formulaire de modification en masse
-  const handleShowBulkEditForm = () => {
-    setShowBulkEditForm(true)
   }
 
   return (
@@ -124,14 +122,16 @@ const ProductManager = () => {
       {isAndroidWebView && (
         <button onClick={handleScanClick}>Scanner un code-barres</button>
       )}
-      <button onClick={toggleBulkEditMode}>
+      <button onClick={() => setIsBulkEditActive(!isBulkEditActive)}>
         {isBulkEditActive
           ? 'Désactiver la Sélection Multiple'
           : 'Activer la Sélection Multiple'}
       </button>
 
       {isBulkEditActive && selectedProducts.size >= 2 && (
-        <button onClick={handleShowBulkEditForm}>Modification Multiples</button>
+        <button onClick={() => setShowBulkEditForm(true)}>
+          Modification Multiples
+        </button>
       )}
 
       {showBulkEditForm && <BulkEditForm onSubmit={handleBulkEditSubmit} />}
@@ -155,7 +155,7 @@ const ProductManager = () => {
               onEdit={handleEdit}
               onProductSelect={handleProductSelect}
               selectedProducts={selectedProducts}
-              isBulkEditActive={isBulkEditActive} // Assurez-vous de passer cette prop.
+              isBulkEditActive={isBulkEditActive}
             />
           ) : (
             <div>

@@ -10,11 +10,12 @@ export const ProductProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
   const [categories, setCategories] = useState([])
-  const [products, setProducts] = useState([]) // Ajout d'un état pour les produits
+  const [products, setProducts] = useState([])
   const [baseUrl, setBaseUrl] = useState('')
   const [isBulkEditActive, setIsBulkEditActive] = useState(false)
   const [selectedProducts, setSelectedProducts] = useState(new Set())
   const [fieldsToEdit, setFieldsToEdit] = useState({})
+  const [showBulkEditForm, setShowBulkEditForm] = useState(false)
 
   useEffect(() => {
     getApiBaseUrl().then((url) => {
@@ -44,7 +45,7 @@ export const ProductProvider = ({ children }) => {
         data.type === 'product-updated' ||
         data.type === 'products-bulk-updated'
       ) {
-        fetchProducts() // Recharger la liste des produits
+        fetchProducts()
       }
     }
 
@@ -57,7 +58,7 @@ export const ProductProvider = ({ children }) => {
   const toggleBulkEdit = () => {
     setIsBulkEditActive((prevState) => !prevState)
     if (!isBulkEditActive) {
-      setSelectedProducts(new Set()) // Réinitialiser la sélection quand on quitte le mode modification en masse
+      setSelectedProducts(new Set())
     }
   }
 
@@ -98,6 +99,11 @@ export const ProductProvider = ({ children }) => {
     handleProductSelect,
     fieldsToEdit,
     handleFieldSelect,
+    setFieldsToEdit,
+    selectedProducts,
+    setSelectedProducts,
+    showBulkEditForm,
+    setShowBulkEditForm,
   }
 
   return (

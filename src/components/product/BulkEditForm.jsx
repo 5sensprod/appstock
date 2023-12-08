@@ -20,6 +20,7 @@ const BulkEditForm = ({ onSubmit }) => {
         <label>
           <input
             type="checkbox"
+            checked={fieldsToEdit['prixVente'] || false}
             onChange={() => handleFieldSelect('prixVente')}
           />
           Prix de Vente
@@ -35,6 +36,7 @@ const BulkEditForm = ({ onSubmit }) => {
         <label>
           <input
             type="checkbox"
+            checked={fieldsToEdit['prixAchat'] || false}
             onChange={() => handleFieldSelect('prixAchat')}
           />
           Prix d'achat
@@ -48,7 +50,11 @@ const BulkEditForm = ({ onSubmit }) => {
       </div>
       <div>
         <label>
-          <input type="checkbox" onChange={() => handleFieldSelect('stock')} />
+          <input
+            type="checkbox"
+            checked={fieldsToEdit['stock'] || false}
+            onChange={() => handleFieldSelect('stock')}
+          />
           Stock
         </label>
         {fieldsToEdit['stock'] && (
