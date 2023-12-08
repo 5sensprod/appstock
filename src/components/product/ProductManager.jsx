@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import useProducts from '../hooks/useProducts'
 import useSearch from '../hooks/useSearch'
 import useWebSocketConnection from '../hooks/useWebSocketConnection'
 import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
@@ -21,9 +20,8 @@ const ProductManager = () => {
     setCategories,
     setSelectedCategoryId,
     setSearchTerm,
-    baseUrl,
+    products,
   } = useProductContext()
-  const [productAdded, setProductAdded] = useState(false)
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
@@ -37,26 +35,6 @@ const ProductManager = () => {
     fetchCategories()
   }, [])
 
-  useEffect(() => {
-    const sseUrl = `${baseUrl}/api/events`
-    const eventSource = new EventSource(sseUrl)
-
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-      if (data.type === 'product-added' || data.type === 'product-updated') {
-        setProductAdded(true)
-      }
-    }
-    eventSource.onerror = (error) => {
-      console.error('Erreur SSE:', error)
-      eventSource.close()
-    }
-    return () => {
-      eventSource.close()
-    }
-  }, [baseUrl])
-
-  const products = useProducts(productAdded)
   const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
 
   const showAddProductButton =
@@ -99,7 +77,6 @@ const ProductManager = () => {
   const handleUpdateProduct = async (productId, productData) => {
     await updateProduct(productId, productData)
     setEditingProduct(null)
-    setProductAdded(!productAdded) // Toggle pour rafraîchir la liste des produits
   }
 
   return (
