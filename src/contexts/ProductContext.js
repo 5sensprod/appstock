@@ -39,7 +39,11 @@ export const ProductProvider = ({ children }) => {
     const eventSource = new EventSource(`${baseUrl}/api/events`)
     eventSource.onmessage = (e) => {
       const data = JSON.parse(e.data)
-      if (data.type === 'product-added' || data.type === 'product-updated') {
+      if (
+        data.type === 'product-added' ||
+        data.type === 'product-updated' ||
+        data.type === 'products-bulk-updated'
+      ) {
         fetchProducts() // Recharger la liste des produits
       }
     }

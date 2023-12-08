@@ -36,15 +36,8 @@ module.exports = (db, sendSseEvent) => {
   })
 
   router.put('/bulk-update', (req, res) => {
-    console.log('Requête reçue sur /bulk-update avec les données :', req.body)
-    const productsToUpdate = req.body // Un tableau d'objets produit
+    const productsToUpdate = req.body
     const updatePromises = productsToUpdate.map((product) => {
-      // Ajoutez le console.log ici
-      console.log(
-        `Mise à jour du produit ID ${product.id} avec`,
-        product.changes,
-      )
-
       return new Promise((resolve, reject) => {
         products.update(
           { _id: product.id },
@@ -59,11 +52,16 @@ module.exports = (db, sendSseEvent) => {
     })
 
     Promise.all(updatePromises)
-      .then((results) =>
+      .then((results) => {
+        // Envoyer un événement SSE ici
+        sendSseEvent({
+          type: 'products-bulk-updated',
+          updatedCount: results.length,
+        })
         res
           .status(200)
-          .json({ message: 'Produits mis à jour', count: results.length }),
-      )
+          .json({ message: 'Produits mis à jour', count: results.length })
+      })
       .catch((err) => res.status(500).send(err))
   })
   router.put('/:id', (req, res) => {
