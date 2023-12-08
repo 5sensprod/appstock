@@ -21,6 +21,7 @@ const ProductManager = () => {
     setCategories,
     setSelectedCategoryId,
     setSearchTerm,
+    baseUrl,
   } = useProductContext()
   const [productAdded, setProductAdded] = useState(false)
   const [showAddProductForm, setShowAddProductForm] = useState(false)
@@ -35,6 +36,25 @@ const ProductManager = () => {
 
     fetchCategories()
   }, [])
+
+  useEffect(() => {
+    const sseUrl = `${baseUrl}/api/events`
+    const eventSource = new EventSource(sseUrl)
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      if (data.type === 'product-added' || data.type === 'product-updated') {
+        setProductAdded(true)
+      }
+    }
+    eventSource.onerror = (error) => {
+      console.error('Erreur SSE:', error)
+      eventSource.close()
+    }
+    return () => {
+      eventSource.close()
+    }
+  }, [baseUrl])
 
   const products = useProducts(productAdded)
   const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
@@ -55,12 +75,12 @@ const ProductManager = () => {
 
   const handleScanClick = () => {
     if (window.Android && isAndroidWebView) {
-      window.Android.performScan() // Appeler la méthode de l'app Android
+      window.Android.performScan()
     }
   }
 
   const handleProductSubmit = () => {
-    setProductAdded((prevState) => !prevState) // Inverser l'état pour déclencher le rechargement
+    setProductAdded((prevState) => !prevState)
   }
 
   const handleShowAddForm = () => {
