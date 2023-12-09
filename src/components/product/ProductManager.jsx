@@ -31,9 +31,12 @@ const ProductManager = () => {
     setFieldsToEdit,
     showBulkEditForm,
     setShowBulkEditForm,
+    cancelEdit,
+    editingProduct,
+    setEditingProduct,
+    cancelBulkEdit,
   } = useProductContext()
   const [showAddProductForm, setShowAddProductForm] = useState(false)
-  const [editingProduct, setEditingProduct] = useState(null)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
 
   useEffect(() => {
@@ -146,6 +149,7 @@ const ProductManager = () => {
           product={editingProduct}
           categories={categories}
           onProductUpdate={handleUpdateProduct}
+          onCancel={cancelEdit}
         />
       ) : (
         <>

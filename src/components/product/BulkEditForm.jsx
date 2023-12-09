@@ -1,8 +1,10 @@
 import React from 'react'
 import { useProductContext } from '../../contexts/ProductContext'
+import SelectCategory from '../category/SelectCategory'
 
 const BulkEditForm = ({ onSubmit }) => {
-  const { fieldsToEdit, handleFieldSelect } = useProductContext()
+  const { fieldsToEdit, handleFieldSelect, categories, cancelBulkEdit } =
+    useProductContext()
   const [formValues, setFormValues] = React.useState({})
 
   const handleInputChange = (field, value) => {
@@ -64,8 +66,51 @@ const BulkEditForm = ({ onSubmit }) => {
           />
         )}
       </div>
-      {/* Répétez pour les autres champs: categorie et sousCategorie */}
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={fieldsToEdit['categorie'] || false}
+            onChange={() => handleFieldSelect('categorie')}
+          />
+          Catégorie
+        </label>
+        {fieldsToEdit['categorie'] && (
+          <SelectCategory
+            categories={categories}
+            selectedCategoryId={formValues['categorie'] || ''}
+            onCategoryChange={(e) =>
+              handleInputChange('categorie', e.target.value)
+            }
+          />
+        )}
+      </div>
+
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={fieldsToEdit['sousCategorie'] || false}
+            onChange={() => handleFieldSelect('sousCategorie')}
+          />
+          Sous-Catégorie
+        </label>
+        {fieldsToEdit['sousCategorie'] && (
+          <SelectCategory
+            categories={categories}
+            selectedCategoryId={formValues['sousCategorie'] || ''}
+            onCategoryChange={(e) =>
+              handleInputChange('sousCategorie', e.target.value)
+            }
+            parentFilter={formValues['categorie']} // Utiliser la catégorie sélectionnée comme filtre
+          />
+        )}
+      </div>
+
       <button type="submit">Appliquer les Modifications</button>
+      <button type="button" onClick={cancelBulkEdit}>
+        Annuler
+      </button>
     </form>
   )
 }

@@ -16,6 +16,7 @@ export const ProductProvider = ({ children }) => {
   const [selectedProducts, setSelectedProducts] = useState(new Set())
   const [fieldsToEdit, setFieldsToEdit] = useState({})
   const [showBulkEditForm, setShowBulkEditForm] = useState(false)
+  const [editingProduct, setEditingProduct] = useState(null)
 
   useEffect(() => {
     getApiBaseUrl().then((url) => {
@@ -83,9 +84,24 @@ export const ProductProvider = ({ children }) => {
     }))
   }
 
+  const cancelEdit = () => {
+    setEditingProduct(null)
+  }
+
+  const cancelBulkEdit = () => {
+    setShowBulkEditForm(false)
+    setIsBulkEditActive(false)
+    setSelectedProducts(new Set())
+    setFieldsToEdit({})
+    // Autres actions nécessaires pour annuler l'édition en masse
+  }
+
   const contextValue = {
     searchTerm,
     setSearchTerm,
+    editingProduct,
+    setEditingProduct,
+    cancelEdit,
     selectedCategoryId,
     setSelectedCategoryId,
     categories,
@@ -104,6 +120,7 @@ export const ProductProvider = ({ children }) => {
     setSelectedProducts,
     showBulkEditForm,
     setShowBulkEditForm,
+    cancelBulkEdit,
   }
 
   return (

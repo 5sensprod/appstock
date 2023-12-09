@@ -3,10 +3,12 @@ import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import SelectCategory from '../category/SelectCategory'
 
-const EditProductForm = ({ product, categories, onProductUpdate }) => {
-  const [selectedCategory, setSelectedCategory] = useState(
-    product.categorie || '',
-  )
+const EditProductForm = ({
+  product,
+  categories,
+  onProductUpdate,
+  onCancel,
+}) => {
   const initialValues = {
     reference: product.reference || '',
     prixVente: product.prixVente || 0,
@@ -20,13 +22,24 @@ const EditProductForm = ({ product, categories, onProductUpdate }) => {
   }
 
   const validationSchema = Yup.object().shape({
-    reference: Yup.string().required('Requis'),
-    prixVente: Yup.number().required('Requis').positive('Doit être positif'),
-    description: Yup.string().required('Requis'),
-    descriptionCourte: Yup.string(),
-    marque: Yup.string(),
-    gencode: Yup.string(),
-    // Ajoutez des validations pour d'autres champs si nécessaire
+    prixVente: Yup.number()
+      .positive('Le prix de vente doit être un nombre positif')
+      .min(0.01, 'Le prix de vente doit être supérieur à zéro')
+      .nullable(true), // Permet les valeurs nulles
+
+    prixAchat: Yup.number()
+      .positive("Le prix d'achat doit être un nombre positif")
+      .min(0.01, "Le prix d'achat doit être supérieur à zéro")
+      .nullable(true),
+
+    stock: Yup.number()
+      .positive('Le stock doit être un nombre positif')
+      .min(1, 'Le stock doit être au moins de 1')
+      .nullable(true),
+
+    gencode: Yup.string()
+      .matches(/^\d+$/, 'Le gencode doit contenir uniquement des chiffres')
+      .nullable(true),
   })
 
   return (
@@ -34,11 +47,15 @@ const EditProductForm = ({ product, categories, onProductUpdate }) => {
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={(values, { setSubmitting }) => {
-        onProductUpdate(product._id, values)
-        setSubmitting(false) // Cette fonction doit être définie ici
+        const updatedProduct = {
+          ...product,
+          ...values,
+        }
+        onProductUpdate(product._id, updatedProduct)
+        setSubmitting(false)
       }}
     >
-      {({ isSubmitting, setFieldValue, values }) => (
+      {({ errors, touched, isSubmitting, setFieldValue, values }) => (
         <Form>
           <div>
             <label htmlFor="reference">Référence</label>
@@ -47,6 +64,9 @@ const EditProductForm = ({ product, categories, onProductUpdate }) => {
           <div>
             <label htmlFor="prixVente">Prix de vente</label>
             <Field name="prixVente" type="number" />
+            {touched.prixVente && errors.prixVente && (
+              <div>{errors.prixVente}</div>
+            )}
           </div>
           <div>
             <label htmlFor="categorie">Catégorie</label>
@@ -86,10 +106,14 @@ const EditProductForm = ({ product, categories, onProductUpdate }) => {
           <div>
             <label htmlFor="gencode">Gencode</label>
             <Field name="gencode" type="text" />
+            {touched.gencode && errors.gencode && <div>{errors.gencode}</div>}
           </div>
           {/* Ajoutez des champs pour d'autres propriétés si nécessaire */}
           <button type="submit" disabled={isSubmitting}>
             Mettre à jour
+          </button>
+          <button type="button" onClick={onCancel}>
+            Annuler
           </button>
         </Form>
       )}
