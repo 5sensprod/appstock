@@ -26,7 +26,6 @@ const ProductManager = () => {
     setIsBulkEditActive,
     selectedProducts,
     setSelectedProducts,
-    fieldsToEdit,
     handleProductSelect,
     setFieldsToEdit,
     showBulkEditForm,
@@ -34,7 +33,6 @@ const ProductManager = () => {
     cancelEdit,
     editingProduct,
     setEditingProduct,
-    cancelBulkEdit,
   } = useProductContext()
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
