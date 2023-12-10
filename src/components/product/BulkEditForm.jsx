@@ -1,19 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Checkbox, FormControlLabel, TextField, Button } from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext'
 import SelectCategory from '../category/SelectCategory'
+import { convertToNumber } from '../../utils/formatUtils'
 
 const BulkEditForm = ({ onSubmit }) => {
   const { fieldsToEdit, handleFieldSelect, categories, cancelBulkEdit } =
     useProductContext()
+  const [selectedCategory, setSelectedCategory] = useState('')
 
   // Initialiser le formulaire avec des valeurs par défaut pour chaque champ
   const { control, handleSubmit } = useForm({
     defaultValues: {
-      prixVente: '', // Assurez-vous que les champs ont une valeur initiale
-      prixAchat: '', // Vous pouvez les mettre à null ou à une valeur par défaut
-      stock: '', // Selon ce qui convient le mieux à votre logique d'application
+      prixVente: '',
+      prixAchat: '',
+      stock: '',
       categorie: '',
       sousCategorie: '',
       // ... autres champs si nécessaire
@@ -21,12 +23,6 @@ const BulkEditForm = ({ onSubmit }) => {
   })
 
   const handleSubmitForm = (data) => {
-    // Fonction pour convertir une valeur en nombre, avec gestion des valeurs nulles ou vides
-    const convertToNumber = (value, defaultValue = 0) => {
-      const number = parseFloat(value)
-      return isNaN(number) ? defaultValue : number
-    }
-
     // Créer un objet avec seulement les champs modifiés et convertis
     const modifiedData = Object.keys(data).reduce((acc, key) => {
       if (fieldsToEdit[key]) {
@@ -112,22 +108,28 @@ const BulkEditForm = ({ onSubmit }) => {
             <SelectCategory
               categories={categories}
               selectedCategoryId={field.value}
-              onCategoryChange={(e) => field.onChange(e.target.value)}
+              onCategoryChange={(e) => {
+                setSelectedCategory(e.target.value)
+                field.onChange(e.target.value)
+              }}
+              label="Catégorie"
             />
           )}
         />
       )}
 
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={fieldsToEdit['sousCategorie'] || false}
-            onChange={() => handleFieldSelect('sousCategorie')}
-          />
-        }
-        label="Sous-Catégorie"
-      />
-      {fieldsToEdit['sousCategorie'] && (
+      {selectedCategory && (
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={fieldsToEdit['sousCategorie'] || false}
+              onChange={() => handleFieldSelect('sousCategorie')}
+            />
+          }
+          label="Sous-Catégorie"
+        />
+      )}
+      {fieldsToEdit['sousCategorie'] && selectedCategory && (
         <Controller
           name="sousCategorie"
           control={control}
@@ -136,7 +138,8 @@ const BulkEditForm = ({ onSubmit }) => {
               categories={categories}
               selectedCategoryId={field.value}
               onCategoryChange={(e) => field.onChange(e.target.value)}
-              parentFilter={control.getValues('categorie')}
+              parentFilter={selectedCategory}
+              label="Sous-catégorie"
             />
           )}
         />

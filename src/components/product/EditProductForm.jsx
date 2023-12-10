@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { TextField, Button, Box } from '@mui/material'
 import SelectCategory from '../category/SelectCategory'
@@ -9,6 +9,10 @@ const EditProductForm = ({
   onProductUpdate,
   onCancel,
 }) => {
+  const [selectedParentCategory, setSelectedParentCategory] = useState(
+    product.categorie,
+  )
+
   const {
     control,
     handleSubmit,
@@ -39,6 +43,12 @@ const EditProductForm = ({
     onProductUpdate(product._id, updatedProduct)
   }
 
+  useEffect(() => {
+    setValue('categorie', selectedParentCategory)
+  }, [selectedParentCategory, setValue])
+
+  const showSubCategorySelector = selectedParentCategory !== ''
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box>
@@ -62,18 +72,42 @@ const EditProductForm = ({
             />
           )}
         />
-        <SelectCategory
-          categories={categories}
-          selectedCategoryId={product.categorie}
-          onCategoryChange={(e) => setValue('categorie', e.target.value)}
-          parentFilter={null}
+        <Controller
+          name="categorie"
+          control={control}
+          render={({ field }) => (
+            <SelectCategory
+              categories={categories}
+              selectedCategoryId={field.value}
+              onCategoryChange={(e) => {
+                setSelectedParentCategory(e.target.value)
+                setValue('categorie', e.target.value)
+                if (!e.target.value) {
+                  setValue('sousCategorie', '')
+                }
+              }}
+              parentFilter={null}
+              label="Catégorie"
+            />
+          )}
         />
-        <SelectCategory
-          categories={categories}
-          selectedCategoryId={product.sousCategorie}
-          onCategoryChange={(e) => setValue('sousCategorie', e.target.value)}
-          parentFilter={product.categorie}
-        />
+        {selectedParentCategory && (
+          <Controller
+            name="sousCategorie"
+            control={control}
+            render={({ field }) => (
+              <SelectCategory
+                categories={categories}
+                selectedCategoryId={field.value}
+                onCategoryChange={(e) =>
+                  setValue('sousCategorie', e.target.value)
+                }
+                parentFilter={selectedParentCategory}
+                label="Sous-catégorie"
+              />
+            )}
+          />
+        )}
         <Controller
           name="description"
           control={control}

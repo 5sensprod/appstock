@@ -7,6 +7,7 @@ const SelectCategory = ({
   selectedCategoryId,
   onCategoryChange,
   parentFilter = null,
+  label = 'Catégorie', // Nouveau paramètre avec une valeur par défaut
 }) => {
   const filteredCategories = parentFilter
     ? categories.filter((cat) => cat.parentId === parentFilter)
@@ -14,15 +15,17 @@ const SelectCategory = ({
 
   return (
     <FormControl fullWidth>
-      <InputLabel id="category-select-label">Catégorie</InputLabel>
+      <InputLabel id="category-select-label">{label}</InputLabel>
       <Select
         labelId="category-select-label"
-        value={selectedCategoryId || ''} // Remplacer null par une chaîne vide
+        value={selectedCategoryId || ''}
         onChange={onCategoryChange}
-        label="Catégorie"
+        label={label}
       >
         <MenuItem value="">
-          <em>Toutes les catégories</em>
+          <em>
+            {parentFilter ? 'Aucune sous-catégorie' : 'Toutes les catégories'}
+          </em>
         </MenuItem>
         {filteredCategories.map((category) => (
           <MenuItem key={category._id} value={category._id}>

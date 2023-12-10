@@ -51,8 +51,14 @@ const ProductManager = () => {
 
   const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
 
+  const isSearchingByReferenceOnly =
+    searchTerm.trim() !== '' && selectedCategoryId === ''
+
   const showAddProductButton =
-    !showAddProductForm && filteredProducts.length === 0
+    !showAddProductForm &&
+    filteredProducts.length === 0 &&
+    isSearchingByReferenceOnly
+
   const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
   useGlobalScannedDataHandler(setSearchTerm)
 
@@ -131,36 +137,35 @@ const ProductManager = () => {
       )}
 
       {!editingProduct && !showAddProductForm && (
-        <Button
-          variant="contained"
-          onClick={() => setIsBulkEditActive(!isBulkEditActive)}
-        >
-          {isBulkEditActive
-            ? 'Désactiver la Sélection Multiple'
-            : 'Activer la Sélection Multiple'}
-        </Button>
-      )}
+        <>
+          <Button
+            variant="contained"
+            onClick={() => setIsBulkEditActive(!isBulkEditActive)}
+          >
+            {isBulkEditActive
+              ? 'Désactiver la Sélection Multiple'
+              : 'Activer la Sélection Multiple'}
+          </Button>
 
-      {isBulkEditActive && selectedProducts.size >= 2 && (
-        <Button variant="contained" onClick={() => setShowBulkEditForm(true)}>
-          Modification Multiples
-        </Button>
+          {isBulkEditActive && selectedProducts.size >= 2 && (
+            <Button
+              variant="contained"
+              onClick={() => setShowBulkEditForm(true)}
+            >
+              Modification Multiples
+            </Button>
+          )}
+
+          <ProductSearch />
+          <SelectCategory
+            categories={categories}
+            selectedCategoryId={selectedCategoryId}
+            onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
+          />
+        </>
       )}
 
       {showBulkEditForm && <BulkEditForm onSubmit={handleBulkEditSubmit} />}
-
-      {!editingProduct &&
-        !showAddProductForm &&
-        filteredProducts.length > 0 && (
-          <>
-            <ProductSearch />
-            <SelectCategory
-              categories={categories}
-              selectedCategoryId={selectedCategoryId}
-              onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
-            />
-          </>
-        )}
 
       {editingProduct ? (
         <EditProductForm

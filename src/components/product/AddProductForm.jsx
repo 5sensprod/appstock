@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Button, TextField } from '@mui/material'
 import { addProduct } from '../../api/productService'
