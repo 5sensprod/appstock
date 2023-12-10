@@ -1,76 +1,99 @@
 import React from 'react'
-import { Formik, Form, Field } from 'formik'
-import * as Yup from 'yup'
+import { useForm, Controller } from 'react-hook-form'
+import { Button, TextField } from '@mui/material'
 import { addProduct } from '../../api/productService'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
 
-// Schéma de validation Yup
-const ProductSchema = Yup.object().shape({
-  // Ajoutez des champs supplémentaires selon la structure de votre produit
-})
-
 const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
-  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+    reset,
+  } = useForm({
+    defaultValues: {
+      reference: capitalizeFirstLetter(initialReference) || '',
+      prixVente: '',
+      gencode: initialGencode || '',
+      // Initialisez d'autres champs par défaut ici
+    },
+  })
+
+  const onSubmit = async (values) => {
     try {
-      await addProduct(values)
-      resetForm()
-      // Appeler onProductAdd pour signaler que le produit a été ajouté
+      // Conversion explicite de prixVente en nombre
+      const formattedValues = {
+        ...values,
+        prixVente: parseFloat(values.prixVente) || 0, // Convertir en nombre, utiliser 0 si la conversion échoue
+      }
+
+      await addProduct(formattedValues)
+      reset() // Réinitialiser le formulaire
       if (onProductAdd) {
         onProductAdd()
       }
     } catch (error) {
       // Gérer les erreurs ici
     }
-    setSubmitting(false)
   }
-
   return (
-    <Formik
-      initialValues={{
-        reference: capitalizeFirstLetter(initialReference) || '',
-        prixVente: '',
-        gencode: initialGencode || '',
-        description: null,
-        descriptionCourte: null,
-        photos: [],
-        videos: [],
-        marque: null,
-        SKU: null,
-        categorie: null,
-        sousCategorie: null,
-        prixAchat: null,
-        variable: true,
-        stock: null,
-        ficheTechnique: null,
-      }}
-      onSubmit={handleSubmit}
-    >
-      {({ isSubmitting }) => (
-        <Form>
-          <Field name="reference" type="text" placeholder="Référence" />
-          <Field name="prixVente" type="number" placeholder="Prix de Vente" />
-          <Field name="gencode" type="text" placeholder="Gencode" />
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="reference"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            type="text"
+            placeholder="Référence"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+          />
+        )}
+      />
+      <Controller
+        name="prixVente"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            type="number"
+            placeholder="Prix de Vente"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+          />
+        )}
+      />
+      <Controller
+        name="gencode"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            type="text"
+            placeholder="Gencode"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+          />
+        )}
+      />
 
-          {/* Champs cachés */}
-          <input type="hidden" name="description" />
-          <input type="hidden" name="descriptionCourte" />
-          <input type="hidden" name="photos" />
-          <input type="hidden" name="videos" />
-          <input type="hidden" name="marque" />
-          <input type="hidden" name="SKU" />
-          <input type="hidden" name="categorie" />
-          <input type="hidden" name="sousCategorie" />
-          <input type="hidden" name="prixAchat" />
-          <input type="hidden" name="variable" />
-          <input type="hidden" name="stock" />
-          <input type="hidden" name="ficheTechnique" />
+      {/* Ajoutez d'autres champs ici selon vos besoins */}
+      {/* ... */}
 
-          <button type="submit" disabled={isSubmitting}>
-            Ajouter Produit
-          </button>
-        </Form>
-      )}
-    </Formik>
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        disabled={isSubmitting}
+        style={{ marginTop: '10px' }}
+      >
+        Ajouter Produit
+      </Button>
+    </form>
   )
 }
 

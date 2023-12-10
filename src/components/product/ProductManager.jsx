@@ -12,6 +12,7 @@ import SelectCategory from '../category/SelectCategory'
 import NoMatchButton from '../ui/NoMatchButton'
 import ProductSearch from './ProductSearch'
 import { useProductContext } from '../../contexts/ProductContext'
+import { Box, Button } from '@mui/material'
 
 const ProductManager = () => {
   const {
@@ -119,20 +120,26 @@ const ProductManager = () => {
 
   return (
     <div>
+      <Box />
       <h1>Produits</h1>
       {isAndroidWebView && (
-        <button onClick={handleScanClick}>Scanner un code-barres</button>
+        <Button variant="contained" onClick={handleScanClick}>
+          Scanner un code-barres
+        </Button>
       )}
-      <button onClick={() => setIsBulkEditActive(!isBulkEditActive)}>
+      <Button
+        variant="contained"
+        onClick={() => setIsBulkEditActive(!isBulkEditActive)}
+      >
         {isBulkEditActive
           ? 'Désactiver la Sélection Multiple'
           : 'Activer la Sélection Multiple'}
-      </button>
+      </Button>
 
       {isBulkEditActive && selectedProducts.size >= 2 && (
-        <button onClick={() => setShowBulkEditForm(true)}>
+        <Button variant="contained" onClick={() => setShowBulkEditForm(true)}>
           Modification Multiples
-        </button>
+        </Button>
       )}
 
       {showBulkEditForm && <BulkEditForm onSubmit={handleBulkEditSubmit} />}
@@ -174,13 +181,16 @@ const ProductManager = () => {
                     initialReference={!isGencode ? searchTerm : ''}
                     onProductAdd={handleProductSubmit}
                   />
-                  <button onClick={handleCancel}>Annuler</button>
+                  <Button variant="contained" onClick={handleCancel}>
+                    Annuler
+                  </Button>
                 </>
               )}
             </div>
           )}
         </>
       )}
+      <Box />
     </div>
   )
 }

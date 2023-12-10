@@ -1,116 +1,125 @@
 import React from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import { Checkbox, FormControlLabel, TextField, Button } from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext'
 import SelectCategory from '../category/SelectCategory'
 
 const BulkEditForm = ({ onSubmit }) => {
   const { fieldsToEdit, handleFieldSelect, categories, cancelBulkEdit } =
     useProductContext()
-  const [formValues, setFormValues] = React.useState({})
-
-  const handleInputChange = (field, value) => {
-    setFormValues((prev) => ({ ...prev, [field]: value }))
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    onSubmit(formValues)
-  }
+  const { control, handleSubmit } = useForm()
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>
-          <input
-            type="checkbox"
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormControlLabel
+        control={
+          <Checkbox
             checked={fieldsToEdit['prixVente'] || false}
             onChange={() => handleFieldSelect('prixVente')}
           />
-          Prix de Vente
-        </label>
-        {fieldsToEdit['prixVente'] && (
-          <input
-            type="number"
-            onChange={(e) => handleInputChange('prixVente', e.target.value)}
-          />
-        )}
-      </div>
-      <div>
-        <label>
-          <input
-            type="checkbox"
+        }
+        label="Prix de Vente"
+      />
+      {fieldsToEdit['prixVente'] && (
+        <Controller
+          name="prixVente"
+          control={control}
+          render={({ field }) => <TextField type="number" {...field} />}
+        />
+      )}
+
+      <FormControlLabel
+        control={
+          <Checkbox
             checked={fieldsToEdit['prixAchat'] || false}
             onChange={() => handleFieldSelect('prixAchat')}
           />
-          Prix d'achat
-        </label>
-        {fieldsToEdit['prixAchat'] && (
-          <input
-            type="number"
-            onChange={(e) => handleInputChange('prixAchat', e.target.value)}
-          />
-        )}
-      </div>
-      <div>
-        <label>
-          <input
-            type="checkbox"
+        }
+        label="Prix d'achat"
+      />
+      {fieldsToEdit['prixAchat'] && (
+        <Controller
+          name="prixAchat"
+          control={control}
+          render={({ field }) => <TextField type="number" {...field} />}
+        />
+      )}
+
+      <FormControlLabel
+        control={
+          <Checkbox
             checked={fieldsToEdit['stock'] || false}
             onChange={() => handleFieldSelect('stock')}
           />
-          Stock
-        </label>
-        {fieldsToEdit['stock'] && (
-          <input
-            type="number"
-            onChange={(e) => handleInputChange('stock', e.target.value)}
-          />
-        )}
-      </div>
-      <div>
-        <label>
-          <input
-            type="checkbox"
+        }
+        label="Stock"
+      />
+      {fieldsToEdit['stock'] && (
+        <Controller
+          name="stock"
+          control={control}
+          render={({ field }) => <TextField type="number" {...field} />}
+        />
+      )}
+
+      <FormControlLabel
+        control={
+          <Checkbox
             checked={fieldsToEdit['categorie'] || false}
             onChange={() => handleFieldSelect('categorie')}
           />
-          Catégorie
-        </label>
-        {fieldsToEdit['categorie'] && (
-          <SelectCategory
-            categories={categories}
-            selectedCategoryId={formValues['categorie'] || ''}
-            onCategoryChange={(e) =>
-              handleInputChange('categorie', e.target.value)
-            }
-          />
-        )}
-      </div>
+        }
+        label="Catégorie"
+      />
+      {fieldsToEdit['categorie'] && (
+        <Controller
+          name="categorie"
+          control={control}
+          render={({ field }) => (
+            <SelectCategory
+              categories={categories}
+              selectedCategoryId={field.value}
+              onCategoryChange={(e) => field.onChange(e.target.value)}
+            />
+          )}
+        />
+      )}
 
-      <div>
-        <label>
-          <input
-            type="checkbox"
+      <FormControlLabel
+        control={
+          <Checkbox
             checked={fieldsToEdit['sousCategorie'] || false}
             onChange={() => handleFieldSelect('sousCategorie')}
           />
-          Sous-Catégorie
-        </label>
-        {fieldsToEdit['sousCategorie'] && (
-          <SelectCategory
-            categories={categories}
-            selectedCategoryId={formValues['sousCategorie'] || ''}
-            onCategoryChange={(e) =>
-              handleInputChange('sousCategorie', e.target.value)
-            }
-            parentFilter={formValues['categorie']} // Utiliser la catégorie sélectionnée comme filtre
-          />
-        )}
-      </div>
+        }
+        label="Sous-Catégorie"
+      />
+      {fieldsToEdit['sousCategorie'] && (
+        <Controller
+          name="sousCategorie"
+          control={control}
+          render={({ field }) => (
+            <SelectCategory
+              categories={categories}
+              selectedCategoryId={field.value}
+              onCategoryChange={(e) => field.onChange(e.target.value)}
+              parentFilter={control.getValues('categorie')}
+            />
+          )}
+        />
+      )}
 
-      <button type="submit">Appliquer les Modifications</button>
-      <button type="button" onClick={cancelBulkEdit}>
+      <Button type="submit" variant="contained" color="primary">
+        Appliquer les Modifications
+      </Button>
+      <Button
+        type="button"
+        variant="outlined"
+        color="secondary"
+        onClick={cancelBulkEdit}
+      >
         Annuler
-      </button>
+      </Button>
     </form>
   )
 }

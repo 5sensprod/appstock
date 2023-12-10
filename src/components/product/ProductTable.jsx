@@ -29,24 +29,6 @@ const ProductTable = ({
               <Typography>Choisir</Typography>
             </Grid>
           )}
-          <Grid item>
-            <Typography>Photo</Typography>
-          </Grid>
-          <Grid item>
-            <Typography>Référence</Typography>
-          </Grid>
-          <Grid item>
-            <Typography>Marque</Typography>
-          </Grid>
-          <Grid item>
-            <Typography>Gencode</Typography>
-          </Grid>
-          <Grid item>
-            <Typography>Prix de vente</Typography>
-          </Grid>
-          <Grid item>
-            <Typography>Actions</Typography>
-          </Grid>
         </Grid>
       </Grid>
 

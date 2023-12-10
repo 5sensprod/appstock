@@ -40,7 +40,7 @@ const Cart = () => {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={12}>
           {cartItems.length > 0 ? (
             <>
               {cartItems.map((item) => (
@@ -110,13 +110,13 @@ const Cart = () => {
           )}
         </Grid>
 
-        {cartItems.length > 0 && (
-          <Grid item xs={12} md={4}>
-            <OrderSummary cartItems={cartItems} taxRate={taxRate} />
-          </Grid>
-        )}
         <OnHoldInvoices />
-      </Grid>
+      </Grid>{' '}
+      {cartItems.length > 0 && (
+        <Grid item xs={12} md={12}>
+          <OrderSummary cartItems={cartItems} taxRate={taxRate} />
+        </Grid>
+      )}
       <InvoiceModal />
     </>
   )
