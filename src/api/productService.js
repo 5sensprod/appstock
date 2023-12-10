@@ -11,7 +11,17 @@ async function getProducts() {
 
 async function addProduct(productData) {
   try {
-    return await fetchApi('products', 'POST', productData)
+    // Assurez-vous que prixVente, prixAchat et stock sont des nombres
+    const formattedData = {
+      ...productData,
+      prixVente: parseFloat(productData.prixVente) || 0,
+      prixAchat: productData.prixAchat
+        ? parseFloat(productData.prixAchat)
+        : null,
+      stock: productData.stock ? parseInt(productData.stock, 10) : null,
+    }
+
+    return await fetchApi('products', 'POST', formattedData)
   } catch (error) {
     console.error("Erreur lors de l'ajout du produit:", error)
     throw error

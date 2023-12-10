@@ -1,3 +1,4 @@
+// src\components\category\SelectCategory.jsx
 import React from 'react'
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material'
 
@@ -16,7 +17,7 @@ const SelectCategory = ({
       <InputLabel id="category-select-label">Catégorie</InputLabel>
       <Select
         labelId="category-select-label"
-        value={selectedCategoryId}
+        value={selectedCategoryId || ''} // Remplacer null par une chaîne vide
         onChange={onCategoryChange}
         label="Catégorie"
       >

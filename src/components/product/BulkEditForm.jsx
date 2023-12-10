@@ -7,10 +7,43 @@ import SelectCategory from '../category/SelectCategory'
 const BulkEditForm = ({ onSubmit }) => {
   const { fieldsToEdit, handleFieldSelect, categories, cancelBulkEdit } =
     useProductContext()
-  const { control, handleSubmit } = useForm()
+
+  // Initialiser le formulaire avec des valeurs par défaut pour chaque champ
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      prixVente: '', // Assurez-vous que les champs ont une valeur initiale
+      prixAchat: '', // Vous pouvez les mettre à null ou à une valeur par défaut
+      stock: '', // Selon ce qui convient le mieux à votre logique d'application
+      categorie: '',
+      sousCategorie: '',
+      // ... autres champs si nécessaire
+    },
+  })
+
+  const handleSubmitForm = (data) => {
+    // Fonction pour convertir une valeur en nombre, avec gestion des valeurs nulles ou vides
+    const convertToNumber = (value, defaultValue = 0) => {
+      const number = parseFloat(value)
+      return isNaN(number) ? defaultValue : number
+    }
+
+    // Créer un objet avec seulement les champs modifiés et convertis
+    const modifiedData = Object.keys(data).reduce((acc, key) => {
+      if (fieldsToEdit[key]) {
+        if (key === 'prixVente' || key === 'prixAchat' || key === 'stock') {
+          acc[key] = convertToNumber(data[key])
+        } else {
+          acc[key] = data[key]
+        }
+      }
+      return acc
+    }, {})
+
+    onSubmit(modifiedData)
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(handleSubmitForm)}>
       <FormControlLabel
         control={
           <Checkbox

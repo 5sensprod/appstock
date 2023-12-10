@@ -3,6 +3,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { Button, TextField } from '@mui/material'
 import { addProduct } from '../../api/productService'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
+import { useProductContext } from '../../contexts/ProductContext'
 
 const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
   const {
@@ -19,15 +20,22 @@ const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
     },
   })
 
-  const onSubmit = async (values) => {
-    try {
-      // Conversion explicite de prixVente en nombre
-      const formattedValues = {
-        ...values,
-        prixVente: parseFloat(values.prixVente) || 0, // Convertir en nombre, utiliser 0 si la conversion échoue
-      }
+  const { setIsAddingProduct } = useProductContext()
 
-      await addProduct(formattedValues)
+  useEffect(() => {
+    setIsAddingProduct(true)
+    return () => setIsAddingProduct(false)
+  }, [setIsAddingProduct])
+
+  const onSubmit = async (values) => {
+    // Convertir prixVente en nombre
+    const updatedValues = {
+      ...values,
+      prixVente: values.prixVente ? parseFloat(values.prixVente) : 0,
+    }
+
+    try {
+      await addProduct(updatedValues)
       reset() // Réinitialiser le formulaire
       if (onProductAdd) {
         onProductAdd()
@@ -36,6 +44,7 @@ const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
       // Gérer les erreurs ici
     }
   }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Controller

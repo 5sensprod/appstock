@@ -34,6 +34,8 @@ const ProductManager = () => {
     cancelEdit,
     editingProduct,
     setEditingProduct,
+
+    isAddingProduct,
   } = useProductContext()
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
@@ -127,14 +129,17 @@ const ProductManager = () => {
           Scanner un code-barres
         </Button>
       )}
-      <Button
-        variant="contained"
-        onClick={() => setIsBulkEditActive(!isBulkEditActive)}
-      >
-        {isBulkEditActive
-          ? 'Désactiver la Sélection Multiple'
-          : 'Activer la Sélection Multiple'}
-      </Button>
+
+      {!editingProduct && !showAddProductForm && (
+        <Button
+          variant="contained"
+          onClick={() => setIsBulkEditActive(!isBulkEditActive)}
+        >
+          {isBulkEditActive
+            ? 'Désactiver la Sélection Multiple'
+            : 'Activer la Sélection Multiple'}
+        </Button>
+      )}
 
       {isBulkEditActive && selectedProducts.size >= 2 && (
         <Button variant="contained" onClick={() => setShowBulkEditForm(true)}>
@@ -143,12 +148,20 @@ const ProductManager = () => {
       )}
 
       {showBulkEditForm && <BulkEditForm onSubmit={handleBulkEditSubmit} />}
-      <ProductSearch />
-      <SelectCategory
-        categories={categories}
-        selectedCategoryId={selectedCategoryId}
-        onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
-      />
+
+      {!editingProduct &&
+        !showAddProductForm &&
+        filteredProducts.length > 0 && (
+          <>
+            <ProductSearch />
+            <SelectCategory
+              categories={categories}
+              selectedCategoryId={selectedCategoryId}
+              onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
+            />
+          </>
+        )}
+
       {editingProduct ? (
         <EditProductForm
           product={editingProduct}
@@ -168,25 +181,29 @@ const ProductManager = () => {
             />
           ) : (
             <div>
-              <p>Aucun produit trouvé.</p>
+              {showAddProductForm ? (
+                <p>Ajouter un nouveau produit</p>
+              ) : (
+                <p>Aucun produit trouvé.</p>
+              )}
               <NoMatchButton
-                show={showAddProductButton}
+                show={!showAddProductForm && showAddProductButton}
                 buttonText="Ajouter"
                 onClick={handleShowAddForm}
               />
-              {showAddProductForm && (
-                <>
-                  <AddProductForm
-                    initialGencode={isGencode ? searchTerm : ''}
-                    initialReference={!isGencode ? searchTerm : ''}
-                    onProductAdd={handleProductSubmit}
-                  />
-                  <Button variant="contained" onClick={handleCancel}>
-                    Annuler
-                  </Button>
-                </>
-              )}
             </div>
+          )}
+          {showAddProductForm && (
+            <>
+              <AddProductForm
+                initialGencode={isGencode ? searchTerm : ''}
+                initialReference={!isGencode ? searchTerm : ''}
+                onProductAdd={handleProductSubmit}
+              />
+              <Button variant="contained" onClick={handleCancel}>
+                Annuler
+              </Button>
+            </>
           )}
         </>
       )}
