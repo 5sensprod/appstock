@@ -12,7 +12,7 @@ export const CompanyInfoProvider = ({ children }) => {
       // Logique pour récupérer les informations de l'entreprise
       try {
         const info = await getCompanyInfo()
-        setCompanyInfo(info)
+        setCompanyInfo(info[0])
       } catch (error) {
         console.error('Failed to fetch company info:', error)
       }

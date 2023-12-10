@@ -1,54 +1,38 @@
 // src/api/invoiceService.js
-import getAxiosInstance from './axiosConfig'
+import { fetchApi } from './axiosConfig'
 
 export const getInvoices = async () => {
   try {
-    const axios = getAxiosInstance() // Utiliser l'instance actuelle d'Axios
-    const response = await axios.get('/api/invoices')
-    console.log('Invoices received:', response.data)
-    return response.data
+    return await fetchApi('invoices')
   } catch (error) {
-    console.error('Error fetching invoices:', error)
-    console.error(error.response || error.message)
-    throw error
+    console.error('Erreur lors de la récupération des factures:', error)
+    return []
   }
 }
 
 export const addInvoice = async (invoiceData) => {
   try {
-    const axios = getAxiosInstance() // Utiliser l'instance actuelle d'Axios
-    const response = await axios.post('/api/invoices', invoiceData)
-    console.log('Invoice added:', response.data)
-    return response.data
+    return await fetchApi('invoices', 'POST', invoiceData)
   } catch (error) {
-    console.error('Error adding invoice:', error)
-    console.error(error.response || error.message)
+    console.error("Erreur lors de l'ajout de la facture:", error)
     throw error
   }
 }
 
 export const updateInvoice = async (id, invoiceData) => {
   try {
-    const axios = getAxiosInstance() // Utiliser l'instance actuelle d'Axios
-    const response = await axios.put(`/api/invoices/${id}`, invoiceData)
-    console.log('Invoice updated:', response.data)
-    return response.data
+    return await fetchApi(`invoices/${id}`, 'PUT', invoiceData)
   } catch (error) {
-    console.error('Error updating pending invoice:', error)
-    console.error(error.response || error.message)
+    console.error('Erreur lors de la mise à jour de la facture:', error)
     throw error
   }
 }
 
 export const deleteInvoice = async (id) => {
   try {
-    const axios = getAxiosInstance()
-    const response = await axios.delete(`/api/invoices/${id}`)
-    console.log('Invoice deleted:', response.data)
-    return response.data
+    return await fetchApi(`invoices/${id}`, 'DELETE')
   } catch (error) {
-    console.error('Error deleting invoice:', error)
-    console.error(error.response || error.message)
+    console.error('Erreur lors de la suppression de la facture:', error)
     throw error
   }
 }

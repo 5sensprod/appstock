@@ -44,9 +44,10 @@ const Cart = () => {
           {cartItems.length > 0 ? (
             <>
               {cartItems.map((item) => (
-                <Box mb={2}>
+                <Box key={item._id} mb={2}>
+                  {' '}
+                  {/* Déplacez la prop 'key' ici */}
                   <CartItem
-                    key={item._id}
                     item={item}
                     updateQuantity={updateQuantity}
                     updatePrice={updatePrice}

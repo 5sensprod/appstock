@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useProductContext } from '../../contexts/ProductContext'
+import { CartContext } from '../../contexts/CartContext'
+import { Grid, Paper, Checkbox, Button, Typography, Box } from '@mui/material'
 
 const ProductTable = ({
   products,
@@ -10,50 +12,92 @@ const ProductTable = ({
   onProductSelect,
 }) => {
   const { baseUrl } = useProductContext()
+
+  const { addToCart } = useContext(CartContext)
+
+  const handleAddToCart = (product) => {
+    addToCart(product)
+  }
+
   return (
-    <table>
-      <thead>
-        <tr>
-          {isBulkEditActive && <th>Choisir</th>}
-          <th>Photo</th>
-          <th>Référence</th>
-          <th>Marque</th>
-          <th>Gencode</th>
-          <th>Prix de vente</th>
-        </tr>
-      </thead>
-      <tbody>
-        {products.map((product) => (
-          <tr key={product._id} style={{ cursor: 'pointer' }}>
-            {isBulkEditActive && (
-              <td>
-                <input
-                  type="checkbox"
-                  checked={selectedProducts.has(product._id)}
-                  onChange={() => onProductSelect(product._id)}
-                />
-              </td>
-            )}
-            <td>
-              {product.photos && product.photos.length > 0 && (
-                <img
-                  src={`${baseUrl}/${product.photos[0]}`}
-                  alt={product.reference}
-                  style={{ width: '100px', height: 'auto' }}
-                />
+    <Grid container spacing={2}>
+      {/* En-tête du tableau */}
+      <Grid item xs={12}>
+        <Grid container spacing={2} alignItems="center">
+          {isBulkEditActive && (
+            <Grid item>
+              <Typography>Choisir</Typography>
+            </Grid>
+          )}
+          <Grid item>
+            <Typography>Photo</Typography>
+          </Grid>
+          <Grid item>
+            <Typography>Référence</Typography>
+          </Grid>
+          <Grid item>
+            <Typography>Marque</Typography>
+          </Grid>
+          <Grid item>
+            <Typography>Gencode</Typography>
+          </Grid>
+          <Grid item>
+            <Typography>Prix de vente</Typography>
+          </Grid>
+          <Grid item>
+            <Typography>Actions</Typography>
+          </Grid>
+        </Grid>
+      </Grid>
+
+      {/* Lignes du tableau */}
+      {products.map((product) => (
+        <Grid
+          item
+          xs={12}
+          key={product._id}
+          onClick={() => handleAddToCart(product)}
+        >
+          <Paper style={{ padding: '10px', cursor: 'pointer' }}>
+            <Grid container spacing={2} alignItems="center">
+              {isBulkEditActive && (
+                <Grid item>
+                  <Checkbox
+                    checked={selectedProducts.has(product._id)}
+                    onChange={() => onProductSelect(product._id)}
+                  />
+                </Grid>
               )}
-            </td>
-            <td>{product.reference}</td>
-            <td>{product.marque}</td>
-            <td>{product.gencode}</td>
-            <td>{product.prixVente} €</td>
-            <td>
-              <button onClick={() => onEdit(product)}>Modifier</button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+              <Grid item>
+                {product.photos && product.photos.length > 0 && (
+                  <Box
+                    component="img"
+                    src={`${baseUrl}/${product.photos[0]}`}
+                    alt={product.reference}
+                    sx={{ width: 100, height: 'auto' }}
+                  />
+                )}
+              </Grid>
+              <Grid item>
+                <Typography>{product.reference}</Typography>
+              </Grid>
+              <Grid item>
+                <Typography>{product.marque}</Typography>
+              </Grid>
+              <Grid item>
+                <Typography>{product.gencode}</Typography>
+              </Grid>
+              <Grid item>
+                <Typography>{product.prixVente} €</Typography>
+              </Grid>
+              <Grid item>
+                <Button onClick={() => onEdit(product)}>Modifier</Button>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+      ))}
+    </Grid>
   )
 }
 

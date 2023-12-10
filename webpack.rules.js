@@ -1,8 +1,6 @@
 module.exports = [
-  // Add support for native node modules
+  // ... vos autres règles existantes
   {
-    // We're specifying native_modules in the test because the asset relocator loader generates a
-    // "fake" .node file which is really a cjs file.
     test: /native_modules[/\\].+\.node$/,
     use: 'node-loader',
   },
@@ -16,20 +14,17 @@ module.exports = [
       },
     },
   },
-  // Put your webpack loader rules in this array.  This is where you would put
-  // your ts-loader configuration for instance:
-  /**
-   * Typescript Example:
-   *
-   * {
-   *   test: /\.tsx?$/,
-   *   exclude: /(node_modules|.webpack)/,
-   *   loaders: [{
-   *     loader: 'ts-loader',
-   *     options: {
-   *       transpileOnly: true
-   *     }
-   *   }]
-   * }
-   */
+  // Ajout d'une règle pour les fichiers d'image
+  {
+    test: /\.(png|jpe?g|gif)$/i,
+    use: [
+      {
+        loader: 'file-loader',
+        options: {
+          // Vous pouvez spécifier des options ici
+          name: '[path][name].[ext]',
+        },
+      },
+    ],
+  },
 ]
