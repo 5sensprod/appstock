@@ -18,7 +18,6 @@ export const ProductProvider = ({ children }) => {
   const [fieldsToEdit, setFieldsToEdit] = useState({})
   const [showBulkEditForm, setShowBulkEditForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
-  const [shouldStartSSE, setShouldStartSSE] = useState(false)
 
   useEffect(() => {
     getApiBaseUrl().then((url) => {
@@ -28,7 +27,6 @@ export const ProductProvider = ({ children }) => {
 
   // Gestion des produits et des SSE
   useEffect(() => {
-    // Récupération des produits
     const fetchProducts = async () => {
       try {
         const fetchedProducts = await getProducts(baseUrl)
@@ -40,37 +38,30 @@ export const ProductProvider = ({ children }) => {
 
     fetchProducts()
 
-    // Démarrer la connexion SSE après un délai
-    setTimeout(() => setShouldStartSSE(true), 5000) // 5 secondes
-
-    return () => {
-      // Nettoyage si nécessaire
-    }
-  }, [baseUrl])
-
-  useEffect(() => {
-    if (shouldStartSSE) {
-      // Logique pour démarrer la connexion SSE
-      const eventSource = new EventSource(`${baseUrl}/api/events`)
+    let eventSource
+    const setupSSE = () => {
+      eventSource = new EventSource(`${baseUrl}/api/events`)
       eventSource.onmessage = (e) => {
         const data = JSON.parse(e.data)
         if (
           data.type === 'product-added' ||
           data.type === 'product-updated' ||
-          data.type === 'products-bulk-updated'
+          data.type === 'products-bulk-updated' ||
+          data.type === 'product-deleted'
         ) {
-          // Re-fetch products or other logic
-        }
-      }
-
-      // Nettoyage : fermer la connexion SSE
-      return () => {
-        if (eventSource) {
-          eventSource.close()
+          fetchProducts()
         }
       }
     }
-  }, [shouldStartSSE, baseUrl])
+
+    const sseTimeout = setTimeout(setupSSE, 5000)
+    return () => {
+      if (eventSource) {
+        eventSource.close()
+      }
+      clearTimeout(sseTimeout)
+    }
+  }, [baseUrl])
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -147,6 +138,7 @@ export const ProductProvider = ({ children }) => {
     showBulkEditForm,
     setShowBulkEditForm,
     cancelBulkEdit,
+    setProducts,
   }
 
   return (

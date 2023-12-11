@@ -77,5 +77,18 @@ module.exports = (db, sendSseEvent) => {
     })
   })
 
+  router.delete('/:id', (req, res) => {
+    const id = req.params.id
+
+    products.remove({ _id: id }, {}, (err, numRemoved) => {
+      if (err) {
+        console.error('Erreur lors de la suppression du produit:', err)
+        return res.status(500).send(err)
+      }
+      sendSseEvent({ type: 'product-deleted', id: id })
+      res.status(200).json({ message: 'Produit supprimé' })
+    })
+  })
+
   return router
 }

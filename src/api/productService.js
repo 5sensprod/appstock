@@ -46,4 +46,19 @@ async function updateProductsBulk(productsData) {
   }
 }
 
-export { getProducts, addProduct, updateProduct, updateProductsBulk }
+async function deleteProduct(productId) {
+  try {
+    return await fetchApi(`products/${productId}`, 'DELETE')
+  } catch (error) {
+    console.error('Erreur lors de la suppression du produit:', error)
+    throw error
+  }
+}
+
+export {
+  getProducts,
+  addProduct,
+  updateProduct,
+  updateProductsBulk,
+  deleteProduct,
+}
