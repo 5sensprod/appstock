@@ -15,6 +15,17 @@ const theme = createTheme({
         },
       },
     },
+    MuiDataGrid: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgb(255, 255, 255)', // Couleur de fond pour DataGrid
+        },
+        columnHeader: {
+          backgroundColor: 'rgb(240, 240, 240)',
+          // color: 'black',
+        },
+      },
+    },
   },
 })
 

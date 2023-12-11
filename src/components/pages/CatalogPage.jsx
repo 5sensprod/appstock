@@ -79,12 +79,28 @@ const CatalogPage = () => {
     columns = Object.keys(products[0])
       .filter((key) => !excludedKeys.includes(key))
       .map((key) => {
+        let width = 150 // Largeur par défaut
+
+        // Réduire la largeur pour les colonnes spécifiques
+        if (key === 'prixVente' || key === 'prixAchat' || key === 'stock') {
+          width = 90
+        }
+        if (key === 'stock') {
+          width = 60
+        }
+        if (key === 'sousCategorie') {
+          width = 120
+        }
+        if (key === 'reference') {
+          width = 250
+        }
+
         // Ajout de la condition pour la colonne 'dateSoumission'
         if (key === 'dateSoumission') {
           return {
             field: key,
             headerName: columnNames[key] || capitalizeFirstLetter(key),
-            width: 180,
+            width: 180, // ou une autre largeur appropriée pour les dates
             valueFormatter: (params) => {
               return params.value
                 ? format(new Date(params.value), 'dd/MM/yyyy')
@@ -92,11 +108,12 @@ const CatalogPage = () => {
             },
           }
         }
-        // Autres colonnes
+
+        // Configuration des autres colonnes
         return {
           field: key,
           headerName: columnNames[key] || capitalizeFirstLetter(key),
-          width: 150,
+          width,
         }
       })
   }
