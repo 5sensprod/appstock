@@ -12,7 +12,7 @@ import CategoryPage from './components/pages/CategoryPage'
 import ClientPage from './components/pages/ClientPage'
 import InvoicePage from './components/pages/InvoicePage'
 import MainLayout from './components/layout/MainLayout'
-
+import CreateProductPage from './components/pages/CreateProductPage'
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
@@ -30,6 +30,10 @@ const App = () => {
                   <Route path="/category" element={<CategoryPage />} />
                   <Route path="/client" element={<ClientPage />} />
                   <Route path="/invoice" element={<InvoicePage />} />
+                  <Route
+                    path="/create-product"
+                    element={<CreateProductPage />}
+                  />
                   {/* Autres routes ici */}
                 </Routes>
               </MainLayout>

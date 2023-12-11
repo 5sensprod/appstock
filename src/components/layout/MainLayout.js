@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { styled, useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import MuiDrawer from '@mui/material/Drawer'
 import MuiAppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
@@ -105,6 +106,24 @@ export default function MiniDrawer({ children }) {
 
   const handleDrawerClose = () => {
     setOpen(false)
+  }
+
+  // Fonction pour afficher le bouton sur la route '/catalog'
+  const renderCatalogButton = () => {
+    if (location.pathname === '/catalog') {
+      return (
+        <Button
+          component={Link}
+          to="/create-product" // Remplacez par le chemin vers votre formulaire de création
+          variant="contained"
+          color="primary"
+          sx={{ margin: theme.spacing(2) }}
+        >
+          Créer un Produit
+        </Button>
+      )
+    }
+    return null
   }
 
   const menuItems = [
@@ -264,6 +283,7 @@ export default function MiniDrawer({ children }) {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
+        {renderCatalogButton()}
         {children}
       </Box>
     </Box>

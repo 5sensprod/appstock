@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react'
 import { getApiBaseUrl } from '../api/axiosConfig'
-import { getProducts } from '../api/productService'
+import { getProducts, addProduct } from '../api/productService'
 import { getCategories } from '../api/categoryService'
 
 const ProductContext = createContext()
@@ -113,6 +113,25 @@ export const ProductProvider = ({ children }) => {
     // Autres actions nécessaires pour annuler l'édition en masse
   }
 
+  const addProductToContext = async (productData) => {
+    try {
+      // Formatage des données avant de les envoyer à l'API
+      const formattedData = {
+        ...productData,
+        prixVente: productData.prixVente
+          ? parseFloat(productData.prixVente)
+          : 0,
+        dateSoumission: new Date().toISOString(), // Ajoutez la date de soumission actuelle
+      }
+
+      const response = await addProduct(formattedData) // Utilisation des données formatées
+      // Mettez à jour l'état du contexte si nécessaire, par exemple ajouter le produit à une liste
+      return response
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du produit:", error)
+      throw error
+    }
+  }
   const contextValue = {
     searchTerm,
     setSearchTerm,
@@ -139,6 +158,7 @@ export const ProductProvider = ({ children }) => {
     setShowBulkEditForm,
     cancelBulkEdit,
     setProducts,
+    addProduct: addProductToContext,
   }
 
   return (

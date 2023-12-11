@@ -1,7 +1,7 @@
 import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Button, TextField } from '@mui/material'
-import { addProduct } from '../../api/productService'
+import { useProductContext } from '../../contexts/ProductContext'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
 
 const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
@@ -15,27 +15,19 @@ const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
       reference: capitalizeFirstLetter(initialReference) || '',
       prixVente: '',
       gencode: initialGencode || '',
-      // Initialisez d'autres champs par défaut ici
     },
   })
 
-  const onSubmit = async (values) => {
-    // Convertir prixVente en nombre
-    const updatedValues = {
-      ...values,
-      prixVente: values.prixVente ? parseFloat(values.prixVente) : 0,
-      dateSoumission: new Date().toISOString(),
-    }
+  const { addProduct } = useProductContext()
 
+  const onSubmit = async (values) => {
     try {
-      await addProduct(updatedValues)
+      await addProduct(values)
       reset()
       if (onProductAdd) {
         onProductAdd()
       }
-    } catch (error) {
-      // Gérer les erreurs ici
-    }
+    } catch (error) {}
   }
 
   return (
