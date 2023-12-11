@@ -6,15 +6,20 @@ const useProducts = (productAdded) => {
   const [products, setProducts] = useState([])
 
   useEffect(() => {
-    getLocalIp().then((localIp) => {
-      getProducts(localIp)
-        .then(setProducts)
-        .catch((error) => {
-          console.error('Erreur lors de la récupération des produits:', error)
-        })
-    })
+    const fetchProducts = async () => {
+      try {
+        const localIp = await getLocalIp()
+        const fetchedProducts = await getProducts(localIp)
+        setProducts(fetchedProducts)
+      } catch (error) {
+        console.error('Erreur lors de la récupération des produits:', error)
+      }
+    }
+
+    fetchProducts()
   }, [productAdded])
 
   return products
 }
+
 export default useProducts

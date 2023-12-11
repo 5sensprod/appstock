@@ -1,12 +1,12 @@
 import React from 'react'
-import { ThemeProvider, Grid, Box } from '@mui/material'
+import { HashRouter as Router, Routes, Route } from 'react-router-dom'
+import { ThemeProvider } from '@mui/material'
 import theme from './theme/theme'
 import { ProductProvider } from './contexts/ProductContext'
-import ProductManager from './components/product/ProductManager'
-import Cart from './components/Cart/Cart'
 import { CartProvider } from './contexts/CartContext'
 import { CompanyInfoProvider } from './contexts/CompanyInfoContext'
-import './index.css' // Importez votre fichier CSS ici
+import POSPage from './components/pages/POSPage'
+import './index.css'
 
 const App = () => {
   return (
@@ -14,16 +14,12 @@ const App = () => {
       <CompanyInfoProvider>
         <CartProvider>
           <ProductProvider>
-            <Box>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={8}>
-                  <ProductManager />
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Cart />
-                </Grid>
-              </Grid>
-            </Box>
+            <Router>
+              <Routes>
+                <Route path="/" element={<POSPage />} />
+                {/* Autres routes ici */}
+              </Routes>
+            </Router>
           </ProductProvider>
         </CartProvider>
       </CompanyInfoProvider>

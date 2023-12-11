@@ -37,21 +37,32 @@ export const ProductProvider = ({ children }) => {
 
     fetchProducts()
 
-    // Établir la connexion SSE
-    const eventSource = new EventSource(`${baseUrl}/api/events`)
-    eventSource.onmessage = (e) => {
-      const data = JSON.parse(e.data)
-      if (
-        data.type === 'product-added' ||
-        data.type === 'product-updated' ||
-        data.type === 'products-bulk-updated'
-      ) {
-        fetchProducts()
+    // Initialisation de la connexion SSE avec un délai
+    let eventSource
+    const setupSSE = () => {
+      eventSource = new EventSource(`${baseUrl}/api/events`)
+      eventSource.onmessage = (e) => {
+        const data = JSON.parse(e.data)
+        if (
+          data.type === 'product-added' ||
+          data.type === 'product-updated' ||
+          data.type === 'products-bulk-updated'
+        ) {
+          fetchProducts()
+        }
       }
     }
 
+    // Démarrage de la connexion SSE après un délai
+    const sseConnectionDelay = 5000 // 5 secondes, par exemple
+    const sseTimeout = setTimeout(setupSSE, sseConnectionDelay)
+
+    // Nettoyage : fermer la connexion SSE et nettoyer le timeout
     return () => {
-      eventSource.close()
+      if (eventSource) {
+        eventSource.close()
+      }
+      clearTimeout(sseTimeout)
     }
   }, [baseUrl]) // Dépend de baseUrl
 
