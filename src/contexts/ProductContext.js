@@ -17,7 +17,6 @@ export const ProductProvider = ({ children }) => {
   const [fieldsToEdit, setFieldsToEdit] = useState({})
   const [showBulkEditForm, setShowBulkEditForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
-  const [isAddingProduct, setIsAddingProduct] = useState(false)
 
   useEffect(() => {
     getApiBaseUrl().then((url) => {
@@ -122,8 +121,6 @@ export const ProductProvider = ({ children }) => {
     showBulkEditForm,
     setShowBulkEditForm,
     cancelBulkEdit,
-    isAddingProduct,
-    setIsAddingProduct,
   }
 
   return (

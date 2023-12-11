@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Button, TextField } from '@mui/material'
 import { addProduct } from '../../api/productService'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
-import { useProductContext } from '../../contexts/ProductContext'
 
 const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
   const {
@@ -20,13 +19,6 @@ const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
     },
   })
 
-  const { setIsAddingProduct } = useProductContext()
-
-  useEffect(() => {
-    setIsAddingProduct(true)
-    return () => setIsAddingProduct(false)
-  }, [setIsAddingProduct])
-
   const onSubmit = async (values) => {
     // Convertir prixVente en nombre
     const updatedValues = {
@@ -36,7 +28,7 @@ const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
 
     try {
       await addProduct(updatedValues)
-      reset() // Réinitialiser le formulaire
+      reset()
       if (onProductAdd) {
         onProductAdd()
       }
@@ -89,9 +81,6 @@ const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
           />
         )}
       />
-
-      {/* Ajoutez d'autres champs ici selon vos besoins */}
-      {/* ... */}
 
       <Button
         type="submit"

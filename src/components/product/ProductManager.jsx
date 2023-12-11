@@ -34,8 +34,6 @@ const ProductManager = () => {
     cancelEdit,
     editingProduct,
     setEditingProduct,
-
-    isAddingProduct,
   } = useProductContext()
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
@@ -60,9 +58,9 @@ const ProductManager = () => {
     isSearchingByReferenceOnly
 
   const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
+
   useGlobalScannedDataHandler(setSearchTerm)
 
-  // Utilisation du hook useWebSocketConnection
   useWebSocketConnection(setSearchTerm)
 
   useEffect(() => {
@@ -78,7 +76,8 @@ const ProductManager = () => {
   }
 
   const handleProductSubmit = () => {
-    setProductAdded((prevState) => !prevState)
+    setShowAddProductForm(false)
+    setSearchTerm('')
   }
 
   const handleShowAddForm = () => {
@@ -100,7 +99,6 @@ const ProductManager = () => {
   }
 
   const handleBulkEditSubmit = async (formValues) => {
-    // Préparez les données pour la mise à jour en masse
     const updates = Array.from(selectedProducts).map((productId) => ({
       id: productId,
       changes: formValues,
@@ -109,15 +107,11 @@ const ProductManager = () => {
     try {
       const response = await updateProductsBulk(updates)
 
-      // Si la mise à jour réussit, réinitialisez l'état
       setShowBulkEditForm(false)
       setIsBulkEditActive(false)
       setSelectedProducts(new Set())
       setFieldsToEdit({})
-
-      // Ici un message de succès ou d'autres actions nécessaires après la mise à jour réussie
     } catch (error) {
-      // Gérez les erreurs ici
       console.error(
         'Erreur lors de la mise à jour en masse des produits',
         error,
