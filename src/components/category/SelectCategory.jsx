@@ -1,4 +1,3 @@
-// src\components\category\SelectCategory.jsx
 import React from 'react'
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material'
 
@@ -7,14 +6,15 @@ const SelectCategory = ({
   selectedCategoryId,
   onCategoryChange,
   parentFilter = null,
-  label = 'Catégorie', // Nouveau paramètre avec une valeur par défaut
+  label = 'Catégorie', // Valeur par défaut pour le label
+  disabled = false, // Ajout d'une propriété disabled
 }) => {
   const filteredCategories = parentFilter
     ? categories.filter((cat) => cat.parentId === parentFilter)
     : categories.filter((cat) => cat.parentId === null)
 
   return (
-    <FormControl fullWidth>
+    <FormControl fullWidth disabled={disabled}>
       <InputLabel id="category-select-label">{label}</InputLabel>
       <Select
         labelId="category-select-label"
