@@ -1,19 +1,15 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { DataGrid, frFR, GridActionsCellItem } from '@mui/x-data-grid'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
 import { useProductContext } from '../../contexts/ProductContext'
 import { deleteProduct } from '../../api/productService'
 import DeleteIcon from '@mui/icons-material/Delete'
-import ConfirmationDialog from '../ui/ConfirmationDialog'
-import Toast from '../ui/Toast'
 import { format } from 'date-fns'
+import { useUI } from '../../contexts/UIContext'
 
 const CatalogPage = () => {
   const { categories, products, setProducts } = useProductContext()
-  const [confirmOpen, setConfirmOpen] = React.useState(false)
-  const [productToDelete, setProductToDelete] = React.useState(null)
-  const [toastOpen, setToastOpen] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
+  const { showConfirmDialog, showToast } = useUI()
 
   // Création d'un mappage pour les noms de catégories
   const categoryMap = categories.reduce((acc, category) => {
@@ -21,27 +17,26 @@ const CatalogPage = () => {
     return acc
   }, {})
 
-  const promptDelete = (id) => {
-    setProductToDelete(id)
-    setConfirmOpen(true)
+  const promptDelete = (product) => {
+    showConfirmDialog(
+      'Confirmer la suppression',
+      `Êtes-vous sûr de vouloir supprimer le produit "${product.reference}" ? Cette action est irréversible.`,
+      () => handleDelete(product),
+    )
   }
 
-  const handleDelete = async () => {
+  const handleDelete = async (product) => {
     try {
-      await deleteProduct(productToDelete._id)
-      const updatedProducts = products.filter(
-        (product) => product._id !== productToDelete._id,
-      )
+      await deleteProduct(product._id)
+      const updatedProducts = products.filter((p) => p._id !== product._id)
       setProducts(updatedProducts)
-      setConfirmOpen(false) // Fermer la boîte de dialogue
-      setToastMessage(
-        `Produit "${productToDelete.reference}" supprimé avec succès`,
+      showToast(
+        `Produit "${product.reference}" supprimé avec succès`,
+        'success',
       )
-      setToastOpen(true)
     } catch (error) {
       console.error('Erreur lors de la suppression du produit:', error)
-      setToastMessage(`Erreur lors de la suppression du produit`)
-      setToastOpen(true)
+      showToast(`Erreur lors de la suppression du produit`, 'error')
     }
   }
 
@@ -149,19 +144,6 @@ const CatalogPage = () => {
         pagination
         checkboxSelection
         checkboxSelectionVisibleOnly={true}
-      />
-      <ConfirmationDialog
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        onConfirm={handleDelete}
-        title="Confirmer la suppression"
-        content={`Êtes-vous sûr de vouloir supprimer le produit "${productToDelete?.reference}" ? Cette action est irréversible.`}
-      />
-      <Toast
-        open={toastOpen}
-        handleClose={() => setToastOpen(false)}
-        message={toastMessage}
-        severity="success" // ou "error" selon le contexte
       />
     </div>
   )

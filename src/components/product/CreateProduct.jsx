@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
 import { TextField, Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useProductContext } from '../../contexts/ProductContext'
-import Toast from '../ui/Toast'
+import { useUI } from '../../contexts/UIContext'
 
 export const CreateProduct = () => {
   const {
@@ -12,9 +12,10 @@ export const CreateProduct = () => {
     formState: { errors },
     reset,
   } = useForm()
+
   const { addProduct } = useProductContext()
+  const { showToast } = useUI()
   const navigate = useNavigate()
-  const [toastOpen, setToastOpen] = useState(false)
   // Structure de données pour les champs de formulaire
   const productFields = [
     { name: 'reference', label: 'Référence', type: 'text' },
@@ -27,14 +28,13 @@ export const CreateProduct = () => {
     try {
       await addProduct(data)
       reset() // Réinitialiser le formulaire
-      setToastOpen(true) // Afficher le Toast
-      setTimeout(() => navigate('/catalog'), 3000)
+      showToast('Produit ajouté avec succès!', 'success')
+      navigate('/catalog')
     } catch (error) {
       console.error(error)
-      // Gérer l'affichage d'un Toast d'erreur si nécessaire
+      showToast("Erreur lors de l'ajout du produit", 'error')
     }
   }
-
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -50,12 +50,6 @@ export const CreateProduct = () => {
         ))}
         <Button type="submit">Ajouter Produit</Button>
       </form>
-      <Toast
-        open={toastOpen}
-        handleClose={() => setToastOpen(false)}
-        message="Produit ajouté avec succès!"
-        severity="success"
-      />
     </>
   )
 }
