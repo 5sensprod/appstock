@@ -42,6 +42,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.20",
+    "@mui/x-data-grid": "^6.18.4",
     "axios": "^1.6.2",
     "cors": "^2.8.5",
     "electron-squirrel-startup": "^1.0.0",

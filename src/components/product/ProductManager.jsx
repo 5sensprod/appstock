@@ -7,7 +7,7 @@ import BulkEditForm from './BulkEditForm'
 import ProductTable from './ProductTable'
 import { updateProduct, updateProductsBulk } from '../../api/productService'
 import EditProductForm from './EditProductForm'
-import { getCategories } from '../../api/categoryService'
+// import { getCategories } from '../../api/categoryService'
 import SelectCategory from '../category/SelectCategory'
 import NoMatchButton from '../ui/NoMatchButton'
 import ProductSearch from './ProductSearch'
@@ -38,14 +38,14 @@ const ProductManager = () => {
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const retrievedCategories = await getCategories()
-      setCategories(retrievedCategories)
-    }
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     const retrievedCategories = await getCategories()
+  //     setCategories(retrievedCategories)
+  //   }
 
-    fetchCategories()
-  }, [])
+  //   fetchCategories()
+  // }, [])
 
   const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
 

@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react'
 import { getApiBaseUrl } from '../api/axiosConfig'
 import { getProducts } from '../api/productService'
+import { getCategories } from '../api/categoryService'
 
 const ProductContext = createContext()
 
@@ -17,6 +18,7 @@ export const ProductProvider = ({ children }) => {
   const [fieldsToEdit, setFieldsToEdit] = useState({})
   const [showBulkEditForm, setShowBulkEditForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
+  const [shouldStartSSE, setShouldStartSSE] = useState(false)
 
   useEffect(() => {
     getApiBaseUrl().then((url) => {
@@ -26,6 +28,7 @@ export const ProductProvider = ({ children }) => {
 
   // Gestion des produits et des SSE
   useEffect(() => {
+    // Récupération des produits
     const fetchProducts = async () => {
       try {
         const fetchedProducts = await getProducts(baseUrl)
@@ -37,10 +40,18 @@ export const ProductProvider = ({ children }) => {
 
     fetchProducts()
 
-    // Initialisation de la connexion SSE avec un délai
-    let eventSource
-    const setupSSE = () => {
-      eventSource = new EventSource(`${baseUrl}/api/events`)
+    // Démarrer la connexion SSE après un délai
+    setTimeout(() => setShouldStartSSE(true), 5000) // 5 secondes
+
+    return () => {
+      // Nettoyage si nécessaire
+    }
+  }, [baseUrl])
+
+  useEffect(() => {
+    if (shouldStartSSE) {
+      // Logique pour démarrer la connexion SSE
+      const eventSource = new EventSource(`${baseUrl}/api/events`)
       eventSource.onmessage = (e) => {
         const data = JSON.parse(e.data)
         if (
@@ -48,23 +59,27 @@ export const ProductProvider = ({ children }) => {
           data.type === 'product-updated' ||
           data.type === 'products-bulk-updated'
         ) {
-          fetchProducts()
+          // Re-fetch products or other logic
+        }
+      }
+
+      // Nettoyage : fermer la connexion SSE
+      return () => {
+        if (eventSource) {
+          eventSource.close()
         }
       }
     }
+  }, [shouldStartSSE, baseUrl])
 
-    // Démarrage de la connexion SSE après un délai
-    const sseConnectionDelay = 5000 // 5 secondes, par exemple
-    const sseTimeout = setTimeout(setupSSE, sseConnectionDelay)
-
-    // Nettoyage : fermer la connexion SSE et nettoyer le timeout
-    return () => {
-      if (eventSource) {
-        eventSource.close()
-      }
-      clearTimeout(sseTimeout)
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const retrievedCategories = await getCategories()
+      setCategories(retrievedCategories)
     }
-  }, [baseUrl]) // Dépend de baseUrl
+
+    fetchCategories()
+  }, [])
 
   // Fonction pour activer/désactiver la modification en masse
   const toggleBulkEdit = () => {
