@@ -24,6 +24,7 @@ const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
     const updatedValues = {
       ...values,
       prixVente: values.prixVente ? parseFloat(values.prixVente) : 0,
+      dateSoumission: new Date().toISOString(),
     }
 
     try {

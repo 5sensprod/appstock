@@ -1,12 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { DataGrid, frFR, GridActionsCellItem } from '@mui/x-data-grid'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
 import { useProductContext } from '../../contexts/ProductContext'
-import { deleteProduct, getProducts } from '../../api/productService'
+import { deleteProduct } from '../../api/productService'
 import DeleteIcon from '@mui/icons-material/Delete'
+import ConfirmationDialog from '../ui/ConfirmationDialog'
+import Toast from '../ui/Toast'
+import { format } from 'date-fns'
 
 const CatalogPage = () => {
   const { categories, products, setProducts } = useProductContext()
+  const [confirmOpen, setConfirmOpen] = React.useState(false)
+  const [productToDelete, setProductToDelete] = React.useState(null)
+  const [toastOpen, setToastOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
 
   // Création d'un mappage pour les noms de catégories
   const categoryMap = categories.reduce((acc, category) => {
@@ -14,18 +21,32 @@ const CatalogPage = () => {
     return acc
   }, {})
 
-  const handleDelete = async (id) => {
+  const promptDelete = (id) => {
+    setProductToDelete(id)
+    setConfirmOpen(true)
+  }
+
+  const handleDelete = async () => {
     try {
-      await deleteProduct(id)
-      const updatedProducts = products.filter((product) => product._id !== id)
-      setProducts(updatedProducts) // Mise à jour de l'état des produits dans le contexte
+      await deleteProduct(productToDelete._id)
+      const updatedProducts = products.filter(
+        (product) => product._id !== productToDelete._id,
+      )
+      setProducts(updatedProducts)
+      setConfirmOpen(false) // Fermer la boîte de dialogue
+      setToastMessage(
+        `Produit "${productToDelete.reference}" supprimé avec succès`,
+      )
+      setToastOpen(true)
     } catch (error) {
       console.error('Erreur lors de la suppression du produit:', error)
-      // Gérer l'erreur ici
+      setToastMessage(`Erreur lors de la suppression du produit`)
+      setToastOpen(true)
     }
   }
 
   const columnNames = {
+    dateSoumission: 'Date',
     reference: 'Référence',
     prixVente: 'Prix Vente',
     prixAchat: 'Prix Achat',
@@ -57,11 +78,27 @@ const CatalogPage = () => {
   if (products.length > 0) {
     columns = Object.keys(products[0])
       .filter((key) => !excludedKeys.includes(key))
-      .map((key) => ({
-        field: key,
-        headerName: columnNames[key] || capitalizeFirstLetter(key),
-        width: 150,
-      }))
+      .map((key) => {
+        // Ajout de la condition pour la colonne 'dateSoumission'
+        if (key === 'dateSoumission') {
+          return {
+            field: key,
+            headerName: columnNames[key] || capitalizeFirstLetter(key),
+            width: 180,
+            valueFormatter: (params) => {
+              return params.value
+                ? format(new Date(params.value), 'dd/MM/yyyy')
+                : ''
+            },
+          }
+        }
+        // Autres colonnes
+        return {
+          field: key,
+          headerName: columnNames[key] || capitalizeFirstLetter(key),
+          width: 150,
+        }
+      })
   }
 
   columns.push({
@@ -73,7 +110,7 @@ const CatalogPage = () => {
       <GridActionsCellItem
         icon={<DeleteIcon />}
         label="Supprimer"
-        onClick={() => handleDelete(params.id)}
+        onClick={() => promptDelete(products.find((p) => p._id === params.id))}
       />,
     ],
   })
@@ -95,6 +132,19 @@ const CatalogPage = () => {
         pagination
         checkboxSelection
         checkboxSelectionVisibleOnly={true}
+      />
+      <ConfirmationDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        title="Confirmer la suppression"
+        content={`Êtes-vous sûr de vouloir supprimer le produit "${productToDelete?.reference}" ? Cette action est irréversible.`}
+      />
+      <Toast
+        open={toastOpen}
+        handleClose={() => setToastOpen(false)}
+        message={toastMessage}
+        severity="success" // ou "error" selon le contexte
       />
     </div>
   )
