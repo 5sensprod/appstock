@@ -15,7 +15,7 @@ const EditBulkProduct = () => {
     }))
 
     await updateProductsBulkInContext(updates)
-    reset() // Réinitialiser le formulaire après soumission
+    reset()
   }
 
   return (

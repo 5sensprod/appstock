@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Modal, Button } from '@mui/material'
 import { DataGrid, frFR, GridActionsCellItem } from '@mui/x-data-grid'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
 import { useProductContext } from '../../contexts/ProductContext'
@@ -8,11 +9,18 @@ import { format } from 'date-fns'
 import { useUI } from '../../contexts/UIContext'
 import EditIcon from '@mui/icons-material/Edit'
 import { useNavigate } from 'react-router-dom'
+import EditBulkProduct from '../product/EditBulkProduct'
 
 const CatalogPage = () => {
-  const { categories, products, setProducts } = useProductContext()
+  const { categories, products, setProducts, setSelectedProducts } =
+    useProductContext()
+
+  const [openModal, setOpenModal] = useState(false)
   const { showConfirmDialog, showToast } = useUI()
   const navigate = useNavigate()
+
+  const handleOpenModal = () => setOpenModal(true)
+  const handleCloseModal = () => setOpenModal(false)
 
   const redirectToEdit = (productId) => {
     navigate(`/edit-product/${productId}`)
@@ -62,6 +70,12 @@ const CatalogPage = () => {
     categorie: categoryMap[product.categorie] || product.categorie,
     sousCategorie: categoryMap[product.sousCategorie] || product.sousCategorie,
   }))
+
+  const handleSelection = (selectionModel) => {
+    console.log('Modèle de sélection :', selectionModel)
+    setSelectedProducts(new Set(selectionModel))
+    console.log('Modèle de sélection mis à jour:', selectionModel)
+  }
 
   // Exclure certaines clés de l'objet produit
   const excludedKeys = [
@@ -158,8 +172,22 @@ const CatalogPage = () => {
         pageSizeOptions={[10, 25, 50]}
         pagination
         checkboxSelection
-        checkboxSelectionVisibleOnly={true}
+        onRowSelectionModelChange={handleSelection}
       />
+      <Button onClick={handleOpenModal}>Modifier en Masse</Button>
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div style={{ backgroundColor: 'white', padding: '20px' }}>
+          <EditBulkProduct />
+        </div>
+      </Modal>
     </div>
   )
 }
