@@ -118,7 +118,7 @@ export default function MiniDrawer({ children }) {
           to="/create-product"
           variant="contained"
           color="primary"
-          sx={{ margin: theme.spacing(2) }}
+          sx={{ margin: theme.spacing(0) }}
         >
           Créer un Produit
         </Button>

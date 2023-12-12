@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Modal, Button } from '@mui/material'
+import { Modal, Button, TextField, Box } from '@mui/material'
 import { DataGrid, frFR, GridActionsCellItem } from '@mui/x-data-grid'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
 import { useProductContext } from '../../contexts/ProductContext'
@@ -12,9 +12,15 @@ import { useNavigate } from 'react-router-dom'
 import EditBulkProduct from '../product/EditBulkProduct'
 
 const CatalogPage = () => {
-  const { categories, products, setProducts, setSelectedProducts } =
-    useProductContext()
+  const {
+    categories,
+    products,
+    setProducts,
+    setSelectedProducts,
+    selectedProducts,
+  } = useProductContext()
 
+  const [searchTerm, setSearchTerm] = useState('')
   const [openModal, setOpenModal] = useState(false)
   const { showConfirmDialog, showToast } = useUI()
   const navigate = useNavigate()
@@ -24,6 +30,10 @@ const CatalogPage = () => {
 
   const redirectToEdit = (productId) => {
     navigate(`/edit-product/${productId}`)
+  }
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value.toLowerCase())
   }
 
   // Création d'un mappage pour les noms de catégories
@@ -156,11 +166,35 @@ const CatalogPage = () => {
     ],
   })
 
+  const filteredProducts = transformedProducts.filter(
+    (product) =>
+      product.reference.toLowerCase().includes(searchTerm) ||
+      (product.gencode && product.gencode.toLowerCase().includes(searchTerm)),
+  )
+
   return (
     <div style={{ width: 'fit-content', maxWidth: '100%' }}>
+      <Box display="flex" alignItems="center" gap={2} my={2}>
+        <TextField
+          label="Recherche par Référence ou Gencode"
+          variant="outlined"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          style={{ flexGrow: 1 }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleOpenModal}
+          disabled={selectedProducts.size < 2}
+          style={{ height: '56px' }} // Assurez-vous que cette hauteur correspond à celle de votre TextField
+        >
+          Modifier en Masse
+        </Button>
+      </Box>
       <DataGrid
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-        rows={transformedProducts}
+        rows={filteredProducts}
         columns={columns}
         initialState={{
           pagination: {
@@ -174,7 +208,7 @@ const CatalogPage = () => {
         checkboxSelection
         onRowSelectionModelChange={handleSelection}
       />
-      <Button onClick={handleOpenModal}>Modifier en Masse</Button>
+
       <Modal
         open={openModal}
         onClose={handleCloseModal}
@@ -185,7 +219,7 @@ const CatalogPage = () => {
         }}
       >
         <div style={{ backgroundColor: 'white', padding: '20px' }}>
-          <EditBulkProduct />
+          <EditBulkProduct handleCloseModal={handleCloseModal} />
         </div>
       </Modal>
     </div>
