@@ -69,20 +69,24 @@ const EditBulkProduct = ({ handleCloseModal }) => {
           type="number"
         />
       </FormControl>
-      <SelectCategory
-        categories={categories}
-        selectedCategoryId={selectedCategoryId}
-        onCategoryChange={handleCategoryChange}
-        label="Catégorie"
-      />
-      <SelectCategory
-        categories={categories}
-        selectedCategoryId={selectedSubCategoryId}
-        onCategoryChange={handleSubCategoryChange}
-        parentFilter={selectedCategoryId}
-        label="Sous-catégorie"
-        disabled={!selectedCategoryId}
-      />
+      <FormControl fullWidth margin="normal">
+        <SelectCategory
+          categories={categories}
+          selectedCategoryId={selectedCategoryId}
+          onCategoryChange={handleCategoryChange}
+          label="Catégorie"
+        />
+      </FormControl>
+      <FormControl fullWidth margin="normal">
+        <SelectCategory
+          categories={categories}
+          selectedCategoryId={selectedSubCategoryId}
+          onCategoryChange={handleSubCategoryChange}
+          parentFilter={selectedCategoryId}
+          label="Sous-catégorie"
+          disabled={!selectedCategoryId}
+        />
+      </FormControl>
       <Button type="submit" variant="contained" color="primary">
         Appliquer les Modifications
       </Button>

@@ -10,6 +10,8 @@ import { useUI } from '../../contexts/UIContext'
 import EditIcon from '@mui/icons-material/Edit'
 import { useNavigate } from 'react-router-dom'
 import EditBulkProduct from '../product/EditBulkProduct'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
 
 const CatalogPage = () => {
   const {
@@ -173,7 +175,7 @@ const CatalogPage = () => {
   )
 
   return (
-    <div style={{ width: 'fit-content', maxWidth: '100%' }}>
+    <div style={{ width: 'fit-content', width: '100%' }}>
       <Box display="flex" alignItems="center" gap={2} my={2}>
         <TextField
           label="Recherche par Référence ou Gencode"
@@ -181,6 +183,13 @@ const CatalogPage = () => {
           value={searchTerm}
           onChange={handleSearchChange}
           style={{ flexGrow: 1 }}
+          InputProps={{
+            endAdornment: searchTerm && (
+              <IconButton onClick={() => setSearchTerm('')} edge="end">
+                <CloseIcon />
+              </IconButton>
+            ),
+          }}
         />
         <Button
           variant="contained"
@@ -207,6 +216,7 @@ const CatalogPage = () => {
         pagination
         checkboxSelection
         onRowSelectionModelChange={handleSelection}
+        style={{ width: '100%' }}
       />
 
       <Modal

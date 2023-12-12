@@ -1,85 +1,60 @@
 import React, { useContext } from 'react'
 import { useProductContext } from '../../contexts/ProductContext'
 import { CartContext } from '../../contexts/CartContext'
-import { Grid, Paper, Checkbox, Button, Typography, Box } from '@mui/material'
+import { DataGrid, frFR } from '@mui/x-data-grid'
+import { Box } from '@mui/material'
 
-const ProductTable = ({
-  products,
-  onEdit,
-  selectedProducts,
-  isBulkEditActive,
-  handleProductSelect,
-  onProductSelect,
-}) => {
+const ProductTable = ({ products }) => {
   const { baseUrl } = useProductContext()
-
   const { addToCart } = useContext(CartContext)
 
-  const handleAddToCart = (product) => {
-    addToCart(product)
+  const columns = [
+    {
+      field: 'photo',
+      headerName: 'Photo',
+      renderCell: (params) =>
+        params.row.photos && params.row.photos.length > 0 ? (
+          <Box
+            component="img"
+            src={`${baseUrl}/${params.row.photos[0]}`}
+            alt={params.row.reference}
+            sx={{ width: 100, height: 'auto' }}
+          />
+        ) : null,
+      width: 110,
+    },
+    { field: 'reference', headerName: 'Référence', width: 250 },
+    { field: 'marque', headerName: 'Marque', width: 130 },
+    { field: 'gencode', headerName: 'Gencode', width: 130 },
+    {
+      field: 'prixVente',
+      headerName: 'Prix Vente',
+      type: 'number',
+      width: 130,
+    },
+  ]
+
+  const handleRowClick = (params) => {
+    addToCart(params.row)
   }
 
   return (
-    <Grid container spacing={2}>
-      {/* En-tête du tableau */}
-      <Grid item xs={12}>
-        <Grid container spacing={2} alignItems="center">
-          {isBulkEditActive && (
-            <Grid item>
-              <Typography>Choisir</Typography>
-            </Grid>
-          )}
-        </Grid>
-      </Grid>
-
-      {/* Lignes du tableau */}
-      {products.map((product) => (
-        <Grid
-          item
-          xs={12}
-          key={product._id}
-          onClick={() => handleAddToCart(product)}
-        >
-          <Paper style={{ padding: '10px', cursor: 'pointer' }}>
-            <Grid container spacing={2} alignItems="center">
-              {isBulkEditActive && (
-                <Grid item>
-                  <Checkbox
-                    checked={selectedProducts.has(product._id)}
-                    onChange={() => onProductSelect(product._id)}
-                  />
-                </Grid>
-              )}
-              <Grid item>
-                {product.photos && product.photos.length > 0 && (
-                  <Box
-                    component="img"
-                    src={`${baseUrl}/${product.photos[0]}`}
-                    alt={product.reference}
-                    sx={{ width: 100, height: 'auto' }}
-                  />
-                )}
-              </Grid>
-              <Grid item>
-                <Typography>{product.reference}</Typography>
-              </Grid>
-              <Grid item>
-                <Typography>{product.marque}</Typography>
-              </Grid>
-              <Grid item>
-                <Typography>{product.gencode}</Typography>
-              </Grid>
-              <Grid item>
-                <Typography>{product.prixVente} €</Typography>
-              </Grid>
-              <Grid item>
-                <Button onClick={() => onEdit(product)}>Modifier</Button>
-              </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
-      ))}
-    </Grid>
+    <DataGrid
+      localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+      rows={products}
+      columns={columns}
+      initialState={{
+        pagination: {
+          paginationModel: {
+            pageSize: 10,
+          },
+        },
+      }}
+      pageSizeOptions={[10, 25, 50]}
+      pagination
+      onRowClick={handleRowClick}
+      getRowId={(row) => row._id}
+    />
   )
 }
 

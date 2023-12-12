@@ -4,7 +4,7 @@ import useWebSocketConnection from '../hooks/useWebSocketConnection'
 import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
 import AddProductForm from './AddProductForm'
 import BulkEditForm from './BulkEditForm'
-import ProductTable from './ProductTable'
+import ProductTableMobil from './ProductTableMobil'
 import EditProductForm from './EditProductForm'
 import { getCategories } from '../../api/categoryService'
 import SelectCategory from '../category/SelectCategory'
@@ -13,7 +13,7 @@ import ProductSearch from './ProductSearch'
 import { useProductContext } from '../../contexts/ProductContext'
 import { Box, Button } from '@mui/material'
 
-const ProductManager = () => {
+const ProductManagerMobil = () => {
   const {
     searchTerm,
     selectedCategoryId,
@@ -134,11 +134,11 @@ const ProductManager = () => {
       {!editingProduct && !showAddProductForm && (
         <>
           <ProductSearch />
-          <SelectCategory
+          {/* <SelectCategory
             categories={categories}
             selectedCategoryId={selectedCategoryId}
             onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
-          />
+          /> */}
         </>
       )}
 
@@ -154,7 +154,7 @@ const ProductManager = () => {
       ) : (
         <>
           {filteredProducts.length > 0 ? (
-            <ProductTable
+            <ProductTableMobil
               products={filteredProducts}
               onEdit={handleEdit}
               onProductSelect={handleProductSelect}
@@ -194,4 +194,4 @@ const ProductManager = () => {
   )
 }
 
-export default ProductManager
+export default ProductManagerMobil

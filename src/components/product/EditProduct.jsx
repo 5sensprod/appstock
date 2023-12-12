@@ -95,7 +95,15 @@ const EditProduct = ({ productId }) => {
 
   const onSubmit = async (data) => {
     try {
-      await updateProductInContext(productId, data)
+      // Conversion des valeurs
+      const updatedData = {
+        ...data,
+        prixVente: parseFloat(data.prixVente) || 0,
+        prixAchat: parseFloat(data.prixAchat) || 0,
+        stock: parseInt(data.stock, 10) || 0,
+      }
+
+      await updateProductInContext(productId, updatedData)
       navigate('/catalog')
       showToast('Produit modifié avec succès!', 'success')
     } catch (error) {
@@ -103,7 +111,6 @@ const EditProduct = ({ productId }) => {
       showToast('Erreur lors de la modification du produit', 'error')
     }
   }
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {productFields.map(({ name, label, type }) => {

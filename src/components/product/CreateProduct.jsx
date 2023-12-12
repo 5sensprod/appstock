@@ -72,7 +72,15 @@ export const CreateProduct = () => {
   }
   const onSubmit = async (data) => {
     try {
-      await addProduct(data)
+      // Conversion des valeurs
+      const updatedData = {
+        ...data,
+        prixVente: parseFloat(data.prixVente) || 0,
+        prixAchat: parseFloat(data.prixAchat) || 0,
+        stock: parseInt(data.stock, 10) || 0,
+      }
+
+      await addProduct(updatedData)
       reset() // Réinitialiser le formulaire
       showToast('Produit ajouté avec succès!', 'success')
       navigate('/catalog')
