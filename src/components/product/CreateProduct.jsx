@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { TextField, Button } from '@mui/material'
+import { FormControl, TextField, Button } from '@mui/material'
+import { useForm, Controller } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useProductContext } from '../../contexts/ProductContext'
 import { useUI } from '../../contexts/UIContext'
@@ -13,10 +13,10 @@ export const CreateProduct = () => {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors },
     reset,
   } = useForm()
-
   const { categories, addProduct } = useProductContext()
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
@@ -90,39 +90,58 @@ export const CreateProduct = () => {
             validationRules.required = 'Ce champ est requis'
           }
 
+          const isTextArea =
+            name === 'description' || name === 'descriptionCourte'
+
           return (
-            <TextField
-              key={name}
-              label={label}
-              type={type}
-              {...register(name, validationRules)}
-              error={!!errors[name]}
-              helperText={errors[name]?.message}
-              onKeyDown={name === 'gencode' ? handleEnterKey : null}
-            />
+            <FormControl fullWidth margin="normal" key={name}>
+              <Controller
+                name={name}
+                control={control}
+                defaultValue=""
+                rules={validationRules}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    label={label}
+                    type={isTextArea ? 'text' : type}
+                    multiline={isTextArea}
+                    rows={isTextArea ? (name === 'description' ? 4 : 2) : 1}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+              />
+            </FormControl>
           )
         })}
-        <SelectCategory
-          categories={categories}
-          selectedCategoryId={selectedCategoryId}
-          onCategoryChange={handleCategoryChange}
-          label="Catégorie"
-        />
-        <SelectCategory
-          categories={categories}
-          selectedCategoryId={selectedSubCategoryId}
-          onCategoryChange={handleSubCategoryChange}
-          parentFilter={selectedCategoryId}
-          label="Sous-catégorie"
-          disabled={!selectedCategoryId}
-        />
+        <FormControl fullWidth margin="normal">
+          <SelectCategory
+            categories={categories}
+            selectedCategoryId={selectedCategoryId}
+            onCategoryChange={handleCategoryChange}
+            label="Catégorie"
+          />
+        </FormControl>
+        <FormControl fullWidth margin="normal">
+          <SelectCategory
+            categories={categories}
+            selectedCategoryId={selectedSubCategoryId}
+            onCategoryChange={handleSubCategoryChange}
+            parentFilter={selectedCategoryId}
+            label="Sous-catégorie"
+            disabled={!selectedCategoryId}
+          />
+        </FormControl>
         <CustomSelect
           label="T.V.A"
           value={selectedTVA}
           onChange={handleTVAChange}
           options={TVA_RATES}
         />
-        <Button type="submit">Ajouter Produit</Button>
+        <Button type="submit" variant="contained" color="primary">
+          Ajouter Produit
+        </Button>
       </form>
     </>
   )

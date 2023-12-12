@@ -107,7 +107,30 @@ const EditProduct = ({ productId }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {productFields.map(({ name, label, type }) => {
-        if (type === 'text' || type === 'number') {
+        // Vérifier si le champ actuel est un des champs de description
+        const isTextArea =
+          name === 'description' || name === 'descriptionCourte'
+
+        if (isTextArea) {
+          return (
+            <FormControl fullWidth margin="normal" key={name}>
+              <Controller
+                name={name}
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label={label}
+                    multiline
+                    rows={name === 'description' ? 8 : 2} // Exemple: 4 lignes pour 'description' et 2 pour 'descriptionCourte'
+                  />
+                )}
+              />
+            </FormControl>
+          )
+        } else if (type === 'text' || type === 'number') {
+          // Rendu standard pour les autres champs
           return (
             <FormControl fullWidth margin="normal" key={name}>
               <Controller
