@@ -6,10 +6,17 @@ import { deleteProduct } from '../../api/productService'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { format } from 'date-fns'
 import { useUI } from '../../contexts/UIContext'
+import EditIcon from '@mui/icons-material/Edit'
+import { useNavigate } from 'react-router-dom'
 
 const CatalogPage = () => {
   const { categories, products, setProducts } = useProductContext()
   const { showConfirmDialog, showToast } = useUI()
+  const navigate = useNavigate()
+
+  const redirectToEdit = (productId) => {
+    navigate(`/edit-product/${productId}`)
+  }
 
   // Création d'un mappage pour les noms de catégories
   const categoryMap = categories.reduce((acc, category) => {
@@ -117,8 +124,13 @@ const CatalogPage = () => {
     field: 'actions',
     type: 'actions',
     headerName: 'Actions',
-    width: 100,
+    width: 150, // Vous pouvez ajuster la largeur selon vos besoins
     getActions: (params) => [
+      <GridActionsCellItem
+        icon={<EditIcon />}
+        label="Modifier"
+        onClick={() => redirectToEdit(params.id)}
+      />,
       <GridActionsCellItem
         icon={<DeleteIcon />}
         label="Supprimer"

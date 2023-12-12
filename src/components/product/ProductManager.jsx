@@ -5,7 +5,6 @@ import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
 import AddProductForm from './AddProductForm'
 import BulkEditForm from './BulkEditForm'
 import ProductTable from './ProductTable'
-import { updateProduct, updateProductsBulk } from '../../api/productService'
 import EditProductForm from './EditProductForm'
 import { getCategories } from '../../api/categoryService'
 import SelectCategory from '../category/SelectCategory'
@@ -34,6 +33,8 @@ const ProductManager = () => {
     cancelEdit,
     editingProduct,
     setEditingProduct,
+    updateProductInContext,
+    updateProductsBulkInContext,
   } = useProductContext()
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
@@ -94,7 +95,7 @@ const ProductManager = () => {
   }
 
   const handleUpdateProduct = async (productId, productData) => {
-    await updateProduct(productId, productData)
+    await updateProductInContext(productId, productData) // Assurez-vous que c'est bien cette fonction qui est appelée
     setEditingProduct(null)
   }
 
@@ -105,7 +106,7 @@ const ProductManager = () => {
     }))
 
     try {
-      const response = await updateProductsBulk(updates)
+      await updateProductsBulkInContext(updates)
 
       setShowBulkEditForm(false)
       setIsBulkEditActive(false)

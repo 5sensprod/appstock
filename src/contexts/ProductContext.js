@@ -1,6 +1,11 @@
 import React, { createContext, useState, useContext, useEffect } from 'react'
 import { getApiBaseUrl } from '../api/axiosConfig'
-import { getProducts, addProduct } from '../api/productService'
+import {
+  getProducts,
+  addProduct,
+  updateProduct,
+  updateProductsBulk,
+} from '../api/productService'
 import { getCategories } from '../api/categoryService'
 
 const ProductContext = createContext()
@@ -132,6 +137,31 @@ export const ProductProvider = ({ children }) => {
       throw error
     }
   }
+
+  const updateProductInContext = async (productId, productData) => {
+    try {
+      const updatedProduct = await updateProduct(productId, productData)
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === productId ? updatedProduct : product,
+        ),
+      )
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du produit', error)
+      throw error
+    }
+  }
+
+  const updateProductsBulkInContext = async (updates) => {
+    try {
+      await updateProductsBulk(updates)
+      // Mettre à jour l'état des produits ici
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour en masse', error)
+      throw error
+    }
+  }
+
   const contextValue = {
     searchTerm,
     setSearchTerm,
@@ -159,6 +189,8 @@ export const ProductProvider = ({ children }) => {
     cancelBulkEdit,
     setProducts,
     addProduct: addProductToContext,
+    updateProductInContext,
+    updateProductsBulkInContext,
   }
 
   return (

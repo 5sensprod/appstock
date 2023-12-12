@@ -14,6 +14,8 @@ import ClientPage from './components/pages/ClientPage'
 import InvoicePage from './components/pages/InvoicePage'
 import MainLayout from './components/layout/MainLayout'
 import CreateProductPage from './components/pages/CreateProductPage'
+import EditProductPage from './components/pages/EditProductPage'
+
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
@@ -35,6 +37,10 @@ const App = () => {
                     <Route
                       path="/create-product"
                       element={<CreateProductPage />}
+                    />
+                    <Route
+                      path="/edit-product/:id"
+                      element={<EditProductPage />}
                     />
                     {/* Autres routes ici */}
                   </Routes>
