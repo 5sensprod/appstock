@@ -25,6 +25,7 @@ import PeopleIcon from '@mui/icons-material/People'
 import ReceiptIcon from '@mui/icons-material/Receipt'
 import SellIcon from '@mui/icons-material/Sell'
 import LocalShippingIcon from '@mui/icons-material/LocalShipping'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Link, useLocation } from 'react-router-dom'
 
 const drawerWidth = 240
@@ -114,12 +115,33 @@ export default function MiniDrawer({ children }) {
       return (
         <Button
           component={Link}
-          to="/create-product" // Remplacez par le chemin vers votre formulaire de création
+          to="/create-product"
           variant="contained"
           color="primary"
           sx={{ margin: theme.spacing(2) }}
         >
           Créer un Produit
+        </Button>
+      )
+    }
+    return null
+  }
+
+  const renderBackButton = () => {
+    const matchCreateOrEdit = location.pathname.match(
+      /\/create-product|\/edit-product\/.+/,
+    )
+    if (matchCreateOrEdit) {
+      return (
+        <Button
+          component={Link}
+          to="/catalog"
+          variant="contained"
+          color="primary"
+          startIcon={<ArrowBackIcon />}
+          sx={{ margin: theme.spacing(2) }}
+        >
+          Retour
         </Button>
       )
     }
@@ -284,6 +306,7 @@ export default function MiniDrawer({ children }) {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
         {renderCatalogButton()}
+        {renderBackButton()}
         {children}
       </Box>
     </Box>

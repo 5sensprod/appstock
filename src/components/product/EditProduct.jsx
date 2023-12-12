@@ -4,6 +4,7 @@ import { TextField, Button, FormControl } from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext'
 import SelectCategory from '../category/SelectCategory'
 import CustomSelect from '../ui/CustomSelect'
+import { useUI } from '../../contexts/UIContext'
 import { TVA_RATES } from '../../utils/constants'
 import { useNavigate } from 'react-router-dom'
 
@@ -16,6 +17,7 @@ const EditProduct = ({ productId }) => {
   const [selectedTVA, setSelectedTVA] = useState(20)
 
   const navigate = useNavigate()
+  const { showToast } = useUI()
 
   const productFields = [
     { name: 'reference', label: 'Référence', type: 'text' },
@@ -94,10 +96,11 @@ const EditProduct = ({ productId }) => {
   const onSubmit = async (data) => {
     try {
       await updateProductInContext(productId, data)
-      navigate('/catalog') // Redirige vers la page '/catalog'
+      navigate('/catalog')
+      showToast('Produit modifié avec succès!', 'success')
     } catch (error) {
       console.error(error)
-      // Gérer les erreurs ici si nécessaire
+      showToast('Erreur lors de la modification du produit', 'error')
     }
   }
 

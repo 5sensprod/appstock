@@ -96,13 +96,16 @@ const CatalogPage = () => {
         if (key === 'reference') {
           width = 250
         }
+        if (key === 'tva') {
+          width = 50
+        }
 
         // Ajout de la condition pour la colonne 'dateSoumission'
         if (key === 'dateSoumission') {
           return {
             field: key,
             headerName: columnNames[key] || capitalizeFirstLetter(key),
-            width: 180, // ou une autre largeur appropriée pour les dates
+            width: 110, // ou une autre largeur appropriée pour les dates
             valueFormatter: (params) => {
               return params.value
                 ? format(new Date(params.value), 'dd/MM/yyyy')
