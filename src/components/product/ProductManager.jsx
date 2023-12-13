@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import useSearch from '../hooks/useSearch'
 import AddProductForm from './AddProductForm'
 import ProductTable from './ProductTable'
-import { getCategories } from '../../api/categoryService'
 import SelectCategory from '../category/SelectCategory'
 import NoMatchButton from '../ui/NoMatchButton'
 import ProductSearch from './ProductSearch'
@@ -17,19 +16,10 @@ const ProductManager = () => {
     selectedCategoryId,
     setSelectedCategoryId,
     categories,
-    setCategories,
   } = useProductContext()
+
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const retrievedCategories = await getCategories()
-      setCategories(retrievedCategories)
-    }
-
-    fetchCategories()
-  }, [])
 
   const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
 

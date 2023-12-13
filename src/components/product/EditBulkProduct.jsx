@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { TextField, Button, FormControl, Select, MenuItem } from '@mui/material'
+import { TextField, Button, FormControl } from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext'
 import SelectCategory from '../category/SelectCategory'
 import { useUI } from '../../contexts/UIContext'

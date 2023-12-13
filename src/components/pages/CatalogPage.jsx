@@ -11,6 +11,8 @@ import { Modal, Button, Box } from '@mui/material'
 import { DataGrid, frFR, GridActionsCellItem } from '@mui/x-data-grid'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import SelectCategory from '../category/SelectCategory'
+import useSearch from '../hooks/useSearch'
 
 const CatalogPage = () => {
   const {
@@ -20,9 +22,13 @@ const CatalogPage = () => {
     setSelectedProducts,
     selectedProducts,
     searchTerm,
-    setSearchTerm,
+    selectedCategoryId,
+    setSelectedCategoryId,
   } = useProductContext()
 
+  const handleCategoryChange = (event) => {
+    setSelectedCategoryId(event.target.value)
+  }
   const [openModal, setOpenModal] = useState(false)
   const { showConfirmDialog, showToast } = useUI()
   const navigate = useNavigate()
@@ -39,6 +45,15 @@ const CatalogPage = () => {
     acc[category._id] = category.name
     return acc
   }, {})
+
+  const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
+
+  const displayProducts = filteredProducts.map((product) => ({
+    ...product,
+    id: product._id,
+    categorie: categoryMap[product.categorie] || product.categorie,
+    sousCategorie: categoryMap[product.sousCategorie] || product.sousCategorie,
+  }))
 
   const promptDelete = (product) => {
     showConfirmDialog(
@@ -71,13 +86,6 @@ const CatalogPage = () => {
     sousCategorie: 'Sous Catégorie',
     marque: 'Marque',
   }
-
-  const transformedProducts = products.map((product) => ({
-    ...product,
-    id: product._id,
-    categorie: categoryMap[product.categorie] || product.categorie,
-    sousCategorie: categoryMap[product.sousCategorie] || product.sousCategorie,
-  }))
 
   const handleSelection = (selectionModel) => {
     setSelectedProducts(new Set(selectionModel))
@@ -159,17 +167,16 @@ const CatalogPage = () => {
     ],
   })
 
-  const filteredProducts = transformedProducts.filter(
-    (product) =>
-      product.reference.toLowerCase().includes(searchTerm) ||
-      (product.gencode && product.gencode.toLowerCase().includes(searchTerm)),
-  )
-
   return (
     <>
       <div style={{ width: 'fit-content' }}>
         <Box display="flex" alignItems="center" gap={2} my={2}>
           <ProductSearch />
+          <SelectCategory
+            categories={categories}
+            selectedCategoryId={selectedCategoryId}
+            onCategoryChange={handleCategoryChange}
+          />
           <Button
             variant="contained"
             color="primary"
@@ -182,7 +189,7 @@ const CatalogPage = () => {
         </Box>
         <DataGrid
           localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-          rows={filteredProducts}
+          rows={displayProducts}
           columns={columns}
           initialState={{
             pagination: {
