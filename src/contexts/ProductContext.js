@@ -15,6 +15,7 @@ export const useProductContext = () => useContext(ProductContext)
 export const ProductProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
+  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
   const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
   const [baseUrl, setBaseUrl] = useState('')
@@ -113,11 +114,20 @@ export const ProductProvider = ({ children }) => {
     }
   }
 
+  const handleCategoryChange = (event) => {
+    setSelectedCategoryId(event.target.value)
+  }
+
+  const handleSubCategoryChange = (event) => {
+    setSelectedSubCategoryId(event.target.value)
+  }
+
   const contextValue = {
     searchTerm,
     setSearchTerm,
     selectedCategoryId,
     setSelectedCategoryId,
+    handleCategoryChange,
     categories,
     setCategories,
     products,
@@ -128,6 +138,9 @@ export const ProductProvider = ({ children }) => {
     addProduct: addProductToContext,
     updateProductInContext,
     updateProductsBulkInContext,
+    selectedSubCategoryId,
+    setSelectedSubCategoryId,
+    handleSubCategoryChange,
   }
 
   return (

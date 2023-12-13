@@ -9,11 +9,20 @@ import { TVA_RATES } from '../../utils/constants'
 import { useNavigate } from 'react-router-dom'
 
 const EditProduct = ({ productId }) => {
-  const { updateProductInContext, products, categories } = useProductContext()
+  const {
+    updateProductInContext,
+    products,
+    categories,
+    selectedCategoryId,
+    setSelectedCategoryId,
+    handleCategoryChange,
+    selectedSubCategoryId,
+    setSelectedSubCategoryId,
+    handleSubCategoryChange,
+  } = useProductContext()
+
   const { control, handleSubmit, setValue, register } = useForm()
   const [initialLoading, setInitialLoading] = useState(true)
-  const [selectedCategoryId, setSelectedCategoryId] = useState('')
-  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
   const [selectedTVA, setSelectedTVA] = useState(20)
 
   const navigate = useNavigate()
@@ -65,20 +74,6 @@ const EditProduct = ({ productId }) => {
     register('sousCategorie')
     register('tva')
   }, [register])
-
-  const handleCategoryChange = (event) => {
-    const categoryId = event.target.value
-    setSelectedCategoryId(categoryId)
-    setValue('categorie', categoryId)
-    setSelectedSubCategoryId('')
-    setValue('sousCategorie', '')
-  }
-
-  const handleSubCategoryChange = (event) => {
-    const subCategoryId = event.target.value
-    setSelectedSubCategoryId(subCategoryId)
-    setValue('sousCategorie', subCategoryId)
-  }
 
   const handleTVAChange = (event) => {
     const newTVAValue = parseFloat(event.target.value)

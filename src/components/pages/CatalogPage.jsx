@@ -23,12 +23,9 @@ const CatalogPage = () => {
     selectedProducts,
     searchTerm,
     selectedCategoryId,
-    setSelectedCategoryId,
+    handleCategoryChange,
   } = useProductContext()
 
-  const handleCategoryChange = (event) => {
-    setSelectedCategoryId(event.target.value)
-  }
   const [openModal, setOpenModal] = useState(false)
   const { showConfirmDialog, showToast } = useUI()
   const navigate = useNavigate()

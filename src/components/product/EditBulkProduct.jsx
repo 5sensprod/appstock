@@ -25,16 +25,17 @@ const EditBulkProduct = ({ handleCloseModal }) => {
   }
 
   const onSubmit = async (data) => {
-    const updates = Array.from(selectedProducts).map((productId) => ({
-      id: productId,
-      changes: {
-        prixVente: parseFloat(data.prixVente) || 0,
-        prixAchat: parseFloat(data.prixAchat) || 0,
-        stock: parseInt(data.stock, 10) || 0,
-        categorie: selectedCategoryId,
-        sousCategorie: selectedSubCategoryId,
-      },
-    }))
+    const updates = Array.from(selectedProducts).map((productId) => {
+      const changes = {}
+      if (data.prixVente) changes.prixVente = parseFloat(data.prixVente)
+      if (data.prixAchat) changes.prixAchat = parseFloat(data.prixAchat)
+      if (data.stock) changes.stock = parseInt(data.stock, 10)
+      if (selectedCategoryId) changes.categorie = selectedCategoryId
+      if (selectedSubCategoryId) changes.sousCategorie = selectedSubCategoryId
+
+      return { id: productId, changes }
+    })
+
     await updateProductsBulkInContext(updates)
     reset()
     handleCloseModal()

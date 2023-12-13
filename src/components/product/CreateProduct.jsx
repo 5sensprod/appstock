@@ -17,9 +17,16 @@ export const CreateProduct = () => {
     formState: { errors },
     reset,
   } = useForm()
-  const { categories, addProduct } = useProductContext()
-  const [selectedCategoryId, setSelectedCategoryId] = useState('')
-  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
+
+  const {
+    categories,
+    addProduct,
+    selectedCategoryId,
+    handleCategoryChange,
+    selectedSubCategoryId,
+    handleSubCategoryChange,
+  } = useProductContext()
+
   const [selectedTVA, setSelectedTVA] = useState(20)
 
   const { showToast } = useUI()
@@ -43,20 +50,6 @@ export const CreateProduct = () => {
     register('categorie')
     register('sousCategorie')
   }, [register])
-
-  const handleCategoryChange = (event) => {
-    const categoryId = event.target.value
-    setSelectedCategoryId(categoryId)
-    setValue('categorie', categoryId)
-    setSelectedSubCategoryId('')
-    setValue('sousCategorie', '')
-  }
-
-  const handleSubCategoryChange = (event) => {
-    const subCategoryId = event.target.value
-    setSelectedSubCategoryId(subCategoryId)
-    setValue('sousCategorie', subCategoryId)
-  }
 
   const handleEnterKeyInGencode = (event) => {
     if (event.key === 'Enter') {
