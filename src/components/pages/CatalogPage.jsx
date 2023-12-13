@@ -125,8 +125,6 @@ const CatalogPage = () => {
         if (key === 'tva') {
           width = 50
         }
-
-        // Ajout de la condition pour la colonne 'dateSoumission'
         if (key === 'dateSoumission') {
           return {
             field: key,
@@ -140,7 +138,6 @@ const CatalogPage = () => {
           }
         }
 
-        // Configuration des autres colonnes
         return {
           field: key,
           headerName: columnNames[key] || capitalizeFirstLetter(key),
@@ -183,7 +180,6 @@ const CatalogPage = () => {
             variant="outlined"
             value={searchTerm}
             onChange={handleSearchChange}
-            // style={{ flexGrow: 1 }}
             InputProps={{
               endAdornment: searchTerm && (
                 <IconButton onClick={() => setSearchTerm('')} edge="end">
@@ -197,7 +193,7 @@ const CatalogPage = () => {
             color="primary"
             onClick={handleOpenModal}
             disabled={selectedProducts.size < 2}
-            style={{ height: '56px' }} // Assurez-vous que cette hauteur correspond à celle de votre TextField
+            style={{ height: '56px' }}
           >
             Modifier en Masse
           </Button>

@@ -1,13 +1,9 @@
 import React from 'react'
-import { useProductContext } from '../../contexts/ProductContext'
 import { DataGrid, frFR } from '@mui/x-data-grid'
 
 const ProductTableMobil = ({ products }) => {
-  // Utilisation de useProductContext() si nécessaire
-  // const { baseUrl } = useProductContext();
-
   const columns = [
-    { field: 'reference', headerName: 'Référence', flex: 1 }, // Utilisation de flex
+    { field: 'reference', headerName: 'Référence', flex: 1 },
     { field: 'gencode', headerName: 'Gencode', flex: 1 },
     {
       field: 'prixVente',
@@ -33,7 +29,7 @@ const ProductTableMobil = ({ products }) => {
       pagination
       getRowId={(row) => row._id}
       sx={{
-        width: '100%', // Assurez-vous que le DataGrid occupe toute la largeur
+        width: '100%',
         '.MuiDataGrid-virtualScroller': {
           overflowX: 'auto', // Permet le défilement horizontal
         },
