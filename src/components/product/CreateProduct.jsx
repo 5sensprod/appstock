@@ -7,6 +7,8 @@ import { useUI } from '../../contexts/UIContext'
 import SelectCategory from '../category/SelectCategory'
 import CustomSelect from '../ui/CustomSelect'
 import { TVA_RATES } from '../../utils/constants'
+import { handleEnterKeyInGencode } from '../../utils/handleUtilsjs'
+import { productFields } from '../../utils/formConfig'
 
 export const CreateProduct = () => {
   const {
@@ -22,21 +24,8 @@ export const CreateProduct = () => {
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
   const [selectedTVA, setSelectedTVA] = useState(20)
 
-  const { showToast } = useUI()
-
   const navigate = useNavigate()
-  // Structure de données pour les champs de formulaire
-  const productFields = [
-    { name: 'reference', label: 'Référence', type: 'text' },
-    { name: 'prixVente', label: 'Prix de Vente', type: 'number' },
-    { name: 'prixAchat', label: 'Prix achat', type: 'number' },
-    { name: 'descriptionCourte', label: 'Description courte', type: 'text' },
-    { name: 'description', label: 'Description', type: 'text' },
-    { name: 'stock', label: 'Stock', type: 'number' },
-    { name: 'marque', label: 'Marque', type: 'text' },
-    { name: 'gencode', label: 'Gencode', type: 'text' },
-    // Ajoutez d'autres champs ici selon vos besoins
-  ]
+  const { showToast } = useUI()
 
   useEffect(() => {
     register('tva')
@@ -56,12 +45,6 @@ export const CreateProduct = () => {
     const subCategoryId = event.target.value
     setSelectedSubCategoryId(subCategoryId)
     setValue('sousCategorie', subCategoryId)
-  }
-
-  const handleEnterKeyInGencode = (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault()
-    }
   }
 
   const handleTVAChange = (event) => {

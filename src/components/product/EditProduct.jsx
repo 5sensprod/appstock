@@ -7,6 +7,8 @@ import CustomSelect from '../ui/CustomSelect'
 import { useUI } from '../../contexts/UIContext'
 import { TVA_RATES } from '../../utils/constants'
 import { useNavigate } from 'react-router-dom'
+import { handleEnterKeyInGencode } from '../../utils/handleUtilsjs'
+import { productFields } from '../../utils/formConfig'
 
 const EditProduct = ({ productId }) => {
   const { updateProductInContext, products, categories } = useProductContext()
@@ -18,31 +20,6 @@ const EditProduct = ({ productId }) => {
 
   const navigate = useNavigate()
   const { showToast } = useUI()
-
-  const productFields = [
-    { name: 'reference', label: 'Référence', type: 'text' },
-    { name: 'prixVente', label: 'Prix de Vente', type: 'number' },
-    { name: 'prixAchat', label: 'Prix achat', type: 'number' },
-    { name: 'descriptionCourte', label: 'Description courte', type: 'text' },
-    { name: 'description', label: 'Description', type: 'text' },
-    { name: 'stock', label: 'Stock', type: 'number' },
-    { name: 'marque', label: 'Marque', type: 'text' },
-    { name: 'gencode', label: 'Gencode', type: 'text' },
-    { name: 'tva', label: 'T.V.A', type: 'select', options: TVA_RATES },
-    {
-      name: 'categorie',
-      label: 'Catégorie',
-      type: 'select',
-      options: categories,
-    },
-    {
-      name: 'sousCategorie',
-      label: 'Sous-catégorie',
-      type: 'select',
-      options: categories,
-    },
-    // Ajoutez d'autres champs ici selon vos besoins
-  ]
 
   useEffect(() => {
     if (initialLoading && products.length > 0) {
@@ -86,13 +63,6 @@ const EditProduct = ({ productId }) => {
     setValue('tva', newTVAValue)
   }
 
-  const handleEnterKeyInGencode = (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      // Ajouter des actions supplémentaires si nécessaire
-    }
-  }
-
   const onSubmit = async (data) => {
     try {
       // Conversion des valeurs
@@ -114,7 +84,6 @@ const EditProduct = ({ productId }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {productFields.map(({ name, label, type }) => {
-        // Vérifier si le champ actuel est un des champs de description
         const isTextArea =
           name === 'description' || name === 'descriptionCourte'
 
@@ -169,7 +138,6 @@ const EditProduct = ({ productId }) => {
           label="Catégorie"
         />
       </FormControl>
-
       <FormControl fullWidth margin="normal">
         <SelectCategory
           categories={categories}
@@ -180,7 +148,6 @@ const EditProduct = ({ productId }) => {
           disabled={!selectedCategoryId}
         />
       </FormControl>
-
       <FormControl fullWidth margin="normal">
         <CustomSelect
           label="T.V.A"
@@ -189,7 +156,6 @@ const EditProduct = ({ productId }) => {
           options={TVA_RATES}
         />
       </FormControl>
-
       <Button type="submit" variant="contained" color="primary">
         Modifier
       </Button>
