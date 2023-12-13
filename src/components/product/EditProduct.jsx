@@ -7,7 +7,7 @@ import CustomSelect from '../ui/CustomSelect'
 import { useUI } from '../../contexts/UIContext'
 import { TVA_RATES } from '../../utils/constants'
 import { useNavigate } from 'react-router-dom'
-import { handleEnterKeyInGencode } from '../../utils/handleUtilsjs'
+import { handleEnterKeyInGencode } from '../../utils/handleUtils.js'
 import { productFields } from '../../utils/formConfig'
 import useCategorySelection from '../hooks/useCategorySelection'
 

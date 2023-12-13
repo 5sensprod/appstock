@@ -7,7 +7,7 @@ import { useUI } from '../../contexts/UIContext'
 import SelectCategory from '../category/SelectCategory'
 import CustomSelect from '../ui/CustomSelect'
 import { TVA_RATES } from '../../utils/constants'
-import { handleEnterKeyInGencode } from '../../utils/handleUtilsjs'
+import { handleEnterKeyInGencode } from '../../utils/handleUtils.js'
 import { productFields } from '../../utils/formConfig'
 import useCategorySelection from '../hooks/useCategorySelection'
 

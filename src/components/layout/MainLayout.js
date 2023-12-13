@@ -16,11 +16,12 @@ import CatalogCreateButton from './CatalogCreateButton'
 import BackButton from './BackButton'
 import SideDrawer from './SideDrawer'
 import TopAppBar from './TopAppBar'
+import { useUI } from '../../contexts/UIContext'
 
 export default function MiniDrawer({ children }) {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
-  const [pageTitle, setPageTitle] = useState('Tableau de bord') // État initial
+  const { updatePageTitle, pageTitle } = useUI()
   const location = useLocation()
 
   const handleDrawerOpen = () => {
@@ -53,9 +54,9 @@ export default function MiniDrawer({ children }) {
       .concat(clientMenuItems, supplierMenuItems)
       .find((item) => item.link === location.pathname)
     if (currentItem) {
-      setPageTitle(currentItem.text)
+      updatePageTitle(currentItem.text) // Mettez à jour le titre en utilisant le contexte
     }
-  }, [location.pathname])
+  }, [location.pathname, updatePageTitle])
 
   return (
     <Box sx={{ display: 'flex' }}>

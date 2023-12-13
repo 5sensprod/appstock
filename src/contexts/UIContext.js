@@ -13,8 +13,6 @@ export const UIProvider = ({ children }) => {
     severity: 'info',
   })
 
-  // Ajoutez d'autres états pour les modales, dialogues, etc.
-
   const showToast = (message, severity = 'info') => {
     setToastInfo({ open: true, message, severity })
   }
@@ -22,8 +20,6 @@ export const UIProvider = ({ children }) => {
   const closeToast = () => {
     setToastInfo({ ...toastInfo, open: false })
   }
-
-  // Ajoutez des méthodes pour gérer d'autres éléments d'UI
 
   const [confirmDialogInfo, setConfirmDialogInfo] = useState({
     open: false,
@@ -40,9 +36,22 @@ export const UIProvider = ({ children }) => {
     setConfirmDialogInfo({ ...confirmDialogInfo, open: false })
   }
 
+  const [pageTitle, setPageTitle] = useState('Tableau de bord') // Nouvel état pour le titre de la page
+
+  const updatePageTitle = (title) => {
+    setPageTitle(title)
+  }
+
   return (
     <UIContext.Provider
-      value={{ showToast, closeToast, showConfirmDialog, closeConfirmDialog }}
+      value={{
+        showToast,
+        closeToast,
+        showConfirmDialog,
+        closeConfirmDialog,
+        pageTitle,
+        updatePageTitle,
+      }}
     >
       {children}
       <Toast

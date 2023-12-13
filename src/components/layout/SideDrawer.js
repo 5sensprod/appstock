@@ -61,7 +61,6 @@ const SideDrawer = ({
       <MenuList menuItems={clientMenuItems} open={open} />
       <Divider />
       <MenuList menuItems={supplierMenuItems} open={open} />
-      // Ajoutez d'autres éléments au besoin
     </Drawer>
   )
 }
