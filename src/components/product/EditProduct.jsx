@@ -84,13 +84,11 @@ const EditProduct = ({ productId }) => {
   const handleEnterKeyInGencode = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault()
-      // Ajouter des actions supplémentaires si nécessaire
     }
   }
 
   const onSubmit = async (data) => {
     try {
-      // Conversion des valeurs
       const updatedData = {
         ...data,
         prixVente: parseFloat(data.prixVente) || 0,
@@ -109,7 +107,6 @@ const EditProduct = ({ productId }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {productFields.map(({ name, label, type }) => {
-        // Vérifier si le champ actuel est un des champs de description
         const isTextArea =
           name === 'description' || name === 'descriptionCourte'
 
