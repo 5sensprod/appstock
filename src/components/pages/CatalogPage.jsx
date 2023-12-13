@@ -175,64 +175,66 @@ const CatalogPage = () => {
   )
 
   return (
-    <div style={{ width: 'fit-content', width: '100%' }}>
-      <Box display="flex" alignItems="center" gap={2} my={2}>
-        <TextField
-          label="Recherche par Référence ou Gencode"
-          variant="outlined"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          style={{ flexGrow: 1 }}
-          InputProps={{
-            endAdornment: searchTerm && (
-              <IconButton onClick={() => setSearchTerm('')} edge="end">
-                <CloseIcon />
-              </IconButton>
-            ),
-          }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleOpenModal}
-          disabled={selectedProducts.size < 2}
-          style={{ height: '56px' }} // Assurez-vous que cette hauteur correspond à celle de votre TextField
-        >
-          Modifier en Masse
-        </Button>
-      </Box>
-      <DataGrid
-        localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-        rows={filteredProducts}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 10,
+    <>
+      <div style={{ width: 'fit-content' }}>
+        <Box display="flex" alignItems="center" gap={2} my={2}>
+          <TextField
+            label="Recherche par Référence ou Gencode"
+            variant="outlined"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            // style={{ flexGrow: 1 }}
+            InputProps={{
+              endAdornment: searchTerm && (
+                <IconButton onClick={() => setSearchTerm('')} edge="end">
+                  <CloseIcon />
+                </IconButton>
+              ),
+            }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenModal}
+            disabled={selectedProducts.size < 2}
+            style={{ height: '56px' }} // Assurez-vous que cette hauteur correspond à celle de votre TextField
+          >
+            Modifier en Masse
+          </Button>
+        </Box>
+        <DataGrid
+          localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+          rows={filteredProducts}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 10,
+              },
             },
-          },
-        }}
-        pageSizeOptions={[10, 25, 50]}
-        pagination
-        checkboxSelection
-        onRowSelectionModelChange={handleSelection}
-        style={{ width: '100%' }}
-      />
+          }}
+          pageSizeOptions={[10, 25, 50]}
+          pagination
+          checkboxSelection
+          onRowSelectionModelChange={handleSelection}
+          style={{ width: '100%' }}
+        />
 
-      <Modal
-        open={openModal}
-        onClose={handleCloseModal}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <div style={{ backgroundColor: 'white', padding: '20px' }}>
-          <EditBulkProduct handleCloseModal={handleCloseModal} />
-        </div>
-      </Modal>
-    </div>
+        <Modal
+          open={openModal}
+          onClose={handleCloseModal}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div style={{ backgroundColor: 'white', padding: '20px' }}>
+            <EditBulkProduct handleCloseModal={handleCloseModal} />
+          </div>
+        </Modal>
+      </div>
+    </>
   )
 }
 

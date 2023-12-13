@@ -21,16 +21,16 @@ const ProductTable = ({ products }) => {
             sx={{ width: 100, height: 'auto' }}
           />
         ) : null,
-      width: 110,
+      flex: 1,
     },
-    { field: 'reference', headerName: 'Référence', width: 250 },
-    { field: 'marque', headerName: 'Marque', width: 130 },
-    { field: 'gencode', headerName: 'Gencode', width: 130 },
+    { field: 'reference', headerName: 'Référence', flex: 1 },
+    { field: 'marque', headerName: 'Marque', flex: 1 },
+    { field: 'gencode', headerName: 'Gencode', flex: 1 },
     {
       field: 'prixVente',
       headerName: 'Prix Vente',
       type: 'number',
-      width: 130,
+      flex: 1,
     },
   ]
 
@@ -54,6 +54,7 @@ const ProductTable = ({ products }) => {
       pagination
       onRowClick={handleRowClick}
       getRowId={(row) => row._id}
+      style={{ width: '100%' }}
     />
   )
 }

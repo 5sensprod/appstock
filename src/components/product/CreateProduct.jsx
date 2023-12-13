@@ -58,7 +58,7 @@ export const CreateProduct = () => {
     setValue('sousCategorie', subCategoryId)
   }
 
-  const handleEnterKey = (event) => {
+  const handleEnterKeyInGencode = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault() // Empêcher la soumission du formulaire
       // Vous pouvez ajouter ici une autre logique si nécessaire
@@ -117,6 +117,9 @@ export const CreateProduct = () => {
                     rows={isTextArea ? (name === 'description' ? 4 : 2) : 1}
                     error={!!error}
                     helperText={error ? error.message : null}
+                    onKeyDown={
+                      name === 'gencode' ? handleEnterKeyInGencode : null
+                    }
                   />
                 )}
               />
