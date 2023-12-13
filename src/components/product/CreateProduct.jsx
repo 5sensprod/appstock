@@ -9,6 +9,7 @@ import CustomSelect from '../ui/CustomSelect'
 import { TVA_RATES } from '../../utils/constants'
 import { handleEnterKeyInGencode } from '../../utils/handleUtilsjs'
 import { productFields } from '../../utils/formConfig'
+import useCategorySelection from '../hooks/useCategorySelection'
 
 export const CreateProduct = () => {
   const {
@@ -20,8 +21,6 @@ export const CreateProduct = () => {
     reset,
   } = useForm()
   const { categories, addProduct } = useProductContext()
-  const [selectedCategoryId, setSelectedCategoryId] = useState('')
-  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
   const [selectedTVA, setSelectedTVA] = useState(20)
 
   const navigate = useNavigate()
@@ -33,19 +32,12 @@ export const CreateProduct = () => {
     register('sousCategorie')
   }, [register])
 
-  const handleCategoryChange = (event) => {
-    const categoryId = event.target.value
-    setSelectedCategoryId(categoryId)
-    setValue('categorie', categoryId)
-    setSelectedSubCategoryId('')
-    setValue('sousCategorie', '')
-  }
-
-  const handleSubCategoryChange = (event) => {
-    const subCategoryId = event.target.value
-    setSelectedSubCategoryId(subCategoryId)
-    setValue('sousCategorie', subCategoryId)
-  }
+  const {
+    selectedCategoryId,
+    selectedSubCategoryId,
+    handleCategoryChange,
+    handleSubCategoryChange,
+  } = useCategorySelection(setValue)
 
   const handleTVAChange = (event) => {
     const newTVAValue = parseFloat(event.target.value)
