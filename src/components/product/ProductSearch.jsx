@@ -1,6 +1,7 @@
 import React from 'react'
-import { TextField } from '@mui/material'
+import { TextField, IconButton } from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext'
+import CloseIcon from '@mui/icons-material/Close'
 
 const ProductSearch = () => {
   const { searchTerm, setSearchTerm } = useProductContext()
@@ -12,14 +13,18 @@ const ProductSearch = () => {
   return (
     <div>
       <TextField
-        id="search-input"
         label="Rechercher un produit"
-        type="search"
         variant="outlined"
-        fullWidth
         value={searchTerm}
         onChange={handleSearchChange}
-        placeholder="Rechercher un produit"
+        fullWidth
+        InputProps={{
+          endAdornment: searchTerm && (
+            <IconButton onClick={() => setSearchTerm('')} edge="end">
+              <CloseIcon />
+            </IconButton>
+          ),
+        }}
       />
     </div>
   )

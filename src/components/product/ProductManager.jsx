@@ -13,13 +13,13 @@ import { Box, Button } from '@mui/material'
 
 const ProductManager = () => {
   const {
+    products,
     searchTerm,
+    setSearchTerm,
     selectedCategoryId,
+    setSelectedCategoryId,
     categories,
     setCategories,
-    setSelectedCategoryId,
-    setSearchTerm,
-    products,
   } = useProductContext()
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
@@ -78,7 +78,6 @@ const ProductManager = () => {
   return (
     <div>
       <Box />
-      <h1>Produits</h1>
       {isAndroidWebView && (
         <Button variant="contained" onClick={handleScanClick}>
           Scanner un code-barres

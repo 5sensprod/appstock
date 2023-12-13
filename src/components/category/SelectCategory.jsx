@@ -6,8 +6,8 @@ const SelectCategory = ({
   selectedCategoryId,
   onCategoryChange,
   parentFilter = null,
-  label = 'Catégorie', // Valeur par défaut pour le label
-  disabled = false, // Ajout d'une propriété disabled
+  label = 'Catégorie',
+  disabled = false,
 }) => {
   const filteredCategories = parentFilter
     ? categories.filter((cat) => cat.parentId === parentFilter)

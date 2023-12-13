@@ -1,17 +1,16 @@
 import React, { useState } from 'react'
-import { Modal, Button, TextField, Box } from '@mui/material'
-import { DataGrid, frFR, GridActionsCellItem } from '@mui/x-data-grid'
-import { capitalizeFirstLetter } from '../../utils/formatUtils'
-import { useProductContext } from '../../contexts/ProductContext'
-import { deleteProduct } from '../../api/productService'
-import DeleteIcon from '@mui/icons-material/Delete'
-import { format } from 'date-fns'
-import { useUI } from '../../contexts/UIContext'
-import EditIcon from '@mui/icons-material/Edit'
 import { useNavigate } from 'react-router-dom'
 import EditBulkProduct from '../product/EditBulkProduct'
-import IconButton from '@mui/material/IconButton'
-import CloseIcon from '@mui/icons-material/Close'
+import { format } from 'date-fns'
+import { capitalizeFirstLetter } from '../../utils/formatUtils'
+import { useProductContext } from '../../contexts/ProductContext'
+import { useUI } from '../../contexts/UIContext'
+import { deleteProduct } from '../../api/productService'
+import ProductSearch from '../product/ProductSearch'
+import { Modal, Button, Box } from '@mui/material'
+import { DataGrid, frFR, GridActionsCellItem } from '@mui/x-data-grid'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 
 const CatalogPage = () => {
   const {
@@ -20,9 +19,10 @@ const CatalogPage = () => {
     setProducts,
     setSelectedProducts,
     selectedProducts,
+    searchTerm,
+    setSearchTerm,
   } = useProductContext()
 
-  const [searchTerm, setSearchTerm] = useState('')
   const [openModal, setOpenModal] = useState(false)
   const { showConfirmDialog, showToast } = useUI()
   const navigate = useNavigate()
@@ -32,10 +32,6 @@ const CatalogPage = () => {
 
   const redirectToEdit = (productId) => {
     navigate(`/edit-product/${productId}`)
-  }
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value.toLowerCase())
   }
 
   // Création d'un mappage pour les noms de catégories
@@ -84,9 +80,7 @@ const CatalogPage = () => {
   }))
 
   const handleSelection = (selectionModel) => {
-    console.log('Modèle de sélection :', selectionModel)
     setSelectedProducts(new Set(selectionModel))
-    console.log('Modèle de sélection mis à jour:', selectionModel)
   }
 
   // Exclure certaines clés de l'objet produit
@@ -175,19 +169,7 @@ const CatalogPage = () => {
     <>
       <div style={{ width: 'fit-content' }}>
         <Box display="flex" alignItems="center" gap={2} my={2}>
-          <TextField
-            label="Recherche par Référence ou Gencode"
-            variant="outlined"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            InputProps={{
-              endAdornment: searchTerm && (
-                <IconButton onClick={() => setSearchTerm('')} edge="end">
-                  <CloseIcon />
-                </IconButton>
-              ),
-            }}
-          />
+          <ProductSearch />
           <Button
             variant="contained"
             color="primary"
@@ -215,7 +197,6 @@ const CatalogPage = () => {
           onRowSelectionModelChange={handleSelection}
           style={{ width: '100%' }}
         />
-
         <Modal
           open={openModal}
           onClose={handleCloseModal}
