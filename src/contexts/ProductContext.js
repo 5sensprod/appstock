@@ -69,34 +69,11 @@ export const ProductProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        const retrievedCategories = await getCategories()
-        setCategories(retrievedCategories)
-      } catch (error) {
-        console.error('Erreur lors de la récupération des catégories:', error)
-      }
+      const retrievedCategories = await getCategories()
+      setCategories(retrievedCategories)
     }
-
-    let eventSource
-    const setupSSE = () => {
-      eventSource = new EventSource(`${baseUrl}/api/events`)
-      eventSource.onmessage = (e) => {
-        const data = JSON.parse(e.data)
-        if (data.type === 'category-added') {
-          fetchCategories()
-        }
-      }
-    }
-
     fetchCategories()
-    const sseTimeout = setTimeout(setupSSE, 5000)
-    return () => {
-      if (eventSource) {
-        eventSource.close()
-      }
-      clearTimeout(sseTimeout)
-    }
-  }, [baseUrl])
+  }, [])
 
   const addProductToContext = async (productData) => {
     try {
