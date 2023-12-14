@@ -1,18 +1,15 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import EditBulkProduct from '../product/EditBulkProduct'
-import { format } from 'date-fns'
-import { capitalizeFirstLetter } from '../../utils/formatUtils'
 import { useProductContext } from '../../contexts/ProductContext'
 import { useUI } from '../../contexts/UIContext'
 import { deleteProduct } from '../../api/productService'
 import ProductSearch from '../product/ProductSearch'
-import { Modal, Button, Box } from '@mui/material'
-import { DataGrid, frFR, GridActionsCellItem } from '@mui/x-data-grid'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
+import { Modal, Box } from '@mui/material'
 import SelectCategory from '../category/SelectCategory'
 import useSearch from '../hooks/useSearch'
+import BulkEditButton from '../ui/BulkEditButton'
+import ProductCatalog from '../product/ProductCatalog'
 
 const CatalogPage = () => {
   const {
@@ -26,8 +23,10 @@ const CatalogPage = () => {
     handleCategoryChange,
   } = useProductContext()
 
-  const [openModal, setOpenModal] = useState(false)
   const { showConfirmDialog, showToast } = useUI()
+
+  const [openModal, setOpenModal] = useState(false)
+  const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
   const navigate = useNavigate()
 
   const handleOpenModal = () => setOpenModal(true)
@@ -36,21 +35,6 @@ const CatalogPage = () => {
   const redirectToEdit = (productId) => {
     navigate(`/edit-product/${productId}`)
   }
-
-  // Création d'un mappage pour les noms de catégories
-  const categoryMap = categories.reduce((acc, category) => {
-    acc[category._id] = category.name
-    return acc
-  }, {})
-
-  const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
-
-  const displayProducts = filteredProducts.map((product) => ({
-    ...product,
-    id: product._id,
-    categorie: categoryMap[product.categorie] || product.categorie,
-    sousCategorie: categoryMap[product.sousCategorie] || product.sousCategorie,
-  }))
 
   const promptDelete = (product) => {
     showConfirmDialog(
@@ -75,94 +59,9 @@ const CatalogPage = () => {
     }
   }
 
-  const columnNames = {
-    dateSoumission: 'Date',
-    reference: 'Référence',
-    prixVente: 'Prix Vente',
-    prixAchat: 'Prix Achat',
-    sousCategorie: 'Sous Catégorie',
-    marque: 'Marque',
-  }
-
   const handleSelection = (selectionModel) => {
     setSelectedProducts(new Set(selectionModel))
   }
-
-  // Exclure certaines clés de l'objet produit
-  const excludedKeys = [
-    'description',
-    'descriptionCourte',
-    'SKU',
-    'photos',
-    'videos',
-    'ficheTechnique',
-    'variable',
-    '_id',
-  ]
-
-  // Création dynamique des colonnes pour DataGrid
-  let columns = []
-  if (products.length > 0) {
-    columns = Object.keys(products[0])
-      .filter((key) => !excludedKeys.includes(key))
-      .map((key) => {
-        let width = 150 // Largeur par défaut
-
-        // Réduire la largeur pour les colonnes spécifiques
-        if (key === 'prixVente' || key === 'prixAchat' || key === 'stock') {
-          width = 90
-        }
-        if (key === 'stock') {
-          width = 60
-        }
-        if (key === 'sousCategorie') {
-          width = 120
-        }
-        if (key === 'reference') {
-          width = 250
-        }
-        if (key === 'tva') {
-          width = 50
-        }
-        if (key === 'dateSoumission') {
-          return {
-            field: key,
-            headerName: columnNames[key] || capitalizeFirstLetter(key),
-            width: 110, // ou une autre largeur appropriée pour les dates
-            valueFormatter: (params) => {
-              return params.value
-                ? format(new Date(params.value), 'dd/MM/yyyy')
-                : ''
-            },
-          }
-        }
-
-        return {
-          field: key,
-          headerName: columnNames[key] || capitalizeFirstLetter(key),
-          width,
-        }
-      })
-  }
-
-  columns.push({
-    field: 'actions',
-    type: 'actions',
-    headerName: 'Actions',
-    width: 150, // Vous pouvez ajuster la largeur selon vos besoins
-    getActions: (params) => [
-      <GridActionsCellItem
-        icon={<EditIcon />}
-        label="Modifier"
-        onClick={() => redirectToEdit(params.id)}
-      />,
-      <GridActionsCellItem
-        icon={<DeleteIcon />}
-        label="Supprimer"
-        onClick={() => promptDelete(products.find((p) => p._id === params.id))}
-      />,
-    ],
-  })
 
   return (
     <>
@@ -174,32 +73,17 @@ const CatalogPage = () => {
             selectedCategoryId={selectedCategoryId}
             onCategoryChange={handleCategoryChange}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleOpenModal}
-            disabled={selectedProducts.size < 2}
-            style={{ height: '56px' }}
-          >
-            Modifier en Masse
-          </Button>
+          <BulkEditButton
+            isDisabled={selectedProducts.size < 2}
+            handleOpenModal={handleOpenModal}
+          />
         </Box>
-        <DataGrid
-          localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-          rows={displayProducts}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
-            },
-          }}
-          pageSizeOptions={[10, 25, 50]}
-          pagination
-          checkboxSelection
-          onRowSelectionModelChange={handleSelection}
-          style={{ width: '100%' }}
+        <ProductCatalog
+          products={filteredProducts}
+          onSelectionChange={handleSelection}
+          redirectToEdit={redirectToEdit}
+          promptDelete={promptDelete}
+          categories={categories}
         />
         <Modal
           open={openModal}
