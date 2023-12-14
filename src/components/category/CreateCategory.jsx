@@ -1,27 +1,23 @@
 import React from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
+import { TextField, Button, FormControl } from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext'
+import SelectCategory from '../category/SelectCategory'
 
 function CreateCategory() {
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm()
-
-  const { addCategory } = useProductContext()
+  const { addCategory, categories } = useProductContext()
 
   const onSubmit = async (data) => {
-    // Définir parentId à null si vide
-    const categoryData = {
-      ...data,
-      parentId: data.parentId || null,
-    }
-
     try {
-      await addCategory(categoryData)
-      reset()
+      await addCategory(data)
+      reset() // Réinitialiser le formulaire après l'envoi
     } catch (error) {
       console.error("Erreur lors de l'ajout de la catégorie:", error)
     }
@@ -29,19 +25,32 @@ function CreateCategory() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label htmlFor="name">Nom de la catégorie:</label>
-        <input id="name" {...register('name', { required: true })} />
-        {errors.name && <span>Ce champ est requis</span>}
-      </div>
-      <div>
-        <label htmlFor="parentId">
-          ID de la catégorie parente (laissez vide pour une catégorie
-          principale):
-        </label>
-        <input id="parentId" {...register('parentId')} />
-      </div>
-      <button type="submit">Ajouter la catégorie</button>
+      <FormControl fullWidth margin="normal">
+        <TextField
+          {...register('name', { required: 'Nom de la catégorie requis' })}
+          label="Nom de la catégorie"
+          error={!!errors.name}
+          helperText={errors.name ? errors.name.message : null}
+        />
+      </FormControl>
+      <FormControl fullWidth margin="normal">
+        <Controller
+          name="parentId"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <SelectCategory
+              categories={categories}
+              selectedCategoryId={field.value}
+              onCategoryChange={(e) => field.onChange(e.target.value)}
+              label="Catégorie Parente"
+            />
+          )}
+        />
+      </FormControl>
+      <Button type="submit" variant="contained" color="primary">
+        Ajouter la catégorie
+      </Button>
     </form>
   )
 }
