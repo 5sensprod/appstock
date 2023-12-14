@@ -6,60 +6,42 @@ import { format } from 'date-fns'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
 import { createCategoryMap, formatProducts } from '../../utils/productUtils'
 
-const ProductCatalog = ({
-  products,
-  onSelectionChange,
-  redirectToEdit,
-  promptDelete,
-  categories,
-}) => {
-  const categoryMap = useMemo(() => createCategoryMap(categories), [categories])
-  const displayProducts = useMemo(
-    () => formatProducts(products, categoryMap),
-    [products, categoryMap],
-  )
-  const columnNames = {
-    dateSoumission: 'Date',
-    reference: 'Référence',
-    prixVente: 'Prix Vente',
-    prixAchat: 'Prix Achat',
-    sousCategorie: 'Sous Catégorie',
-    marque: 'Marque',
-  }
+const columnWidths = {
+  prixVente: 90,
+  prixAchat: 90,
+  stock: 60,
+  sousCategorie: 120,
+  reference: 250,
+  tva: 50,
+}
 
-  const excludedKeys = [
-    'description',
-    'descriptionCourte',
-    'SKU',
-    'photos',
-    'videos',
-    'ficheTechnique',
-    'variable',
-    '_id',
-  ]
+const columnNames = {
+  dateSoumission: 'Date',
+  reference: 'Référence',
+  prixVente: 'Prix Vente',
+  prixAchat: 'Prix Achat',
+  sousCategorie: 'Sous Catégorie',
+  marque: 'Marque',
+}
 
+const excludedKeys = [
+  'description',
+  'descriptionCourte',
+  'SKU',
+  'photos',
+  'videos',
+  'ficheTechnique',
+  'variable',
+  '_id',
+]
+
+const generateColumns = (products, redirectToEdit, promptDelete) => {
   let columns =
     products.length > 0
       ? Object.keys(products[0])
           .filter((key) => !excludedKeys.includes(key))
           .map((key) => {
-            let width = 150 // Largeur par défaut
-
-            if (['prixVente', 'prixAchat', 'stock'].includes(key)) {
-              width = 90
-            }
-            if (key === 'stock') {
-              width = 60
-            }
-            if (key === 'sousCategorie') {
-              width = 120
-            }
-            if (key === 'reference') {
-              width = 250
-            }
-            if (key === 'tva') {
-              width = 50
-            }
+            const width = columnWidths[key] || 150
             if (key === 'dateSoumission') {
               return {
                 field: key,
@@ -69,7 +51,6 @@ const ProductCatalog = ({
                   format(new Date(params.value), 'dd/MM/yyyy'),
               }
             }
-
             return {
               field: key,
               headerName: columnNames[key] || capitalizeFirstLetter(key),
@@ -96,6 +77,27 @@ const ProductCatalog = ({
       />,
     ],
   })
+
+  return columns
+}
+
+const ProductCatalog = ({
+  products,
+  onSelectionChange,
+  redirectToEdit,
+  promptDelete,
+  categories,
+}) => {
+  const categoryMap = useMemo(() => createCategoryMap(categories), [categories])
+  const displayProducts = useMemo(
+    () => formatProducts(products, categoryMap),
+    [products, categoryMap],
+  )
+
+  const columns = useMemo(
+    () => generateColumns(products, redirectToEdit, promptDelete),
+    [products, redirectToEdit, promptDelete],
+  )
 
   if (products.length === 0) {
     return (
