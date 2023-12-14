@@ -64,42 +64,40 @@ const CatalogPage = () => {
   }
 
   return (
-    <>
-      <div style={{ width: '100%' }}>
-        <Box display="flex" alignItems="center" gap={2} my={2}>
-          <ProductSearch />
-          <SelectCategory
-            categories={categories}
-            selectedCategoryId={selectedCategoryId}
-            onCategoryChange={handleCategoryChange}
-          />
-          <BulkEditButton
-            isDisabled={selectedProducts.size < 2}
-            handleOpenModal={handleOpenModal}
-          />
-        </Box>
-        <ProductCatalog
-          products={filteredProducts}
-          onSelectionChange={handleSelection}
-          redirectToEdit={redirectToEdit}
-          promptDelete={promptDelete}
+    <div style={{ width: 'fit-content' }}>
+      <Box display="flex" alignItems="center" gap={2} my={2}>
+        <ProductSearch />
+        <SelectCategory
           categories={categories}
+          selectedCategoryId={selectedCategoryId}
+          onCategoryChange={handleCategoryChange}
         />
-        <Modal
-          open={openModal}
-          onClose={handleCloseModal}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{ backgroundColor: 'white', padding: '20px' }}>
-            <EditBulkProduct handleCloseModal={handleCloseModal} />
-          </div>
-        </Modal>
-      </div>
-    </>
+        <BulkEditButton
+          isDisabled={selectedProducts.size < 2}
+          handleOpenModal={handleOpenModal}
+        />
+      </Box>
+      <ProductCatalog
+        products={filteredProducts}
+        onSelectionChange={handleSelection}
+        redirectToEdit={redirectToEdit}
+        promptDelete={promptDelete}
+        categories={categories}
+      />
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div style={{ backgroundColor: 'white', padding: '20px' }}>
+          <EditBulkProduct handleCloseModal={handleCloseModal} />
+        </div>
+      </Modal>
+    </div>
   )
 }
 
