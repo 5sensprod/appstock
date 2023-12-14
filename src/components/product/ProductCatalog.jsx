@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { DataGrid, frFR, GridActionsCellItem } from '@mui/x-data-grid'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { format } from 'date-fns'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
+import { createCategoryMap, formatProducts } from '../../utils/productUtils'
 
 const ProductCatalog = ({
   products,
@@ -12,18 +13,11 @@ const ProductCatalog = ({
   promptDelete,
   categories,
 }) => {
-  const categoryMap = categories.reduce((acc, category) => {
-    acc[category._id] = category.name
-    return acc
-  }, {})
-
-  const displayProducts = products.map((product) => ({
-    ...product,
-    id: product._id,
-    categorie: categoryMap[product.categorie] || product.categorie,
-    sousCategorie: categoryMap[product.sousCategorie] || product.sousCategorie,
-  }))
-
+  const categoryMap = useMemo(() => createCategoryMap(categories), [categories])
+  const displayProducts = useMemo(
+    () => formatProducts(products, categoryMap),
+    [products, categoryMap],
+  )
   const columnNames = {
     dateSoumission: 'Date',
     reference: 'Référence',
@@ -102,6 +96,14 @@ const ProductCatalog = ({
       />,
     ],
   })
+
+  if (products.length === 0) {
+    return (
+      <div style={{ textAlign: 'center', padding: '20px' }}>
+        Aucun produit trouvé pour cette catégorie.
+      </div>
+    )
+  }
 
   return (
     <DataGrid
