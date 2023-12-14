@@ -65,15 +65,15 @@ module.exports = (db, sendSseEvent) => {
   })
   router.put('/:id', (req, res) => {
     const id = req.params.id
-    const updatedProduct = req.body
+    const updatedProduct = { $set: req.body }
 
     products.update({ _id: id }, updatedProduct, {}, (err, numReplaced) => {
       if (err) {
         console.error('Erreur lors de la mise à jour du produit:', err)
         return res.status(500).send(err)
       }
-      sendSseEvent({ type: 'product-updated', product: updatedProduct })
-      res.status(200).json({ message: 'Produit mis à jour' })
+      sendSseEvent({ type: 'product-updated', product: req.body })
+      res.status(200).json({ message: 'Produit mis à jour', id: id })
     })
   })
 

@@ -67,7 +67,7 @@ const invoicesRoutes = require('./routes/invoicesRoutes')
 initializeDatabases().then((db) => {
   app.use('/api/users', usersRoutes(db))
   app.use('/api/products', productsRoutes(db, sendSseEvent))
-  app.use('/api/categories', categoriesRoutes(db))
+  app.use('/api/categories', categoriesRoutes(db, sendSseEvent))
   app.use('/api/invoices', invoicesRoutes(db))
 })
 

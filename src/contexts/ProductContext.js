@@ -6,8 +6,12 @@ import {
   updateProduct,
   updateProductsBulk,
 } from '../api/productService'
-import { getCategories } from '../api/categoryService'
-
+import {
+  getCategories,
+  addCategory,
+  updateCategory,
+  deleteCategory,
+} from '../api/categoryService'
 const ProductContext = createContext()
 
 export const useProductContext = () => useContext(ProductContext)
@@ -65,11 +69,34 @@ export const ProductProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const retrievedCategories = await getCategories()
-      setCategories(retrievedCategories)
+      try {
+        const retrievedCategories = await getCategories()
+        setCategories(retrievedCategories)
+      } catch (error) {
+        console.error('Erreur lors de la récupération des catégories:', error)
+      }
     }
+
+    let eventSource
+    const setupSSE = () => {
+      eventSource = new EventSource(`${baseUrl}/api/events`)
+      eventSource.onmessage = (e) => {
+        const data = JSON.parse(e.data)
+        if (data.type === 'category-added') {
+          fetchCategories()
+        }
+      }
+    }
+
     fetchCategories()
-  }, [])
+    const sseTimeout = setTimeout(setupSSE, 5000)
+    return () => {
+      if (eventSource) {
+        eventSource.close()
+      }
+      clearTimeout(sseTimeout)
+    }
+  }, [baseUrl])
 
   const addProductToContext = async (productData) => {
     try {
@@ -122,6 +149,43 @@ export const ProductProvider = ({ children }) => {
     setSelectedSubCategoryId(event.target.value)
   }
 
+  const addCategoryToContext = async (categoryData) => {
+    try {
+      const response = await addCategory(categoryData)
+      setCategories((prevCategories) => [...prevCategories, response])
+      return response
+    } catch (error) {
+      console.error("Erreur lors de l'ajout de la catégorie:", error)
+      throw error
+    }
+  }
+
+  const updateCategoryInContext = async (id, categoryData) => {
+    try {
+      const updatedCategory = await updateCategory(id, categoryData)
+      setCategories((prevCategories) =>
+        prevCategories.map((category) =>
+          category._id === id ? updatedCategory : category,
+        ),
+      )
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la catégorie', error)
+      throw error
+    }
+  }
+
+  const deleteCategoryFromContext = async (id) => {
+    try {
+      await deleteCategory(id)
+      setCategories((prevCategories) =>
+        prevCategories.filter((category) => category._id !== id),
+      )
+    } catch (error) {
+      console.error('Erreur lors de la suppression de la catégorie', error)
+      throw error
+    }
+  }
+
   const contextValue = {
     searchTerm,
     setSearchTerm,
@@ -141,6 +205,9 @@ export const ProductProvider = ({ children }) => {
     selectedSubCategoryId,
     setSelectedSubCategoryId,
     handleSubCategoryChange,
+    addCategory: addCategoryToContext,
+    updateCategoryInContext,
+    deleteCategoryFromContext,
   }
 
   return (

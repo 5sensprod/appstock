@@ -18,4 +18,22 @@ async function addCategory(categoryData) {
   }
 }
 
-export { getCategories, addCategory }
+async function updateCategory(id, categoryData) {
+  try {
+    return await fetchApi(`categories/${id}`, 'PUT', categoryData)
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la catégorie:', error)
+    throw error
+  }
+}
+
+async function deleteCategory(id) {
+  try {
+    return await fetchApi(`categories/${id}`, 'DELETE')
+  } catch (error) {
+    console.error('Erreur lors de la suppression de la catégorie:', error)
+    throw error
+  }
+}
+
+export { getCategories, addCategory, updateCategory, deleteCategory }
