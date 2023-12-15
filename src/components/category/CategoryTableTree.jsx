@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
-import 'ag-grid-community/dist/styles/ag-theme-alpine.css'
+import 'ag-grid-community/dist/styles/ag-theme-material.css'
 import { useProductContext } from '../../contexts/ProductContext'
 import { useUI } from '../../contexts/UIContext'
 import DeleteIcon from '@mui/icons-material/Delete'
 import useCategoryData from '../hooks/useCategoryData'
-import TextField from '@mui/material/TextField'
+import { TextField, Button } from '@mui/material'
 import frenchLocale from '../locales/frenchLocale'
 
 const CategoryTreeGrid = () => {
@@ -61,20 +61,21 @@ const CategoryTreeGrid = () => {
   const columns = [
     {
       headerName: 'Déplacement',
-      width: 40,
+      width: 50,
       rowDrag: true,
     },
     {
       headerName: 'Actions',
       field: 'actions',
-      width: 100,
+      width: 180,
+      minWidth: 100,
       cellRenderer: (params) => (
-        <button
+        <Button
           onClick={() => promptDeleteWithConfirmation(params.data)}
           style={{ border: 'none', background: 'none' }}
         >
           <DeleteIcon />
-        </button>
+        </Button>
       ),
     },
   ]
@@ -85,6 +86,7 @@ const CategoryTreeGrid = () => {
     editable: true,
     resizable: true,
     minWidth: 300,
+    maxWidth: 600,
     cellRendererParams: {
       suppressCount: true,
       innerRenderer: (params) => {
@@ -98,7 +100,10 @@ const CategoryTreeGrid = () => {
   }
 
   return (
-    <div className="ag-theme-alpine" style={{ height: 600, width: '100%' }}>
+    <div
+      className="ag-theme-material"
+      style={{ height: 650, width: '100%', maxWidth: 900 }}
+    >
       <TextField
         value={searchText}
         onChange={(e) => updateSearch(e.target.value)}
@@ -111,6 +116,8 @@ const CategoryTreeGrid = () => {
         localeText={frenchLocale}
         onGridReady={onGridReady}
         columnDefs={columns}
+        pagination={true} // Active la pagination
+        paginationPageSize={10}
         rowData={rowData}
         treeData={true}
         animateRows={true}

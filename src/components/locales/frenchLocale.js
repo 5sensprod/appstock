@@ -2,8 +2,8 @@ const frenchLocale = {
   // Votre objet de traduction
   page: 'Page',
   more: 'Plus',
-  to: 'A',
-  of: 'De',
+  to: 'à',
+  of: 'de',
   next: 'Suivant',
   last: 'Dernier',
   first: 'Premier',
