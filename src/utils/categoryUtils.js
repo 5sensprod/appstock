@@ -54,10 +54,27 @@ export const buildCategoryPath = (category, idToCategoryMap) => {
 }
 
 export const findAllChildCategories = (categoryId, categories) => {
-  const childCategories = categories.filter(
-    (cat) => cat.parentId === categoryId,
-  )
-  return childCategories.reduce((acc, cat) => {
-    return [...acc, cat, ...findAllChildCategories(cat._id, categories)]
-  }, [])
+  let result = []
+  let toProcess = [categoryId]
+
+  while (toProcess.length > 0) {
+    const currentId = toProcess.pop()
+
+    // Éviter de traiter les catégories déjà traitées
+    if (result.includes(currentId)) {
+      continue
+    }
+
+    // Trouver les enfants directs de la catégorie actuelle
+    const children = categories.filter((cat) => cat.parentId === currentId)
+
+    // Ajouter les enfants à la liste des résultats et à la liste des catégories à traiter
+    result.push(...children.map((cat) => cat._id))
+    toProcess.push(...children.map((cat) => cat._id))
+  }
+
+  // Retirer le categoryId initial pour ne retourner que les enfants
+  return result
+    .filter((id) => id !== categoryId)
+    .map((id) => categories.find((cat) => cat._id === id))
 }

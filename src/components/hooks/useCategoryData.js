@@ -18,10 +18,14 @@ const useCategoryData = (
       return acc
     }, {})
 
-    const processedData = categories.map((category) => ({
-      ...category,
-      path: buildCategoryPath(category, idToCategoryMap),
-    }))
+    const processedData = categories.map((category) => {
+      const childCategories = findAllChildCategories(category._id, categories)
+      return {
+        ...category,
+        path: buildCategoryPath(category, idToCategoryMap),
+        numberOfChildren: childCategories.length,
+      }
+    })
 
     setRowData(processedData)
   }, [categories])

@@ -43,6 +43,23 @@ const CategoryTreeGrid = () => {
     },
   ]
 
+  const autoGroupColumnDef = {
+    headerName: 'Catégories',
+    field: 'name',
+    editable: true,
+    resizable: true,
+    cellRendererParams: {
+      suppressCount: true,
+      innerRenderer: (params) => {
+        // Vérifie si l'élément a des enfants
+        if (params.data.numberOfChildren > 0) {
+          return `${params.value} (${params.data.numberOfChildren})`
+        }
+        return params.value
+      },
+    },
+  }
+
   return (
     <div className="ag-theme-alpine" style={{ height: 600, width: '100%' }}>
       <AgGridReact
@@ -52,15 +69,7 @@ const CategoryTreeGrid = () => {
         animateRows={true}
         groupDefaultExpanded={-1}
         getDataPath={(data) => data.path}
-        autoGroupColumnDef={{
-          headerName: 'Catégories',
-          field: 'name',
-          editable: true,
-          resizable: true,
-          cellRendererParams: {
-            suppressCount: true,
-          },
-        }}
+        autoGroupColumnDef={autoGroupColumnDef}
         onCellValueChanged={onCellValueChanged}
       />
     </div>
