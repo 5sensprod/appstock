@@ -1,11 +1,19 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { TextField, Button, FormControl, Popover } from '@mui/material'
+import {
+  Box,
+  TextField,
+  Button,
+  FormControl,
+  IconButton,
+  Popover,
+  Fab,
+} from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext'
 import CategoryTreeSelect from './CategoryTreeSelect'
 import { transformCategoriesToTree } from '../../utils/transformCategoriesToTree'
 import CloseIcon from '@mui/icons-material/Close'
-import IconButton from '@mui/material/IconButton'
+import AddIcon from '@mui/icons-material/Add'
 
 function CreateCategory() {
   const {
@@ -17,7 +25,13 @@ function CreateCategory() {
   const { addCategory, categories } = useProductContext()
   const [selectedParentId, setSelectedParentId] = useState('')
   const [anchorEl, setAnchorEl] = useState(null)
-  const [selectedParentName, setSelectedParentName] = useState('') // Nom de la catégorie parente sélectionnée
+  const [selectedParentName, setSelectedParentName] = useState('')
+  const [categoryName, setCategoryName] = useState('') // État pour le nom de la catégorie
+
+  // Gestionnaire pour la mise à jour du nom de la catégorie
+  const handleCategoryNameChange = (event) => {
+    setCategoryName(event.target.value)
+  }
 
   // Fonction pour effacer la sélection de la catégorie
   const clearCategorySelection = (event) => {
@@ -35,11 +49,10 @@ function CreateCategory() {
         parentId: selectedParentId,
       }
       await addCategory(categoryData)
-      reset() // Réinitialiser les autres champs du formulaire
-
-      // Réinitialiser la sélection de la catégorie parente
+      reset()
       setSelectedParentId('')
       setSelectedParentName('')
+      setCategoryName('')
     } catch (error) {
       console.error("Erreur lors de l'ajout de la catégorie:", error)
     }
@@ -47,7 +60,7 @@ function CreateCategory() {
 
   const handleCategorySelect = (categoryId, categoryName) => {
     setSelectedParentId(categoryId)
-    setSelectedParentName(categoryName || '') // S'assurer que cela ne devient pas undefined ou null
+    setSelectedParentName(categoryName || '')
     setAnchorEl(null)
   }
   const handleParentTextFieldClick = (event) => {
@@ -70,6 +83,9 @@ function CreateCategory() {
           label="Nom de la catégorie"
           error={!!errors.name}
           helperText={errors.name ? 'Ce champ est requis' : null}
+          size="small"
+          value={categoryName}
+          onChange={handleCategoryNameChange}
         />
       </FormControl>
       <FormControl fullWidth margin="normal">
@@ -77,6 +93,7 @@ function CreateCategory() {
           label="Catégorie Parente"
           value={selectedParentName}
           onClick={handleParentTextFieldClick}
+          size="small"
           InputProps={{
             readOnly: true,
             endAdornment: selectedParentName ? (
@@ -106,9 +123,16 @@ function CreateCategory() {
           onCategorySelect={(id, name) => handleCategorySelect(id, name)}
         />
       </Popover>
-      <Button type="submit" variant="contained" color="primary">
-        Ajouter la catégorie
-      </Button>
+      <Box display="flex" justifyContent="center" marginY={2}>
+        <Fab
+          color="primary"
+          size="small"
+          type="submit"
+          disabled={!categoryName}
+        >
+          <AddIcon />
+        </Fab>
+      </Box>
     </form>
   )
 }

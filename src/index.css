@@ -3,5 +3,9 @@ body {
     Arial, sans-serif;
   margin: 0;
   background-color: rgb(252, 252, 254);
+  height: 100%;
+}
 
+.ag-center-cols-viewport {
+  min-height: unset !important;
 }

@@ -55,32 +55,42 @@ export const ProductProvider = ({ children }) => {
     fetchProducts()
     fetchCategories()
 
-    const eventSource = new EventSource(`${baseUrl}/api/events`)
-    eventSource.onmessage = (e) => {
-      const data = JSON.parse(e.data)
+    // Temporisation avant d'établir la connexion SSE
+    const sseConnectionDelay = 5000 // Retarder de 5000 ms (5 secondes)
+    const sseTimeout = setTimeout(() => {
+      const eventSource = new EventSource(`${baseUrl}/api/events`)
 
-      // Gestion des événements pour les produits
-      if (
-        data.type === 'product-added' ||
-        data.type === 'product-updated' ||
-        data.type === 'products-bulk-updated' ||
-        data.type === 'product-deleted'
-      ) {
-        fetchProducts()
+      eventSource.onmessage = (e) => {
+        const data = JSON.parse(e.data)
+
+        // Gestion des événements pour les produits
+        if (
+          data.type === 'product-added' ||
+          data.type === 'product-updated' ||
+          data.type === 'products-bulk-updated' ||
+          data.type === 'product-deleted'
+        ) {
+          fetchProducts()
+        }
+
+        // Gestion des événements pour les catégories
+        if (
+          data.type === 'category-added' ||
+          data.type === 'category-updated' ||
+          data.type === 'category-deleted'
+        ) {
+          fetchCategories()
+        }
       }
 
-      // Gestion des événements pour les catégories
-      if (
-        data.type === 'category-added' ||
-        data.type === 'category-updated' ||
-        data.type === 'category-deleted'
-      ) {
-        fetchCategories()
+      return () => {
+        eventSource.close()
       }
-    }
+    }, sseConnectionDelay)
 
+    // Nettoyage de la temporisation
     return () => {
-      eventSource.close()
+      clearTimeout(sseTimeout)
     }
   }, [baseUrl])
 
