@@ -16,6 +16,7 @@ const CategoryTreeGrid = () => {
   const { showToast, showConfirmDialog } = useUI()
   const [searchText, setSearchText] = useState('')
   const gridApi = useRef(null)
+
   const { rowData, promptDeleteWithConfirmation } = useCategoryData(
     categories,
     deleteCategoryFromContext,
