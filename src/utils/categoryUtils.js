@@ -42,3 +42,22 @@ export const transformCategoriesToGridData = (categories) => {
 
   return tree.map((rootNode) => transformNode(rootNode))
 }
+
+export const buildCategoryPath = (category, idToCategoryMap) => {
+  let path = [category.name]
+  let current = category
+  while (current.parentId && idToCategoryMap[current.parentId]) {
+    current = idToCategoryMap[current.parentId]
+    path.unshift(current.name)
+  }
+  return path
+}
+
+export const findAllChildCategories = (categoryId, categories) => {
+  const childCategories = categories.filter(
+    (cat) => cat.parentId === categoryId,
+  )
+  return childCategories.reduce((acc, cat) => {
+    return [...acc, cat, ...findAllChildCategories(cat._id, categories)]
+  }, [])
+}

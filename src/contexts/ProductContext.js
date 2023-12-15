@@ -41,39 +41,48 @@ export const ProductProvider = ({ children }) => {
         console.error('Erreur lors de la récupération des produits:', error)
       }
     }
-    fetchProducts()
-    let eventSource
-    const setupSSE = () => {
-      eventSource = new EventSource(`${baseUrl}/api/events`)
-      eventSource.onmessage = (e) => {
-        const data = JSON.parse(e.data)
-        if (
-          data.type === 'product-added' ||
-          data.type === 'product-updated' ||
-          data.type === 'products-bulk-updated' ||
-          data.type === 'product-deleted'
-        ) {
-          fetchProducts()
-        }
+
+    const fetchCategories = async () => {
+      try {
+        const retrievedCategories = await getCategories()
+        setCategories(retrievedCategories)
+      } catch (error) {
+        console.error('Erreur lors de la récupération des catégories:', error)
       }
     }
 
-    const sseTimeout = setTimeout(setupSSE, 5000)
-    return () => {
-      if (eventSource) {
-        eventSource.close()
+    // Charge initialement les produits et les catégories
+    fetchProducts()
+    fetchCategories()
+
+    const eventSource = new EventSource(`${baseUrl}/api/events`)
+    eventSource.onmessage = (e) => {
+      const data = JSON.parse(e.data)
+
+      // Gestion des événements pour les produits
+      if (
+        data.type === 'product-added' ||
+        data.type === 'product-updated' ||
+        data.type === 'products-bulk-updated' ||
+        data.type === 'product-deleted'
+      ) {
+        fetchProducts()
       }
-      clearTimeout(sseTimeout)
+
+      // Gestion des événements pour les catégories
+      if (
+        data.type === 'category-added' ||
+        data.type === 'category-updated' ||
+        data.type === 'category-deleted'
+      ) {
+        fetchCategories()
+      }
+    }
+
+    return () => {
+      eventSource.close()
     }
   }, [baseUrl])
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const retrievedCategories = await getCategories()
-      setCategories(retrievedCategories)
-    }
-    fetchCategories()
-  }, [])
 
   const addProductToContext = async (productData) => {
     try {

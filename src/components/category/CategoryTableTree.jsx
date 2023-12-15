@@ -1,55 +1,50 @@
 import React, { useState, useEffect } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
-import 'ag-grid-community/dist/styles/ag-theme-material.css'
-import { getCategories, updateCategory } from '../../api/categoryService'
+import 'ag-grid-community/dist/styles/ag-theme-alpine.css'
+import { useProductContext } from '../../contexts/ProductContext'
+import { useUI } from '../../contexts/UIContext'
+import DeleteIcon from '@mui/icons-material/Delete'
+import useCategoryData from '../hooks/useCategoryData'
 
 const CategoryTreeGrid = () => {
-  const [rowData, setRowData] = useState([])
+  const { categories, updateCategoryInContext, deleteCategoryFromContext } =
+    useProductContext()
+  const { showToast, showConfirmDialog } = useUI()
+  const { rowData, promptDeleteWithConfirmation } = useCategoryData(
+    categories,
+    deleteCategoryFromContext,
+    showToast,
+    showConfirmDialog,
+  )
 
-  const columns = [
-    { field: 'name', sortable: true, filter: true, editable: true },
-    { field: '_id', sortable: true, filter: true, editable: true },
-  ]
-
-  useEffect(() => {
-    getCategories().then((data) => {
-      const idToCategoryMap = data.reduce((acc, category) => {
-        acc[category._id] = category
-        return acc
-      }, {})
-
-      const getPath = (category) => {
-        let path = [category.name]
-        let current = category
-        while (current.parentId && idToCategoryMap[current.parentId]) {
-          current = idToCategoryMap[current.parentId]
-          path.unshift(current.name)
-        }
-        return path
+  const onCellValueChanged = async ({ data, oldValue, newValue, colDef }) => {
+    if (colDef.field === 'name' && oldValue !== newValue) {
+      try {
+        await updateCategoryInContext(data._id, { name: newValue })
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour de la catégorie:', error)
       }
-
-      const processedData = data.map((category) => ({
-        ...category,
-        path: getPath(category),
-      }))
-
-      setRowData(processedData)
-    })
-  }, [])
-
-  const onCellValueChanged = async ({ data }) => {
-    try {
-      await updateCategory(data._id, { name: data.name })
-      // Optionnel : Mettez à jour l'état local si nécessaire
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour de la catégorie:', error)
-      // Gérer les erreurs, par exemple en rétablissant l'ancienne valeur si nécessaire
     }
   }
 
+  const columns = [
+    {
+      headerName: 'Actions',
+      field: 'actions',
+      cellRendererFramework: (params) => (
+        <button
+          onClick={() => promptDeleteWithConfirmation(params.data)}
+          style={{ border: 'none', background: 'none' }}
+        >
+          <DeleteIcon />
+        </button>
+      ),
+    },
+  ]
+
   return (
-    <div className="ag-theme-material" style={{ height: 600, width: '100%' }}>
+    <div className="ag-theme-alpine" style={{ height: 600, width: '100%' }}>
       <AgGridReact
         columnDefs={columns}
         rowData={rowData}
@@ -58,8 +53,10 @@ const CategoryTreeGrid = () => {
         groupDefaultExpanded={-1}
         getDataPath={(data) => data.path}
         autoGroupColumnDef={{
-          headerName: 'Category',
+          headerName: 'Catégories',
           field: 'name',
+          editable: true,
+          resizable: true,
           cellRendererParams: {
             suppressCount: true,
           },
