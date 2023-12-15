@@ -1,23 +1,27 @@
 export const transformCategoriesToTree = (categories) => {
-  // Créer une copie des catégories pour éviter de modifier les données d'origine
   let categoriesCopy = categories.map((category) => ({ ...category }))
 
-  // Créer un objet pour accéder rapidement aux catégories par leur ID
   let categoriesMap = categoriesCopy.reduce((acc, category) => {
     acc[category._id] = category
     category.children = []
     return acc
   }, {})
 
-  // Construire la structure d'arbre
   let tree = []
   categoriesCopy.forEach((category) => {
     if (category.parentId) {
-      categoriesMap[category.parentId].children.push(category)
+      if (categoriesMap[category.parentId]) {
+        categoriesMap[category.parentId].children.push(category)
+      } else {
+        console.log('Parent ID not found for:', category)
+      }
     } else {
       tree.push(category)
     }
   })
+
+  // Log pour vérifier la structure finale de l'arbre
+  console.log('Final tree structure:', tree)
 
   return tree
 }

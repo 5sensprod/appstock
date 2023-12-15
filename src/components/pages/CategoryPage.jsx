@@ -1,10 +1,10 @@
 import React from 'react'
-import CreateCategory from '../category/CreateCategory'
+import CategoryManager from '../category/CategoryManager'
 
 const CategoryPage = () => {
   return (
     <div>
-      <CreateCategory />
+      <CategoryManager />
     </div>
   )
 }
