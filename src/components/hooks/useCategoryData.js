@@ -32,39 +32,28 @@ const useCategoryData = (
 
   const promptDeleteWithConfirmation = useCallback(
     (category) => {
-      const childCategories = findAllChildCategories(category._id, categories)
-      const isParentCategory = childCategories.length > 0
-      const categoryNames = isParentCategory
-        ? [category.name, ...childCategories.map((cat) => cat.name)].join(', ')
-        : category.name
-
-      const confirmMessage = isParentCategory
-        ? `Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}" et ses sous-catégories? Les catégories suivantes seront supprimées : ${categoryNames}. Cette action est irréversible.`
-        : `Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}"? Cette action est irréversible.`
+      const confirmMessage = `Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}"? Cette action est irréversible.`
 
       showConfirmDialog('Confirmer la suppression', confirmMessage, () =>
-        handleRecursiveDelete(category._id, categoryNames),
+        handleDelete(category._id, category.name),
       )
     },
-    [categories, showConfirmDialog],
+    [showConfirmDialog],
   )
 
-  const handleRecursiveDelete = useCallback(
-    async (categoryId, categoryNames) => {
-      const childCategories = findAllChildCategories(categoryId, categories)
-      for (const cat of childCategories) {
-        await deleteCategoryAndUpdateProducts(cat._id) // Utilisez la nouvelle fonction ici
-      }
-      await deleteCategoryAndUpdateProducts(categoryId) // Et ici
+  const handleDelete = async (categoryId, categoryName) => {
+    try {
+      await deleteCategoryAndUpdateProducts(categoryId)
+      showToast(`Catégorie supprimée avec succès: ${categoryName}`, 'success')
+    } catch (error) {
+      console.error('Erreur lors de la suppression de la catégorie', error)
       showToast(
-        `Catégories supprimées avec succès: ${categoryNames}`,
-        'success',
+        `Erreur lors de la suppression de la catégorie: ${categoryName}`,
+        'error',
       )
-    },
-    [categories, deleteCategoryAndUpdateProducts, showToast], // Mettez à jour les dépendances
-  )
-
-  return { rowData, promptDeleteWithConfirmation, handleRecursiveDelete }
+    }
+  }
+  return { rowData, promptDeleteWithConfirmation, handleDelete }
 }
 
 export default useCategoryData

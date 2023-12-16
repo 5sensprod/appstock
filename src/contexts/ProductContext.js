@@ -101,6 +101,40 @@ export const ProductProvider = ({ children }) => {
     }
   }, [baseUrl])
 
+  const deleteCategoryFromContext = async (id) => {
+    try {
+      await deleteCategory(id)
+      setCategories((prevCategories) =>
+        prevCategories.filter((category) => category._id !== id),
+      )
+    } catch (error) {
+      console.error('Erreur lors de la suppression de la catégorie', error)
+      throw error
+    }
+  }
+
+  const deleteCategoryAndUpdateProducts = async (categoryId) => {
+    try {
+      // Supprimer la catégorie (et ses sous-catégories côté serveur)
+      await deleteCategory(categoryId)
+      console.log(`Catégorie supprimée avec succès, ID : ${categoryId}`)
+
+      // Récupérer les listes mises à jour des produits et des catégories
+      const updatedProducts = await getProducts(baseUrl)
+      const retrievedCategories = await getCategories()
+
+      // Mettre à jour l'état des produits et des catégories
+      setProducts(updatedProducts)
+      setCategories(retrievedCategories)
+    } catch (error) {
+      console.error(
+        'Erreur lors de la suppression de la catégorie et de la mise à jour des produits',
+        error,
+      )
+      // Gérer l'erreur
+    }
+  }
+
   const addProductToContext = async (productData) => {
     try {
       // Formatage des données avant de les envoyer à l'API
@@ -177,18 +211,6 @@ export const ProductProvider = ({ children }) => {
     }
   }
 
-  const deleteCategoryFromContext = async (id) => {
-    try {
-      await deleteCategory(id)
-      setCategories((prevCategories) =>
-        prevCategories.filter((category) => category._id !== id),
-      )
-    } catch (error) {
-      console.error('Erreur lors de la suppression de la catégorie', error)
-      throw error
-    }
-  }
-
   const fetchProductCountByCategory = async () => {
     try {
       const data = await getProductCountByCategory()
@@ -198,35 +220,6 @@ export const ProductProvider = ({ children }) => {
         'Erreur lors de la récupération du comptage des produits par catégorie:',
         error,
       )
-    }
-  }
-
-  const deleteCategoryAndUpdateProducts = async (categoryId) => {
-    try {
-      // Supprimer la catégorie
-      await deleteCategory(categoryId)
-
-      // Identifier les produits affectés et préparer les mises à jour
-      const updates = products
-        .filter((product) => product.categoryId === categoryId)
-        .map((product) => ({ id: product._id, changes: { categoryId: null } }))
-
-      // Mettre à jour les produits en masse
-      if (updates.length > 0) {
-        await updateProductsBulk(updates)
-      }
-
-      // Récupérer la liste mise à jour des produits
-      const updatedProducts = await getProducts(baseUrl)
-
-      // Mettre à jour l'état des produits avec les nouvelles données
-      setProducts(updatedProducts)
-    } catch (error) {
-      console.error(
-        'Erreur lors de la suppression de la catégorie et de la mise à jour des produits',
-        error,
-      )
-      // Gérer l'erreur
     }
   }
 

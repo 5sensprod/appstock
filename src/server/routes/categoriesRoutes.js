@@ -38,17 +38,43 @@ module.exports = (db, sendSseEvent) => {
     })
   })
 
-  router.delete('/:id', (req, res) => {
+  const deleteCategoryAndChildren = async (categoryId) => {
+    // Récupérer toutes les sous-catégories
+    const childCategories = await new Promise((resolve, reject) => {
+      categories.find({ parentId: categoryId }, (err, docs) => {
+        if (err) reject(err)
+        else resolve(docs)
+      })
+    })
+
+    // Supprimer récursivement chaque sous-catégorie
+    for (const childCategory of childCategories) {
+      await deleteCategoryAndChildren(childCategory._id)
+    }
+
+    // Supprimer la catégorie parent
+    await new Promise((resolve, reject) => {
+      categories.remove({ _id: categoryId }, {}, (err, numRemoved) => {
+        if (err) reject(err)
+        else resolve(numRemoved)
+      })
+    })
+  }
+
+  // Route DELETE modifiée
+  router.delete('/:id', async (req, res) => {
     const id = req.params.id
 
-    categories.remove({ _id: id }, {}, (err, numRemoved) => {
-      if (err) {
-        console.error('Erreur lors de la suppression de la catégorie:', err)
-        return res.status(500).send(err)
-      }
-      sendSseEvent({ type: 'category-deleted', id: id })
-      res.status(200).json({ message: 'Catégorie supprimée', id: id })
-    })
+    try {
+      await deleteCategoryAndChildren(id)
+      sendSseEvent({ type: 'category-deleted', id: id }) // Envoyer un événement SSE après la suppression complète
+      res
+        .status(200)
+        .json({ message: 'Catégorie et sous-catégories supprimées', id: id })
+    } catch (err) {
+      console.error('Erreur lors de la suppression de la catégorie:', err)
+      res.status(500).send(err)
+    }
   })
 
   return router
