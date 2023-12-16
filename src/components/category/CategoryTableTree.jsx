@@ -42,7 +42,9 @@ const CategoryTreeGrid = () => {
     deleteCategoryFromContext,
     showToast,
     showConfirmDialog,
+    productCountByCategory, // Passez cela au hook useCategoryData
   )
+
   useEffect(() => {
     const fetchData = async () => {
       try {

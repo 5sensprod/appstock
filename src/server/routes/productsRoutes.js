@@ -21,10 +21,18 @@ module.exports = (db, sendSseEvent) => {
         })
       })
 
-      // Créer une Map pour les relations catégorie-parent
+      // Créer une Map pour les relations catégorie-parent et compter les sous-catégories
       const categoryMap = new Map()
       allCategories.forEach((cat) => {
-        categoryMap.set(cat._id, { ...cat, count: 0, productIds: [] })
+        const childCount = allCategories.filter(
+          (c) => c.parentId === cat._id,
+        ).length
+        categoryMap.set(cat._id, {
+          ...cat,
+          count: 0,
+          productIds: [],
+          childCount: childCount,
+        })
       })
 
       // Récupérer tous les produits
@@ -67,6 +75,7 @@ module.exports = (db, sendSseEvent) => {
         countByCategory[key] = {
           count: value.count,
           productIds: value.productIds,
+          childCount: value.childCount, // Inclure le nombre de sous-catégories
         }
       })
 
