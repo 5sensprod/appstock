@@ -37,6 +37,7 @@ module.exports = (db, sendSseEvent) => {
 
       // Compter les produits et stocker leurs _id par catégorie
       allProducts.forEach((prod) => {
+        // Comptage pour la catégorie principale
         if (categoryMap.has(prod.categorie)) {
           const category = categoryMap.get(prod.categorie)
           category.count++
@@ -50,6 +51,13 @@ module.exports = (db, sendSseEvent) => {
             parentCategory.productIds.push(prod._id)
             parentId = parentCategory.parentId
           }
+        }
+
+        // Comptage pour la sous-catégorie
+        if (prod.sousCategorie && categoryMap.has(prod.sousCategorie)) {
+          const subCategory = categoryMap.get(prod.sousCategorie)
+          subCategory.count++
+          subCategory.productIds.push(prod._id)
         }
       })
 
