@@ -2,13 +2,76 @@ const express = require('express')
 const router = express.Router()
 
 module.exports = (db, sendSseEvent) => {
-  const { products } = db
+  const { products, categories } = db
 
   router.get('/', (req, res) => {
     products.find({}, (err, docs) => {
       if (err) res.status(500).send(err)
       else res.status(200).json(docs)
     })
+  })
+
+  router.get('/countByCategory', async (req, res) => {
+    try {
+      // Récupérer toutes les catégories
+      const allCategories = await new Promise((resolve, reject) => {
+        categories.find({}, (err, docs) => {
+          if (err) reject(err)
+          else resolve(docs)
+        })
+      })
+
+      // Créer une Map pour les relations catégorie-parent
+      const categoryMap = new Map()
+      allCategories.forEach((cat) => {
+        categoryMap.set(cat._id, { ...cat, count: 0, productIds: [] })
+      })
+
+      // Récupérer tous les produits
+      const allProducts = await new Promise((resolve, reject) => {
+        products.find({}, (err, docs) => {
+          if (err) reject(err)
+          else resolve(docs)
+        })
+      })
+
+      // Compter les produits et stocker leurs _id par catégorie
+      allProducts.forEach((prod) => {
+        if (categoryMap.has(prod.categorie)) {
+          const category = categoryMap.get(prod.categorie)
+          category.count++
+          category.productIds.push(prod._id)
+
+          // Mettre à jour les catégories parentes
+          let parentId = category.parentId
+          while (parentId) {
+            const parentCategory = categoryMap.get(parentId)
+            parentCategory.count++
+            parentCategory.productIds.push(prod._id)
+            parentId = parentCategory.parentId
+          }
+        }
+      })
+
+      // Convertir la Map en un objet pour la réponse
+      const countByCategory = {}
+      categoryMap.forEach((value, key) => {
+        countByCategory[key] = {
+          count: value.count,
+          productIds: value.productIds,
+        }
+      })
+
+      // Envoyer un événement SSE avec les nouvelles données
+      sendSseEvent({
+        type: 'countByCategory-updated',
+        countByCategory: countByCategory,
+      })
+
+      res.status(200).json(countByCategory)
+    } catch (error) {
+      res.status(500).send(error)
+    }
   })
 
   router.get('/:id', (req, res) => {

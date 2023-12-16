@@ -55,10 +55,23 @@ async function deleteProduct(productId) {
   }
 }
 
+async function getProductCountByCategory() {
+  try {
+    return await fetchApi('products/countByCategory')
+  } catch (error) {
+    console.error(
+      'Erreur lors de la récupération du nombre de produits par catégorie:',
+      error,
+    )
+    return {}
+  }
+}
+
 export {
   getProducts,
   addProduct,
   updateProduct,
   updateProductsBulk,
   deleteProduct,
+  getProductCountByCategory,
 }

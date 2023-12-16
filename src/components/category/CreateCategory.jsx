@@ -46,7 +46,7 @@ function CreateCategory() {
     try {
       const categoryData = {
         ...data,
-        parentId: selectedParentId,
+        parentId: selectedParentId === '' ? null : selectedParentId,
       }
       await addCategory(categoryData)
       reset()

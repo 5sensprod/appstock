@@ -10,7 +10,7 @@ export const formatProducts = (products, categoryMap) => {
   return products.map((product) => ({
     ...product,
     id: product._id,
-    categorie: categoryMap[product.categorie] || product.categorie,
-    sousCategorie: categoryMap[product.sousCategorie] || product.sousCategorie,
+    categorie: categoryMap[product.categorie] || 'Non Catégorisé',
+    sousCategorie: categoryMap[product.sousCategorie] || '',
   }))
 }

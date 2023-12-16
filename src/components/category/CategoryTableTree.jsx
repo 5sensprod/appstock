@@ -8,10 +8,21 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import useCategoryData from '../hooks/useCategoryData'
 import { TextField, Button } from '@mui/material'
 import frenchLocale from '../locales/frenchLocale'
+// import { getProductCountByCategory } from '../../api/productService'
 
 const CategoryTreeGrid = () => {
-  const { categories, updateCategoryInContext, deleteCategoryFromContext } =
-    useProductContext()
+  const {
+    categories,
+    updateCategoryInContext,
+    deleteCategoryFromContext,
+    fetchProductCountByCategory,
+    productCountByCategory,
+    deleteCategoryAndUpdateProducts,
+  } = useProductContext()
+
+  const [productCount, setProductCount] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const { showToast, showConfirmDialog } = useUI()
   const [searchText, setSearchText] = useState('')
@@ -23,6 +34,19 @@ const CategoryTreeGrid = () => {
     showToast,
     showConfirmDialog,
   )
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await fetchProductCountByCategory()
+        setLoading(false)
+      } catch (err) {
+        setError(err)
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   const onGridReady = (params) => {
     gridApi.current = params.api
@@ -78,6 +102,14 @@ const CategoryTreeGrid = () => {
           <DeleteIcon />
         </Button>
       ),
+    },
+    {
+      headerName: 'Nombre de Produits',
+      field: '_id',
+      width: 150,
+      cellRenderer: (params) => {
+        return productCountByCategory[params.value]?.count || 'Aucun'
+      },
     },
   ]
 

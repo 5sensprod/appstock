@@ -6,7 +6,8 @@ import {
 
 const useCategoryData = (
   categories,
-  deleteCategoryFromContext,
+  // deleteCategoryFromContext,
+  deleteCategoryAndUpdateProducts,
   showToast,
   showConfirmDialog,
 ) => {
@@ -53,15 +54,15 @@ const useCategoryData = (
     async (categoryId, categoryNames) => {
       const childCategories = findAllChildCategories(categoryId, categories)
       for (const cat of childCategories) {
-        await deleteCategoryFromContext(cat._id)
+        await deleteCategoryAndUpdateProducts(cat._id) // Utilisez la nouvelle fonction ici
       }
-      await deleteCategoryFromContext(categoryId)
+      await deleteCategoryAndUpdateProducts(categoryId) // Et ici
       showToast(
         `Catégories supprimées avec succès: ${categoryNames}`,
         'success',
       )
     },
-    [categories, deleteCategoryFromContext, showToast],
+    [categories, deleteCategoryAndUpdateProducts, showToast], // Mettez à jour les dépendances
   )
 
   return { rowData, promptDeleteWithConfirmation, handleRecursiveDelete }

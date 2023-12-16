@@ -5,6 +5,7 @@ import {
   addProduct,
   updateProduct,
   updateProductsBulk,
+  getProductCountByCategory,
 } from '../api/productService'
 import {
   getCategories,
@@ -24,6 +25,7 @@ export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([])
   const [baseUrl, setBaseUrl] = useState('')
   const [selectedProducts, setSelectedProducts] = useState(new Set())
+  const [productCountByCategory, setProductCountByCategory] = useState({})
 
   useEffect(() => {
     getApiBaseUrl().then((url) => {
@@ -80,6 +82,11 @@ export const ProductProvider = ({ children }) => {
           data.type === 'category-deleted'
         ) {
           fetchCategories()
+        }
+
+        // Nouveau : Gestion de l'événement pour le comptage des produits par catégorie
+        if (data.type === 'countByCategory-updated') {
+          setProductCountByCategory(data.countByCategory)
         }
       }
 
@@ -182,7 +189,54 @@ export const ProductProvider = ({ children }) => {
     }
   }
 
+  const fetchProductCountByCategory = async () => {
+    try {
+      const data = await getProductCountByCategory()
+      setProductCountByCategory(data)
+    } catch (error) {
+      console.error(
+        'Erreur lors de la récupération du comptage des produits par catégorie:',
+        error,
+      )
+    }
+  }
+
+  const deleteCategoryAndUpdateProducts = async (categoryId) => {
+    try {
+      // Supprimer la catégorie
+      await deleteCategory(categoryId)
+
+      // Identifier les produits affectés et préparer les mises à jour
+      const updates = products
+        .filter((product) => product.categoryId === categoryId)
+        .map((product) => ({ id: product._id, changes: { categoryId: null } }))
+
+      // Mettre à jour les produits en masse
+      if (updates.length > 0) {
+        await updateProductsBulk(updates)
+      }
+
+      // Récupérer la liste mise à jour des produits
+      const updatedProducts = await getProducts(baseUrl)
+
+      // Mettre à jour l'état des produits avec les nouvelles données
+      setProducts(updatedProducts)
+    } catch (error) {
+      console.error(
+        'Erreur lors de la suppression de la catégorie et de la mise à jour des produits',
+        error,
+      )
+      // Gérer l'erreur
+    }
+  }
+
   const contextValue = {
+    addCategory: addCategoryToContext,
+    updateCategoryInContext,
+    deleteCategoryFromContext,
+    deleteCategoryAndUpdateProducts,
+    fetchProductCountByCategory,
+    productCountByCategory,
     searchTerm,
     setSearchTerm,
     selectedCategoryId,
@@ -201,9 +255,6 @@ export const ProductProvider = ({ children }) => {
     selectedSubCategoryId,
     setSelectedSubCategoryId,
     handleSubCategoryChange,
-    addCategory: addCategoryToContext,
-    updateCategoryInContext,
-    deleteCategoryFromContext,
   }
 
   return (
