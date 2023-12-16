@@ -8,9 +8,8 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import useCategoryData from '../hooks/useCategoryData'
 import { TextField, Button } from '@mui/material'
 import frenchLocale from '../locales/frenchLocale'
-import { ModuleRegistry } from '@ag-grid-community/core'
-import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model'
-ModuleRegistry.registerModules([ClientSideRowModelModule])
+import { useNavigate } from 'react-router-dom'
+
 const CategoryTreeGrid = () => {
   const {
     categories,
@@ -22,7 +21,7 @@ const CategoryTreeGrid = () => {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
+  const navigate = useNavigate()
   const { showToast, showConfirmDialog } = useUI()
   const [searchText, setSearchText] = useState('')
 
@@ -32,6 +31,7 @@ const CategoryTreeGrid = () => {
 
   const handleProductCountClick = (categoryId) => {
     const productIds = productCountByCategory[categoryId]?.productIds || []
+    navigate(`/product-details/${productIds.join(',')}`)
     setSelectedProductIds(productIds)
     console.log('Selected Product IDs:', productIds)
     setTimeout(() => gridApi.current?.sizeColumnsToFit(), 100)
