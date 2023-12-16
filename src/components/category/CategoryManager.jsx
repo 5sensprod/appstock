@@ -5,18 +5,20 @@ import CategoryTableTree from './CategoryTableTree'
 
 function CategoryManager() {
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} md={3}>
-        <Box>
-          <CreateCategory />
-        </Box>
+    <div>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={3}>
+          <Box>
+            <CreateCategory />
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={9}>
+          <Box mt={2}>
+            <CategoryTableTree />
+          </Box>
+        </Grid>
       </Grid>
-      <Grid item xs={12} md={9}>
-        <Box mt={2}>
-          <CategoryTableTree />
-        </Box>
-      </Grid>
-    </Grid>
+    </div>
   )
 }
 

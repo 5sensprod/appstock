@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
 import 'ag-grid-community/dist/styles/ag-theme-material.css'
@@ -8,9 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import useCategoryData from '../hooks/useCategoryData'
 import { TextField, Button } from '@mui/material'
 import frenchLocale from '../locales/frenchLocale'
-import { ModuleRegistry } from '@ag-grid-community/core'
-import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model'
-ModuleRegistry.registerModules([ClientSideRowModelModule])
+
 const CategoryTreeGrid = () => {
   const {
     categories,
@@ -34,7 +32,6 @@ const CategoryTreeGrid = () => {
     const productIds = productCountByCategory[categoryId]?.productIds || []
     setSelectedProductIds(productIds)
     console.log('Selected Product IDs:', productIds)
-    setTimeout(() => gridApi.current?.sizeColumnsToFit(), 100)
   }
 
   const { rowData, promptDeleteWithConfirmation } = useCategoryData(
@@ -57,14 +54,9 @@ const CategoryTreeGrid = () => {
     fetchData()
   }, [])
 
-  const onGridReady = useCallback((params) => {
+  const onGridReady = (params) => {
     gridApi.current = params.api
-    setTimeout(() => params.api.sizeColumnsToFit(), 100)
-
-    window.addEventListener('resize', () => {
-      setTimeout(() => params.api.sizeColumnsToFit(), 100)
-    })
-  }, [])
+  }
 
   const updateSearch = (searchValue) => {
     setSearchText(searchValue)
@@ -110,7 +102,7 @@ const CategoryTreeGrid = () => {
       cellRenderer: (params) => (
         <Button
           onClick={() => promptDeleteWithConfirmation(params.data)}
-          style={{ border: 'none', background: 'none' }}
+          variant="primary"
         >
           <DeleteIcon />
         </Button>
@@ -155,17 +147,9 @@ const CategoryTreeGrid = () => {
       },
     },
   }
-  const autoSizeStrategy = useMemo(() => {
-    return {
-      type: 'fitGridWidth',
-    }
-  }, [])
 
   return (
-    <div
-      className="ag-theme-material"
-      // style={{ height: 650, width: '100%', maxWidth: 900 }}
-    >
+    <div className="ag-theme-material" style={{ width: '100%' }}>
       <TextField
         value={searchText}
         onChange={(e) => updateSearch(e.target.value)}
@@ -189,7 +173,6 @@ const CategoryTreeGrid = () => {
         autoGroupColumnDef={autoGroupColumnDef}
         onCellValueChanged={onCellValueChanged}
         domLayout="autoHeight"
-        autoSizeStrategy={autoSizeStrategy}
       />
     </div>
   )
