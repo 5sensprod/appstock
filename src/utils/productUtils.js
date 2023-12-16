@@ -1,4 +1,4 @@
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 
 export const createCategoryMap = (categories) => {
   return categories.reduce((acc, category) => {
@@ -7,15 +7,16 @@ export const createCategoryMap = (categories) => {
   }, {})
 }
 
-// Fonction pour formater les produits
 export const formatProducts = (products, categoryMap) => {
   return products.map((product) => ({
     ...product,
     id: product._id,
     categorie: categoryMap[product.categorie] || 'Non Catégorisé',
+    categorieId: product.categorie,
     sousCategorie: categoryMap[product.sousCategorie] || '',
-    dateSoumission: product.dateSoumission
-      ? format(new Date(product.dateSoumission), 'dd/MM/yyyy')
+    sousCategorieId: product.sousCategorie,
+    dateSoumissionFormatted: product.dateSoumission
+      ? format(parseISO(product.dateSoumission), 'dd/MM/yyyy')
       : '',
     // ... autres champs ...
   }))

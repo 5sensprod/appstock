@@ -33,6 +33,8 @@ const useSearch = (products, searchTerm, selectedCategoryId) => {
         (matchesSearchTerm(product.reference, searchTerm) ||
           matchesSearchTerm(product.marque, searchTerm) ||
           matchesSearchTerm(product.gencode, searchTerm) ||
+          matchesSearchTerm(product.descriptionCourte, searchTerm) ||
+          matchesSearchTerm(product.description, searchTerm) ||
           matchesSKU(product, searchTerm)),
     )
   }, [products, searchTerm, selectedCategoryId])

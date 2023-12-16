@@ -105,20 +105,6 @@ const CategoryTreeGrid = () => {
     //   rowDrag: true,
     // },
     {
-      headerName: 'Actions',
-      field: 'actions',
-      width: 150,
-      minWidth: 100,
-      cellRenderer: (params) => (
-        <Button
-          onClick={() => promptDeleteWithConfirmation(params.data)}
-          style={{ border: 'none', background: 'none' }}
-        >
-          <DeleteIcon />
-        </Button>
-      ),
-    },
-    {
       headerName: 'Produits',
       field: '_id',
       width: 150,
@@ -136,6 +122,21 @@ const CategoryTreeGrid = () => {
           handleProductCountClick(params.value)
         }
       },
+    },
+    {
+      headerName: 'Actions',
+      field: 'actions',
+      width: 150,
+      minWidth: 100,
+      cellRenderer: (params) => (
+        <Button
+          onClick={() => promptDeleteWithConfirmation(params.data)}
+          style={{ color: 'lightgrey', background: 'none' }}
+          variant="primary"
+        >
+          <DeleteIcon />
+        </Button>
+      ),
     },
   ]
 

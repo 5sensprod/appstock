@@ -156,6 +156,14 @@ export const ProductProvider = ({ children }) => {
 
   const updateProductInContext = async (productId, productData) => {
     try {
+      // Vérifiez que les valeurs numériques sont des nombres valides
+      const numericFields = ['prixVente', 'prixAchat', 'stock', 'tva']
+      for (let field of numericFields) {
+        if (field in productData && isNaN(productData[field])) {
+          throw new Error(`La valeur pour ${field} doit être un nombre valide`)
+        }
+      }
+
       const updatedProduct = await updateProduct(productId, productData)
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
@@ -163,7 +171,7 @@ export const ProductProvider = ({ children }) => {
         ),
       )
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du produit', error)
+      console.error('Erreur lors de la mise à jour du produit:', error)
       throw error
     }
   }

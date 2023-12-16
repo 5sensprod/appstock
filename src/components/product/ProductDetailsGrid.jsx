@@ -1,65 +1,106 @@
-import React, { useMemo, useEffect, useRef, useCallback } from 'react'
+import React, { useMemo } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
 import 'ag-grid-community/dist/styles/ag-theme-material.css'
 import { useProductContext } from '../../contexts/ProductContext'
 import { filterAndFormatProducts } from '../../utils/productUtils'
+import useColumnAutoSize from '../hooks/useColumnAutoSize'
 import frenchLocale from '../locales/frenchLocale'
 
 const ProductDetailsGrid = ({ productIds }) => {
-  const { products, categories } = useProductContext()
-
+  const { products, categories, updateProductInContext } = useProductContext()
   const filteredProducts = filterAndFormatProducts(
     products,
     productIds,
     categories,
   )
 
-  const gridApi = useRef(null)
-
-  const autoSizeStrategy = useMemo(() => {
-    return {
+  const autoSizeStrategy = useMemo(
+    () => ({
       type: 'fitGridWidth',
-    }
-  }, [])
+    }),
+    [],
+  )
 
-  const onGridReady = useCallback((params) => {
-    gridApi.current = params.api
-    setTimeout(() => params.api.sizeColumnsToFit(), 100)
-
-    window.addEventListener('resize', () => {
-      setTimeout(() => params.api.sizeColumnsToFit(), 100)
-    })
-  }, [])
-
-  useEffect(() => {
-    if (gridApi.current) {
-      gridApi.current.sizeColumnsToFit()
-    }
-  }, [filteredProducts])
+  // Utilisez le hook useColumnAutoSize
+  const { onGridReady, onFirstDataRendered } =
+    useColumnAutoSize(autoSizeStrategy)
 
   const columnDefs = [
-    { field: 'reference', headerName: 'Référence', resizable: true },
-    { field: 'prixVente', headerName: 'Prix Vente', resizable: true },
-    // { field: 'descriptionCourte', headerName: 'Description Courte', resizable: true },
-    { field: 'prixAchat', headerName: "Prix d'Achat", resizable: true },
-    { field: 'stock', headerName: 'Stock', resizable: true },
+    {
+      field: 'reference',
+      headerName: 'Référence',
+      resizable: true,
+      editable: true,
+      sortable: true,
+    },
+    {
+      field: 'prixVente',
+      headerName: 'Prix Vente',
+      resizable: true,
+      editable: true,
+      sortable: true,
+    },
+    {
+      field: 'prixAchat',
+      headerName: "Prix d'Achat",
+      resizable: true,
+      editable: true,
+      sortable: true,
+    },
+    {
+      field: 'stock',
+      headerName: 'Stock',
+      resizable: true,
+      editable: true,
+      sortable: true,
+    },
+    // ... Ajoutez 'sortable: true' pour d'autres colonnes si nécessaire
     { field: 'tva', headerName: 'TVA', resizable: true },
-    { field: 'marque', headerName: 'Marque', resizable: true },
-    { field: 'categorie', headerName: 'Catégorie', resizable: true },
-    { field: 'sousCategorie', headerName: 'Sous-Catégorie', resizable: true },
-    { field: 'dateSoumission', headerName: 'Date Ajout', resizable: true },
-    // Ajoutez la propriété resizable à d'autres champs selon les détails de vos produits
+    { field: 'marque', headerName: 'Marque', resizable: true, sortable: true },
+    {
+      field: 'categorie',
+      headerName: 'Catégorie',
+      resizable: true,
+      sortable: true,
+    },
+    {
+      field: 'sousCategorie',
+      headerName: 'Sous-Catégorie',
+      resizable: true,
+      sortable: true,
+    },
+    {
+      field: 'dateSoumissionFormatted',
+      headerName: 'Date Ajout',
+      resizable: true,
+      sortable: true,
+    },
   ]
 
-  const onFirstDataRendered = (params) => {
-    if (autoSizeStrategy.type === 'fitGridWidth') {
-      const allColumnIds = params.columnApi
-        .getAllColumns()
-        .map((column) => column.colId)
-      params.columnApi.autoSizeColumns(allColumnIds)
+  const onCellValueChanged = (params) => {
+    const { data, colDef } = params
+    const field = colDef.field
+    let value = data[field]
+
+    if (
+      field === 'prixVente' ||
+      field === 'prixAchat' ||
+      field === 'stock' ||
+      field === 'tva'
+    ) {
+      value = parseFloat(value)
+      if (isNaN(value)) {
+        console.error('La valeur doit être un nombre')
+        return // Ne pas mettre à jour si la valeur n'est pas un nombre
+      }
     }
+
+    const updateData = { id: data.id, [field]: value }
+
+    updateProductInContext(data.id, updateData)
   }
+
   return (
     <div
       className="ag-theme-material"
@@ -71,8 +112,8 @@ const ProductDetailsGrid = ({ productIds }) => {
         columnDefs={columnDefs}
         onGridReady={onGridReady}
         onFirstDataRendered={onFirstDataRendered}
+        onCellValueChanged={onCellValueChanged}
         domLayout="autoHeight"
-        autoSizeStrategy={autoSizeStrategy}
       />
     </div>
   )

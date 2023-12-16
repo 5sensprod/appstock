@@ -25,6 +25,7 @@ const columnNames = {
 }
 
 const excludedKeys = [
+  'id',
   'description',
   'descriptionCourte',
   'SKU',
