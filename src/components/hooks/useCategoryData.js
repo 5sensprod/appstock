@@ -6,7 +6,6 @@ import {
 
 const useCategoryData = (
   categories,
-  // deleteCategoryFromContext,
   deleteCategoryAndUpdateProducts,
   showToast,
   showConfirmDialog,

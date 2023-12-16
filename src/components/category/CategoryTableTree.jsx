@@ -8,7 +8,6 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import useCategoryData from '../hooks/useCategoryData'
 import { TextField, Button } from '@mui/material'
 import frenchLocale from '../locales/frenchLocale'
-// import { getProductCountByCategory } from '../../api/productService'
 
 const CategoryTreeGrid = () => {
   const {
@@ -17,10 +16,8 @@ const CategoryTreeGrid = () => {
     deleteCategoryFromContext,
     fetchProductCountByCategory,
     productCountByCategory,
-    deleteCategoryAndUpdateProducts,
   } = useProductContext()
 
-  const [productCount, setProductCount] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
