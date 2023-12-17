@@ -13,6 +13,7 @@ import SellIcon from '@mui/icons-material/Sell'
 import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import DrawerHeader from './DrawerHeader'
 import CatalogCreateButton from './CatalogCreateButton'
+import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import BackButton from './BackButton'
 import SideDrawer from './SideDrawer'
 import TopAppBar from './TopAppBar'
@@ -35,18 +36,19 @@ export default function MiniDrawer({ children }) {
   const menuItems = [
     { text: 'Tableau de bord', icon: <DashboardIcon />, link: '/dashboard' },
     { text: 'Caisse', icon: <PointOfSaleIcon />, link: '/' },
-    { text: 'Catalogue', icon: <StorefrontIcon />, link: '/products' },
-    { text: 'Catégorie', icon: <BookmarkIcon />, link: '/category' },
+    { text: 'Produits', icon: <StorefrontIcon />, link: '/products' },
+    { text: 'Catégories', icon: <BookmarkIcon />, link: '/category' },
+    { text: 'Catalogue', icon: <AutoStoriesIcon />, link: '/catalog' },
   ]
 
   const clientMenuItems = [
-    { text: 'Client', icon: <PeopleIcon />, link: '/client' },
-    { text: 'Facture', icon: <ReceiptIcon />, link: '/invoice' },
+    { text: 'Clients', icon: <PeopleIcon />, link: '/client' },
+    { text: 'Factures', icon: <ReceiptIcon />, link: '/invoice' },
   ]
 
   const supplierMenuItems = [
-    { text: 'Commande', icon: <SellIcon />, link: '/order' },
-    { text: 'Fournisseur', icon: <LocalShippingIcon />, link: '/supplier' },
+    { text: 'Commandes', icon: <SellIcon />, link: '/order' },
+    { text: 'Fournisseurs', icon: <LocalShippingIcon />, link: '/supplier' },
   ]
 
   React.useEffect(() => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid'
+import { useUI } from '../../contexts/UIContext'
 
 import ProductGrid from '../product/ProductGrid'
 import CategoryTreeFilter from '../category/CategoryTreeFilter'
@@ -8,6 +9,7 @@ import { useProductContext } from '../../contexts/ProductContext'
 
 const ProductPage = () => {
   const { productIds, categoryId } = useParams()
+  const { updatePageTitle } = useUI()
 
   const [filteredProducts, setFilteredProducts] = useState([])
 
@@ -34,7 +36,15 @@ const ProductPage = () => {
       setSelectedCategoryId(null)
       setFilteredProducts(products)
     }
-  }, [productIds, categoryId, products])
+    if (categoryId) {
+      // Mettez à jour le titre de la page en fonction de la catégorie sélectionnée
+      const selectedCategory = categories.find((cat) => cat._id === categoryId)
+      updatePageTitle(selectedCategory ? selectedCategory.name : 'Produits')
+    } else {
+      // Titre par défaut pour la page des produits
+      updatePageTitle('Produits')
+    }
+  }, [productIds, categoryId, products, categories, updatePageTitle])
 
   const handleCategoryFilter = (selectedCategoryId) => {
     setSelectedCategoryId(selectedCategoryId)
@@ -50,7 +60,7 @@ const ProductPage = () => {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} md={4}>
+      <Grid item xs={12} md={3}>
         <CategoryTreeFilter
           categories={categories}
           onCategorySelect={handleCategoryFilter}
@@ -59,7 +69,7 @@ const ProductPage = () => {
           productCountByCategory={productCountByCategory}
         />
       </Grid>
-      <Grid item xs={12} md={8}>
+      <Grid item xs={12} md={9}>
         <ProductGrid products={filteredProducts} categories={categories} />
       </Grid>
     </Grid>

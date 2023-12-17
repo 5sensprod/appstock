@@ -27,8 +27,16 @@ const MenuList = ({ menuItems, open }) => {
                 minWidth: 0,
                 mr: open ? 3 : 'auto',
                 justifyContent: 'center',
-                color: location.pathname === item.link ? 'grey' : 'lightgrey',
-                opacity: location.pathname === item.link ? 1 : 0.99,
+                color:
+                  (location.pathname === '/' && item.link === '/') ||
+                  (location.pathname.startsWith(item.link) && item.link !== '/')
+                    ? 'grey'
+                    : 'lightgrey',
+                opacity:
+                  (location.pathname === '/' && item.link === '/') ||
+                  (location.pathname.startsWith(item.link) && item.link !== '/')
+                    ? 1
+                    : 0.99,
               }}
             >
               {item.icon}
