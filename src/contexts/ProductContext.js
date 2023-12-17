@@ -16,6 +16,19 @@ import {
 const ProductContext = createContext()
 
 export const useProductContext = () => useContext(ProductContext)
+const fetchProductCountByCategory = async () => {
+  try {
+    // Remplacez ceci par votre logique de récupération des données
+    const data = await getProductCountByCategory()
+    return data
+  } catch (error) {
+    console.error(
+      'Erreur lors de la récupération du comptage des produits par catégorie:',
+      error,
+    )
+    return {}
+  }
+}
 
 export const ProductProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -35,29 +48,25 @@ export const ProductProvider = ({ children }) => {
 
   // Gestion des produits et des SSE
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProductsAndCategories = async () => {
       try {
+        // Chargement des produits et des catégories
         const fetchedProducts = await getProducts(baseUrl)
-        setProducts(fetchedProducts)
-      } catch (error) {
-        console.error('Erreur lors de la récupération des produits:', error)
-      }
-    }
-
-    const fetchCategories = async () => {
-      try {
         const retrievedCategories = await getCategories()
+        const productCountData = await fetchProductCountByCategory()
+
+        // Mise à jour des états avec les données chargées
+        setProducts(fetchedProducts)
         setCategories(retrievedCategories)
+        setProductCountByCategory(productCountData)
       } catch (error) {
-        console.error('Erreur lors de la récupération des catégories:', error)
+        console.error('Erreur lors du chargement des données:', error)
       }
     }
 
-    // Charge initialement les produits et les catégories
-    fetchProducts()
-    fetchCategories()
+    fetchProductsAndCategories()
 
-    // Temporisation avant d'établir la connexion SSE
+    // Configuration de la connexion SSE
     const sseConnectionDelay = 5000 // Retarder de 5000 ms (5 secondes)
     const sseTimeout = setTimeout(() => {
       const eventSource = new EventSource(`${baseUrl}/api/events`)
@@ -65,26 +74,19 @@ export const ProductProvider = ({ children }) => {
       eventSource.onmessage = (e) => {
         const data = JSON.parse(e.data)
 
-        // Gestion des événements pour les produits
+        // Gestion des événements pour les produits et catégories
         if (
-          data.type === 'product-added' ||
-          data.type === 'product-updated' ||
-          data.type === 'products-bulk-updated' ||
-          data.type === 'product-deleted'
+          [
+            'product-added',
+            'product-updated',
+            'products-bulk-updated',
+            'product-deleted',
+          ].includes(data.type)
         ) {
-          fetchProducts()
+          fetchProductsAndCategories()
         }
 
-        // Gestion des événements pour les catégories
-        if (
-          data.type === 'category-added' ||
-          data.type === 'category-updated' ||
-          data.type === 'category-deleted'
-        ) {
-          fetchCategories()
-        }
-
-        // Nouveau : Gestion de l'événement pour le comptage des produits par catégorie
+        // Gestion de l'événement pour le comptage des produits par catégorie
         if (data.type === 'countByCategory-updated') {
           setProductCountByCategory(data.countByCategory)
         }
@@ -95,7 +97,7 @@ export const ProductProvider = ({ children }) => {
       }
     }, sseConnectionDelay)
 
-    // Nettoyage de la temporisation
+    // Nettoyage de la temporisation et de la connexion SSE
     return () => {
       clearTimeout(sseTimeout)
     }
@@ -216,18 +218,6 @@ export const ProductProvider = ({ children }) => {
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la catégorie', error)
       throw error
-    }
-  }
-
-  const fetchProductCountByCategory = async () => {
-    try {
-      const data = await getProductCountByCategory()
-      setProductCountByCategory(data)
-    } catch (error) {
-      console.error(
-        'Erreur lors de la récupération du comptage des produits par catégorie:',
-        error,
-      )
     }
   }
 

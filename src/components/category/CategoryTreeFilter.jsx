@@ -28,16 +28,11 @@ const CategoryTreeFilter = ({
   onCategorySelect,
   selectedCategoryId,
   getProductIdsByCategory,
+  productCountByCategory,
 }) => {
   const [expanded, setExpanded] = useState([])
   const [selected, setSelected] = useState('')
   const navigate = useNavigate()
-
-  const renderTree = (node) => (
-    <TreeItem key={node._id} nodeId={node._id} label={node.name}>
-      {node.children && node.children.map((child) => renderTree(child))}
-    </TreeItem>
-  )
 
   useEffect(() => {
     if (selectedCategoryId) {
@@ -53,6 +48,25 @@ const CategoryTreeFilter = ({
     navigate(url)
     onCategorySelect(nodeId)
   }
+
+  const renderTree = (node) => {
+    const productIds = getProductIdsByCategory(node._id)
+    const hasProducts = productIds && productIds.length > 0
+    const isDataLoaded = Object.keys(productCountByCategory).length > 0
+
+    return (
+      <TreeItem
+        key={node._id}
+        nodeId={node._id}
+        label={node.name}
+        style={{ opacity: hasProducts || !isDataLoaded ? 1 : 0.5 }}
+        disabled={!hasProducts && isDataLoaded}
+      >
+        {node.children && node.children.map((child) => renderTree(child))}
+      </TreeItem>
+    )
+  }
+
   return (
     <TreeView
       expanded={expanded}

@@ -10,9 +10,14 @@ const ProductPage = () => {
   const { productIds, categoryId } = useParams()
 
   const [filteredProducts, setFilteredProducts] = useState([])
+
   const [selectedCategoryId, setSelectedCategoryId] = useState(categoryId)
-  const navigate = useNavigate()
-  const { products, categories, productCountByCategory } = useProductContext()
+
+  const getProductIdsByCategory = (categoryId) => {
+    return productCountByCategory[categoryId]?.productIds || []
+  }
+  const { products, categories, productCountByCategory, isLoading } =
+    useProductContext()
 
   useEffect(() => {
     if (productIds) {
@@ -39,16 +44,19 @@ const ProductPage = () => {
     setFilteredProducts(filtered)
   }
 
+  if (isLoading) {
+    return <div>Chargement en cours...</div>
+  }
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} md={4}>
         <CategoryTreeFilter
           categories={categories}
           onCategorySelect={handleCategoryFilter}
-          getProductIdsByCategory={(categoryId) => {
-            return productCountByCategory[categoryId]?.productIds || []
-          }}
-          selectedCategoryId={categoryId}
+          selectedCategoryId={selectedCategoryId}
+          getProductIdsByCategory={getProductIdsByCategory}
+          productCountByCategory={productCountByCategory}
         />
       </Grid>
       <Grid item xs={12} md={8}>

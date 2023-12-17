@@ -35,7 +35,7 @@ export default function MiniDrawer({ children }) {
   const menuItems = [
     { text: 'Tableau de bord', icon: <DashboardIcon />, link: '/dashboard' },
     { text: 'Caisse', icon: <PointOfSaleIcon />, link: '/' },
-    { text: 'Catalogue', icon: <StorefrontIcon />, link: '/catalog' },
+    { text: 'Catalogue', icon: <StorefrontIcon />, link: '/products' },
     { text: 'Catégorie', icon: <BookmarkIcon />, link: '/category' },
   ]
 
