@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react'
 import Toast from '../components/ui/Toast'
 import ConfirmationDialog from '../components/ui/ConfirmationDialog'
+import ProductDetailsModal from '../components/ui/ProductDetailsModal'
 
 const UIContext = createContext()
 
@@ -42,6 +43,19 @@ export const UIProvider = ({ children }) => {
     setPageTitle(title)
   }
 
+  const [productDetails, setProductDetails] = useState({
+    open: false,
+    product: null,
+  })
+
+  const showProductDetails = (product) => {
+    setProductDetails({ open: true, product })
+  }
+
+  const closeProductDetails = () => {
+    setProductDetails({ ...productDetails, open: false })
+  }
+
   return (
     <UIContext.Provider
       value={{
@@ -51,6 +65,8 @@ export const UIProvider = ({ children }) => {
         closeConfirmDialog,
         pageTitle,
         updatePageTitle,
+        showProductDetails,
+        closeProductDetails,
       }}
     >
       {children}
@@ -69,6 +85,11 @@ export const UIProvider = ({ children }) => {
         }}
         title={confirmDialogInfo.title}
         content={confirmDialogInfo.content}
+      />
+      <ProductDetailsModal
+        open={productDetails.open}
+        onClose={closeProductDetails}
+        product={productDetails.product}
       />
     </UIContext.Provider>
   )

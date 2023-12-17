@@ -1,9 +1,11 @@
 import React from 'react'
 import { productFactory } from '../factory/productFactory'
 import { useProductContext } from '../../contexts/ProductContext'
+import { useUI } from '../../contexts/UIContext'
 
 const ProductGallery = ({ products }) => {
   const { baseUrl } = useProductContext()
+  const { showProductDetails } = useUI()
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
@@ -17,6 +19,7 @@ const ProductGallery = ({ products }) => {
             product.photos,
             product.categorie,
             baseUrl,
+            () => showProductDetails(product), // Ajout de cette ligne
           ).render()}
         </div>
       ))}

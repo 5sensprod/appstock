@@ -1,6 +1,14 @@
 import React from 'react'
-import { Card, CardContent, CardMedia, Typography, Box } from '@mui/material'
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Box,
+  IconButton,
+} from '@mui/material'
 import { getProductImageUrl } from '../../utils/imageUtils'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 
 function productFactory(
   _id,
@@ -10,6 +18,7 @@ function productFactory(
   photos,
   categorie,
   baseUrl,
+  handleOpenModal,
 ) {
   function createProductElement() {
     const imageUrl = getProductImageUrl(photos, baseUrl)
@@ -57,12 +66,16 @@ function productFactory(
             </Typography>
           </CardContent>
         </Box>
-        <Box p={2}>
-          <Typography
-            variant="body1"
-            color="text.primary"
-            style={{ textAlign: 'right' }}
-          >
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          p={2}
+        >
+          <IconButton onClick={() => handleOpenModal(_id)}>
+            <VisibilityIcon />
+          </IconButton>
+          <Typography variant="body1" color="text.primary">
             {`Prix: ${prixVente} €`}
           </Typography>
         </Box>
