@@ -1,17 +1,38 @@
 import React, { useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid'
-import { useProductContext } from '../../contexts/ProductContext'
-import ProductGrid from '../product/ProductGrid' // Remplacez ProductDetailsGrid par ProductGrid
+
+import ProductGrid from '../product/ProductGrid'
 import CategoryTreeFilter from '../category/CategoryTreeFilter'
+import { useProductContext } from '../../contexts/ProductContext'
 
 const ProductPage = () => {
-  const { products, categories } = useProductContext()
+  const { productIds, categoryId } = useParams()
+
   const [filteredProducts, setFilteredProducts] = useState([])
+  const [selectedCategoryId, setSelectedCategoryId] = useState(categoryId)
+  const navigate = useNavigate()
+  const { products, categories, productCountByCategory } = useProductContext()
 
   useEffect(() => {
-    setFilteredProducts(products)
-  }, [products])
+    if (productIds) {
+      const ids = productIds.split(',')
+      setFilteredProducts(
+        products.filter((product) => ids.includes(product._id)),
+      )
+    } else if (categoryId) {
+      setSelectedCategoryId(categoryId)
+      setFilteredProducts(
+        products.filter((product) => product.categorie === categoryId),
+      )
+    } else {
+      setSelectedCategoryId(null)
+      setFilteredProducts(products)
+    }
+  }, [productIds, categoryId, products])
+
   const handleCategoryFilter = (selectedCategoryId) => {
+    setSelectedCategoryId(selectedCategoryId)
     const filtered = selectedCategoryId
       ? products.filter((product) => product.categorie === selectedCategoryId)
       : products
@@ -20,18 +41,18 @@ const ProductPage = () => {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} md={3}>
-        {' '}
-        {/* Filtre de catégorie à gauche */}
+      <Grid item xs={12} md={4}>
         <CategoryTreeFilter
           categories={categories}
           onCategorySelect={handleCategoryFilter}
+          getProductIdsByCategory={(categoryId) => {
+            return productCountByCategory[categoryId]?.productIds || []
+          }}
+          selectedCategoryId={categoryId}
         />
       </Grid>
-      <Grid item xs={12} md={9}>
-        {' '}
-        {/* Grille des produits à droite */}
-        <ProductGrid products={filteredProducts} />
+      <Grid item xs={12} md={8}>
+        <ProductGrid products={filteredProducts} categories={categories} />
       </Grid>
     </Grid>
   )

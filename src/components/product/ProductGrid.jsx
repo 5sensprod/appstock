@@ -3,12 +3,17 @@ import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
 import 'ag-grid-community/dist/styles/ag-theme-material.css'
 import { useProductContext } from '../../contexts/ProductContext'
+import { filterAndFormatProducts } from '../../utils/productUtils' // Importez la fonction
 import useColumnAutoSize from '../hooks/useColumnAutoSize'
 import frenchLocale from '../locales/frenchLocale'
 
-const ProductGrid = ({ products }) => {
+const ProductGrid = ({ products, categories }) => {
   const { updateProductInContext } = useProductContext()
-
+  const formattedProducts = filterAndFormatProducts(
+    products,
+    products.map((p) => p._id),
+    categories,
+  )
   const autoSizeStrategy = useMemo(
     () => ({
       type: 'fitGridWidth',
@@ -100,7 +105,7 @@ const ProductGrid = ({ products }) => {
     >
       <AgGridReact
         localeText={frenchLocale}
-        rowData={products} // Utilisez directement les produits passés en prop
+        rowData={formattedProducts} // Utilisez les produits formatés
         columnDefs={columnDefs}
         onGridReady={onGridReady}
         onFirstDataRendered={onFirstDataRendered}
