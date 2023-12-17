@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Tabs, Tab, Modal, Box, Typography, CardMedia } from '@mui/material'
-
+import Carousel from 'react-material-ui-carousel'
 const style = {
   position: 'absolute',
   top: '50%',
@@ -13,7 +13,16 @@ const style = {
   p: 4,
 }
 
-const GenericModal = ({ open, onClose, title, content, imageUrl, videos }) => {
+const GenericModal = ({
+  open,
+  onClose,
+  title,
+  content,
+  imageUrl,
+  videos,
+  photos,
+  baseUrl,
+}) => {
   if (!open) return null
 
   const [tabValue, setTabValue] = useState(0)
@@ -55,7 +64,23 @@ const GenericModal = ({ open, onClose, title, content, imageUrl, videos }) => {
 
         {tabValue === 1 && (
           <Box sx={{ p: 3 }}>
-            {/* Ici, ajoutez la logique pour l'upload de photos */}
+            {photos && photos.length > 0 ? (
+              <Carousel>
+                {photos.map((photo, index) => {
+                  const photoUrl = `${baseUrl}/${photo}`
+                  return (
+                    <CardMedia
+                      key={index}
+                      component="img"
+                      image={photoUrl}
+                      alt={`Photo ${index + 1}`}
+                    />
+                  )
+                })}
+              </Carousel>
+            ) : (
+              <Typography>Aucune photo disponible</Typography>
+            )}
           </Box>
         )}
 
