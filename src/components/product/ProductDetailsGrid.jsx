@@ -58,24 +58,24 @@ const ProductDetailsGrid = ({ productIds }) => {
     // ... Ajoutez 'sortable: true' pour d'autres colonnes si nécessaire
     { field: 'tva', headerName: 'TVA', resizable: true },
     { field: 'marque', headerName: 'Marque', resizable: true, sortable: true },
-    {
-      field: 'categorie',
-      headerName: 'Catégorie',
-      resizable: true,
-      sortable: true,
-    },
-    {
-      field: 'sousCategorie',
-      headerName: 'Sous-Catégorie',
-      resizable: true,
-      sortable: true,
-    },
-    {
-      field: 'dateSoumissionFormatted',
-      headerName: 'Date Ajout',
-      resizable: true,
-      sortable: true,
-    },
+    // {
+    //   field: 'categorie',
+    //   headerName: 'Catégorie',
+    //   resizable: true,
+    //   sortable: true,
+    // },
+    // {
+    //   field: 'sousCategorie',
+    //   headerName: 'Sous-Catégorie',
+    //   resizable: true,
+    //   sortable: true,
+    // },
+    // {
+    //   field: 'dateSoumissionFormatted',
+    //   headerName: 'Date Ajout',
+    //   resizable: true,
+    //   sortable: true,
+    // },
   ]
 
   const onCellValueChanged = (params) => {
