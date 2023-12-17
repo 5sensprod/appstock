@@ -1,5 +1,5 @@
-import React from 'react'
-import { Modal, Box, Typography, CardMedia } from '@mui/material'
+import React, { useState } from 'react'
+import { Tabs, Tab, Modal, Box, Typography, CardMedia } from '@mui/material'
 
 const style = {
   position: 'absolute',
@@ -7,32 +7,67 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 600,
+  // height: 600,
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
 }
 
-const GenericModal = ({ open, onClose, title, content, imageUrl }) => {
+const GenericModal = ({ open, onClose, title, content, imageUrl, videos }) => {
   if (!open) return null
+
+  const [tabValue, setTabValue] = useState(0)
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue)
+  }
 
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={style}>
-        {imageUrl && (
-          <CardMedia
-            component="img"
-            height="140"
-            image={imageUrl}
-            alt={title}
-          />
-        )}
-        <Typography variant="h5" component="h2">
-          {title}
-        </Typography>
-        <Box sx={{ mt: 2 }}>
-          {content} {/* Directement inséré sans Typography supplémentaire */}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="modal tabs"
+          >
+            <Tab label="Description" />
+            <Tab label="Média" />
+            <Tab label="Vidéos" />
+          </Tabs>
         </Box>
-        {/* ... autres contenus génériques ... */}
+
+        {tabValue === 0 && (
+          <Box sx={{ p: 3 }}>
+            <Typography variant="body1" component="div">
+              {content}
+            </Typography>
+            {imageUrl && (
+              <CardMedia
+                component="img"
+                height="140"
+                image={imageUrl}
+                alt={title}
+              />
+            )}
+          </Box>
+        )}
+
+        {tabValue === 1 && (
+          <Box sx={{ p: 3 }}>
+            {/* Ici, ajoutez la logique pour l'upload de photos */}
+          </Box>
+        )}
+
+        {tabValue === 2 && (
+          <Box sx={{ p: 3 }}>
+            {/* Ici, affichez les vidéos YouTube à partir des liens */}
+            {videos.map((video, index) => (
+              // Utilisez un composant ou une iframe pour afficher chaque vidéo
+              <div key={index}> {/* Placeholder pour le contenu vidéo */} </div>
+            ))}
+          </Box>
+        )}
       </Box>
     </Modal>
   )
