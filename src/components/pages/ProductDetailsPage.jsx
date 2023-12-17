@@ -1,12 +1,13 @@
+// Dans ProductDetailsPage
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import ProductDetailsGrid from '../product/ProductDetailsGrid'
+import CategoryWithChildren from '../category/CategoryWithChildren'
 import { useUI } from '../../contexts/UIContext'
 
 const ProductDetailsPage = () => {
-  const { productIds } = useParams()
+  const { productIds, categoryId } = useParams()
   const { updatePageTitle } = useUI()
-  const idsArray = productIds.split(',')
 
   useEffect(() => {
     updatePageTitle('Les produits en détails')
@@ -14,7 +15,8 @@ const ProductDetailsPage = () => {
 
   return (
     <div>
-      <ProductDetailsGrid productIds={idsArray} />
+      <CategoryWithChildren categoryId={categoryId} />
+      <ProductDetailsGrid productIds={productIds.split(',')} />
     </div>
   )
 }

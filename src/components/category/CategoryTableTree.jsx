@@ -31,9 +31,10 @@ const CategoryTreeGrid = () => {
 
   const handleProductCountClick = (categoryId) => {
     const productIds = productCountByCategory[categoryId]?.productIds || []
-    navigate(`/product-details/${productIds.join(',')}`)
+    console.log('Clicked Category ID:', categoryId) // Pour le débogage
+    navigate(`/product-details/${productIds.join(',')}/${categoryId}`)
     setSelectedProductIds(productIds)
-    console.log('Selected Product IDs:', productIds)
+    console.log('Selected Product IDs:', productIds) // Pour le débogage
     setTimeout(() => gridApi.current?.sizeColumnsToFit(), 100)
   }
 
