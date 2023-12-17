@@ -1,7 +1,12 @@
 import React from 'react'
+import InvoiceGrid from '../invoice/InvoiceGrid'
 
 const InvoicePage = () => {
-  return <div>Facture</div>
+  return (
+    <div>
+      <InvoiceGrid />
+    </div>
+  )
 }
 
 export default InvoicePage
