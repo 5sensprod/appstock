@@ -9,6 +9,7 @@ import { UIProvider } from './contexts/UIContext'
 import POSPage from './components/pages/POSPage'
 import DashboardPage from './components/pages/DashboardPage'
 import CatalogPage from './components/pages/CatalogPage'
+import ProductDetailsPage from './components/pages/ProductDetailsPage'
 import CategoryPage from './components/pages/CategoryPage'
 import ClientPage from './components/pages/ClientPage'
 import InvoicePage from './components/pages/InvoicePage'
@@ -16,6 +17,12 @@ import MainLayout from './components/layout/MainLayout'
 import CreateProductPage from './components/pages/CreateProductPage'
 import EditProductPage from './components/pages/EditProductPage'
 import MobilPage from './components/pages/MobilPage'
+import ProductPage from './components/pages/ProductPage'
+import { LicenseManager } from 'ag-grid-enterprise'
+
+const licenseKey =
+  'CompanyName=Equinix Asia Pacific pte ltd,LicensedGroup=equinixMendixPrivateLib,LicenseType=MultipleApplications,LicensedConcurrentDeveloperCount=2,LicensedProductionInstancesCount=0,AssetReference=AG-027567,SupportServicesEnd=18_June_2023_[v2]_MTY4NzA0MjgwMDAwMA==4be2c388f9a8a7443c72842dff53d5b2'
+LicenseManager.setLicenseKey(licenseKey)
 
 const App = () => {
   const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
@@ -40,6 +47,18 @@ const App = () => {
                       <Route path="/" element={<POSPage />} />
                       <Route path="/dashboard" element={<DashboardPage />} />
                       <Route path="/catalog" element={<CatalogPage />} />
+                      <Route
+                        path="/products/:productIds?/:categoryId?"
+                        element={<ProductPage />}
+                      />
+                      <Route
+                        path="/product-details/:productIds/:categoryId"
+                        element={<ProductDetailsPage />}
+                      />
+                      <Route
+                        path="/product-details"
+                        element={<ProductDetailsPage />}
+                      />
                       <Route path="/category" element={<CategoryPage />} />
                       <Route path="/client" element={<ClientPage />} />
                       <Route path="/invoice" element={<InvoicePage />} />
