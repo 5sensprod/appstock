@@ -5,11 +5,12 @@ import { useProductContext } from '../../contexts/ProductContext'
 import { useUI } from '../../contexts/UIContext'
 import { deleteProduct } from '../../api/productService'
 import ProductSearch from '../product/ProductSearch'
-import { Modal, Box } from '@mui/material'
 import SelectCategory from '../category/SelectCategory'
 import useSearch from '../hooks/useSearch'
 import BulkEditButton from '../ui/BulkEditButton'
 import ProductCatalog from '../product/ProductCatalog'
+import ProductGallery from '../product/ProductGallery' // Assurez-vous d'importer ce composant
+import { Modal, Box, Button } from '@mui/material'
 
 const CatalogPage = () => {
   const {
@@ -24,7 +25,7 @@ const CatalogPage = () => {
   } = useProductContext()
 
   const { showConfirmDialog, showToast } = useUI()
-
+  const [viewMode, setViewMode] = useState('table')
   const [openModal, setOpenModal] = useState(false)
   const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
   const navigate = useNavigate()
@@ -67,6 +68,13 @@ const CatalogPage = () => {
     <div style={{ width: 'fit-content' }}>
       <Box display="flex" alignItems="center" gap={2} my={2}>
         <ProductSearch />
+        <Button
+          onClick={() =>
+            setViewMode(viewMode === 'table' ? 'gallery' : 'table')
+          }
+        >
+          {viewMode === 'table' ? 'Voir en Galerie' : 'Voir en Tableau'}
+        </Button>
         <SelectCategory
           categories={categories}
           selectedCategoryId={selectedCategoryId}
@@ -77,13 +85,17 @@ const CatalogPage = () => {
           handleOpenModal={handleOpenModal}
         />
       </Box>
-      <ProductCatalog
-        products={filteredProducts}
-        onSelectionChange={handleSelection}
-        redirectToEdit={redirectToEdit}
-        promptDelete={promptDelete}
-        categories={categories}
-      />
+      {viewMode === 'table' ? (
+        <ProductCatalog
+          products={filteredProducts}
+          onSelectionChange={handleSelection}
+          redirectToEdit={redirectToEdit}
+          promptDelete={promptDelete}
+          categories={categories}
+        />
+      ) : (
+        <ProductGallery products={filteredProducts} />
+      )}
       <Modal
         open={openModal}
         onClose={handleCloseModal}
