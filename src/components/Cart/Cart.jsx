@@ -11,6 +11,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  TextField,
 } from '@mui/material'
 import useHandlePayClick from '../../hooks/useHandlePayClick'
 import InvoiceModal from '../invoice/InvoiceModal'
@@ -27,9 +28,12 @@ const Cart = () => {
     holdInvoice,
     taxRate,
     setInvoiceData,
+    adjustmentAmount,
+    cartTotals,
   } = useContext(CartContext)
 
   const [paymentType, setPaymentType] = useState('CB')
+  const [amountPaid, setAmountPaid] = useState('')
 
   const handlePayment = useHandlePayClick(paymentType, setInvoiceData)
 
@@ -37,6 +41,19 @@ const Cart = () => {
     (invoice) => JSON.stringify(invoice.items) === JSON.stringify(cartItems),
   )
 
+  const handlePaymentTypeChange = (event) => {
+    setPaymentType(event.target.value)
+  }
+
+  const calculateChange = () => {
+    // Utiliser le total modifié si un ajustement a été appliqué, sinon utiliser le total original
+    const total =
+      adjustmentAmount !== 0
+        ? cartTotals.modifiedTotal
+        : cartTotals.originalTotal
+    const paid = parseFloat(amountPaid)
+    return paid > total ? paid - total : 0
+  }
   return (
     <>
       <Grid container spacing={2}>
@@ -55,6 +72,10 @@ const Cart = () => {
                   />
                 </Box>
               ))}
+
+              <Box my={2}>
+                <CartTotal />
+              </Box>
               <Grid item xs={12} md={12}>
                 <Box mb={2}>
                   <FormControl fullWidth>
@@ -63,29 +84,45 @@ const Cart = () => {
                     </InputLabel>
                     <Select
                       labelId="payment-type-label"
-                      id="payment-type-select"
                       value={paymentType}
+                      onChange={handlePaymentTypeChange}
                       label="Type de paiement"
-                      size="small"
-                      onChange={(event) => setPaymentType(event.target.value)}
                     >
                       <MenuItem value="CB">Carte Bancaire</MenuItem>
                       <MenuItem value="Cash">Espèces</MenuItem>
                       <MenuItem value="Cheque">Chèque</MenuItem>
                       <MenuItem value="ChequeCadeau">Chèque Cadeau</MenuItem>
                     </Select>
+
+                    {paymentType === 'Cash' && (
+                      <Box my={2}>
+                        <TextField
+                          label="Montant Payé"
+                          value={amountPaid}
+                          onChange={(e) => setAmountPaid(e.target.value)}
+                          type="number"
+                        />
+                      </Box>
+                    )}
+
+                    {paymentType === 'Cash' && (
+                      <Box my={2}>
+                        <Typography variant="h6">
+                          {' '}
+                          {/* Vous pouvez utiliser une chaîne de caractères pour des valeurs CSS spécifiques */}
+                          Monnaie à rendre : {calculateChange().toFixed(2)} €
+                        </Typography>
+                      </Box>
+                    )}
                   </FormControl>
                 </Box>
               </Grid>
-              <Box mb={2}>
-                <CartTotal />
-              </Box>
               <Box
                 sx={{
                   display: 'flex',
-                  justifyContent: 'flex-end',
-                  marginTop: '8px',
+                  justifyContent: 'flex-start',
                 }}
+                my={4}
               >
                 {!isCurrentCartOnHold && cartItems.length > 0 && (
                   <Button
@@ -108,9 +145,10 @@ const Cart = () => {
           ) : (
             <Typography variant="h6">Votre panier est vide.</Typography>
           )}
+          <Box my={3}>
+            <OnHoldInvoices />
+          </Box>
         </Grid>
-
-        <OnHoldInvoices />
       </Grid>{' '}
       {cartItems.length > 0 && (
         <Grid item xs={12} md={12}>

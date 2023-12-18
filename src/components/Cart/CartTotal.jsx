@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { Typography, TextField, IconButton } from '@mui/material'
+import { Typography, TextField, IconButton, Box } from '@mui/material'
 import ReplayIcon from '@mui/icons-material/Replay'
 import EditIcon from '@mui/icons-material/Edit'
 import { CartContext } from '../../contexts/CartContext'
@@ -80,13 +80,14 @@ const CartTotal = () => {
           size="small"
         />
       )}
-
-      <Typography variant="h6">
-        Total :{' '}
-        {adjustmentAmount === 0
-          ? formatPrice(cartTotals.originalTotal)
-          : formatPrice(cartTotals.modifiedTotal)}
-      </Typography>
+      <Box my={2}>
+        <Typography variant="h5">
+          Total :{' '}
+          {adjustmentAmount === 0
+            ? formatPrice(cartTotals.originalTotal)
+            : formatPrice(cartTotals.modifiedTotal)}
+        </Typography>
+      </Box>
     </>
   )
 }

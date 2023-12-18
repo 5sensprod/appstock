@@ -17,11 +17,8 @@ const OnHoldInvoices = () => {
             const adjustmentLabel =
               invoice.adjustmentAmount > 0 ? 'Majoration' : 'Remise'
             return (
-              <Box
-                key={index}
-                sx={{ marginBottom: '8px', flexDirection: 'column' }}
-              >
-                <Typography sx={{ marginBottom: '4px' }}>
+              <Box key={index} my={3} sx={{ flexDirection: 'column' }}>
+                <Typography>
                   Total: {formatPrice(invoice.totalTTC)}
                   {invoice.adjustmentAmount !== 0 &&
                     ` (${adjustmentLabel}: ${formatPrice(
