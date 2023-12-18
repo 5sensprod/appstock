@@ -24,7 +24,6 @@ const CartTotal = () => {
     } else {
       resetAdjustment() // Réinitialiser si la valeur est 0 ou non numérique
     }
-    updateTotalWithAdjustment(numericAdjustment)
   }
 
   const resetAdjustment = () => {
@@ -40,29 +39,33 @@ const CartTotal = () => {
 
   return (
     <>
-      {isAdjustmentValidated && adjustment ? (
+      {(isAdjustmentValidated || adjustmentAmount !== 0) && (
+        <Typography variant="body2">
+          Total Original: {formatPrice(cartTotals.originalTotal)}
+        </Typography>
+      )}
+
+      {(isAdjustmentValidated || adjustmentAmount !== 0) && (
         <>
-          <Typography variant="body2">
-            Total Original: {formatPrice(cartTotals.originalTotal)}
-            <IconButton onClick={resetAdjustment} size="small">
-              <ReplayIcon />
-            </IconButton>
+          <IconButton onClick={resetAdjustment} size="small">
+            <ReplayIcon style={{ fontSize: 'medium' }} />
+          </IconButton>
+          {isAdjustmentValidated && (
             <IconButton
               onClick={() => setIsAdjustmentValidated(false)}
               size="small"
             >
-              <EditIcon />
+              <EditIcon style={{ fontSize: 'medium' }} />
             </IconButton>
-          </Typography>
+          )}
+
           <Typography variant="body2">
-            {adjustmentType}: {formatPrice(Math.abs(adjustmentAmount))}
+            {adjustmentAmount > 0 ? 'Majoration: ' : 'Remise: '}
+            {formatPrice(Math.abs(adjustmentAmount))}
           </Typography>
         </>
-      ) : (
-        <Typography variant="h6">
-          Total: {formatPrice(cartTotals.originalTotal)}
-        </Typography>
       )}
+
       {!isAdjustmentValidated && (
         <TextField
           label="Remise/Majoration"
@@ -77,11 +80,13 @@ const CartTotal = () => {
           size="small"
         />
       )}
-      {isAdjustmentValidated && adjustment && (
-        <Typography variant="h6">
-          Total : {formatPrice(cartTotals.modifiedTotal)}
-        </Typography>
-      )}
+
+      <Typography variant="h6">
+        Total :{' '}
+        {adjustmentAmount === 0
+          ? formatPrice(cartTotals.originalTotal)
+          : formatPrice(cartTotals.modifiedTotal)}
+      </Typography>
     </>
   )
 }

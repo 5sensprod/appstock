@@ -127,21 +127,34 @@ export const CartProvider = ({ children }) => {
         ...item,
         prixModifie: item.prixModifie,
       })),
+      totalHT: cartTotals.totalHT,
+      totalTVA: cartTotals.totalTaxes,
+      totalTTC:
+        adjustmentAmount !== 0 ? cartTotals.modifiedTotal : cartTotals.totalTTC,
+      adjustmentAmount: adjustmentAmount,
     }
     setOnHoldInvoices((prevInvoices) => [...prevInvoices, newInvoice])
     setCartItems([])
+    setAdjustmentAmount(0) // Réinitialiser adjustmentAmount
   }
 
   // Reprendre une facture en attente
   const resumeInvoice = (index) => {
-    const invoiceItems = onHoldInvoices[index].items.map((item) => ({
+    const invoice = onHoldInvoices[index]
+    const invoiceItems = invoice.items.map((item) => ({
       ...item,
       // Restaurez le prixModifie et le prixVente
       prixVente: item.prixVente,
       prixModifie: item.prixModifie,
     }))
+
     setCartItems(invoiceItems)
+    setAdjustmentAmount(invoice.adjustmentAmount) // Réinitialiser adjustmentAmount à la valeur de la facture en attente
+
     // Optionnellement, vous pouvez décider de conserver ou non la facture dans onHoldInvoices
+    setOnHoldInvoices((prevInvoices) =>
+      prevInvoices.filter((_, i) => i !== index),
+    )
   }
 
   const deleteInvoice = (index) => {

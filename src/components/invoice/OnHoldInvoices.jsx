@@ -1,9 +1,8 @@
-// src/components/OnHoldInvoices.jsx
 import React, { useContext } from 'react'
 import { Box, Typography, Button, IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { CartContext } from '../../contexts/CartContext'
-import { formatPrice, calculateInvoiceTotal } from '../../utils/priceUtils'
+import { formatPrice } from '../../utils/priceUtils'
 
 const OnHoldInvoices = () => {
   const { onHoldInvoices, resumeInvoice, deleteInvoice } =
@@ -15,24 +14,22 @@ const OnHoldInvoices = () => {
         <Box>
           <Typography variant="h6">Factures en attente:</Typography>
           {onHoldInvoices.map((invoice, index) => {
-            const invoiceTotal = calculateInvoiceTotal(invoice.items)
+            const adjustmentLabel =
+              invoice.adjustmentAmount > 0 ? 'Majoration' : 'Remise'
             return (
               <Box
                 key={index}
-                sx={{
-                  marginBottom: '8px',
-                  flexDirection: 'column',
-                }}
+                sx={{ marginBottom: '8px', flexDirection: 'column' }}
               >
                 <Typography sx={{ marginBottom: '4px' }}>
-                  {formatPrice(invoiceTotal)} - Facture en attente #{index + 1}
+                  Total: {formatPrice(invoice.totalTTC)}
+                  {invoice.adjustmentAmount !== 0 &&
+                    ` (${adjustmentLabel}: ${formatPrice(
+                      Math.abs(invoice.adjustmentAmount),
+                    )})`}
+                  - Facture en attente #{index + 1}
                 </Typography>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                  }}
-                >
+                <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                   <Button
                     onClick={() => resumeInvoice(index)}
                     variant="contained"
