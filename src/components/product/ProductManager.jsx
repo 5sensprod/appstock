@@ -6,7 +6,7 @@ import SelectCategory from '../category/SelectCategory'
 import NoMatchButton from '../ui/NoMatchButton'
 import ProductSearch from './ProductSearch'
 import { useProductContext } from '../../contexts/ProductContext'
-import { Button } from '@mui/material'
+import { Button, Box } from '@mui/material'
 
 const ProductManager = () => {
   const {
@@ -92,11 +92,13 @@ const ProductManager = () => {
   return (
     <div>
       <ProductSearch />
-      <SelectCategory
-        categories={categories}
-        selectedCategoryId={selectedCategoryId}
-        onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
-      />
+      <Box my={3}>
+        <SelectCategory
+          categories={categories}
+          selectedCategoryId={selectedCategoryId}
+          onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
+        />
+      </Box>
       {renderProductTableOrMessage()}
       {renderAddProductForm()}
     </div>

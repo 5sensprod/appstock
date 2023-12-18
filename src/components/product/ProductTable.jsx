@@ -39,23 +39,25 @@ const ProductTable = ({ products }) => {
   }
 
   return (
-    <DataGrid
-      localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-      rows={products}
-      columns={columns}
-      initialState={{
-        pagination: {
-          paginationModel: {
-            pageSize: 10,
+    <Box my={3}>
+      <DataGrid
+        localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+        rows={products}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 10,
+            },
           },
-        },
-      }}
-      pageSizeOptions={[10, 25, 50]}
-      pagination
-      onRowClick={handleRowClick}
-      getRowId={(row) => row._id}
-      style={{ width: '100%' }}
-    />
+        }}
+        pageSizeOptions={[10, 25, 50]}
+        pagination
+        onRowClick={handleRowClick}
+        getRowId={(row) => row._id}
+        style={{ width: '100%' }}
+      />
+    </Box>
   )
 }
 
