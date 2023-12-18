@@ -10,6 +10,7 @@ const useHandlePayClick = () => {
     setIsModalOpen,
     setInvoiceData,
     cartTotals,
+    adjustmentAmount,
   } = useContext(CartContext)
 
   const handlePayClick = async (paymentType) => {
@@ -28,18 +29,21 @@ const useHandlePayClick = () => {
       }),
     }))
 
+    const totalToUse =
+      adjustmentAmount !== 0 ? cartTotals.modifiedTotal : cartTotals.totalTTC
+
     // Créez un nouvel objet de données de facture pour l'envoyer
     const newInvoiceData = {
       items: invoiceItems,
       totalHT: cartTotals.totalHT.toFixed(2),
       totalTVA: cartTotals.totalTaxes.toFixed(2),
-      totalTTC: cartTotals.totalTTC,
+      totalTTC: totalToUse.toFixed(2),
+      adjustment: adjustmentAmount !== 0 ? adjustmentAmount.toFixed(2) : null,
       date: new Date().toISOString(),
       paymentType,
     }
 
     try {
-      // Envoyez les données de la facture à l'API et mettez à jour l'état
       const newInvoice = await addInvoice(newInvoiceData)
       console.log('New invoice added:', newInvoice)
       setInvoiceData(newInvoice)

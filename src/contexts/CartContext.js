@@ -81,6 +81,14 @@ export const CartProvider = ({ children }) => {
     })
 
     setAdjustmentAmount(adjustment)
+
+    if (invoiceData) {
+      setInvoiceData({
+        ...invoiceData,
+        totalModified: newModifiedTotal,
+        adjustment: adjustment,
+      })
+    }
   }
 
   // Mettez à jour les totaux chaque fois que le panier est modifié

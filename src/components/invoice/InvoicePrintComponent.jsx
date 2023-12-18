@@ -1,12 +1,14 @@
 import React, { useContext } from 'react'
 import { Typography, Box, Grid } from '@mui/material'
 import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
+import { useProductContext } from '../../contexts/ProductContext'
 import { formatNumberFrench } from '../../utils/priceUtils'
 import './styles/InvoiceTable.css'
-import logo from '../../assets/logo.png'
+import { getLogoUrl } from '../../utils/imageUtils'
 
 const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
   const companyInfo = useContext(CompanyInfoContext)
+  const { baseUrl } = useProductContext()
   // Formatage de la date pour l'affichage
   const formattedDate =
     invoiceData &&
@@ -87,7 +89,7 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
       <Box display="flex" justifyContent="space-between">
         {/* Card Entreprise - Haut Droite */}
         <Box>
-          <img src={logo} alt="Logo" />
+          <img src={getLogoUrl(baseUrl)} alt="Logo" />
         </Box>
         <Box component="div" border={1} borderRadius={1} p={1}>
           <Typography variant="body1">{companyInfo.name}</Typography>
@@ -132,6 +134,14 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
                 <td>TVA</td>
                 <td>{invoiceData.totalTVA} €</td>
               </tr>
+              {invoiceData.adjustment && invoiceData.adjustment !== 0 && (
+                <tr>
+                  <td>
+                    {invoiceData.adjustment > 0 ? 'Majoration' : 'Remise'}
+                  </td>
+                  <td>{Math.abs(invoiceData.adjustment)} €</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </Grid>

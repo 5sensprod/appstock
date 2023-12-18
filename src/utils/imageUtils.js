@@ -8,3 +8,6 @@ export function getProductImageUrl(images, baseUrl) {
     ? `${baseUrl}/${images[0]}`
     : defaultImagePath
 }
+export function getLogoUrl(baseUrl) {
+  return `${baseUrl}/catalogue/default/logo.png`
+}
