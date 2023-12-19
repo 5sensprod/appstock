@@ -19,3 +19,18 @@ export const getLocalIp = async () => {
     return 'localhost' // Une adresse IP de secours ou une autre logique
   }
 }
+
+export const sendPrintRequest = async (printContent) => {
+  if (window.electron) {
+    try {
+      // Envoyer la demande d'impression au processus principal
+      await window.electron.ipcRenderer.send('print', printContent)
+    } catch (error) {
+      console.error("Erreur lors de l'envoi de la demande d'impression:", error)
+    }
+  } else {
+    console.log(
+      "Contexte Electron non disponible. Impossible d'envoyer la demande d'impression.",
+    )
+  }
+}

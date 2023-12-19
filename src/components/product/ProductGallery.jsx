@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Typography } from '@mui/material'
+import { Typography, Box } from '@mui/material'
 import { productFactory } from '../factory/productFactory'
 import { useProductContext } from '../../contexts/ProductContext'
 import GenericModal from '../ui/GenericModal'
@@ -61,9 +61,17 @@ const ProductGallery = ({ products }) => {
     })
   }
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+    <div
+      style={{ display: 'flex', flexWrap: 'wrap', gap: '50px', width: '100%' }}
+    >
       {products.map((product) => (
-        <div key={product._id}>
+        <Box
+          key={product._id}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          style={{ height: '100%' }}
+        >
           {productFactory(
             product._id,
             product.reference,
@@ -74,7 +82,7 @@ const ProductGallery = ({ products }) => {
             baseUrl,
             () => showProductModal(product),
           ).render()}
-        </div>
+        </Box>
       ))}
       <GenericModal
         baseUrl={baseUrl}

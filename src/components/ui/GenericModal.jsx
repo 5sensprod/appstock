@@ -42,7 +42,6 @@ const GenericModal = ({
           >
             <Tab label="Description" />
             <Tab label="Média" />
-            <Tab label="Vidéos" />
           </Tabs>
         </Box>
 
@@ -81,16 +80,6 @@ const GenericModal = ({
             ) : (
               <Typography>Aucune photo disponible</Typography>
             )}
-          </Box>
-        )}
-
-        {tabValue === 2 && (
-          <Box sx={{ p: 3 }}>
-            {/* Ici, affichez les vidéos YouTube à partir des liens */}
-            {videos.map((video, index) => (
-              // Utilisez un composant ou une iframe pour afficher chaque vidéo
-              <div key={index}> {/* Placeholder pour le contenu vidéo */} </div>
-            ))}
           </Box>
         )}
       </Box>

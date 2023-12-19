@@ -1,7 +1,8 @@
 import React, { useContext } from 'react'
-import { Modal, Paper, Typography } from '@mui/material'
+import { Modal, Paper, Typography, Box } from '@mui/material'
 import { CartContext } from '../../contexts/CartContext'
 import PrintableInvoice from './PrintableInvoice'
+import SimplePrintComponent from './SimplePrintComponent'
 
 const InvoiceModal = () => {
   const { isModalOpen, setIsModalOpen, invoiceData } = useContext(CartContext)
@@ -25,7 +26,12 @@ const InvoiceModal = () => {
         <Typography id="modal-modal-title" variant="body2" component="h2">
           La facture a été enregistrée avec succès.
         </Typography>
-        {invoiceData && <PrintableInvoice invoiceData={invoiceData} />}
+        <Box my={1}>
+          <SimplePrintComponent />
+        </Box>
+        <Box my={1}>
+          {invoiceData && <PrintableInvoice invoiceData={invoiceData} />}
+        </Box>
       </Paper>
     </Modal>
   )

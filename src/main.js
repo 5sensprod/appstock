@@ -6,6 +6,16 @@ const Store = require('electron-store')
 const store = new Store()
 let mainWindow
 
+ipcMain.on('print', (event, content) => {
+  let win = new BrowserWindow({ show: false })
+  win.loadURL('data:text/html;charset=utf-8,' + encodeURI(content))
+  win.webContents.on('did-finish-load', () => {
+    win.webContents.print({}, (success, errorType) => {
+      if (!success) console.log(errorType)
+    })
+  })
+})
+
 const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 800,

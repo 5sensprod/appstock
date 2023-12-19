@@ -9,7 +9,9 @@ class PrintableInvoice extends React.Component {
       <div>
         <ReactToPrint
           trigger={() => (
-            <Button variant="contained">Imprimer la facture</Button>
+            <Button variant="contained" size="small">
+              Imprimer la facture
+            </Button>
           )}
           content={() => this.componentRef}
         />

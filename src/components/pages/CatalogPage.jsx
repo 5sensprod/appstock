@@ -69,6 +69,8 @@ const CatalogPage = () => {
       <Box display="flex" alignItems="center" gap={2} my={2}>
         <ProductSearch />
         <Button
+          variant="contained"
+          color="primary"
           onClick={() =>
             setViewMode(viewMode === 'table' ? 'gallery' : 'table')
           }
