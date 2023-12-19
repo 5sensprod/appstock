@@ -9,8 +9,10 @@ import SelectCategory from '../category/SelectCategory'
 import useSearch from '../hooks/useSearch'
 import BulkEditButton from '../ui/BulkEditButton'
 import ProductCatalog from '../product/ProductCatalog'
-import ProductGallery from '../product/ProductGallery' // Assurez-vous d'importer ce composant
-import { Modal, Box, Button } from '@mui/material'
+import ProductGallery from '../product/ProductGallery'
+import { Modal, Box, Button, IconButton } from '@mui/material'
+import ViewListIcon from '@mui/icons-material/ViewList'
+import ViewComfyIcon from '@mui/icons-material/ViewComfy'
 
 const CatalogPage = () => {
   const {
@@ -66,26 +68,50 @@ const CatalogPage = () => {
 
   return (
     <div style={{ width: 'fit-content' }}>
-      <Box display="flex" alignItems="center" gap={2} my={2}>
-        <ProductSearch />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() =>
-            setViewMode(viewMode === 'table' ? 'gallery' : 'table')
-          }
-        >
-          {viewMode === 'table' ? 'Voir en Galerie' : 'Voir en Tableau'}
-        </Button>
-        <SelectCategory
-          categories={categories}
-          selectedCategoryId={selectedCategoryId}
-          onCategoryChange={handleCategoryChange}
-        />
-        <BulkEditButton
-          isDisabled={selectedProducts.size < 2}
-          handleOpenModal={handleOpenModal}
-        />
+      <Box
+        display="flex"
+        alignItems="center"
+        gap={2}
+        my={2}
+        justifyContent={'space-between'}
+      >
+        <Box display="flex" alignItems="center" gap={2} my={2} flex={1}>
+          <Box width={'30%'}>
+            <SelectCategory
+              categories={categories}
+              selectedCategoryId={selectedCategoryId}
+              onCategoryChange={handleCategoryChange}
+            />
+          </Box>
+          <Box width={'70%'}>
+            <ProductSearch />
+          </Box>
+        </Box>
+        <Box display="flex" gap={2}>
+          <BulkEditButton
+            isDisabled={selectedProducts.size < 2}
+            handleOpenModal={handleOpenModal}
+          />
+          {viewMode === 'gallery' && (
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={() => setViewMode('table')}
+            >
+              <ViewListIcon />
+            </IconButton>
+          )}
+
+          {viewMode === 'table' && (
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={() => setViewMode('gallery')}
+            >
+              <ViewComfyIcon />
+            </IconButton>
+          )}
+        </Box>
       </Box>
       {viewMode === 'table' ? (
         <ProductCatalog
@@ -108,7 +134,10 @@ const CatalogPage = () => {
         }}
       >
         <div style={{ backgroundColor: 'white', padding: '20px' }}>
-          <EditBulkProduct handleCloseModal={handleCloseModal} />
+          <EditBulkProduct
+            handleCloseModal={handleCloseModal}
+            selectedProductIds={selectedProducts}
+          />
         </div>
       </Modal>
     </div>

@@ -13,6 +13,7 @@ const ProductSearch = () => {
   return (
     <div>
       <TextField
+        size="small"
         label="Rechercher un produit"
         variant="outlined"
         value={searchTerm}

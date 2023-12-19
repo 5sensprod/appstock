@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import Button from '@mui/material/Button'
+import Fab from '@mui/material/Fab'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
 const BackButton = ({ theme }) => {
@@ -12,16 +12,15 @@ const BackButton = ({ theme }) => {
 
   if (matchCreateOrEdit) {
     return (
-      <Button
+      <Fab
         component={Link}
         to="/catalog"
-        variant="contained"
         color="primary"
-        startIcon={<ArrowBackIcon />}
-        sx={{ margin: theme.spacing(2) }}
+        sx={{ margin: theme.spacing(0) }}
+        size="small"
       >
-        Retour
-      </Button>
+        <ArrowBackIcon />
+      </Fab>
     )
   }
   return null

@@ -5,7 +5,7 @@ import { useProductContext } from '../../contexts/ProductContext'
 import SelectCategory from '../category/SelectCategory'
 import { useUI } from '../../contexts/UIContext'
 
-const EditBulkProduct = ({ handleCloseModal }) => {
+const EditBulkProduct = ({ handleCloseModal, selectedProductIds }) => {
   const { selectedProducts, updateProductsBulkInContext, categories } =
     useProductContext()
   const { register, handleSubmit, reset } = useForm()
@@ -14,7 +14,7 @@ const EditBulkProduct = ({ handleCloseModal }) => {
   const [newStock, setNewStock] = useState('')
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
-  const { showToast } = useUI()
+  const { showToast, showConfirmDialog } = useUI()
 
   const handleCategoryChange = (event) => {
     setSelectedCategoryId(event.target.value)
@@ -24,7 +24,7 @@ const EditBulkProduct = ({ handleCloseModal }) => {
     setSelectedSubCategoryId(event.target.value)
   }
 
-  const onSubmit = async (data) => {
+  const confirmAndSubmit = async (data) => {
     const updates = Array.from(selectedProducts).map((productId) => {
       const changes = {}
       if (data.prixVente) changes.prixVente = parseFloat(data.prixVente)
@@ -41,6 +41,16 @@ const EditBulkProduct = ({ handleCloseModal }) => {
     handleCloseModal()
     showToast('Produits modifiés avec succès!', 'success')
   }
+
+  const onSubmit = (data) => {
+    const nombreProduits = selectedProductIds.size
+    showConfirmDialog(
+      'Confirmer les modifications',
+      `Êtes-vous sûr de vouloir modifier ${nombreProduits} produits ?`,
+      () => confirmAndSubmit(data),
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl fullWidth margin="normal">

@@ -20,6 +20,7 @@ function CreateCategory() {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm()
   const { addCategory, categories } = useProductContext()
@@ -30,9 +31,10 @@ function CreateCategory() {
 
   // Gestionnaire pour la mise à jour du nom de la catégorie
   const handleCategoryNameChange = (event) => {
-    setCategoryName(event.target.value)
+    const name = event.target.value
+    setCategoryName(name)
+    setValue('name', name) // Mettre à jour la valeur dans react-hook-form
   }
-
   // Fonction pour effacer la sélection de la catégorie
   const clearCategorySelection = (event) => {
     // Empêcher la propagation de l'événement pour éviter de déclencher l'ouverture du popover

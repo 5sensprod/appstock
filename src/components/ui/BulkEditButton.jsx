@@ -1,17 +1,17 @@
 import React from 'react'
-import { Button } from '@mui/material'
+import IconButton from '@mui/material/IconButton'
+import EditIcon from '@mui/icons-material/Edit'
 
 const BulkEditButton = ({ isDisabled, handleOpenModal }) => {
   return (
-    <Button
-      variant="contained"
+    <IconButton
       color="primary"
       onClick={handleOpenModal}
       disabled={isDisabled}
-      style={{ height: '56px' }}
+      size="small"
     >
-      Modifier en Masse
-    </Button>
+      <EditIcon />
+    </IconButton>
   )
 }
 

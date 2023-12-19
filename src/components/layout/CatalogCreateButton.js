@@ -1,22 +1,22 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import Button from '@mui/material/Button'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import Fab from '@mui/material/Fab'
+import AddIcon from '@mui/icons-material/Add'
 
 const CatalogCreateButton = ({ theme }) => {
   const location = useLocation()
 
   if (location.pathname === '/catalog') {
     return (
-      <Button
+      <Fab
         component={Link}
         to="/create-product"
-        variant="contained"
         color="primary"
         sx={{ margin: theme.spacing(0) }}
+        size="small"
       >
-        Créer un Produit
-      </Button>
+        <AddIcon />
+      </Fab>
     )
   }
   return null

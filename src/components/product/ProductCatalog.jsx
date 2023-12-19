@@ -124,7 +124,7 @@ const ProductCatalog = ({
       pagination
       checkboxSelection
       onRowSelectionModelChange={onSelectionChange}
-      style={{ width: '100%' }}
+      style={{ width: 'fit-content' }}
     />
   )
 }
