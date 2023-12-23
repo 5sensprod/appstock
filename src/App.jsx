@@ -19,10 +19,15 @@ import EditProductPage from './components/pages/EditProductPage'
 import MobilPage from './components/pages/MobilPage'
 import ProductPage from './components/pages/ProductPage'
 import { LicenseManager } from 'ag-grid-enterprise'
+import { LicenseInfo } from '@mui/x-data-grid-pro'
 
 const licenseKey =
   'CompanyName=Equinix Asia Pacific pte ltd,LicensedGroup=equinixMendixPrivateLib,LicenseType=MultipleApplications,LicensedConcurrentDeveloperCount=2,LicensedProductionInstancesCount=0,AssetReference=AG-027567,SupportServicesEnd=18_June_2023_[v2]_MTY4NzA0MjgwMDAwMA==4be2c388f9a8a7443c72842dff53d5b2'
 LicenseManager.setLicenseKey(licenseKey)
+
+LicenseInfo.setLicenseKey(
+  'x0jTPl0USVkVZV0SsMjM1kDNyADM5cjM2ETPZJVSQhVRsIDN0YTM6IVREJ1T0b9586ef25c9853decfa7709eee27a1e',
+)
 
 const App = () => {
   const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')

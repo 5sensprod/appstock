@@ -1,8 +1,10 @@
 import React, { useContext } from 'react'
 import { useProductContext } from '../../contexts/ProductContext'
 import { CartContext } from '../../contexts/CartContext'
-import { DataGrid, frFR } from '@mui/x-data-grid'
+// import { DataGrid, frFR } from '@mui/x-data-grid'
+import { DataGridPremium, frFR, GridToolbar } from '@mui/x-data-grid-premium'
 import { Box } from '@mui/material'
+import { formatNumberFrench } from '../../utils/priceUtils'
 
 const ProductTable = ({ products }) => {
   const { baseUrl } = useProductContext()
@@ -31,6 +33,7 @@ const ProductTable = ({ products }) => {
       headerName: 'Prix Vente',
       type: 'number',
       flex: 1,
+      renderCell: (params) => `${formatNumberFrench(params.value)} €`,
     },
   ]
 
@@ -40,7 +43,7 @@ const ProductTable = ({ products }) => {
 
   return (
     <Box my={3}>
-      <DataGrid
+      <DataGridPremium
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
         rows={products}
         columns={columns}
@@ -56,6 +59,7 @@ const ProductTable = ({ products }) => {
         onRowClick={handleRowClick}
         getRowId={(row) => row._id}
         style={{ width: '100%' }}
+        slots={{ toolbar: GridToolbar }}
       />
     </Box>
   )
