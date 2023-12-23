@@ -1,13 +1,12 @@
 import React, { useContext } from 'react'
-import { useProductContext } from '../../contexts/ProductContext'
 import { CartContext } from '../../contexts/CartContext'
-// import { DataGrid, frFR } from '@mui/x-data-grid'
 import { DataGridPremium, frFR, GridToolbar } from '@mui/x-data-grid-premium'
 import { Box } from '@mui/material'
 import { formatNumberFrench } from '../../utils/priceUtils'
+import { useConfig } from '../../contexts/ConfigContext'
 
 const ProductTable = ({ products }) => {
-  const { baseUrl } = useProductContext()
+  const { baseUrl } = useConfig()
   const { addToCart } = useContext(CartContext)
 
   const columns = [

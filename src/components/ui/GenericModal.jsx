@@ -19,9 +19,8 @@ const GenericModal = ({
   title,
   content,
   imageUrl,
-  videos,
   photos,
-  baseUrl,
+  baseUrl = '',
 }) => {
   if (!open) return null
 

@@ -1,14 +1,14 @@
 import React, { useContext } from 'react'
 import { Typography, Box, Grid } from '@mui/material'
 import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
-import { useProductContext } from '../../contexts/ProductContext'
 import { formatNumberFrench } from '../../utils/priceUtils'
 import './styles/InvoiceTable.css'
 import { getLogoUrl } from '../../utils/imageUtils'
+import { useConfig } from '../../contexts/ConfigContext'
 
 const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
   const companyInfo = useContext(CompanyInfoContext)
-  const { baseUrl } = useProductContext()
+  const { baseUrl } = useConfig()
   // Formatage de la date pour l'affichage
   const formattedDate =
     invoiceData &&
@@ -20,7 +20,7 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
       minute: '2-digit',
     })
 
-  const items = invoiceData.items // Assurez-vous que cette ligne est correcte selon votre structure de données
+  const items = invoiceData.items
   const hasAnyDiscountOrMarkup =
     items && items.some((item) => item.remiseMajorationLabel)
 

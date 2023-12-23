@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, useEffect } from 'react'
-import { getApiBaseUrl } from '../api/axiosConfig'
 import {
   getProducts,
   addProduct,
@@ -13,13 +12,16 @@ import {
   updateCategory,
   deleteCategory,
 } from '../api/categoryService'
+import { useConfig } from './ConfigContext'
+
 const ProductContext = createContext()
 
 export const useProductContext = () => useContext(ProductContext)
-const fetchProductCountByCategory = async () => {
+
+const fetchProductCountByCategory = async (baseUrl) => {
   try {
     // Remplacez ceci par votre logique de récupération des données
-    const data = await getProductCountByCategory()
+    const data = await getProductCountByCategory(baseUrl)
     return data
   } catch (error) {
     console.error(
@@ -36,15 +38,9 @@ export const ProductProvider = ({ children }) => {
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
   const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
-  const [baseUrl, setBaseUrl] = useState('')
+  const { baseUrl } = useConfig()
   const [selectedProducts, setSelectedProducts] = useState(new Set())
   const [productCountByCategory, setProductCountByCategory] = useState({})
-
-  useEffect(() => {
-    getApiBaseUrl().then((url) => {
-      setBaseUrl(url.replace('/api', ''))
-    })
-  }, [])
 
   // Gestion des produits et des SSE
   useEffect(() => {
@@ -236,7 +232,6 @@ export const ProductProvider = ({ children }) => {
     categories,
     setCategories,
     products,
-    baseUrl,
     selectedProducts,
     setSelectedProducts,
     setProducts,

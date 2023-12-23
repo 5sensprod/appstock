@@ -4,10 +4,13 @@ import { productFactory } from '../factory/productFactory'
 import { useProductContext } from '../../contexts/ProductContext'
 import GenericModal from '../ui/GenericModal'
 import { getProductImageUrl } from '../../utils/imageUtils'
+import { useConfig } from '../../contexts/ConfigContext'
 
 const ProductGallery = ({ products }) => {
-  const { baseUrl } = useProductContext()
+  const { baseUrl } = useConfig()
+
   const { categories } = useProductContext()
+
   const [modalInfo, setModalInfo] = useState({
     open: false,
     title: '',
@@ -31,21 +34,24 @@ const ProductGallery = ({ products }) => {
 
   const showProductModal = (product) => {
     const imageUrl = getProductImageUrl(product.photos, baseUrl)
-    const categoryName = getCategoryName(product.categorie)
-    const cleanedDescriptionCourte = product.descriptionCourte.replace(
-      'Chapeau : ',
-      '',
-    )
-    const jsxDescriptionCourte = transformNewLinesToJSX(
-      cleanedDescriptionCourte,
-    )
-    const jsxDescription = transformNewLinesToJSX(product.description)
+    const categoryName = getCategoryName(product.categorie) || 'Non catégorisé'
+    const descriptionCourte = product.descriptionCourte || ''
+    const description = product.description || ''
+
+    const jsxDescriptionCourte = transformNewLinesToJSX(descriptionCourte)
+    const jsxDescription = transformNewLinesToJSX(description)
+
     setModalInfo({
       open: true,
-      title: product.reference,
+      title: product.reference || 'Titre non disponible',
       photos: product.photos,
       content: (
         <>
+          {product.reference && ( // Afficher le titre si disponible
+            <Typography variant="h6" component="div">
+              {product.reference}
+            </Typography>
+          )}
           <Typography variant="body1" component="div">
             {categoryName}
           </Typography>
@@ -60,6 +66,7 @@ const ProductGallery = ({ products }) => {
       imageUrl,
     })
   }
+
   return (
     <div
       style={{ display: 'flex', flexWrap: 'wrap', gap: '50px', width: '100%' }}

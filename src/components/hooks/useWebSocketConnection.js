@@ -2,9 +2,11 @@ import { useState, useCallback, useEffect } from 'react'
 import useWebSocket from './useWebSocket'
 import { isRunningInElectron, fetchApi } from '../../api/axiosConfig'
 import { useProductContext } from '../../contexts/ProductContext'
+import { useConfig } from '../../contexts/ConfigContext'
 
 const useWebSocketConnection = () => {
-  const { setSearchTerm, baseUrl } = useProductContext()
+  const { setSearchTerm } = useProductContext()
+  const { baseUrl } = useConfig()
   const [wsUrl, setWsUrl] = useState('')
 
   useEffect(() => {
