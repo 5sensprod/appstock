@@ -99,6 +99,39 @@ export const ProductProvider = ({ children }) => {
     }
   }, [baseUrl])
 
+  const handleCategoryChange = (event) => {
+    setSelectedCategoryId(event.target.value)
+  }
+
+  const handleSubCategoryChange = (event) => {
+    setSelectedSubCategoryId(event.target.value)
+  }
+
+  const addCategoryToContext = async (categoryData) => {
+    try {
+      const response = await addCategory(categoryData)
+      setCategories((prevCategories) => [...prevCategories, response])
+      return response
+    } catch (error) {
+      console.error("Erreur lors de l'ajout de la catégorie:", error)
+      throw error
+    }
+  }
+
+  const updateCategoryInContext = async (id, categoryData) => {
+    try {
+      const updatedCategory = await updateCategory(id, categoryData)
+      setCategories((prevCategories) =>
+        prevCategories.map((category) =>
+          category._id === id ? updatedCategory : category,
+        ),
+      )
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la catégorie', error)
+      throw error
+    }
+  }
+
   const deleteCategoryFromContext = async (id) => {
     try {
       await deleteCategory(id)
@@ -180,39 +213,6 @@ export const ProductProvider = ({ children }) => {
       // Mettre à jour l'état des produits ici
     } catch (error) {
       console.error('Erreur lors de la mise à jour en masse', error)
-      throw error
-    }
-  }
-
-  const handleCategoryChange = (event) => {
-    setSelectedCategoryId(event.target.value)
-  }
-
-  const handleSubCategoryChange = (event) => {
-    setSelectedSubCategoryId(event.target.value)
-  }
-
-  const addCategoryToContext = async (categoryData) => {
-    try {
-      const response = await addCategory(categoryData)
-      setCategories((prevCategories) => [...prevCategories, response])
-      return response
-    } catch (error) {
-      console.error("Erreur lors de l'ajout de la catégorie:", error)
-      throw error
-    }
-  }
-
-  const updateCategoryInContext = async (id, categoryData) => {
-    try {
-      const updatedCategory = await updateCategory(id, categoryData)
-      setCategories((prevCategories) =>
-        prevCategories.map((category) =>
-          category._id === id ? updatedCategory : category,
-        ),
-      )
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour de la catégorie', error)
       throw error
     }
   }
