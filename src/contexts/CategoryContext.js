@@ -4,6 +4,7 @@ import {
   updateCategory,
   deleteCategory,
   fetchSubCategoryCounts,
+  fetchProductCountByCategory,
 } from '../api/categoryService'
 import { useConfig } from './ConfigContext'
 
@@ -15,6 +16,7 @@ export const CategoryProvider = ({ children }) => {
   const { baseUrl } = useConfig()
   const [categories, setCategories] = useState([])
   const [subCategoryCounts, setSubCategoryCounts] = useState([])
+  const [productCountByCategory, setProductCountByCategory] = useState({})
 
   useEffect(() => {
     const loadCategoriesAndCounts = async () => {
@@ -22,8 +24,12 @@ export const CategoryProvider = ({ children }) => {
         const fetchedCategories = await getCategories(baseUrl)
         setCategories(fetchedCategories)
 
-        const counts = await fetchSubCategoryCounts(baseUrl)
-        setSubCategoryCounts(counts)
+        const subCounts = await fetchSubCategoryCounts(baseUrl)
+        setSubCategoryCounts(subCounts)
+
+        // Ajoutez ici la logique pour charger le comptage des produits par catégorie
+        const productCounts = await fetchProductCountByCategory(baseUrl)
+        setProductCountByCategory(productCounts)
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error)
       }
@@ -37,18 +43,15 @@ export const CategoryProvider = ({ children }) => {
         type,
         category,
         id,
-        subCategoryCounts: updatedCounts,
+        subCategoryCounts: updatedSubCounts,
+        productCountByCategory: updatedProductCounts,
       } = JSON.parse(event.data)
 
       switch (type) {
         case 'category-added':
           setCategories((prevCategories) => [...prevCategories, category])
-          // Après l'ajout d'une catégorie, rechargez également les comptes de sous-catégories
-          const loadSubCategoryCounts = async () => {
-            const counts = await fetchSubCategoryCounts(baseUrl)
-            setSubCategoryCounts(counts)
-          }
-          loadSubCategoryCounts()
+          // Recharger les comptes de sous-catégories après l'ajout d'une catégorie
+          loadCategoriesAndCounts()
           break
         case 'category-updated':
           setCategories((prevCategories) =>
@@ -63,10 +66,12 @@ export const CategoryProvider = ({ children }) => {
           )
           break
         case 'subCategoryCounts-updated':
-          // Mettre à jour les comptes de sous-catégories
-          setSubCategoryCounts(updatedCounts)
+          setSubCategoryCounts(updatedSubCounts)
           break
-        // Gérer d'autres types d'événements si nécessaire
+        case 'productCountByCategory-updated':
+          setProductCountByCategory(updatedProductCounts)
+          break
+        // Ajouter des cas pour d'autres types d'événements si nécessaire
         default:
           break
       }
@@ -74,7 +79,7 @@ export const CategoryProvider = ({ children }) => {
 
     loadCategoriesAndCounts()
 
-    // Nettoyer la connexion SSE
+    // Nettoyer la connexion SSE à la désinscription du composant
     return () => {
       eventSource.close()
     }
@@ -109,6 +114,7 @@ export const CategoryProvider = ({ children }) => {
   const contextValue = {
     categories,
     subCategoryCounts,
+    productCountByCategory,
     updateCategoryInContext,
     deleteCategoryFromContext,
   }

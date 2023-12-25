@@ -48,10 +48,23 @@ async function fetchSubCategoryCounts() {
   }
 }
 
+async function fetchProductCountByCategory() {
+  try {
+    return await fetchApi('categories/productCountByCategory')
+  } catch (error) {
+    console.error(
+      'Erreur lors de la récupération du nombre de produits par catégorie:',
+      error,
+    )
+    throw error
+  }
+}
+
 export {
   getCategories,
   addCategory,
   updateCategory,
   deleteCategory,
   fetchSubCategoryCounts,
+  fetchProductCountByCategory,
 }

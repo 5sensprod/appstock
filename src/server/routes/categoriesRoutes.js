@@ -2,13 +2,66 @@ const express = require('express')
 const router = express.Router()
 
 module.exports = (db, sendSseEvent) => {
-  const { categories } = db
+  const { products, categories } = db
 
   router.get('/', (req, res) => {
     categories.find({}, (err, docs) => {
       if (err) res.status(500).send(err)
       else res.status(200).json(docs)
     })
+  })
+
+  router.get('/productCountByCategory', async (req, res) => {
+    try {
+      // Obtenir toutes les catégories
+      const allCategories = await new Promise((resolve, reject) => {
+        categories.find({}, (err, docs) => {
+          if (err) reject(err)
+          else resolve(docs)
+        })
+      })
+
+      // Obtenir tous les produits
+      const allProducts = await new Promise((resolve, reject) => {
+        products.find({}, (err, docs) => {
+          if (err) reject(err)
+          else resolve(docs)
+        })
+      })
+
+      // Fonction pour compter les produits dans une catégorie et ses sous-catégories
+      const countProductsInCategory = (categoryId) => {
+        // Compter les produits directement dans la catégorie
+        const directCount = allProducts.filter(
+          (product) => product.categorie === categoryId,
+        ).length
+
+        // Compter les produits dans les sous-catégories
+        const subCategories = allCategories.filter(
+          (cat) => cat.parentId === categoryId,
+        )
+        const subCategoryCount = subCategories.reduce(
+          (acc, subCat) => acc + countProductsInCategory(subCat._id),
+          0,
+        )
+
+        return directCount + subCategoryCount
+      }
+
+      // Compter les produits par catégorie
+      const productCountByCategory = allCategories.reduce((acc, category) => {
+        acc[category._id] = countProductsInCategory(category._id)
+        return acc
+      }, {})
+
+      res.json(productCountByCategory)
+    } catch (error) {
+      console.error(
+        'Erreur lors de la récupération du nombre de produits par catégorie:',
+        error,
+      )
+      res.status(500).send(error)
+    }
   })
 
   router.get('/subCategoryCount', async (req, res) => {
