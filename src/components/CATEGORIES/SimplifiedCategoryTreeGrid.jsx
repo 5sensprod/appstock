@@ -6,15 +6,27 @@ import frenchLocale from '../locales/frenchLocale'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 
 const SimplifiedCategoryTreeGrid = () => {
-  const { categories, updateCategoryInContext, deleteCategoryFromContext } =
-    useCategoryContext()
+  const {
+    categories,
+    subCategoryCounts,
+    updateCategoryInContext,
+    deleteCategoryFromContext,
+  } = useCategoryContext()
+
   const [searchText, setSearchText] = useState('')
   const gridApi = useRef(null)
 
   const mapPath = (categoryId, path = []) => {
     const category = categories.find((cat) => cat._id === categoryId)
     if (category) {
-      path.unshift(category.name)
+      const subCategoryCount =
+        subCategoryCounts.find((count) => count._id === categoryId)
+          ?.childCount || 0
+      const categoryNameWithCount =
+        subCategoryCount > 0
+          ? `${category.name} (${subCategoryCount})`
+          : category.name
+      path.unshift(categoryNameWithCount)
       if (category.parentId) {
         mapPath(category.parentId, path)
       }
@@ -22,14 +34,21 @@ const SimplifiedCategoryTreeGrid = () => {
     return path
   }
 
-  const rowData = useMemo(
-    () =>
-      categories.map((cat) => ({
+  const rowData = useMemo(() => {
+    return categories.map((cat) => {
+      const subCategoryCount =
+        subCategoryCounts.find((count) => count._id === cat._id)?.childCount ||
+        0
+      const categoryNameWithCount =
+        subCategoryCount > 0 ? `${cat.name} (${subCategoryCount})` : cat.name
+
+      return {
         ...cat,
+        name: categoryNameWithCount, // Modifier le nom ici pour inclure le nombre de sous-catégories
         path: mapPath(cat._id),
-      })),
-    [categories],
-  )
+      }
+    })
+  }, [categories, subCategoryCounts])
 
   const columns = useMemo(
     () => [

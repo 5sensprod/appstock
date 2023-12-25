@@ -11,6 +11,33 @@ module.exports = (db, sendSseEvent) => {
     })
   })
 
+  router.get('/subCategoryCount', async (req, res) => {
+    try {
+      const allCategories = await new Promise((resolve, reject) => {
+        categories.find({}, (err, docs) => {
+          if (err) reject(err)
+          else resolve(docs)
+        })
+      })
+
+      const subCategoryCounts = allCategories.map((cat) => ({
+        _id: cat._id,
+        name: cat.name,
+        childCount: allCategories.filter((c) => c.parentId === cat._id).length,
+      }))
+
+      res.status(200).json(subCategoryCounts)
+
+      // Envoyer un événement SSE pour indiquer la mise à jour des comptes de sous-catégories
+      sendSseEvent({
+        type: 'subCategoryCounts-updated',
+        subCategoryCounts: subCategoryCounts,
+      })
+    } catch (error) {
+      res.status(500).send(error)
+    }
+  })
+
   router.post('/', (req, res) => {
     const newCategory = req.body
 
@@ -39,7 +66,6 @@ module.exports = (db, sendSseEvent) => {
   })
 
   const deleteCategoryAndChildren = async (categoryId) => {
-    // Récupérer toutes les sous-catégories
     const childCategories = await new Promise((resolve, reject) => {
       categories.find({ parentId: categoryId }, (err, docs) => {
         if (err) reject(err)
@@ -47,27 +73,27 @@ module.exports = (db, sendSseEvent) => {
       })
     })
 
-    // Supprimer récursivement chaque sous-catégorie
     for (const childCategory of childCategories) {
       await deleteCategoryAndChildren(childCategory._id)
+      sendSseEvent({ type: 'category-deleted', id: childCategory._id })
     }
 
-    // Supprimer la catégorie parent
     await new Promise((resolve, reject) => {
       categories.remove({ _id: categoryId }, {}, (err, numRemoved) => {
         if (err) reject(err)
-        else resolve(numRemoved)
+        else {
+          sendSseEvent({ type: 'category-deleted', id: categoryId })
+          resolve(numRemoved)
+        }
       })
     })
   }
 
-  // Route DELETE modifiée
   router.delete('/:id', async (req, res) => {
     const id = req.params.id
 
     try {
       await deleteCategoryAndChildren(id)
-      sendSseEvent({ type: 'category-deleted', id: id }) // Envoyer un événement SSE après la suppression complète
       res
         .status(200)
         .json({ message: 'Catégorie et sous-catégories supprimées', id: id })

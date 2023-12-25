@@ -3,6 +3,7 @@ import {
   getCategories,
   updateCategory,
   deleteCategory,
+  fetchSubCategoryCounts,
 } from '../api/categoryService'
 import { useConfig } from './ConfigContext'
 
@@ -13,22 +14,41 @@ export const useCategoryContext = () => useContext(CategoryContext)
 export const CategoryProvider = ({ children }) => {
   const { baseUrl } = useConfig()
   const [categories, setCategories] = useState([])
+  const [subCategoryCounts, setSubCategoryCounts] = useState([])
 
   useEffect(() => {
-    const loadCategories = async () => {
-      const fetchedCategories = await getCategories(baseUrl)
-      setCategories(fetchedCategories)
+    const loadCategoriesAndCounts = async () => {
+      try {
+        const fetchedCategories = await getCategories(baseUrl)
+        setCategories(fetchedCategories)
+
+        const counts = await fetchSubCategoryCounts(baseUrl)
+        setSubCategoryCounts(counts)
+      } catch (error) {
+        console.error('Erreur lors du chargement des données:', error)
+      }
     }
 
     // Établir une connexion SSE
     const eventSource = new EventSource(`${baseUrl}/api/events`)
 
     eventSource.onmessage = (event) => {
-      const { type, category, id } = JSON.parse(event.data)
+      const {
+        type,
+        category,
+        id,
+        subCategoryCounts: updatedCounts,
+      } = JSON.parse(event.data)
 
       switch (type) {
         case 'category-added':
           setCategories((prevCategories) => [...prevCategories, category])
+          // Après l'ajout d'une catégorie, rechargez également les comptes de sous-catégories
+          const loadSubCategoryCounts = async () => {
+            const counts = await fetchSubCategoryCounts(baseUrl)
+            setSubCategoryCounts(counts)
+          }
+          loadSubCategoryCounts()
           break
         case 'category-updated':
           setCategories((prevCategories) =>
@@ -42,15 +62,19 @@ export const CategoryProvider = ({ children }) => {
             prevCategories.filter((cat) => cat._id !== id),
           )
           break
+        case 'subCategoryCounts-updated':
+          // Mettre à jour les comptes de sous-catégories
+          setSubCategoryCounts(updatedCounts)
+          break
         // Gérer d'autres types d'événements si nécessaire
         default:
           break
       }
     }
 
-    loadCategories()
+    loadCategoriesAndCounts()
 
-    // Nettoyer la connexion SSE à la désinscription du composant
+    // Nettoyer la connexion SSE
     return () => {
       eventSource.close()
     }
@@ -84,6 +108,7 @@ export const CategoryProvider = ({ children }) => {
 
   const contextValue = {
     categories,
+    subCategoryCounts,
     updateCategoryInContext,
     deleteCategoryFromContext,
   }

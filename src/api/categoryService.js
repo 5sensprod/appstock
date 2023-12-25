@@ -36,4 +36,22 @@ async function deleteCategory(id) {
   }
 }
 
-export { getCategories, addCategory, updateCategory, deleteCategory }
+async function fetchSubCategoryCounts() {
+  try {
+    return await fetchApi('categories/subCategoryCount')
+  } catch (error) {
+    console.error(
+      'Erreur lors de la récupération des comptes des sous-catégories:',
+      error,
+    )
+    return []
+  }
+}
+
+export {
+  getCategories,
+  addCategory,
+  updateCategory,
+  deleteCategory,
+  fetchSubCategoryCounts,
+}
