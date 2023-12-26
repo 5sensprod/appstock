@@ -17,7 +17,8 @@ import MainLayout from './components/layout/MainLayout'
 import CreateProductPage from './components/pages/CreateProductPage'
 import EditProductPage from './components/pages/EditProductPage'
 import MobilPage from './components/pages/MobilPage'
-import ProductPage from './components/pages/ProductPage'
+// import ProductPage from './components/pages/ProductPage'
+import SimplifiedProductPage from './components/pages/SimplifiedProductPage'
 import { LicenseManager } from 'ag-grid-enterprise'
 import { LicenseInfo } from '@mui/x-data-grid-pro'
 import { ConfigProvider } from './contexts/ConfigContext'
@@ -59,9 +60,13 @@ const App = () => {
                             element={<DashboardPage />}
                           />
                           <Route path="/catalog" element={<CatalogPage />} />
-                          <Route
+                          {/* <Route
                             path="/products/:productIds?/:categoryId?"
                             element={<ProductPage />}
+                          /> */}
+                          <Route
+                            path="/products"
+                            element={<SimplifiedProductPage />}
                           />
                           <Route
                             path="/product-details/:productIds/:categoryId"
