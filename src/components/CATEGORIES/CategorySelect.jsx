@@ -10,8 +10,7 @@ import { useCategoryContext } from '../../contexts/CategoryContext'
 const CategorySelect = ({ value, onChange }) => {
   const { categories } = useCategoryContext()
   const [anchorEl, setAnchorEl] = useState(null)
-  const [selectedCategoryName, setSelectedCategoryName] = useState('')
-
+  const [selectedCategoryName, setSelectedCategoryName] = useState(value)
   // Ouvre le popover
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)

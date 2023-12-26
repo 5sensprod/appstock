@@ -80,18 +80,25 @@ const ProductsGrid = ({ selectedCategoryId }) => {
 
         return getCategoryPath(params.value) || 'Non classifié'
       },
-      renderEditCell: (params) => (
-        <CategorySelect
-          value={params.value || ''}
-          onChange={(newValue) => {
-            params.api.setEditCellValue({
-              id: params.id,
-              field: 'categorie',
-              value: newValue,
-            })
-          }}
-        />
-      ),
+      renderEditCell: (params) => {
+        const currentCategoryName = params.api.getCellValue(
+          params.id,
+          'categorie',
+        )
+
+        return (
+          <CategorySelect
+            value={currentCategoryName}
+            onChange={(newValue) => {
+              params.api.setEditCellValue({
+                id: params.id,
+                field: 'categorie',
+                value: newValue,
+              })
+            }}
+          />
+        )
+      },
     },
     { field: 'marque', headerName: 'Marque', flex: 0.75 },
     { field: 'gencode', headerName: 'GenCode', flex: 0.75 },
