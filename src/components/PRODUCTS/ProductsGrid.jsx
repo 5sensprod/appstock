@@ -1,35 +1,22 @@
 // src/components/PRODUCTS/ProductsGrid.js
 import React from 'react'
-import { DataGridPro } from '@mui/x-data-grid-pro'
+import { DataGridPro, GridToolbar } from '@mui/x-data-grid-pro'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import moment from 'moment'
 
 const ProductsGrid = ({ selectedCategoryId }) => {
-  const { products, searchTerm } = useProductContextSimplified()
+  const { products } = useProductContextSimplified()
   const { categories } = useCategoryContext()
 
   // Filtrer les produits en fonction du searchTerm
   const filteredProducts = products.filter((product) => {
-    // Filtrage par terme de recherche
-    const lowerCaseSearchTerm = searchTerm.toLowerCase()
-    const reference = product.reference
-      ? product.reference.toLowerCase().includes(lowerCaseSearchTerm)
-      : false
-    const descriptionCourte = product.descriptionCourte
-      ? product.descriptionCourte.toLowerCase().includes(lowerCaseSearchTerm)
-      : false
-    const marque = product.marque
-      ? product.marque.toLowerCase().includes(lowerCaseSearchTerm)
-      : false
-    const matchesSearch = reference || descriptionCourte || marque
-
     // Filtrage par catégorie
     const matchesCategory = selectedCategoryId
       ? product.categorie === selectedCategoryId
       : true
 
-    return matchesSearch && matchesCategory
+    return matchesCategory
   })
 
   const columns = [
@@ -77,6 +64,14 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         rowsPerPageOptions={[10, 20, 50]}
         checkboxSelection
         getRowId={(row) => row._id}
+        slots={{
+          toolbar: GridToolbar,
+        }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+          },
+        }}
       />
     </div>
   )

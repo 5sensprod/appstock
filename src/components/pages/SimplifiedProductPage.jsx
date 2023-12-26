@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import Grid from '@mui/material/Grid'
 import ProductsGrid from '../PRODUCTS/ProductsGrid'
-import ProductSearch from '../PRODUCTS/ProductSearch'
+// import ProductSearch from '../PRODUCTS/ProductSearch'
 import CategoryFilter from '../CATEGORIES/CategoryFilter'
 import { useLocation } from 'react-router-dom'
 
@@ -15,7 +15,7 @@ const SimplifiedProductPage = () => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <ProductSearch />
+        {/* <ProductSearch /> */}
       </Grid>
       <Grid item xs={12}>
         <CategoryFilter
