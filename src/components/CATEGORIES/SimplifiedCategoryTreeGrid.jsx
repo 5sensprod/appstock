@@ -4,6 +4,7 @@ import { Button, TextField } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import frenchLocale from '../locales/frenchLocale'
 import { useCategoryContext } from '../../contexts/CategoryContext'
+import { useNavigate } from 'react-router-dom'
 
 const SimplifiedCategoryTreeGrid = () => {
   const {
@@ -14,8 +15,13 @@ const SimplifiedCategoryTreeGrid = () => {
     productCountByCategory,
   } = useCategoryContext()
 
+  const navigate = useNavigate()
   const [searchText, setSearchText] = useState('')
   const gridApi = useRef(null)
+
+  const handleProductCountClick = (categoryId) => {
+    navigate('/products', { state: { selectedCategoryId: categoryId } })
+  }
 
   const onCellValueChanged = async ({ data, oldValue, newValue, colDef }) => {
     // Assurez-vous que la modification concerne la colonne 'name'
@@ -59,7 +65,11 @@ const SimplifiedCategoryTreeGrid = () => {
         field: 'productCount',
         cellRendererFramework: (params) => {
           const productCount = productCountByCategory[params.data._id] || 0
-          return <span>{productCount}</span>
+          return (
+            <Button onClick={() => handleProductCountClick(params.data._id)}>
+              {productCount}
+            </Button>
+          )
         },
       },
       {
@@ -76,7 +86,7 @@ const SimplifiedCategoryTreeGrid = () => {
         maxWidth: 150,
       },
     ],
-    [subCategoryCounts],
+    [subCategoryCounts, productCountByCategory, handleProductCountClick],
   )
 
   const handleDeleteCategory = async (categoryId) => {

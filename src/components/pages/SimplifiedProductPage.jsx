@@ -4,9 +4,13 @@ import Grid from '@mui/material/Grid'
 import ProductsGrid from '../PRODUCTS/ProductsGrid'
 import ProductSearch from '../PRODUCTS/ProductSearch'
 import CategoryFilter from '../CATEGORIES/CategoryFilter'
+import { useLocation } from 'react-router-dom'
 
 const SimplifiedProductPage = () => {
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null)
+  const location = useLocation()
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    location.state?.selectedCategoryId || null,
+  )
 
   return (
     <Grid container spacing={2}>
@@ -14,7 +18,10 @@ const SimplifiedProductPage = () => {
         <ProductSearch />
       </Grid>
       <Grid item xs={12}>
-        <CategoryFilter onCategorySelect={setSelectedCategoryId} />
+        <CategoryFilter
+          onCategorySelect={setSelectedCategoryId}
+          selectedCategoryId={selectedCategoryId}
+        />
       </Grid>
       <Grid item xs={12}>
         <ProductsGrid selectedCategoryId={selectedCategoryId} />
