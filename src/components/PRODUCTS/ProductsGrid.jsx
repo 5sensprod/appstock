@@ -1,8 +1,9 @@
 // src/components/PRODUCTS/ProductsGrid.js
 import React from 'react'
-import { DataGridPro, GridToolbar } from '@mui/x-data-grid-pro'
+import { DataGridPro, frFR, GridToolbar } from '@mui/x-data-grid-pro'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { useCategoryContext } from '../../contexts/CategoryContext'
+import { formatNumberFrench } from '../../utils/priceUtils'
 import moment from 'moment'
 
 const ProductsGrid = ({ selectedCategoryId }) => {
@@ -20,39 +21,62 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   })
 
   const columns = [
-    { field: 'reference', headerName: 'Référence', width: 150 },
+    { field: 'reference', headerName: 'Référence', flex: 1, editable: true },
     {
       field: 'prixVente',
-      headerName: 'Prix de Vente',
+      headerName: 'Px Vente',
       type: 'number',
-      width: 130,
+      flex: 0.5,
       editable: true,
+      renderCell: (params) => (
+        <span>
+          {params.value !== undefined
+            ? `${formatNumberFrench(params.value)} €`
+            : ''}
+        </span>
+      ),
     },
     {
-      field: 'descriptionCourte',
-      headerName: 'Description Courte',
-      width: 200,
+      field: 'prixAchat',
+      headerName: 'Px Achat',
+      type: 'number',
+      flex: 0.5,
+      editable: true,
+      renderCell: (params) => (
+        <span>
+          {params.value !== undefined
+            ? `${formatNumberFrench(params.value)} €`
+            : ''}
+        </span>
+      ),
+    },
+    {
+      field: 'stock',
+      headerName: 'Stock',
+      type: 'number',
+      flex: 0.5,
+      editable: true,
     },
     {
       field: 'categorie',
       headerName: 'Catégorie',
-      width: 150,
+      flex: 0.75,
       valueGetter: (params) => {
         const category = categories.find((cat) => cat._id === params.value)
         return category ? category.name : 'Non classifié'
       },
     },
-    { field: 'marque', headerName: 'Marque', width: 150 },
-    { field: 'SKU', headerName: 'SKU', width: 150 },
+    { field: 'marque', headerName: 'Marque', flex: 0.75 },
+    { field: 'gencode', headerName: 'GenCode', flex: 0.75 },
     {
       field: 'dateSoumission',
-      headerName: 'Date de Soumission',
+      headerName: 'Date Ajout',
       type: 'date',
-      width: 180,
+      flex: 0.5,
       valueGetter: (params) =>
         moment(params.value).isValid() ? moment(params.value).toDate() : null,
     },
-    { field: 'tva', headerName: 'TVA', type: 'number', width: 100 },
+    { field: 'tva', headerName: 'TVA', type: 'number', flex: 0.5 },
     // Ajoutez d'autres colonnes selon les besoins
   ]
 
@@ -73,26 +97,35 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   }
 
   return (
-    <div style={{ height: 600, width: '100%' }}>
-      <DataGridPro
-        rows={filteredProducts}
-        columns={columns}
-        pageSize={10}
-        rowsPerPageOptions={[10, 20, 50]}
-        checkboxSelection
-        getRowId={(row) => row._id}
-        processRowUpdate={processRowUpdate}
-        onProcessRowUpdateError={handleProcessRowUpdateError}
-        slots={{
-          toolbar: GridToolbar,
-        }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
+    <DataGridPro
+      localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+      rows={filteredProducts}
+      columns={columns}
+      initialState={{
+        pagination: {
+          paginationModel: {
+            pageSize: 10,
           },
-        }}
-      />
-    </div>
+        },
+      }}
+      pageSizeOptions={[10, 25, 50]}
+      pagination
+      checkboxSelection
+      checkboxSelectionVisibleOnly
+      getRowId={(row) => row._id}
+      processRowUpdate={processRowUpdate}
+      onProcessRowUpdateError={handleProcessRowUpdateError}
+      slots={{
+        toolbar: GridToolbar,
+      }}
+      disableRowSelectionOnClick
+      slotProps={{
+        toolbar: {
+          showQuickFilter: true,
+        },
+      }}
+      style={{ width: '100%' }}
+    />
   )
 }
 

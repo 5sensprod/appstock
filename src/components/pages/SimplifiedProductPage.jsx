@@ -13,19 +13,13 @@ const SimplifiedProductPage = () => {
   )
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        {/* <ProductSearch /> */}
-      </Grid>
-      <Grid item xs={12}>
-        <CategoryFilter
-          onCategorySelect={setSelectedCategoryId}
-          selectedCategoryId={selectedCategoryId}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <ProductsGrid selectedCategoryId={selectedCategoryId} />
-      </Grid>
+    <Grid container direction="column" spacing={2} mt={6}>
+      <CategoryFilter
+        onCategorySelect={setSelectedCategoryId}
+        selectedCategoryId={selectedCategoryId}
+      />
+
+      <ProductsGrid selectedCategoryId={selectedCategoryId} />
     </Grid>
   )
 }

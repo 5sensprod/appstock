@@ -64,5 +64,16 @@ export const calculateTotalItem = (item) => {
 
 // Fonction d'aide pour formater les nombres selon la convention française
 export const formatNumberFrench = (number) => {
+  // Vérifier si la valeur est une chaîne vide, null, undefined ou non numérique
+  if (
+    number === '' ||
+    number === null ||
+    number === undefined ||
+    isNaN(Number(number))
+  ) {
+    return 0
+  }
+
+  // Convertir la valeur nettoyée en un nombre flottant et le formater
   return parseFloat(number).toLocaleString('fr-FR')
 }
