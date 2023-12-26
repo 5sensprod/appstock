@@ -44,7 +44,8 @@ export const ProductProviderSimplified = ({ children }) => {
   // Mettre à jour un produit
   const updateProductInContext = async (productId, productData) => {
     try {
-      await updateProduct(baseUrl, productId, productData)
+      // Notez que nous ne passons pas `baseUrl` ici
+      await updateProduct(productId, productData)
       loadProducts()
     } catch (error) {
       console.error('Erreur lors de la mise à jour du produit:', error)
@@ -87,7 +88,7 @@ export const ProductProviderSimplified = ({ children }) => {
   const contextValue = {
     products,
     addProduct: addProductToContext,
-    updateProduct: updateProductInContext,
+    updateProductInContext,
     deleteProduct: deleteProductFromContext,
     searchTerm,
     setSearchTerm,

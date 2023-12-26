@@ -6,7 +6,7 @@ import { useCategoryContext } from '../../contexts/CategoryContext'
 import moment from 'moment'
 
 const ProductsGrid = ({ selectedCategoryId }) => {
-  const { products } = useProductContextSimplified()
+  const { products, updateProductInContext } = useProductContextSimplified()
   const { categories } = useCategoryContext()
 
   // Filtrer les produits en fonction du searchTerm
@@ -26,6 +26,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       headerName: 'Prix de Vente',
       type: 'number',
       width: 130,
+      editable: true,
     },
     {
       field: 'descriptionCourte',
@@ -55,6 +56,22 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     // Ajoutez d'autres colonnes selon les besoins
   ]
 
+  const processRowUpdate = async (newRow, oldRow) => {
+    try {
+      // Appel à la fonction du contexte pour mettre à jour le produit sur le serveur
+      await updateProductInContext(newRow._id, newRow)
+      return newRow
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du produit:', error)
+      throw error // Important pour déclencher onProcessRowUpdateError
+    }
+  }
+
+  const handleProcessRowUpdateError = (error) => {
+    // Gérer l'erreur ici (par exemple, afficher une notification à l'utilisateur)
+    console.error('Erreur lors de la mise à jour de la ligne :', error)
+  }
+
   return (
     <div style={{ height: 600, width: '100%' }}>
       <DataGridPro
@@ -64,6 +81,8 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         rowsPerPageOptions={[10, 20, 50]}
         checkboxSelection
         getRowId={(row) => row._id}
+        processRowUpdate={processRowUpdate}
+        onProcessRowUpdateError={handleProcessRowUpdateError}
         slots={{
           toolbar: GridToolbar,
         }}
