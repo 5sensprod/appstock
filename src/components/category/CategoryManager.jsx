@@ -3,6 +3,7 @@ import { Grid, Box } from '@mui/material'
 import CreateCategory from './CreateCategory'
 import CategoryTableTree from './CategoryTableTree'
 import SimplifiedCategoryTreeGrid from '../CATEGORIES/SimplifiedCategoryTreeGrid'
+import SimplifiedCreateCategory from '../CATEGORIES/SimplifiedCreateCategory'
 
 function CategoryManager() {
   return (
@@ -10,7 +11,7 @@ function CategoryManager() {
       <Grid container spacing={2}>
         <Grid item xs={12} md={3}>
           <Box>
-            <CreateCategory />
+            <SimplifiedCreateCategory />
           </Box>
         </Grid>
         <Grid item xs={12} md={9}>

@@ -5,6 +5,7 @@ import {
   deleteCategory,
   fetchSubCategoryCounts,
   fetchProductCountByCategory,
+  addCategory,
 } from '../api/categoryService'
 import { useConfig } from './ConfigContext'
 
@@ -111,12 +112,25 @@ export const CategoryProvider = ({ children }) => {
     }
   }
 
+  const addCategoryToContext = async (categoryData) => {
+    try {
+      const newCategory = await addCategory(categoryData, baseUrl)
+      setCategories((prevCategories) => [...prevCategories, newCategory])
+      // Pas besoin d'appeler loadCategoriesAndCounts ici
+      // car l'ajout d'une catégorie déclenchera un événement SSE qui mettra à jour les données
+    } catch (error) {
+      console.error('Erreur lors de l’ajout de la catégorie:', error)
+      throw error
+    }
+  }
+
   const contextValue = {
     categories,
     subCategoryCounts,
     productCountByCategory,
     updateCategoryInContext,
     deleteCategoryFromContext,
+    addCategoryToContext,
   }
 
   return (
