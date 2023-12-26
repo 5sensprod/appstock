@@ -14,7 +14,12 @@ export const useProductContextSimplified = () =>
 
 export const ProductProviderSimplified = ({ children }) => {
   const [products, setProducts] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
   const { baseUrl } = useConfig()
+
+  useEffect(() => {
+    loadProducts()
+  }, [])
 
   // Charger les produits
   const loadProducts = async () => {
@@ -84,6 +89,8 @@ export const ProductProviderSimplified = ({ children }) => {
     addProduct: addProductToContext,
     updateProduct: updateProductInContext,
     deleteProduct: deleteProductFromContext,
+    searchTerm,
+    setSearchTerm,
   }
 
   return (
