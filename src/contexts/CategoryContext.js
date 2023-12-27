@@ -28,13 +28,20 @@ export const CategoryProvider = ({ children }) => {
         const subCounts = await fetchSubCategoryCounts(baseUrl)
         setSubCategoryCounts(subCounts)
 
-        // Ajoutez ici la logique pour charger le comptage des produits par catégorie
+        // Chargement du comptage des produits par catégorie
         const productCounts = await fetchProductCountByCategory(baseUrl)
         setProductCountByCategory(productCounts)
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error)
       }
     }
+
+    // Écoute de l'événement de mise à jour du produit
+    const onProductUpdated = () => {
+      loadCategoriesAndCounts()
+    }
+
+    document.addEventListener('productUpdated', onProductUpdated)
 
     // Établir une connexion SSE
     const eventSource = new EventSource(`${baseUrl}/api/events`)
@@ -51,7 +58,6 @@ export const CategoryProvider = ({ children }) => {
       switch (type) {
         case 'category-added':
           setCategories((prevCategories) => [...prevCategories, category])
-          // Recharger les comptes de sous-catégories après l'ajout d'une catégorie
           loadCategoriesAndCounts()
           break
         case 'category-updated':
@@ -80,8 +86,9 @@ export const CategoryProvider = ({ children }) => {
 
     loadCategoriesAndCounts()
 
-    // Nettoyer la connexion SSE à la désinscription du composant
+    // Nettoyage des écouteurs d'événements et de la connexion SSE
     return () => {
+      document.removeEventListener('productUpdated', onProductUpdated)
       eventSource.close()
     }
   }, [baseUrl])
