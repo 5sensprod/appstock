@@ -11,14 +11,33 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const { products, updateProductInContext } = useProductContextSimplified()
   const { categories } = useCategoryContext()
 
+  const findAllSubCategoryIds = (categoryId) => {
+    const subCategoryIds = [categoryId]
+
+    const findSubIds = (id) => {
+      categories.forEach((cat) => {
+        if (cat.parentId === id) {
+          subCategoryIds.push(cat._id)
+          findSubIds(cat._id)
+        }
+      })
+    }
+
+    findSubIds(categoryId)
+    return subCategoryIds
+  }
+
   // Filtrer les produits en fonction du searchTerm
   const filteredProducts = products.filter((product) => {
-    // Filtrage par catégorie
-    const matchesCategory = selectedCategoryId
-      ? product.categorie === selectedCategoryId
-      : true
-
-    return matchesCategory
+    if (!selectedCategoryId) {
+      // Si aucune catégorie n'est sélectionnée, afficher tous les produits
+      return true
+    } else {
+      // Récupérer les ID de toutes les sous-catégories de la catégorie sélectionnée
+      const subCategoryIds = findAllSubCategoryIds(selectedCategoryId)
+      // Vérifier si la catégorie du produit correspond à la catégorie sélectionnée ou à une de ses sous-catégories
+      return subCategoryIds.includes(product.categorie)
+    }
   })
 
   const columns = [
