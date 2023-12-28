@@ -34,7 +34,9 @@ export const ProductProviderSimplified = ({ children }) => {
   // Ajouter un produit
   const addProductToContext = async (productData) => {
     try {
-      await addProduct(baseUrl, productData)
+      const newProduct = await addProduct(baseUrl, productData)
+      // Ici, vous pourriez soit rappeler loadProducts(), soit mettre à jour l'état directement
+      // si newProduct contient l'ID généré par NeDB.
       loadProducts()
     } catch (error) {
       console.error('Erreur lors de l’ajout du produit:', error)
@@ -93,6 +95,7 @@ export const ProductProviderSimplified = ({ children }) => {
     deleteProduct: deleteProductFromContext,
     searchTerm,
     setSearchTerm,
+    loadProducts,
   }
 
   return (
