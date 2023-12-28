@@ -1,5 +1,5 @@
 import React from 'react'
-import CategoryManager from '../category/CategoryManager'
+import CategoryManager from '../CATEGORIES/CategoryManager'
 
 const CategoryPage = () => {
   return (

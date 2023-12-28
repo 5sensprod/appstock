@@ -1,9 +1,7 @@
 import React from 'react'
 import { Grid, Box } from '@mui/material'
+import CategoryTreeGrid from './CategoryTreeGrid'
 import CreateCategory from './CreateCategory'
-import CategoryTableTree from './CategoryTableTree'
-import SimplifiedCategoryTreeGrid from '../CATEGORIES/SimplifiedCategoryTreeGrid'
-import SimplifiedCreateCategory from '../CATEGORIES/SimplifiedCreateCategory'
 
 function CategoryManager() {
   return (
@@ -11,12 +9,12 @@ function CategoryManager() {
       <Grid container spacing={2}>
         <Grid item xs={12} md={3}>
           <Box>
-            <SimplifiedCreateCategory />
+            <CreateCategory />
           </Box>
         </Grid>
         <Grid item xs={12} md={9}>
           <Box mt={2}>
-            <SimplifiedCategoryTreeGrid />
+            <CategoryTreeGrid />
           </Box>
         </Grid>
       </Grid>

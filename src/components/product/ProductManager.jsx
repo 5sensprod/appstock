@@ -8,19 +8,23 @@ import SelectCategory from '../category/SelectCategory'
 import NoMatchButton from '../ui/NoMatchButton'
 import ProductSearch from './ProductSearch'
 import { useProductContext } from '../../contexts/ProductContext'
+import { useCategoryContext } from '../../contexts/CategoryContext'
 import { Box, Button } from '@mui/material'
 
 const ProductManager = () => {
   const {
     searchTerm,
     selectedCategoryId,
-    categories,
+    // categories,
     setSelectedCategoryId,
     setSearchTerm,
     products,
     selectedProducts,
     handleProductSelect,
   } = useProductContext()
+
+  const { categories } = useCategoryContext()
+
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
 

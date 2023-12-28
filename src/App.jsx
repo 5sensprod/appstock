@@ -9,7 +9,6 @@ import { UIProvider } from './contexts/UIContext'
 import POSPage from './components/pages/POSPage'
 import DashboardPage from './components/pages/DashboardPage'
 import CatalogPage from './components/pages/CatalogPage'
-import ProductDetailsPage from './components/pages/ProductDetailsPage'
 import CategoryPage from './components/pages/CategoryPage'
 import ClientPage from './components/pages/ClientPage'
 import InvoicePage from './components/pages/InvoicePage'
@@ -17,8 +16,7 @@ import MainLayout from './components/layout/MainLayout'
 import CreateProductPage from './components/pages/CreateProductPage'
 import EditProductPage from './components/pages/EditProductPage'
 import MobilPage from './components/pages/MobilPage'
-// import ProductPage from './components/pages/ProductPage'
-import SimplifiedProductPage from './components/pages/SimplifiedProductPage'
+import ProductPage from './components/pages/ProductPage'
 import { LicenseManager } from 'ag-grid-enterprise'
 import { LicenseInfo } from '@mui/x-data-grid-pro'
 import { ConfigProvider } from './contexts/ConfigContext'
@@ -66,18 +64,7 @@ const App = () => {
                             path="/products/:productIds?/:categoryId?"
                             element={<ProductPage />}
                           /> */}
-                            <Route
-                              path="/products"
-                              element={<SimplifiedProductPage />}
-                            />
-                            <Route
-                              path="/product-details/:productIds/:categoryId"
-                              element={<ProductDetailsPage />}
-                            />
-                            <Route
-                              path="/product-details"
-                              element={<ProductDetailsPage />}
-                            />
+                            <Route path="/products" element={<ProductPage />} />
                             <Route
                               path="/category"
                               element={<CategoryPage />}

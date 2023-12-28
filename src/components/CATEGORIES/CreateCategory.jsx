@@ -3,13 +3,12 @@ import { useForm } from 'react-hook-form'
 import {
   Box,
   TextField,
-  Button,
   FormControl,
   IconButton,
   Popover,
   Fab,
 } from '@mui/material'
-import { useProductContext } from '../../contexts/ProductContext'
+import { useCategoryContext } from '../../contexts/CategoryContext'
 import CategoryTreeSelect from './CategoryTreeSelect'
 import { transformCategoriesToTree } from '../../utils/transformCategoriesToTree'
 import CloseIcon from '@mui/icons-material/Close'
@@ -23,11 +22,11 @@ function CreateCategory() {
     setValue,
     formState: { errors },
   } = useForm()
-  const { addCategory, categories } = useProductContext()
+  const { categories, addCategoryToContext } = useCategoryContext()
   const [selectedParentId, setSelectedParentId] = useState('')
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedParentName, setSelectedParentName] = useState('')
-  const [categoryName, setCategoryName] = useState('') // État pour le nom de la catégorie
+  const [categoryName, setCategoryName] = useState('')
 
   // Gestionnaire pour la mise à jour du nom de la catégorie
   const handleCategoryNameChange = (event) => {
@@ -50,7 +49,7 @@ function CreateCategory() {
         ...data,
         parentId: selectedParentId === '' ? null : selectedParentId,
       }
-      await addCategory(categoryData)
+      await addCategoryToContext(categoryData)
       reset()
       setSelectedParentId('')
       setSelectedParentName('')
@@ -107,7 +106,7 @@ function CreateCategory() {
           InputLabelProps={{
             shrink: true,
           }}
-          onFocus={(event) => event.target.blur()} // Empêcher le focus
+          onFocus={(event) => event.target.blur()}
         />
       </FormControl>
       <Popover

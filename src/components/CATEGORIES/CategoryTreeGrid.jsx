@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState, useMemo } from 'react'
+import React, { useRef, useState, useMemo } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import { Button, TextField } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { updateProductsBulk } from '../../api/productService'
 
-const SimplifiedCategoryTreeGrid = () => {
+const CategoryTreeGrid = () => {
   const {
     categories,
     subCategoryCounts,
@@ -28,7 +28,6 @@ const SimplifiedCategoryTreeGrid = () => {
   }
 
   const onCellValueChanged = async ({ data, oldValue, newValue, colDef }) => {
-    // Assurez-vous que la modification concerne la colonne 'name'
     if (colDef.field === 'name' && oldValue !== newValue) {
       // Extrait uniquement le nom de la catégorie de la nouvelle valeur
       const updatedName = newValue.split(' (')[0]
@@ -176,4 +175,4 @@ const SimplifiedCategoryTreeGrid = () => {
   )
 }
 
-export default SimplifiedCategoryTreeGrid
+export default CategoryTreeGrid
