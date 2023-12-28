@@ -5,6 +5,8 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import frenchLocale from '../locales/frenchLocale'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useNavigate } from 'react-router-dom'
+import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
+import { updateProductsBulk } from '../../api/productService'
 
 const SimplifiedCategoryTreeGrid = () => {
   const {
@@ -14,6 +16,8 @@ const SimplifiedCategoryTreeGrid = () => {
     deleteCategoryFromContext,
     productCountByCategory,
   } = useCategoryContext()
+
+  const { products } = useProductContextSimplified()
 
   const navigate = useNavigate()
   const [searchText, setSearchText] = useState('')
@@ -42,7 +46,7 @@ const SimplifiedCategoryTreeGrid = () => {
     while (current) {
       const category = categories.find((cat) => cat._id === current)
       if (category) {
-        path.unshift(category.name) // Utiliser seulement le nom de la catégorie
+        path.unshift(category.name)
         current = category.parentId
       } else {
         break
@@ -90,7 +94,20 @@ const SimplifiedCategoryTreeGrid = () => {
   )
 
   const handleDeleteCategory = async (categoryId) => {
-    // Ici, vous pouvez ajouter une logique de confirmation avant la suppression
+    // Préparer la liste des produits à mettre à jour
+    const productsToUpdate = products
+      .filter((product) => product.categorie === categoryId)
+      .map((product) => ({
+        id: product._id,
+        changes: { categorie: null },
+      }))
+
+    // Mettre à jour les produits en masse
+    if (productsToUpdate.length > 0) {
+      await updateProductsBulk(productsToUpdate)
+    }
+
+    // Supprimer la catégorie
     await deleteCategoryFromContext(categoryId)
   }
 
