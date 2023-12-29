@@ -4,7 +4,7 @@ import { formatNumberFrench } from '../../../utils/priceUtils'
 import moment from 'moment'
 import CategorySelect from '../../CATEGORIES/CategorySelect'
 import { useProductContextSimplified } from '../../../contexts/ProductContextSimplified'
-import DeleteIcon from '@mui/icons-material/Delete'
+import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import EditIcon from '@mui/icons-material/Edit'
 
 const useColumns = () => {
@@ -13,7 +13,9 @@ const useColumns = () => {
   const [editRowsModel, setEditRowsModel] = useState({})
 
   const handleEditClick = (id) => {
-    setEditRowsModel({ ...editRowsModel, [id]: { isEditable: true } })
+    // Activer le mode d'édition pour la ligne spécifiée
+    const isEditable = editRowsModel[id]?.isEditable
+    setEditRowsModel({ ...editRowsModel, [id]: { isEditable: !isEditable } })
   }
 
   const actionColumn = {

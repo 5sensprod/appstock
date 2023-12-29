@@ -1,22 +1,24 @@
 import React from 'react'
-import { GridToolbar } from '@mui/x-data-grid-pro'
-import { Button } from '@mui/material'
+import {
+  GridToolbarContainer,
+  GridToolbarQuickFilter,
+  GridToolbar,
+} from '@mui/x-data-grid-pro'
+import Button from '@mui/material/Button'
 import AddIcon from '@mui/icons-material/Add'
 
-const CustomToolbar = ({ onAddClick }) => {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <Button
-        startIcon={<AddIcon />}
-        variant="contained"
-        color="primary"
-        onClick={onAddClick}
-      >
-        Ajouter
-      </Button>
-      <GridToolbar />
-    </div>
-  )
-}
+const CustomToolbar = ({ onAddClick }) => (
+  <GridToolbarContainer>
+    <Button color="primary" startIcon={<AddIcon />} onClick={onAddClick}>
+      Ajouter un produit
+    </Button>
+
+    {/* Ajouter explicitement le QuickFilter */}
+    <GridToolbarQuickFilter />
+
+    {/* Autres éléments de la barre d'outils */}
+    <GridToolbar />
+  </GridToolbarContainer>
+)
 
 export default CustomToolbar

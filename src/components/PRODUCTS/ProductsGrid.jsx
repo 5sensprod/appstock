@@ -1,8 +1,9 @@
 import React from 'react'
-import { DataGridPro, frFR, GridToolbar } from '@mui/x-data-grid-pro'
+import { DataGridPro, frFR } from '@mui/x-data-grid-pro'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import useFilteredProducts from './hooks/useFilteredProducts'
 import useColumns from './hooks/useColumns'
+import CustomToolbar from './CustomToolbar'
 
 const ProductsGrid = ({ selectedCategoryId }) => {
   const { updateProductInContext } = useProductContextSimplified()
@@ -12,18 +13,20 @@ const ProductsGrid = ({ selectedCategoryId }) => {
 
   const processRowUpdate = async (newRow, oldRow) => {
     try {
-      // Appel à la fonction du contexte pour mettre à jour le produit sur le serveur
       await updateProductInContext(newRow._id, newRow)
       return newRow
     } catch (error) {
       console.error('Erreur lors de la mise à jour du produit:', error)
-      throw error // Important pour déclencher onProcessRowUpdateError
+      throw error
     }
   }
 
   const handleProcessRowUpdateError = (error) => {
-    // Gérer l'erreur ici (par exemple, afficher une notification à l'utilisateur)
     console.error('Erreur lors de la mise à jour de la ligne :', error)
+  }
+
+  const handleAddClick = () => {
+    // Logique pour ajouter une nouvelle ligne
   }
 
   return (
@@ -47,12 +50,13 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       processRowUpdate={processRowUpdate}
       onProcessRowUpdateError={handleProcessRowUpdateError}
       slots={{
-        toolbar: GridToolbar,
+        toolbar: CustomToolbar,
       }}
       disableRowSelectionOnClick
       slotProps={{
         toolbar: {
           showQuickFilter: true,
+          onAddClick: handleAddClick,
         },
       }}
       style={{ width: '100%' }}
