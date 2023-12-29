@@ -92,7 +92,7 @@ export const ProductProviderSimplified = ({ children }) => {
     products,
     addProduct: addProductToContext,
     updateProductInContext,
-    deleteProduct: deleteProductFromContext,
+    deleteProduct,
     searchTerm,
     setSearchTerm,
     loadProducts,

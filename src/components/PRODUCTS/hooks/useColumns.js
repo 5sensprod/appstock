@@ -1,11 +1,39 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useCategoryContext } from '../../../contexts/CategoryContext'
 import { formatNumberFrench } from '../../../utils/priceUtils'
 import moment from 'moment'
 import CategorySelect from '../../CATEGORIES/CategorySelect'
+import { useProductContextSimplified } from '../../../contexts/ProductContextSimplified'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 
 const useColumns = () => {
   const { categories } = useCategoryContext()
+  const { deleteProduct } = useProductContextSimplified()
+  const [editRowsModel, setEditRowsModel] = useState({})
+
+  const handleEditClick = (id) => {
+    setEditRowsModel({ ...editRowsModel, [id]: { isEditable: true } })
+  }
+
+  const actionColumn = {
+    field: 'actions',
+    headerName: 'Actions',
+    flex: 0.5,
+    sortable: false,
+    renderCell: (params) => (
+      <>
+        <EditIcon
+          onClick={() => handleEditClick(params.row._id)}
+          style={{ cursor: 'pointer', marginRight: 8 }}
+        />
+        <DeleteIcon
+          onClick={() => deleteProduct(params.row._id)}
+          style={{ cursor: 'pointer' }}
+        />
+      </>
+    ),
+  }
 
   const getCategoryPath = (categoryId) => {
     let path = []
@@ -95,9 +123,10 @@ const useColumns = () => {
         moment(params.value).isValid() ? moment(params.value).toDate() : null,
     },
     { field: 'tva', headerName: 'TVA', type: 'number', flex: 0.5 },
+    actionColumn,
   ]
 
-  return columns
+  return { columns, editRowsModel }
 }
 
 export default useColumns

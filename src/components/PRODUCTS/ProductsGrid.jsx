@@ -8,7 +8,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const { updateProductInContext } = useProductContextSimplified()
 
   const filteredProducts = useFilteredProducts(selectedCategoryId)
-  const columns = useColumns()
+  const { columns, editRowsModel } = useColumns()
 
   const processRowUpdate = async (newRow, oldRow) => {
     try {
@@ -31,6 +31,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
       rows={filteredProducts}
       columns={columns}
+      editRowsModel={editRowsModel}
       initialState={{
         pagination: {
           paginationModel: {
