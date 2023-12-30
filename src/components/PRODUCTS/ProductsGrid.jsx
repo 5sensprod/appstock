@@ -1,40 +1,86 @@
-import React from 'react'
-import { DataGridPro, frFR } from '@mui/x-data-grid-pro'
+import React, { useState, useMemo } from 'react'
+import { DataGridPro, frFR, GridRowModes } from '@mui/x-data-grid-pro'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import useFilteredProducts from './hooks/useFilteredProducts'
 import useColumns from './hooks/useColumns'
 import CustomToolbar from './CustomToolbar'
 
 const ProductsGrid = ({ selectedCategoryId }) => {
-  const { updateProductInContext } = useProductContextSimplified()
-
+  const { addProduct, updateProduct } = useProductContextSimplified()
   const filteredProducts = useFilteredProducts(selectedCategoryId)
-  const { columns, editRowsModel } = useColumns()
+
+  const [rows, setRows] = useState(filteredProducts)
+  const initialRowModesModel = useMemo(() => {
+    return filteredProducts.reduce((model, product) => {
+      model[product._id] = { mode: GridRowModes.View }
+      return model
+    }, {})
+  }, [filteredProducts])
+  const [rowModesModel, setRowModesModel] = useState(initialRowModesModel)
+
+  const { columns } = useColumns(
+    rowModesModel,
+    setRowModesModel,
+    setRows,
+    addProduct,
+  )
 
   const processRowUpdate = async (newRow, oldRow) => {
     try {
-      await updateProductInContext(newRow._id, newRow)
+      if (newRow.isNew || newRow.id.startsWith('new-')) {
+        // Supprimez l'attribut 'id' temporaire avant d'envoyer à l'API
+        const { id, ...productData } = newRow
+        const addedProduct = await addProduct(productData)
+
+        // Remplacez la ligne temporaire par la nouvelle ligne ajoutée
+        setRows((prevRows) =>
+          prevRows.map((row) =>
+            row.id === id ? { ...addedProduct, isNew: false } : row,
+          ),
+        )
+      } else {
+        // Mise à jour d'une ligne existante
+        const updatedProduct = await updateProduct(newRow._id, newRow)
+        setRows((prevRows) =>
+          prevRows.map((row) =>
+            row._id === newRow._id ? updatedProduct : row,
+          ),
+        )
+      }
       return newRow
     } catch (error) {
       console.error('Erreur lors de la mise à jour du produit:', error)
-      throw error
+      throw error // Pour déclencher handleProcessRowUpdateError
     }
   }
-
   const handleProcessRowUpdateError = (error) => {
     console.error('Erreur lors de la mise à jour de la ligne :', error)
   }
-
   const handleAddClick = () => {
-    // Logique pour ajouter une nouvelle ligne
+    const tempId = 'new-' + Date.now() // Identifiant temporaire unique
+    const newRow = {
+      id: tempId,
+      // Initialisez seulement les champs absolument nécessaires avec des valeurs par défaut
+      reference: '', // S'il est important de commencer avec une référence vide
+      dateSoumission: new Date().toISOString(), // S'il est important de fixer une date par défaut
+      // ...autres champs absolument nécessaires
+    }
+
+    setRows((prevRows) => [...prevRows, newRow])
+    setRowModesModel((prev) => ({
+      ...prev,
+      [tempId]: { mode: GridRowModes.Edit },
+    }))
   }
 
   return (
     <DataGridPro
       localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-      rows={filteredProducts}
+      rows={rows}
+      getRowId={(row) => row._id || row.id}
       columns={columns}
-      editRowsModel={editRowsModel}
+      rowModesModel={rowModesModel}
+      onRowModesModelChange={setRowModesModel}
       initialState={{
         pagination: {
           paginationModel: {
@@ -46,7 +92,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       pagination
       checkboxSelection
       checkboxSelectionVisibleOnly
-      getRowId={(row) => row._id}
       processRowUpdate={processRowUpdate}
       onProcessRowUpdateError={handleProcessRowUpdateError}
       slots={{

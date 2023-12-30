@@ -90,8 +90,8 @@ export const ProductProviderSimplified = ({ children }) => {
 
   const contextValue = {
     products,
-    addProduct: addProductToContext,
-    updateProductInContext,
+    addProduct,
+    updateProduct,
     deleteProduct,
     searchTerm,
     setSearchTerm,
