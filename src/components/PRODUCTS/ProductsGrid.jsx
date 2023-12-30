@@ -43,14 +43,15 @@ const ProductsGrid = ({ selectedCategoryId }) => {
 
   const processRowUpdate = async (newRow, oldRow) => {
     try {
-      // Vérifiez si newRow et newRow.id sont définis
-      if (!newRow || typeof newRow.id === 'undefined') {
-        throw new Error(
-          "La nouvelle ligne ou l'identifiant de la ligne est indéfini.",
-        )
+      // Vérifiez si newRow est défini
+      if (!newRow) {
+        throw new Error('La nouvelle ligne est indéfinie.')
       }
 
-      if (newRow.isNew || newRow.id.startsWith('new-')) {
+      if (
+        newRow.isNew ||
+        (typeof newRow.id !== 'undefined' && newRow.id.startsWith('new-'))
+      ) {
         // Supprimez l'attribut 'id' temporaire avant d'envoyer à l'API
         const { id, ...productData } = newRow
         const addedProduct = await addProduct(productData)
