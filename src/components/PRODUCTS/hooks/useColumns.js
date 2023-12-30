@@ -28,6 +28,7 @@ const useColumns = (
       [id]: { mode: GridRowModes.Edit },
     }))
   }
+
   const handleSaveClick = async (id, row) => {
     try {
       let response
@@ -65,9 +66,14 @@ const useColumns = (
     }
   }
 
-  const handleDeleteClick = (id) => {
-    // Implémentez la logique de suppression ici
-    setRows((prev) => prev.filter((row) => row.id !== id))
+  const handleDeleteClick = async (id) => {
+    try {
+      await deleteProduct(id) // Supprimez le produit à l'aide de l'API
+      setRows((prevRows) => prevRows.filter((row) => row.id !== id)) // Mettez à jour l'état de la grille
+    } catch (error) {
+      console.error('Erreur lors de la suppression du produit:', error)
+      // Gérez les erreurs, par exemple, affichez un message d'erreur à l'utilisateur
+    }
   }
 
   const actionColumn = {
@@ -96,14 +102,12 @@ const useColumns = (
           <GridActionsCellItem
             icon={<EditIcon />}
             label="Edit"
-            onClick={() => {
-              /* logique d'édition */
-            }}
+            onClick={() => handleEditClick(params.id)}
           />,
           <GridActionsCellItem
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={() => deleteProduct(params.id)}
+            onClick={() => handleDeleteClick(params.id)}
           />,
         ]
       }

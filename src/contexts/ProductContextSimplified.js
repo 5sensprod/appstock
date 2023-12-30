@@ -58,12 +58,30 @@ export const ProductProviderSimplified = ({ children }) => {
   // Supprimer un produit
   const deleteProductFromContext = async (productId) => {
     try {
-      await deleteProduct(baseUrl, productId)
+      await deleteProduct(productId)
       loadProducts()
+
+      // Créer et émettre un événement personnalisé
+      const event = new CustomEvent('product-deleted', {
+        detail: { productId },
+      })
+      document.dispatchEvent(event)
     } catch (error) {
       console.error('Erreur lors de la suppression du produit:', error)
     }
   }
+  const handleProductDeleted = (e) => {
+    const deletedProductId = e.detail.productId
+    setProducts((prevProducts) =>
+      prevProducts.filter((product) => product._id !== deletedProductId),
+    )
+  }
+
+  useEffect(() => {
+    document.addEventListener('product-deleted', handleProductDeleted)
+    return () =>
+      document.removeEventListener('product-deleted', handleProductDeleted)
+  }, [])
 
   // Connexion SSE pour les mises à jour en temps réel
   useEffect(() => {
@@ -91,8 +109,8 @@ export const ProductProviderSimplified = ({ children }) => {
   const contextValue = {
     products,
     addProduct,
-    updateProduct,
-    deleteProduct,
+    updateProductInContext,
+    deleteProduct: deleteProductFromContext,
     searchTerm,
     setSearchTerm,
     loadProducts,
