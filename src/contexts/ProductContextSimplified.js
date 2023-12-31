@@ -6,6 +6,7 @@ import {
   deleteProduct,
 } from '../api/productService'
 import { useConfig } from './ConfigContext'
+import { EventEmitter } from '../utils/eventEmitter'
 
 const ProductContextSimplified = createContext()
 
@@ -34,10 +35,9 @@ export const ProductProviderSimplified = ({ children }) => {
   // Ajouter un produit
   const addProductToContext = async (productData) => {
     try {
-      const newProduct = await addProduct(baseUrl, productData)
-      // Ici, vous pourriez soit rappeler loadProducts(), soit mettre à jour l'état directement
-      // si newProduct contient l'ID généré par NeDB.
+      const newProduct = await addProduct(productData)
       loadProducts()
+      EventEmitter.dispatch('PRODUCT_CRUD_OPERATION')
     } catch (error) {
       console.error('Erreur lors de l’ajout du produit:', error)
     }
@@ -46,42 +46,24 @@ export const ProductProviderSimplified = ({ children }) => {
   // Mettre à jour un produit
   const updateProductInContext = async (productId, productData) => {
     try {
-      await updateProduct(productId, productData)
-      loadProducts()
-      // Déclencher l'événement personnalisé
-      document.dispatchEvent(new CustomEvent('productUpdated'))
+      await updateProduct(productId, productData) // Mise à jour du produit via l'API
+      loadProducts() // Rechargement de la liste des produits
+      EventEmitter.dispatch('PRODUCT_CRUD_OPERATION') // Déclencher un événement pour notifier les autres parties de l'application
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du produit:', error)
+      console.error('Erreur lors de la mise à jour du produit:', error) // Gestion des erreurs
     }
   }
 
   // Supprimer un produit
   const deleteProductFromContext = async (productId) => {
     try {
-      await deleteProduct(productId)
-      loadProducts()
-
-      // Créer et émettre un événement personnalisé
-      const event = new CustomEvent('product-deleted', {
-        detail: { productId },
-      })
-      document.dispatchEvent(event)
+      await deleteProduct(productId) // Suppression du produit via l'API
+      loadProducts() // Rechargement de la liste des produits
+      EventEmitter.dispatch('PRODUCT_CRUD_OPERATION') // Déclencher un événement pour notifier les autres parties de l'application
     } catch (error) {
-      console.error('Erreur lors de la suppression du produit:', error)
+      console.error('Erreur lors de la suppression du produit:', error) // Gestion des erreurs
     }
   }
-  const handleProductDeleted = (e) => {
-    const deletedProductId = e.detail.productId
-    setProducts((prevProducts) =>
-      prevProducts.filter((product) => product._id !== deletedProductId),
-    )
-  }
-
-  useEffect(() => {
-    document.addEventListener('product-deleted', handleProductDeleted)
-    return () =>
-      document.removeEventListener('product-deleted', handleProductDeleted)
-  }, [])
 
   // Connexion SSE pour les mises à jour en temps réel
   useEffect(() => {
@@ -108,7 +90,7 @@ export const ProductProviderSimplified = ({ children }) => {
 
   const contextValue = {
     products,
-    addProduct,
+    addProduct: addProductToContext,
     updateProductInContext,
     deleteProduct: deleteProductFromContext,
     searchTerm,

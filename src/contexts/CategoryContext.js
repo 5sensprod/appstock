@@ -8,6 +8,7 @@ import {
   addCategory,
 } from '../api/categoryService'
 import { useConfig } from './ConfigContext'
+import { EventEmitter } from '../utils/eventEmitter'
 
 const CategoryContext = createContext()
 
@@ -36,12 +37,11 @@ export const CategoryProvider = ({ children }) => {
       }
     }
 
-    // Écoute de l'événement de mise à jour du produit
-    const onProductUpdated = () => {
+    // Nouvelle souscription à l'événement via EventEmitter
+    const onProductCrudOperation = () => {
       loadCategoriesAndCounts()
     }
-
-    document.addEventListener('productUpdated', onProductUpdated)
+    EventEmitter.subscribe('PRODUCT_CRUD_OPERATION', onProductCrudOperation)
 
     // Établir une connexion SSE
     const eventSource = new EventSource(`${baseUrl}/api/events`)
@@ -88,7 +88,7 @@ export const CategoryProvider = ({ children }) => {
 
     // Nettoyage des écouteurs d'événements et de la connexion SSE
     return () => {
-      document.removeEventListener('productUpdated', onProductUpdated)
+      EventEmitter.unsubscribe('PRODUCT_CRUD_OPERATION', onProductCrudOperation)
       eventSource.close()
     }
   }, [baseUrl])
@@ -123,8 +123,6 @@ export const CategoryProvider = ({ children }) => {
     try {
       const newCategory = await addCategory(categoryData, baseUrl)
       setCategories((prevCategories) => [...prevCategories, newCategory])
-      // Pas besoin d'appeler loadCategoriesAndCounts ici
-      // car l'ajout d'une catégorie déclenchera un événement SSE qui mettra à jour les données
     } catch (error) {
       console.error('Erreur lors de l’ajout de la catégorie:', error)
       throw error
