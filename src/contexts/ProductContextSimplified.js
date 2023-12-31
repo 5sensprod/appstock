@@ -36,7 +36,7 @@ export const ProductProviderSimplified = ({ children }) => {
   const addProductToContext = async (productData) => {
     try {
       const newProduct = await addProduct(productData)
-      loadProducts()
+      setProducts((currentProducts) => [...currentProducts, newProduct])
       EventEmitter.dispatch('PRODUCT_CRUD_OPERATION')
     } catch (error) {
       console.error('Erreur lors de l’ajout du produit:', error)
@@ -46,22 +46,24 @@ export const ProductProviderSimplified = ({ children }) => {
   // Mettre à jour un produit
   const updateProductInContext = async (productId, productData) => {
     try {
-      await updateProduct(productId, productData) // Mise à jour du produit via l'API
-      loadProducts() // Rechargement de la liste des produits
-      EventEmitter.dispatch('PRODUCT_CRUD_OPERATION') // Déclencher un événement pour notifier les autres parties de l'application
+      await updateProduct(productId, productData)
+      loadProducts()
+      EventEmitter.dispatch('PRODUCT_CRUD_OPERATION')
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du produit:', error) // Gestion des erreurs
+      console.error('Erreur lors de la mise à jour du produit:', error)
     }
   }
 
   // Supprimer un produit
   const deleteProductFromContext = async (productId) => {
     try {
-      await deleteProduct(productId) // Suppression du produit via l'API
-      loadProducts() // Rechargement de la liste des produits
-      EventEmitter.dispatch('PRODUCT_CRUD_OPERATION') // Déclencher un événement pour notifier les autres parties de l'application
+      await deleteProduct(productId)
+      setProducts((currentProducts) =>
+        currentProducts.filter((product) => product.id !== productId),
+      )
+      EventEmitter.dispatch('PRODUCT_CRUD_OPERATION')
     } catch (error) {
-      console.error('Erreur lors de la suppression du produit:', error) // Gestion des erreurs
+      console.error('Erreur lors de la suppression du produit:', error)
     }
   }
 
@@ -71,8 +73,6 @@ export const ProductProviderSimplified = ({ children }) => {
 
     eventSource.onmessage = (e) => {
       const data = JSON.parse(e.data)
-
-      // Gérer les mises à jour pour les produits
       if (
         ['product-added', 'product-updated', 'product-deleted'].includes(
           data.type,
@@ -82,17 +82,16 @@ export const ProductProviderSimplified = ({ children }) => {
       }
     }
 
-    // Nettoyage à la désinscription
     return () => {
       eventSource.close()
     }
-  }, [baseUrl])
+  }, [baseUrl, loadProducts])
 
   const contextValue = {
     products,
-    addProduct: addProductToContext,
+    addProductToContext,
     updateProductInContext,
-    deleteProduct: deleteProductFromContext,
+    deleteProductFromContext,
     searchTerm,
     setSearchTerm,
     loadProducts,
