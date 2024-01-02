@@ -89,6 +89,7 @@ export const ProductProviderSimplified = ({ children }) => {
 
   const contextValue = {
     products,
+    setProducts,
     addProductToContext,
     updateProductInContext,
     deleteProductFromContext,

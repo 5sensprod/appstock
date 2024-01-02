@@ -3,8 +3,19 @@ import { useCategoryContext } from '../../../contexts/CategoryContext'
 import { formatNumberFrench } from '../../../utils/priceUtils'
 import moment from 'moment'
 import CategorySelect from '../../CATEGORIES/CategorySelect'
+import SaveIcon from '@mui/icons-material/Save'
+import CancelIcon from '@mui/icons-material/Close'
+import { IconButton } from '@mui/material'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
 
-const useColumns = () => {
+const useColumns = (
+  handleEdit,
+  handleDelete,
+  handleSave,
+  handleCancel,
+  isNewRow,
+) => {
   const { categories } = useCategoryContext()
 
   const getCategoryPath = (categoryId) => {
@@ -22,6 +33,40 @@ const useColumns = () => {
   }
 
   const columns = [
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      renderCell: (params) => {
+        // Vérifiez si la ligne est nouvelle
+        const isNew = isNewRow(params.row)
+
+        return (
+          <div>
+            {isNew ? (
+              <>
+                <IconButton onClick={() => handleSave(params.row)}>
+                  <SaveIcon />
+                </IconButton>
+                <IconButton onClick={() => handleCancel(params.row)}>
+                  <CancelIcon />
+                </IconButton>
+              </>
+            ) : (
+              <>
+                <IconButton onClick={() => handleEdit(params.row)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton onClick={() => handleDelete(params.row)}>
+                  <DeleteIcon />
+                </IconButton>
+              </>
+            )}
+          </div>
+        )
+      },
+      editable: false,
+    },
     { field: 'reference', headerName: 'Référence', flex: 1, editable: true },
     {
       field: 'prixVente',
