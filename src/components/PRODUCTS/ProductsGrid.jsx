@@ -139,7 +139,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   return (
     <DataGridPro
       localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-      rows={products}
+      rows={filteredProducts}
       columns={columns}
       initialState={{
         pagination: {
