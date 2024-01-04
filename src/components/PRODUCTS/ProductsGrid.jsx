@@ -23,6 +23,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const [isRowNew, setIsRowNew] = useState({})
   const [rowModesModel, setRowModesModel] = useState({})
   const [editingRow, setEditingRow] = useState(null)
+  const [isUpdating, setIsUpdating] = useState(false)
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.cellFocusOut) {
@@ -63,6 +64,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   }
 
   const handleSave = async (row) => {
+    setIsUpdating(true)
     if (!row) {
       console.error('Erreur : la ligne à sauvegarder est undefined.')
       return
@@ -89,6 +91,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   }
 
   const handleCancel = (row) => {
+    setIsUpdating(false)
     // Si la ligne est nouvelle (non enregistrée), la retirer du tableau des produits
     if (isRowNew[row._id]) {
       console.log(`Annulation de l'ajout d'une nouvelle ligne ID: ${row._id}`)
@@ -135,6 +138,9 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   )
 
   const processRowUpdate = async (newRow, oldRow) => {
+    if (!isUpdating) {
+      return oldRow
+    }
     if (newRow && newRow._id && newRow._id.startsWith('temp-')) {
       const addedProduct = await addProductToContext({
         ...newRow,
