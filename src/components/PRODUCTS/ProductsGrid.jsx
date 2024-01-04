@@ -22,6 +22,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const filteredProducts = useFilteredProducts(selectedCategoryId)
   const [isRowNew, setIsRowNew] = useState({})
   const [rowModesModel, setRowModesModel] = useState({})
+  const [editingRow, setEditingRow] = useState(null)
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.cellFocusOut) {
@@ -47,21 +48,22 @@ const ProductsGrid = ({ selectedCategoryId }) => {
 
     setIsRowNew({ ...isRowNew, [tempId]: true })
     setProducts([newProduct, ...products])
+    setRowModesModel((oldModel) => ({
+      ...oldModel,
+      [tempId]: { mode: GridRowModes.Edit },
+    }))
   }
 
   const handleEdit = (row) => {
+    setEditingRow({ ...row })
     setRowModesModel((oldModel) => ({
       ...oldModel,
       [row._id]: { mode: GridRowModes.Edit },
     }))
   }
 
-  const handleDelete = async (row) => {
-    await deleteProductFromContext(row._id)
-  }
-
   const handleSave = async (row) => {
-    if (!row || !row.reference || row.reference === '') {
+    if (!row) {
       console.error('Erreur : la ligne à sauvegarder est undefined.')
       return
     }
@@ -79,6 +81,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     } else {
       await updateProductInContext(row._id, row)
     }
+    setEditingRow(null)
     setRowModesModel((oldModel) => ({
       ...oldModel,
       [row._id]: { mode: GridRowModes.View },
@@ -86,9 +89,11 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   }
 
   const handleCancel = (row) => {
+    // Si la ligne est nouvelle (non enregistrée), la retirer du tableau des produits
     if (isRowNew[row._id]) {
+      console.log(`Annulation de l'ajout d'une nouvelle ligne ID: ${row._id}`)
       setProducts((currentProducts) =>
-        currentProducts.filter((p) => p._id !== row._id),
+        currentProducts.filter((product) => product._id !== row._id),
       )
       setIsRowNew((currentIsRowNew) => {
         const newIsRowNew = { ...currentIsRowNew }
@@ -96,10 +101,28 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         return newIsRowNew
       })
     }
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [row._id]: { mode: GridRowModes.View },
-    }))
+    // Sinon, rétablir les valeurs originales pour une ligne existante
+    else if (editingRow) {
+      console.log(
+        `Restauration des valeurs originales pour la ligne ID: ${row._id}`,
+      )
+      setProducts((currentProducts) =>
+        currentProducts.map((product) =>
+          product._id === editingRow._id ? editingRow : product,
+        ),
+      )
+    }
+
+    // Nettoyer l'état de l'édition et sortir du mode d'édition
+    setEditingRow(null)
+    setRowModesModel((oldModel) => {
+      console.log(`Sortie du mode d'édition pour la ligne ID: ${row._id}`)
+      return { ...oldModel, [row._id]: { mode: GridRowModes.View } }
+    })
+  }
+
+  const handleDelete = async (row) => {
+    await deleteProductFromContext(row._id)
   }
 
   const columns = useColumns(
@@ -112,7 +135,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   )
 
   const processRowUpdate = async (newRow, oldRow) => {
-    if (newRow._id.startsWith('temp-')) {
+    if (newRow && newRow._id && newRow._id.startsWith('temp-')) {
       const addedProduct = await addProductToContext({
         ...newRow,
         _id: undefined,
