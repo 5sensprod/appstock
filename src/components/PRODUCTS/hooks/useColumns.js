@@ -14,7 +14,7 @@ const useColumns = (
   handleDelete,
   handleSave,
   handleCancel,
-  isNewRow,
+  isNewRowFunction,
 ) => {
   const { categories } = useCategoryContext()
 
@@ -38,8 +38,7 @@ const useColumns = (
       headerName: 'Actions',
       width: 100,
       renderCell: (params) => {
-        // Vérifiez si la ligne est nouvelle
-        const isNew = isNewRow(params.row)
+        const isNew = isNewRowFunction(params.row)
 
         return (
           <div>

@@ -18,7 +18,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const [isRowNew, setIsRowNew] = useState({})
 
   const handleAddClick = () => {
-    const tempId = Date.now().toString() // Définir tempId ici
+    const tempId = `temp-${Date.now()}`
     const newProduct = {
       _id: tempId,
       reference: '',
@@ -33,7 +33,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     }
 
     setIsRowNew({ ...isRowNew, [tempId]: true })
-    setProducts([...products, newProduct])
+    setProducts([newProduct, ...products])
   }
 
   const handleEdit = (row) => {
@@ -49,12 +49,18 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   }
 
   const handleSave = async (row) => {
-    if (!row) {
+    console.trace('handleSave appelé')
+    console.log('handleSave appelé avec la ligne :', row)
+    if (!row || !row.reference || row.reference === '') {
       console.error('Erreur : la ligne à sauvegarder est undefined.')
       return
     }
 
+    console.log('ID de la ligne :', row._id)
+    console.log('Est-ce une nouvelle ligne ?', isRowNew[row._id])
+
     if (isRowNew[row._id]) {
+      console.log("Ajout d'un nouveau produit")
       // Logique pour ajouter un nouveau produit
       try {
         const addedProduct = await addProductToContext({
@@ -74,6 +80,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         console.error("Erreur lors de l'ajout du produit:", error)
       }
     } else {
+      console.log("Mise à jour d'un produit existant")
       // Logique pour mettre à jour un produit existant
       await updateProductInContext(row._id, row)
       setProducts((currentProducts) =>
@@ -105,30 +112,21 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   )
 
   const processRowUpdate = async (newRow, oldRow) => {
-    console.log('processRowUpdate - newRow:', newRow, 'oldRow:', oldRow)
-    if (!newRow._id || newRow._id.startsWith('temp-')) {
-      try {
-        console.log('Nouveau produit:', newRow)
-        const addedProduct = await addProductToContext({
-          ...newRow,
-          _id: undefined,
-        })
-        setProducts((currentProducts) => [
-          ...currentProducts.filter((p) => p._id !== 'temp-id'),
-          addedProduct,
-        ])
-      } catch (error) {
-        console.error("Erreur lors de l'ajout du produit:", error)
-      }
+    if (newRow._id.startsWith('temp-')) {
+      const addedProduct = await addProductToContext({
+        ...newRow,
+        _id: undefined,
+      })
+      setProducts((currentProducts) =>
+        currentProducts.map((row) =>
+          row._id === newRow._id ? { ...addedProduct, isNew: false } : row,
+        ),
+      )
     } else {
-      try {
-        await updateProductInContext(newRow._id, newRow)
-        setProducts((currentProducts) =>
-          currentProducts.map((p) => (p._id === newRow._id ? newRow : p)),
-        )
-      } catch (error) {
-        console.error('Erreur lors de la mise à jour du produit:', error)
-      }
+      await updateProductInContext(newRow._id, newRow)
+      setProducts((currentProducts) =>
+        currentProducts.map((row) => (row._id === newRow._id ? newRow : row)),
+      )
     }
     return newRow
   }
@@ -141,7 +139,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   return (
     <DataGridPro
       localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-      rows={filteredProducts}
+      rows={products}
       columns={columns}
       initialState={{
         pagination: {
@@ -154,7 +152,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       pagination
       checkboxSelection
       checkboxSelectionVisibleOnly
-      getRowId={(row) => row._id}
+      getRowId={(row) => row._id || row.id || `temp-${Date.now()}`}
       processRowUpdate={processRowUpdate}
       onProcessRowUpdateError={handleProcessRowUpdateError}
       slots={{
