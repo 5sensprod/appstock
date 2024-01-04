@@ -8,6 +8,7 @@ import CancelIcon from '@mui/icons-material/Close'
 import { IconButton } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import { GridRowModes } from '@mui/x-data-grid-pro'
 
 const useColumns = (
   handleEdit,
@@ -15,6 +16,7 @@ const useColumns = (
   handleSave,
   handleCancel,
   isNewRowFunction,
+  rowModesModel,
 ) => {
   const { categories } = useCategoryContext()
 
@@ -39,10 +41,12 @@ const useColumns = (
       width: 100,
       renderCell: (params) => {
         const isNew = isNewRowFunction(params.row)
+        const isInEditMode =
+          rowModesModel[params.id]?.mode === GridRowModes.Edit
 
         return (
           <div>
-            {isNew ? (
+            {isNew || isInEditMode ? (
               <>
                 <IconButton onClick={() => handleSave(params.row)}>
                   <SaveIcon />

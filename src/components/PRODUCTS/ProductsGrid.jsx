@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
-import { DataGridPro, frFR } from '@mui/x-data-grid-pro'
+import {
+  DataGridPro,
+  frFR,
+  GridRowEditStopReasons,
+  GridRowModes,
+} from '@mui/x-data-grid-pro'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import useFilteredProducts from './hooks/useFilteredProducts'
 import useColumns from './hooks/useColumns'
@@ -16,6 +21,15 @@ const ProductsGrid = ({ selectedCategoryId }) => {
 
   const filteredProducts = useFilteredProducts(selectedCategoryId)
   const [isRowNew, setIsRowNew] = useState({})
+  const [rowModesModel, setRowModesModel] = useState({})
+
+  const handleRowEditStop = (params, event) => {
+    if (params.reason === GridRowEditStopReasons.cellFocusOut) {
+      if (!event?.defaultMuiPrevented) {
+        event.defaultMuiPrevented = true
+      }
+    }
+  }
 
   const handleAddClick = () => {
     const tempId = `temp-${Date.now()}`
@@ -29,7 +43,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       marque: '',
       gencode: '',
       tva: 0,
-      // ... autres champs
     }
 
     setIsRowNew({ ...isRowNew, [tempId]: true })
@@ -37,60 +50,42 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   }
 
   const handleEdit = (row) => {
-    // Logique pour commencer l'édition d'une ligne
+    setRowModesModel((oldModel) => ({
+      ...oldModel,
+      [row._id]: { mode: GridRowModes.Edit },
+    }))
   }
 
   const handleDelete = async (row) => {
-    // Logique pour supprimer une ligne
     await deleteProductFromContext(row._id)
-    setProducts((currentProducts) =>
-      currentProducts.filter((p) => p._id !== row._id),
-    )
   }
 
   const handleSave = async (row) => {
-    console.trace('handleSave appelé')
-    console.log('handleSave appelé avec la ligne :', row)
     if (!row || !row.reference || row.reference === '') {
       console.error('Erreur : la ligne à sauvegarder est undefined.')
       return
     }
 
-    console.log('ID de la ligne :', row._id)
-    console.log('Est-ce une nouvelle ligne ?', isRowNew[row._id])
-
     if (isRowNew[row._id]) {
-      console.log("Ajout d'un nouveau produit")
-      // Logique pour ajouter un nouveau produit
       try {
-        const addedProduct = await addProductToContext({
-          ...row,
-          _id: undefined, // Retirer l'_id_ temporaire avant d'envoyer à l'API
-        })
         setIsRowNew((currentIsRowNew) => {
           const newIsRowNew = { ...currentIsRowNew }
           delete newIsRowNew[row._id]
           return newIsRowNew
         })
-        setProducts((currentProducts) => [
-          ...currentProducts.filter((p) => p._id !== row._id),
-          addedProduct,
-        ])
       } catch (error) {
         console.error("Erreur lors de l'ajout du produit:", error)
       }
     } else {
-      console.log("Mise à jour d'un produit existant")
-      // Logique pour mettre à jour un produit existant
       await updateProductInContext(row._id, row)
-      setProducts((currentProducts) =>
-        currentProducts.map((p) => (p._id === row._id ? row : p)),
-      )
     }
+    setRowModesModel((oldModel) => ({
+      ...oldModel,
+      [row._id]: { mode: GridRowModes.View },
+    }))
   }
 
   const handleCancel = (row) => {
-    // Supprime la nouvelle ligne si l'ajout est annulé
     if (isRowNew[row._id]) {
       setProducts((currentProducts) =>
         currentProducts.filter((p) => p._id !== row._id),
@@ -101,6 +96,10 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         return newIsRowNew
       })
     }
+    setRowModesModel((oldModel) => ({
+      ...oldModel,
+      [row._id]: { mode: GridRowModes.View },
+    }))
   }
 
   const columns = useColumns(
@@ -109,6 +108,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     handleSave,
     handleCancel,
     (row) => isRowNew[row._id],
+    rowModesModel,
   )
 
   const processRowUpdate = async (newRow, oldRow) => {
@@ -132,7 +132,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   }
 
   const handleProcessRowUpdateError = (error) => {
-    // Gérer l'erreur ici (par exemple, afficher une notification à l'utilisateur)
     console.error('Erreur lors de la mise à jour de la ligne :', error)
   }
 
@@ -141,6 +140,9 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
       rows={filteredProducts}
       columns={columns}
+      rowModesModel={rowModesModel}
+      onRowModesModelChange={setRowModesModel}
+      onRowEditStop={handleRowEditStop}
       initialState={{
         pagination: {
           paginationModel: {
