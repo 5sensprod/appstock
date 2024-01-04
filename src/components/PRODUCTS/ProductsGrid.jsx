@@ -19,6 +19,14 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     deleteProductFromContext,
   } = useProductContextSimplified()
 
+  // État pour le modèle de tri
+  const [sortModel, setSortModel] = useState([
+    {
+      field: 'dateSoumission',
+      sort: 'desc', // Tri décroissant pour afficher les plus récentes en premier
+    },
+  ])
+
   const filteredProducts = useFilteredProducts(selectedCategoryId)
   const [isRowNew, setIsRowNew] = useState({})
   const [rowModesModel, setRowModesModel] = useState({})
@@ -163,15 +171,31 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const handleProcessRowUpdateError = (error) => {
     console.error('Erreur lors de la mise à jour de la ligne :', error)
   }
+  const handleCellDoubleClick = (params, event) => {
+    if (params.isEditable) {
+      setEditingRow({ ...params.row })
+      setRowModesModel((oldModel) => ({
+        ...oldModel,
+        [params.id]: { mode: GridRowModes.Edit },
+      }))
+    }
+  }
 
   return (
     <DataGridPro
       localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
       rows={filteredProducts}
       columns={columns}
+      sortModel={sortModel}
+      onSortModelChange={setSortModel}
       rowModesModel={rowModesModel}
       onRowModesModelChange={setRowModesModel}
       onRowEditStop={handleRowEditStop}
+      onCellDoubleClick={(params, event) => {
+        if (!event.ctrlKey) {
+          event.defaultMuiPrevented = true
+        }
+      }}
       initialState={{
         pagination: {
           paginationModel: {
