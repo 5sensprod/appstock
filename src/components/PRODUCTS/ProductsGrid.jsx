@@ -193,7 +193,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       setEditingRow({ ...params.row })
       setRowModesModel((oldModel) => ({
         ...oldModel,
-        [params.id]: { mode: GridRowModes.Edit },
+        [params.row._id]: { mode: GridRowModes.Edit }, // Utiliser params.row._id au lieu de params.id
       }))
     }
   }
@@ -208,11 +208,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       rowModesModel={rowModesModel}
       onRowModesModelChange={setRowModesModel}
       onRowEditStop={handleRowEditStop}
-      onCellDoubleClick={(params, event) => {
-        if (!event.ctrlKey) {
-          event.defaultMuiPrevented = true
-        }
-      }}
+      onCellDoubleClick={handleCellDoubleClick}
       initialState={{
         pagination: {
           paginationModel: {
