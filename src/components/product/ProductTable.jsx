@@ -1,3 +1,5 @@
+// Tableau produits page POS
+
 import React, { useContext } from 'react'
 import { CartContext } from '../../contexts/CartContext'
 import { DataGridPremium, frFR, GridToolbar } from '@mui/x-data-grid-premium'
@@ -32,6 +34,7 @@ const ProductTable = ({ products }) => {
       flex: 1,
       renderCell: (params) => `${formatNumberFrench(params.value)} €`,
     },
+    { field: 'stock', headerName: 'Stock', type: 'number', flex: 1 },
     { field: 'tva', headerName: 'TVA', type: 'number', flex: 1 },
     { field: 'marque', headerName: 'Marque', flex: 1 },
     { field: 'gencode', headerName: 'Gencode', flex: 1 },

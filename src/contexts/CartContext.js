@@ -1,3 +1,4 @@
+import { useProductContextSimplified } from './ProductContextSimplified'
 import React, { createContext, useState, useEffect } from 'react'
 import {
   calculateTotal,
@@ -12,6 +13,7 @@ export const CartContext = createContext()
 // const taxRate = 0.2
 
 export const CartProvider = ({ children }) => {
+  const { updateProductInContext } = useProductContextSimplified()
   const [cartItems, setCartItems] = useState([])
   const [onHoldInvoices, setOnHoldInvoices] = useState([])
   const [cartTotals, setCartTotals] = useState({
@@ -24,6 +26,7 @@ export const CartProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [invoiceData, setInvoiceData] = useState(null)
   const [adjustmentAmount, setAdjustmentAmount] = useState(0)
+  const [updateTrigger, setUpdateTrigger] = useState(false)
 
   const enrichCartItem = (item) => {
     const priceToUse = item.prixModifie ?? item.prixVente
@@ -182,28 +185,57 @@ export const CartProvider = ({ children }) => {
       )
 
       if (itemIndex > -1) {
-        // Le produit est déjà dans le panier, donc nous augmentons simplement la quantité.
+        // Le produit est déjà dans le panier
         const newItems = [...currentItems]
-        newItems[itemIndex] = enrichCartItem({
-          ...newItems[itemIndex],
-          quantity: newItems[itemIndex].quantity + 1,
-        })
+        newItems[itemIndex].quantity += 1
+
+        // Mettre à jour le stock si nécessaire
+        if (newItems[itemIndex].stock !== null) {
+          const newStock = newItems[itemIndex].stock - 1
+          newItems[itemIndex].stock = newStock
+          updateProductInContext(product._id, { stock: newStock })
+        }
+        setUpdateTrigger((prev) => !prev)
         return newItems
       } else {
-        // Le produit n'est pas dans le panier, nous l'ajoutons après l'avoir enrichi.
-        const newItem = enrichCartItem({ ...product, quantity: 1 })
+        // Ajouter un nouveau produit au panier
+        const newItem = enrichCartItem({
+          ...product,
+          quantity: 1,
+          stock: product.stock - 1,
+        })
+        if (product.stock !== null) {
+          updateProductInContext(product._id, { stock: newItem.stock })
+        }
         return [...currentItems, newItem]
       }
     })
   }
 
   // Mettre à jour la quantité d'un produit dans le panier
-  const updateQuantity = (productId, quantity) => {
-    setCartItems((currentItems) =>
-      currentItems.map((item) =>
-        item._id === productId ? enrichCartItem({ ...item, quantity }) : item,
-      ),
-    )
+  const updateQuantity = (productId, newQuantity) => {
+    setCartItems((currentItems) => {
+      return currentItems.map((item) => {
+        if (item._id === productId) {
+          // Calculer le changement de quantité
+          const quantityChange = newQuantity - item.quantity
+
+          // Mettre à jour le stock
+          if (item.stock !== null) {
+            const newStock = item.stock - quantityChange
+            updateProductInContext(productId, { stock: newStock })
+            return enrichCartItem({
+              ...item,
+              quantity: newQuantity,
+              stock: newStock,
+            })
+          }
+
+          return enrichCartItem({ ...item, quantity: newQuantity })
+        }
+        return item
+      })
+    })
   }
 
   // Mettre à jour le prix d'un article dans le panier
@@ -219,9 +251,21 @@ export const CartProvider = ({ children }) => {
 
   // Retirer un produit du panier
   const removeItem = (productId) => {
-    setCartItems((currentItems) =>
-      currentItems.filter((item) => item._id !== productId),
-    )
+    setCartItems((currentItems) => {
+      const itemIndex = currentItems.findIndex((item) => item._id === productId)
+
+      if (itemIndex > -1) {
+        const item = currentItems[itemIndex]
+        // Rétablir le stock si nécessaire
+        if (item.stock !== null) {
+          updateProductInContext(productId, {
+            stock: item.stock + item.quantity,
+          })
+        }
+      }
+
+      return currentItems.filter((item) => item._id !== productId)
+    })
   }
 
   return (

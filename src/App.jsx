@@ -39,8 +39,8 @@ const App = () => {
       <ConfigProvider>
         <UIProvider>
           <CompanyInfoProvider>
-            <CartProvider>
-              <ProductProviderSimplified>
+            <ProductProviderSimplified>
+              <CartProvider>
                 <ProductProvider>
                   <CategoryProvider>
                     <Router>
@@ -87,8 +87,8 @@ const App = () => {
                     </Router>
                   </CategoryProvider>
                 </ProductProvider>
-              </ProductProviderSimplified>
-            </CartProvider>
+              </CartProvider>
+            </ProductProviderSimplified>
           </CompanyInfoProvider>
         </UIProvider>
       </ConfigProvider>
