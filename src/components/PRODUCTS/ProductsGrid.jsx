@@ -55,7 +55,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       categorie: '',
       marque: '',
       gencode: '',
-      tva: 0,
+      tva: 20,
     }
 
     setIsRowNew({ ...isRowNew, [tempId]: true })
