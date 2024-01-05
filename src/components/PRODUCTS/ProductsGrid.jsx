@@ -102,7 +102,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     setIsUpdating(false)
     // Si la ligne est nouvelle (non enregistrée), la retirer du tableau des produits
     if (isRowNew[row._id]) {
-      console.log(`Annulation de l'ajout d'une nouvelle ligne ID: ${row._id}`)
       setProducts((currentProducts) =>
         currentProducts.filter((product) => product._id !== row._id),
       )
@@ -114,9 +113,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     }
     // Sinon, rétablir les valeurs originales pour une ligne existante
     else if (editingRow) {
-      console.log(
-        `Restauration des valeurs originales pour la ligne ID: ${row._id}`,
-      )
       setProducts((currentProducts) =>
         currentProducts.map((product) =>
           product._id === editingRow._id ? editingRow : product,
@@ -127,7 +123,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     // Nettoyer l'état de l'édition et sortir du mode d'édition
     setEditingRow(null)
     setRowModesModel((oldModel) => {
-      console.log(`Sortie du mode d'édition pour la ligne ID: ${row._id}`)
       return { ...oldModel, [row._id]: { mode: GridRowModes.View } }
     })
   }

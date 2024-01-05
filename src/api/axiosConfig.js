@@ -22,8 +22,6 @@ export const fetchApi = async (endpoint, method = 'GET', data = null) => {
   const baseUrl = await getApiBaseUrl()
   const url = `${baseUrl}/${endpoint}`
 
-  console.log(`Envoi d'une requête ${method} à ${url}`, data)
-
   switch (method) {
     case 'POST':
       return (await axiosInstance.post(url, data)).data
