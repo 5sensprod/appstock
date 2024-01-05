@@ -9,8 +9,11 @@ import { useProductContextSimplified } from '../../contexts/ProductContextSimpli
 import useFilteredProducts from './hooks/useFilteredProducts'
 import useColumns from './hooks/useColumns'
 import CustomToolbar from './CustomToolbar'
+import { useUI } from '../../contexts/UIContext'
 
 const ProductsGrid = ({ selectedCategoryId }) => {
+  const { showToast, showConfirmDialog } = useUI()
+
   const {
     products,
     setProducts,
@@ -75,6 +78,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     setIsUpdating(true)
     if (!row) {
       console.error('Erreur : la ligne à sauvegarder est undefined.')
+      showToast("Erreur lors de l'enregistrement du produit", 'error')
       return
     }
 
@@ -128,7 +132,14 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   }
 
   const handleDelete = async (row) => {
-    await deleteProductFromContext(row._id)
+    showConfirmDialog(
+      'Confirmer la suppression',
+      'Êtes-vous sûr de vouloir supprimer ce produit ?',
+      async () => {
+        await deleteProductFromContext(row._id)
+        showToast('Produit supprimé avec succès', 'success')
+      },
+    )
   }
 
   const columns = useColumns(
@@ -144,23 +155,34 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     if (!isUpdating) {
       return oldRow
     }
-    if (newRow && newRow._id && newRow._id.startsWith('temp-')) {
-      const addedProduct = await addProductToContext({
-        ...newRow,
-        _id: undefined,
-      })
-      setProducts((currentProducts) =>
-        currentProducts.map((row) =>
-          row._id === newRow._id ? { ...addedProduct, isNew: false } : row,
-        ),
-      )
-    } else {
-      await updateProductInContext(newRow._id, newRow)
-      setProducts((currentProducts) =>
-        currentProducts.map((row) => (row._id === newRow._id ? newRow : row)),
-      )
+
+    try {
+      if (newRow && newRow._id && newRow._id.startsWith('temp-')) {
+        // Logique pour l'ajout d'un nouveau produit
+        const addedProduct = await addProductToContext({
+          ...newRow,
+          _id: undefined,
+        })
+        setProducts((currentProducts) =>
+          currentProducts.map((row) =>
+            row._id === newRow._id ? { ...addedProduct, isNew: false } : row,
+          ),
+        )
+        showToast('Produit ajouté avec succès', 'success')
+      } else {
+        // Logique pour la mise à jour d'un produit existant
+        await updateProductInContext(newRow._id, newRow)
+        setProducts((currentProducts) =>
+          currentProducts.map((row) => (row._id === newRow._id ? newRow : row)),
+        )
+        showToast('Produit modifié avec succès', 'success')
+      }
+      return newRow
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la ligne :', error)
+      showToast("Erreur lors de l'enregistrement du produit", 'error')
+      return oldRow // Retourner l'ancienne ligne en cas d'échec pour annuler les modifications dans le DataGrid
     }
-    return newRow
   }
 
   const handleProcessRowUpdateError = (error) => {
