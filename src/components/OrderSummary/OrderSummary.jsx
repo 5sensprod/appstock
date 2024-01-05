@@ -10,11 +10,18 @@ import {
   ListItemText,
 } from '@mui/material'
 import { formatPrice } from '../../utils/priceUtils'
-import { formatNumberFrench } from '../../utils/priceUtils'
 
 const OrderSummary = () => {
   const { cartItems, cartTotals, adjustmentAmount } = useContext(CartContext)
-  const tauxTVA = cartItems.length > 0 ? cartItems[0].tauxTVA : '0.00'
+
+  // Calculer les totaux de TVA pour chaque taux distinct
+  const tvaTotals = cartItems.reduce((acc, item) => {
+    const taxRate = item.tauxTVA
+    const taxAmount = parseFloat(item.montantTVA) * item.quantity // Assurez-vous de multiplier par la quantité
+
+    acc[taxRate] = (acc[taxRate] || 0) + taxAmount
+    return acc
+  }, {})
 
   // Déterminer si un ajustement a été appliqué
   const isAdjustmentApplied = adjustmentAmount !== 0
@@ -43,7 +50,7 @@ const OrderSummary = () => {
                       <>
                         <br />
                         {item.remiseMajorationLabel}:{' '}
-                        {formatNumberFrench(item.remiseMajorationValue)} %
+                        {formatPrice(item.remiseMajorationValue)} %
                       </>
                     )}
                   </>
@@ -56,9 +63,11 @@ const OrderSummary = () => {
         <Typography>
           Sous-total HT: {formatPrice(cartTotals.totalHT)}
         </Typography>
-        <Typography>
-          TVA ({tauxTVA}%) : {formatPrice(cartTotals.totalTaxes)}
-        </Typography>
+        {Object.entries(tvaTotals).map(([taxRate, total]) => (
+          <Typography key={taxRate}>
+            TVA ({taxRate}%) : {formatPrice(total)}
+          </Typography>
+        ))}
         <Divider />
         {isAdjustmentApplied && (
           <Typography>

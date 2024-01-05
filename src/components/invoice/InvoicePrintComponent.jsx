@@ -69,7 +69,7 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
         )}
         <td align="right">{item.quantite}</td>
         <td align="right">{formatNumberFrench(item.puHT)} €</td>
-        <td align="right">{parseFloat(item.tauxTVA).toFixed(0)} %</td>
+        <td align="right">{parseFloat(item.tauxTVA).toFixed(1)} %</td>
         <td align="right">{formatNumberFrench(item.puTTC)} €</td>
         {hasAnyDiscountOrMarkup && (
           <td align="right">

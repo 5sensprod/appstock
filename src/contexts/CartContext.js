@@ -9,7 +9,7 @@ import {
 
 export const CartContext = createContext()
 
-const taxRate = 0.2
+// const taxRate = 0.2
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([])
@@ -27,9 +27,10 @@ export const CartProvider = ({ children }) => {
 
   const enrichCartItem = (item) => {
     const priceToUse = item.prixModifie ?? item.prixVente
-    const prixHT = priceToUse / (1 + taxRate)
-    const montantTVA = calculateTax(prixHT, taxRate)
-    const tauxTVA = taxRate * 100
+    const taxRateForItem = item.tva / 100 // Assurez-vous que le taux de TVA est en pourcentage
+    const prixHT = priceToUse / (1 + taxRateForItem)
+    const montantTVA = calculateTax(prixHT, taxRateForItem)
+    const tauxTVA = item.tva // Utilisez directement le taux de TVA du produit
     const totalItem = calculateTotalItem(item)
 
     return {
@@ -69,9 +70,19 @@ export const CartProvider = ({ children }) => {
       adjustment,
     )
 
-    // Recalculer le total HT et les taxes en fonction du nouveau total TTC
-    const newTotalHT = newModifiedTotal / (1 + taxRate)
-    const newTotalTaxes = newModifiedTotal - newTotalHT
+    // Recalculer le total HT et les taxes pour chaque article
+    let newTotalHT = 0
+    let newTotalTaxes = 0
+    cartItems.forEach((item) => {
+      const taxRateForItem = item.tva / 100
+      const priceToUse = item.prixModifie ?? item.prixVente
+      const adjustedPrice = applyCartDiscountOrMarkup(priceToUse, adjustment)
+      const prixHT = adjustedPrice / (1 + taxRateForItem)
+      const montantTVA = adjustedPrice - prixHT
+
+      newTotalHT += prixHT
+      newTotalTaxes += montantTVA
+    })
 
     setCartTotals({
       ...cartTotals,
@@ -230,7 +241,7 @@ export const CartProvider = ({ children }) => {
         adjustmentAmount,
         setAdjustmentAmount,
         updateTotalWithAdjustment,
-        taxRate,
+        // taxRate,
         isModalOpen,
         setIsModalOpen,
         invoiceData,
