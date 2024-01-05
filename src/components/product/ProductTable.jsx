@@ -25,8 +25,6 @@ const ProductTable = ({ products }) => {
       flex: 1,
     },
     { field: 'reference', headerName: 'Référence', flex: 1 },
-    { field: 'marque', headerName: 'Marque', flex: 1 },
-    { field: 'gencode', headerName: 'Gencode', flex: 1 },
     {
       field: 'prixVente',
       headerName: 'Prix Vente',
@@ -34,6 +32,9 @@ const ProductTable = ({ products }) => {
       flex: 1,
       renderCell: (params) => `${formatNumberFrench(params.value)} €`,
     },
+    { field: 'tva', headerName: 'TVA', type: 'number', flex: 1 },
+    { field: 'marque', headerName: 'Marque', flex: 1 },
+    { field: 'gencode', headerName: 'Gencode', flex: 1 },
   ]
 
   const handleRowClick = (params) => {
