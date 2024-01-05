@@ -9,6 +9,8 @@ import { IconButton } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { GridRowModes } from '@mui/x-data-grid-pro'
+import CustomSelect from '../../ui/CustomSelect'
+import { TVA_RATES } from '../../../utils/constants'
 
 const useColumns = (
   handleEdit,
@@ -132,17 +134,37 @@ const useColumns = (
         )
       },
     },
-    { field: 'marque', headerName: 'Marque', flex: 0.75 },
-    { field: 'gencode', headerName: 'GenCode', flex: 0.75 },
+    { field: 'marque', headerName: 'Marque', flex: 0.75, editable: true },
+    { field: 'gencode', headerName: 'GenCode', flex: 0.75, editable: true },
+    {
+      field: 'tva',
+      headerName: 'TVA',
+      type: 'number',
+      flex: 0.5,
+      editable: true,
+      renderEditCell: (params) => (
+        <CustomSelect
+          label="TVA"
+          options={TVA_RATES}
+          value={params.value}
+          onChange={(e) =>
+            params.api.setEditCellValue(
+              { id: params.id, field: 'tva', value: e.target.value },
+              e,
+            )
+          }
+          showLabel={false}
+        />
+      ),
+    },
     {
       field: 'dateSoumission',
       headerName: 'Date Ajout',
       type: 'date',
-      flex: 0.5,
+      flex: 0.75,
       valueGetter: (params) =>
         moment(params.value).isValid() ? moment(params.value).toDate() : null,
     },
-    { field: 'tva', headerName: 'TVA', type: 'number', flex: 0.5 },
   ]
 
   return columns
