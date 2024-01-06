@@ -172,9 +172,22 @@ export const CartProvider = ({ children }) => {
   }
 
   const deleteInvoice = (index) => {
-    setOnHoldInvoices((prevInvoices) =>
-      prevInvoices.filter((_, i) => i !== index),
-    )
+    setOnHoldInvoices((prevInvoices) => {
+      const invoiceToDelete = prevInvoices[index]
+
+      if (invoiceToDelete && invoiceToDelete.items) {
+        invoiceToDelete.items.forEach((item) => {
+          if (item.stock !== null) {
+            // Rétablir le stock dans la base de données
+            const newStock = item.stock + item.quantity
+            updateProductInContext(item._id, { stock: newStock })
+          }
+        })
+      }
+
+      // Supprimer la facture
+      return prevInvoices.filter((_, i) => i !== index)
+    })
   }
 
   // Ajouter un produit au panier
