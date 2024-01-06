@@ -3,8 +3,15 @@ import { useForm, Controller } from 'react-hook-form'
 import { Button, TextField } from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
+import CustomSelect from '../ui/CustomSelect'
+import { TVA_RATES } from '../../utils/constants'
 
-const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
+const CreateProductShort = ({
+  initialGencode,
+  initialReference,
+  onProductAdd,
+  onCancel,
+}) => {
   const {
     control,
     handleSubmit,
@@ -14,6 +21,8 @@ const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
     defaultValues: {
       reference: capitalizeFirstLetter(initialReference) || '',
       prixVente: '',
+      prixAchat: '',
+      tva: 20,
       gencode: initialGencode || '',
     },
   })
@@ -43,6 +52,7 @@ const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
             variant="outlined"
             fullWidth
             margin="normal"
+            label="Référence"
           />
         )}
       />
@@ -57,7 +67,30 @@ const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
             variant="outlined"
             fullWidth
             margin="normal"
+            label="Prix de vente"
           />
+        )}
+      />
+      <Controller
+        name="prixAchat"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            type="number"
+            placeholder="Prix d'Achat"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            label="Prix d'Achat"
+          />
+        )}
+      />
+      <Controller
+        name="tva"
+        control={control}
+        render={({ field }) => (
+          <CustomSelect {...field} label="TVA" options={TVA_RATES} />
         )}
       />
       <Controller
@@ -71,21 +104,34 @@ const AddProductForm = ({ initialGencode, initialReference, onProductAdd }) => {
             variant="outlined"
             fullWidth
             margin="normal"
+            label="Gencode"
           />
         )}
       />
 
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        disabled={isSubmitting}
-        style={{ marginTop: '10px' }}
+      <div
+        style={{
+          marginTop: '10px',
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
       >
-        Ajouter Produit
-      </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={isSubmitting}
+          sx={{ mt: 2 }}
+        >
+          Ajouter Produit
+        </Button>
+
+        <Button variant="contained" onClick={onCancel} sx={{ mt: 2 }}>
+          Annuler
+        </Button>
+      </div>
     </form>
   )
 }
 
-export default AddProductForm
+export default CreateProductShort

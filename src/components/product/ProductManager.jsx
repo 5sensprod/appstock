@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import useSearch from '../hooks/useSearch'
 import useWebSocketConnection from '../hooks/useWebSocketConnection'
 import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
-import AddProductForm from './AddProductForm'
+import CreateProductShort from './CreateProductShort'
 import ProductTable from './ProductTable'
 import SelectCategory from '../category/SelectCategory'
 import NoMatchButton from '../ui/NoMatchButton'
@@ -114,16 +114,12 @@ const ProductManager = () => {
         </div>
       )}
       {showAddProductForm && (
-        <>
-          <AddProductForm
-            initialGencode={isGencode ? searchTerm : ''}
-            initialReference={!isGencode ? searchTerm : ''}
-            onProductAdd={handleProductSubmit}
-          />
-          <Button variant="contained" onClick={handleCancel}>
-            Annuler
-          </Button>
-        </>
+        <CreateProductShort
+          initialGencode={isGencode ? searchTerm : ''}
+          initialReference={!isGencode ? searchTerm : ''}
+          onProductAdd={handleProductSubmit}
+          onCancel={handleCancel}
+        />
       )}
       <Box />
     </div>

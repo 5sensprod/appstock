@@ -15,10 +15,9 @@ async function addProduct(productData) {
     const formattedData = {
       ...productData,
       prixVente: parseFloat(productData.prixVente) || 0,
-      prixAchat: productData.prixAchat
-        ? parseFloat(productData.prixAchat)
-        : null,
-      stock: productData.stock ? parseInt(productData.stock, 10) : null,
+      prixAchat: parseFloat(productData.prixAchat) || 0,
+      stock: parseInt(productData.stock, 10) || 0,
+      tva: parseFloat(productData.tva) || 20,
     }
 
     return await fetchApi('products', 'POST', formattedData)

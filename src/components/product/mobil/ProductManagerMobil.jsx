@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import useSearch from '../../hooks/useSearch'
 import useWebSocketConnection from '../../hooks/useWebSocketConnection'
 import useGlobalScannedDataHandler from '../../hooks/useGlobalScannedDataHandler'
-import AddProductForm from '../AddProductForm'
+import CreateProductShort from '../CreateProductShort'
 import ProductTableMobil from './ProductTableMobil'
 import { getCategories } from '../../../api/categoryService'
 import NoMatchButton from '../../ui/NoMatchButton'
@@ -100,7 +100,7 @@ const ProductManagerMobil = () => {
         )}
         {showAddProductForm && (
           <>
-            <AddProductForm
+            <CreateProductShort
               initialGencode={isGencode ? searchTerm : ''}
               initialReference={!isGencode ? searchTerm : ''}
               onProductAdd={handleProductSubmit}
