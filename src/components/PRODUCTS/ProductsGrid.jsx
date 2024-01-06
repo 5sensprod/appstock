@@ -26,7 +26,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const [sortModel, setSortModel] = useState([
     {
       field: 'dateSoumission',
-      sort: 'desc', // Tri décroissant pour afficher les plus récentes en premier
+      sort: 'desc',
     },
   ])
 
@@ -181,21 +181,12 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la ligne :', error)
       showToast("Erreur lors de l'enregistrement du produit", 'error')
-      return oldRow // Retourner l'ancienne ligne en cas d'échec pour annuler les modifications dans le DataGrid
+      return oldRow
     }
   }
 
   const handleProcessRowUpdateError = (error) => {
     console.error('Erreur lors de la mise à jour de la ligne :', error)
-  }
-  const handleCellDoubleClick = (params, event) => {
-    if (params.isEditable) {
-      setEditingRow({ ...params.row })
-      setRowModesModel((oldModel) => ({
-        ...oldModel,
-        [params.row._id]: { mode: GridRowModes.Edit }, // Utiliser params.row._id au lieu de params.id
-      }))
-    }
   }
 
   return (
@@ -208,7 +199,9 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       rowModesModel={rowModesModel}
       onRowModesModelChange={setRowModesModel}
       onRowEditStop={handleRowEditStop}
-      onCellDoubleClick={handleCellDoubleClick}
+      onCellDoubleClick={(params, event) => {
+        event.defaultMuiPrevented = true
+      }}
       initialState={{
         pagination: {
           paginationModel: {
