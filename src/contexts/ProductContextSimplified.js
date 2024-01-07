@@ -79,6 +79,10 @@ export const ProductProviderSimplified = ({ children }) => {
         )
       ) {
         loadProducts()
+      } else if (data.type === 'products-bulk-updated') {
+        // Gérer les mises à jour en masse
+        // Recharger les produits ou mettre à jour spécifiquement les produits concernés
+        loadProducts()
       }
     }
 

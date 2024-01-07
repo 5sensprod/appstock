@@ -39,9 +39,9 @@ const App = () => {
       <ConfigProvider>
         <UIProvider>
           <CompanyInfoProvider>
-            <ProductProviderSimplified>
-              <CartProvider>
-                <ProductProvider>
+            <ProductProvider>
+              <ProductProviderSimplified>
+                <CartProvider>
                   <CategoryProvider>
                     <Router>
                       {isAndroidWebView ? (
@@ -86,9 +86,9 @@ const App = () => {
                       )}
                     </Router>
                   </CategoryProvider>
-                </ProductProvider>
-              </CartProvider>
-            </ProductProviderSimplified>
+                </CartProvider>
+              </ProductProviderSimplified>
+            </ProductProvider>
           </CompanyInfoProvider>
         </UIProvider>
       </ConfigProvider>

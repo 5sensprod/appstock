@@ -136,6 +136,7 @@ module.exports = (db, sendSseEvent) => {
         sendSseEvent({
           type: 'products-bulk-updated',
           updatedCount: results.length,
+          updatedProducts: productsToUpdate.map((p) => p.id),
         })
         res
           .status(200)

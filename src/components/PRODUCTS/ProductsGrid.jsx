@@ -10,6 +10,7 @@ import useFilteredProducts from './hooks/useFilteredProducts'
 import useColumns from './hooks/useColumns'
 import CustomToolbar from './CustomToolbar'
 import { useUI } from '../../contexts/UIContext'
+import BulkUpdateProduct from '../product/BulkUpdateProduct'
 
 const ProductsGrid = ({ selectedCategoryId }) => {
   const { showToast, showConfirmDialog } = useUI()
@@ -35,6 +36,34 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const [rowModesModel, setRowModesModel] = useState({})
   const [editingRow, setEditingRow] = useState(null)
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false)
+  const [selectedProductIds, setSelectedProductIds] = useState(new Set())
+  const [isBulkUpdateModalOpen, setIsBulkUpdateModalOpen] = useState(false)
+
+  const handleSelectionModelChange = (newSelectionModel) => {
+    console.log('Produits sélectionnés:', newSelectionModel) // Pour le débogage
+    setSelectedProductIds(new Set(newSelectionModel))
+  }
+
+  const openBulkUpdateModal = () => {
+    if (selectedProductIds.size > 0) {
+      setIsBulkUpdateModalOpen(true)
+    } else {
+      // Afficher un message d'erreur ou une notification si aucun produit n'est sélectionné
+    }
+  }
+
+  const openBulkEditModal = () => {
+    console.log('openBulkEditModal called') // Ajouter pour le débogage
+    if (selectedProductIds.size > 0) {
+      setIsBulkEditModalOpen(true)
+    } else {
+      // Afficher un message d'erreur ou une notification
+      console.log('Aucun produit sélectionné') // Pour le débogage
+    }
+  }
+
+  // Ajoutez un bouton ou un autre déclencheur pour appeler openBulkEditModal
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.cellFocusOut) {
@@ -190,44 +219,58 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   }
 
   return (
-    <DataGridPro
-      localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-      rows={filteredProducts}
-      columns={columns}
-      sortModel={sortModel}
-      onSortModelChange={setSortModel}
-      rowModesModel={rowModesModel}
-      onRowModesModelChange={setRowModesModel}
-      onRowEditStop={handleRowEditStop}
-      onCellDoubleClick={(params, event) => {
-        event.defaultMuiPrevented = true
-      }}
-      initialState={{
-        pagination: {
-          paginationModel: {
-            pageSize: 10,
+    <>
+      <DataGridPro
+        localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+        rows={filteredProducts}
+        columns={columns}
+        sortModel={sortModel}
+        // selectionModel={Array.from(selectedProductIds)}
+        onRowSelectionModelChange={handleSelectionModelChange}
+        onSortModelChange={setSortModel}
+        rowModesModel={rowModesModel}
+        onRowModesModelChange={setRowModesModel}
+        onRowEditStop={handleRowEditStop}
+        onCellDoubleClick={(params, event) => {
+          event.defaultMuiPrevented = true
+        }}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 10,
+            },
           },
-        },
-      }}
-      pageSizeOptions={[10, 25, 50]}
-      pagination
-      checkboxSelection
-      checkboxSelectionVisibleOnly
-      getRowId={(row) => row._id || row.id || `temp-${Date.now()}`}
-      processRowUpdate={processRowUpdate}
-      onProcessRowUpdateError={handleProcessRowUpdateError}
-      slots={{
-        toolbar: CustomToolbar,
-      }}
-      disableRowSelectionOnClick
-      slotProps={{
-        toolbar: {
-          onAddClick: handleAddClick,
-          showQuickFilter: true,
-        },
-      }}
-      style={{ width: '100%' }}
-    />
+        }}
+        pageSizeOptions={[10, 25, 50]}
+        pagination
+        checkboxSelection
+        // checkboxSelectionVisibleOnly
+        getRowId={(row) => row._id || row.id || `temp-${Date.now()}`}
+        processRowUpdate={processRowUpdate}
+        onProcessRowUpdateError={handleProcessRowUpdateError}
+        slots={{
+          toolbar: () => (
+            <CustomToolbar
+              onAddClick={handleAddClick}
+              onBulkEditClick={openBulkUpdateModal}
+            />
+          ),
+        }}
+        disableRowSelectionOnClick
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+          },
+        }}
+        style={{ width: '100%' }}
+      />
+      {isBulkUpdateModalOpen && (
+        <BulkUpdateProduct
+          selectedProductIds={selectedProductIds}
+          onClose={() => setIsBulkUpdateModalOpen(false)}
+        />
+      )}
+    </>
   )
 }
 
