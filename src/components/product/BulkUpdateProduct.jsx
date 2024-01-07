@@ -7,11 +7,13 @@ import {
   DialogContent,
   DialogTitle,
 } from '@mui/material'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { updateProductsBulk } from '../../api/productService'
+import CustomSelect from '../ui/CustomSelect'
+import { TVA_RATES } from '../../utils/constants'
 
 const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
-  const { register, handleSubmit, reset } = useForm()
+  const { register, handleSubmit, reset, control } = useForm()
   const [loading, setLoading] = useState(false)
 
   const onSubmit = async (data) => {
@@ -61,6 +63,13 @@ const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
             type="number"
             fullWidth
             margin="normal"
+          />
+          <Controller
+            name="tva"
+            control={control}
+            render={({ field }) => (
+              <CustomSelect label="TVA" options={TVA_RATES} {...field} />
+            )}
           />
           <TextField
             label="Nouvelle Marque"
