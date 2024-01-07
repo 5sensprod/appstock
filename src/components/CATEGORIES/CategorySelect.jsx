@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 
-const CategorySelect = ({ value, onChange }) => {
+const CategorySelect = ({ value, onChange, size = 'small', label = '' }) => {
   const { categories } = useCategoryContext()
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedCategoryName, setSelectedCategoryName] = useState(value)
@@ -62,7 +62,8 @@ const CategorySelect = ({ value, onChange }) => {
   return (
     <div>
       <TextField
-        size="small"
+        size={size}
+        label={label}
         variant="outlined"
         onClick={handleClick}
         value={selectedCategoryName}

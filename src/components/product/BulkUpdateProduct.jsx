@@ -6,11 +6,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Box,
 } from '@mui/material'
 import { useForm, Controller } from 'react-hook-form'
 import { updateProductsBulk } from '../../api/productService'
 import CustomSelect from '../ui/CustomSelect'
 import { TVA_RATES } from '../../utils/constants'
+import CategorySelect from '../CATEGORIES/CategorySelect'
 
 const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
   const { register, handleSubmit, reset, control } = useForm()
@@ -44,21 +46,21 @@ const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <TextField
-            label="Nouveau Prix de Vente"
+            label="Prix de Vente"
             {...register('prixVente')}
             type="number"
             fullWidth
             margin="normal"
           />
           <TextField
-            label="Nouveau Prix d'Achat"
+            label="Prix d'Achat"
             {...register('prixAchat')}
             type="number"
             fullWidth
             margin="normal"
           />
           <TextField
-            label="Nouveau Stock"
+            label="Stock"
             {...register('stock')}
             type="number"
             fullWidth
@@ -69,6 +71,22 @@ const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
             control={control}
             render={({ field }) => (
               <CustomSelect label="TVA" options={TVA_RATES} {...field} />
+            )}
+          />
+          <Controller
+            name="categorie"
+            control={control}
+            render={({ field }) => (
+              <Box mt={2} mb={1}>
+                {' '}
+                {/* Ajout de marges */}
+                <CategorySelect
+                  value={field.value}
+                  onChange={(categoryId) => field.onChange(categoryId)}
+                  size="medium"
+                  label="Catégorie"
+                />
+              </Box>
             )}
           />
           <TextField
