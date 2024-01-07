@@ -39,12 +39,23 @@ const CategorySelect = ({ value, onChange, size = 'small', label = '' }) => {
 
   // Construit l'arbre des catégories
   const buildTree = (categories, parentId = null) => {
-    return categories
+    const tree = categories
       .filter((category) => category.parentId === parentId)
       .map((category) => ({
         ...category,
         children: buildTree(categories, category._id),
       }))
+
+    // Ajoutez l'option "Aucun" au début si le parent est null
+    if (parentId === null) {
+      tree.unshift({
+        _id: '',
+        name: 'Aucun',
+        children: [],
+      })
+    }
+
+    return tree
   }
 
   // Rendu de l'arbre
