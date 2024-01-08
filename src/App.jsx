@@ -22,7 +22,10 @@ import { LicenseInfo } from '@mui/x-data-grid-pro'
 import { ConfigProvider } from './contexts/ConfigContext'
 import { CategoryProvider } from './contexts/CategoryContext'
 import { ProductProviderSimplified } from './contexts/ProductContextSimplified'
-
+import {
+  CategoryTreeSelectContext,
+  CategoryTreeSelectProvider,
+} from './contexts/CategoryTreeSelectContext'
 const licenseKey =
   'CompanyName=Equinix Asia Pacific pte ltd,LicensedGroup=equinixMendixPrivateLib,LicenseType=MultipleApplications,LicensedConcurrentDeveloperCount=2,LicensedProductionInstancesCount=0,AssetReference=AG-027567,SupportServicesEnd=18_June_2023_[v2]_MTY4NzA0MjgwMDAwMA==4be2c388f9a8a7443c72842dff53d5b2'
 LicenseManager.setLicenseKey(licenseKey)
@@ -38,58 +41,69 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <ConfigProvider>
         <UIProvider>
-          <CompanyInfoProvider>
-            <ProductProvider>
-              <ProductProviderSimplified>
-                <CartProvider>
-                  <CategoryProvider>
-                    <Router>
-                      {isAndroidWebView ? (
-                        // Affichage pour WebView Android
-                        <Routes>
-                          <Route path="/mobil" element={<MobilPage />} />
-                          {/* Ajoutez ici d'autres routes si nécessaire pour WebView */}
-                        </Routes>
-                      ) : (
-                        // Affichage normal avec MainLayout
-                        <MainLayout>
+          <CategoryTreeSelectProvider>
+            <CompanyInfoProvider>
+              <ProductProvider>
+                <ProductProviderSimplified>
+                  <CartProvider>
+                    <CategoryProvider>
+                      <Router>
+                        {isAndroidWebView ? (
+                          // Affichage pour WebView Android
                           <Routes>
-                            <Route path="/" element={<POSPage />} />
-                            <Route
-                              path="/dashboard"
-                              element={<DashboardPage />}
-                            />
-                            <Route path="/catalog" element={<CatalogPage />} />
-                            {/* <Route
+                            <Route path="/mobil" element={<MobilPage />} />
+                            {/* Ajoutez ici d'autres routes si nécessaire pour WebView */}
+                          </Routes>
+                        ) : (
+                          // Affichage normal avec MainLayout
+                          <MainLayout>
+                            <Routes>
+                              <Route path="/" element={<POSPage />} />
+                              <Route
+                                path="/dashboard"
+                                element={<DashboardPage />}
+                              />
+                              <Route
+                                path="/catalog"
+                                element={<CatalogPage />}
+                              />
+                              {/* <Route
                             path="/products/:productIds?/:categoryId?"
                             element={<ProductPage />}
                           /> */}
-                            <Route path="/products" element={<ProductPage />} />
-                            <Route
-                              path="/category"
-                              element={<CategoryPage />}
-                            />
-                            <Route path="/client" element={<ClientPage />} />
-                            <Route path="/invoice" element={<InvoicePage />} />
-                            <Route
-                              path="/create-product"
-                              element={<CreateProductPage />}
-                            />
-                            <Route
-                              path="/edit-product/:id"
-                              element={<EditProductPage />}
-                            />
-                            {/* Autres routes ici */}
-                            {/* La route /mobil est accessible uniquement dans WebView */}
-                          </Routes>
-                        </MainLayout>
-                      )}
-                    </Router>
-                  </CategoryProvider>
-                </CartProvider>
-              </ProductProviderSimplified>
-            </ProductProvider>
-          </CompanyInfoProvider>
+                              <Route
+                                path="/products"
+                                element={<ProductPage />}
+                              />
+                              <Route
+                                path="/category"
+                                element={<CategoryPage />}
+                              />
+                              <Route path="/client" element={<ClientPage />} />
+                              <Route
+                                path="/invoice"
+                                element={<InvoicePage />}
+                              />
+                              <Route
+                                path="/create-product"
+                                element={<CreateProductPage />}
+                              />
+                              <Route
+                                path="/edit-product/:id"
+                                element={<EditProductPage />}
+                              />
+                              {/* Autres routes ici */}
+                              {/* La route /mobil est accessible uniquement dans WebView */}
+                            </Routes>
+                          </MainLayout>
+                        )}
+                      </Router>
+                    </CategoryProvider>
+                  </CartProvider>
+                </ProductProviderSimplified>
+              </ProductProvider>
+            </CompanyInfoProvider>
+          </CategoryTreeSelectProvider>
         </UIProvider>
       </ConfigProvider>
     </ThemeProvider>

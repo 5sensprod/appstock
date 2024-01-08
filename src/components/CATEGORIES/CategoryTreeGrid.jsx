@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from 'react'
+import React, { useRef, useState, useMemo, useContext } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import { Button, TextField } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -7,6 +7,7 @@ import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useNavigate } from 'react-router-dom'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { updateProductsBulk } from '../../api/productService'
+import { CategoryTreeSelectContext } from '../../contexts/CategoryTreeSelectContext'
 
 const CategoryTreeGrid = () => {
   const {
@@ -20,11 +21,19 @@ const CategoryTreeGrid = () => {
   const { products } = useProductContextSimplified()
 
   const navigate = useNavigate()
+  const { handleCategorySelect } = useContext(CategoryTreeSelectContext)
   const [searchText, setSearchText] = useState('')
   const gridApi = useRef(null)
 
   const handleProductCountClick = (categoryId) => {
-    navigate('/products', { state: { selectedCategoryId: categoryId } })
+    // Trouvez le nom de la catégorie correspondant à categoryId
+    const categoryName = categories.find((cat) => cat._id === categoryId)?.name
+
+    // Mettez à jour le contexte avec l'ID et le nom de la catégorie sélectionnée
+    handleCategorySelect(categoryId, categoryName)
+
+    // Naviguez vers la page des produits
+    navigate('/products')
   }
 
   const onCellValueChanged = async ({ data, oldValue, newValue, colDef }) => {

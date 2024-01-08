@@ -1,24 +1,17 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import Grid from '@mui/material/Grid'
 import ProductsGrid from '../PRODUCTS/ProductsGrid'
-// import ProductSearch from '../PRODUCTS/ProductSearch'
 import CategoryFilter from '../CATEGORIES/CategoryFilter'
-import { useLocation } from 'react-router-dom'
+import { CategoryTreeSelectContext } from '../../contexts/CategoryTreeSelectContext'
 
 const ProductPage = () => {
-  const location = useLocation()
-  const [selectedCategoryId, setSelectedCategoryId] = useState(
-    location.state?.selectedCategoryId || null,
-  )
+  const { selectedCategory } = useContext(CategoryTreeSelectContext)
 
   return (
     <Grid container direction="column" spacing={2} mt={6}>
-      <CategoryFilter
-        onCategorySelect={setSelectedCategoryId}
-        selectedCategoryId={selectedCategoryId}
-      />
+      <CategoryFilter />
 
-      <ProductsGrid selectedCategoryId={selectedCategoryId} />
+      <ProductsGrid selectedCategoryId={selectedCategory.categoryId} />
     </Grid>
   )
 }

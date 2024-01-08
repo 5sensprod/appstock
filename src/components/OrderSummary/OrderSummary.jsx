@@ -43,6 +43,8 @@ const OrderSummary = () => {
                   <>
                     Quantité: {item.quantity}
                     <br />
+                    TVA: {item.tva} %
+                    <br />
                     Prix unitaire HT: {formatPrice(parseFloat(item.prixHT))}
                     <br />
                     Prix unitaire TTC: {formatPrice(parseFloat(item.puTTC))}

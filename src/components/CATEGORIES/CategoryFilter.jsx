@@ -1,26 +1,38 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { TextField, Popover, IconButton } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
-import { TreeView } from '@mui/x-tree-view/TreeView'
-import { TreeItem } from '@mui/x-tree-view/TreeItem'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import { TreeView, TreeItem } from '@mui/x-tree-view'
 import { useCategoryContext } from '../../contexts/CategoryContext'
+import { CategoryTreeSelectContext } from '../../contexts/CategoryTreeSelectContext'
 
-const CategoryFilter = ({ onCategorySelect, selectedCategoryId }) => {
+const CategoryFilter = () => {
   const { categories } = useCategoryContext()
+  const { selectedCategory, handleCategorySelect } = useContext(
+    CategoryTreeSelectContext,
+  )
   const [anchorEl, setAnchorEl] = useState(null)
   const [filterText, setFilterText] = useState('')
-  const [selectedCategoryName, setSelectedCategoryName] = useState('')
+
+  const [expandedNodes, setExpandedNodes] = useState([])
 
   useEffect(() => {
-    if (selectedCategoryId) {
-      const selectedCategory = categories.find(
-        (cat) => cat._id === selectedCategoryId,
-      )
-      setSelectedCategoryName(selectedCategory ? selectedCategory.name : '')
+    const expandNodes = (categoryId) => {
+      const category = categories.find((cat) => cat._id === categoryId)
+      if (!category) return []
+      if (category.parentId) {
+        return [category._id, ...expandNodes(category.parentId)]
+      }
+      return [category._id]
     }
-  }, [selectedCategoryId, categories])
+
+    if (selectedCategory?.categoryId) {
+      setExpandedNodes(expandNodes(selectedCategory.categoryId))
+    } else {
+      setExpandedNodes([])
+    }
+  }, [selectedCategory, categories])
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -32,21 +44,20 @@ const CategoryFilter = ({ onCategorySelect, selectedCategoryId }) => {
 
   const clearCategorySelection = (event) => {
     event.stopPropagation()
-    setSelectedCategoryName('')
+    handleCategorySelect(null, '')
     setFilterText('')
-    onCategorySelect(null)
   }
 
-  const handleCategorySelect = (event, categoryId) => {
-    // Empêcher le popover de se fermer lors d'un clic sur les chevrons
+  const localHandleCategorySelect = (event, categoryId) => {
     if (event.target.closest('.MuiTreeItem-iconContainer')) {
       return
     }
 
     const selectedCategory = categories.find((cat) => cat._id === categoryId)
-    setSelectedCategoryName(selectedCategory ? selectedCategory.name : '')
-    setFilterText('')
-    onCategorySelect(categoryId)
+    handleCategorySelect(
+      categoryId,
+      selectedCategory ? selectedCategory.name : '',
+    )
     handleClose()
   }
 
@@ -68,7 +79,8 @@ const CategoryFilter = ({ onCategorySelect, selectedCategoryId }) => {
       key={node._id}
       nodeId={node._id}
       label={node.name}
-      onClick={(event) => handleCategorySelect(event, node._id)}
+      className={node._id === selectedCategory?.categoryId ? 'highlighted' : ''}
+      onClick={(event) => localHandleCategorySelect(event, node._id)}
     >
       {node.children && node.children.map((child) => renderTree(child))}
     </TreeItem>
@@ -81,13 +93,13 @@ const CategoryFilter = ({ onCategorySelect, selectedCategoryId }) => {
         label="Filtrer par catégorie"
         variant="outlined"
         onClick={handleClick}
-        value={selectedCategoryName}
+        value={selectedCategory?.categoryName || ''}
         onChange={(e) => setFilterText(e.target.value)}
         fullWidth
         style={{ marginBottom: 8 }}
         InputProps={{
           readOnly: true,
-          endAdornment: selectedCategoryName ? (
+          endAdornment: selectedCategory ? (
             <IconButton onClick={clearCategorySelection}>
               <CloseIcon />
             </IconButton>
@@ -106,10 +118,11 @@ const CategoryFilter = ({ onCategorySelect, selectedCategoryId }) => {
         <TreeView
           defaultCollapseIcon={<ExpandMoreIcon />}
           defaultExpandIcon={<ChevronRightIcon />}
+          expanded={expandedNodes}
+          selected={selectedCategory?.categoryId}
+          onNodeToggle={(event, nodeIds) => setExpandedNodes(nodeIds)}
         >
-          {buildTree(filteredCategories).map((category) =>
-            renderTree(category),
-          )}
+          {buildTree(categories).map((category) => renderTree(category))}
         </TreeView>
       </Popover>
     </div>
