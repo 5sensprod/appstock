@@ -11,9 +11,12 @@ import useColumns from './hooks/useColumns'
 import CustomToolbar from './CustomToolbar'
 import { useUI } from '../../contexts/UIContext'
 import BulkUpdateProduct from '../product/BulkUpdateProduct'
+import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 
 const ProductsGrid = ({ selectedCategoryId }) => {
   const { showToast, showConfirmDialog } = useUI()
+
+  const { gridPreferences, updatePreferences } = useGridPreferences()
 
   const {
     products,
@@ -36,7 +39,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const [rowModesModel, setRowModesModel] = useState({})
   const [editingRow, setEditingRow] = useState(null)
   const [isUpdating, setIsUpdating] = useState(false)
-  const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false)
   const [selectedProductIds, setSelectedProductIds] = useState(new Set())
   const [isBulkUpdateModalOpen, setIsBulkUpdateModalOpen] = useState(false)
 
@@ -50,16 +52,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       setIsBulkUpdateModalOpen(true)
     } else {
       // Afficher un message d'erreur ou une notification si aucun produit n'est sélectionné
-    }
-  }
-
-  const openBulkEditModal = () => {
-    console.log('openBulkEditModal called') // Ajouter pour le débogage
-    if (selectedProductIds.size > 0) {
-      setIsBulkEditModalOpen(true)
-    } else {
-      // Afficher un message d'erreur ou une notification
-      console.log('Aucun produit sélectionné') // Pour le débogage
     }
   }
 
@@ -217,10 +209,25 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const handleProcessRowUpdateError = (error) => {
     console.error('Erreur lors de la mise à jour de la ligne :', error)
   }
+  const handleDensityChange = (newDensity) => {
+    // Affichez le changement de densité dans la console
+    console.log('Densité modifiée :', newDensity)
+
+    // Mettez à jour les préférences de la grille
+    updatePreferences({ density: newDensity })
+  }
+
+  const handleColumnVisibilityChange = (newModel) => {
+    console.log('Modèle de visibilité des colonnes modifié:', newModel)
+    updatePreferences({ columnsVisibility: newModel })
+  }
 
   return (
     <>
       <DataGridPro
+        columnVisibilityModel={gridPreferences.columnsVisibility}
+        onColumnVisibilityModelChange={handleColumnVisibilityChange}
+        onColumnVisibilityChange={handleColumnVisibilityChange}
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
         rows={filteredProducts}
         columns={columns}
@@ -229,6 +236,8 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         onRowSelectionModelChange={handleSelectionModelChange}
         onSortModelChange={setSortModel}
         rowModesModel={rowModesModel}
+        density={gridPreferences.density}
+        onDensityChange={(params) => handleDensityChange(params.value)}
         onRowModesModelChange={setRowModesModel}
         onRowEditStop={handleRowEditStop}
         onCellDoubleClick={(params, event) => {
@@ -244,7 +253,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         pageSizeOptions={[10, 25, 50]}
         pagination
         checkboxSelection
-        // checkboxSelectionVisibleOnly
+        checkboxSelectionVisibleOnly
         getRowId={(row) => row._id || row.id || `temp-${Date.now()}`}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
