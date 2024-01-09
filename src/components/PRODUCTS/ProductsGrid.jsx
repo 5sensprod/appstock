@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import {
   DataGridPro,
   frFR,
@@ -24,6 +24,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     addProductToContext,
     updateProductInContext,
     deleteProductFromContext,
+    searchTerm,
   } = useProductContextSimplified()
 
   // État pour le modèle de tri
@@ -34,7 +35,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     },
   ])
 
-  const filteredProducts = useFilteredProducts(selectedCategoryId)
+  const filteredProducts = useFilteredProducts(selectedCategoryId, searchTerm)
   const [isRowNew, setIsRowNew] = useState({})
   const [rowModesModel, setRowModesModel] = useState({})
   const [editingRow, setEditingRow] = useState(null)
@@ -43,7 +44,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const [isBulkUpdateModalOpen, setIsBulkUpdateModalOpen] = useState(false)
 
   const handleSelectionModelChange = (newSelectionModel) => {
-    console.log('Produits sélectionnés:', newSelectionModel) // Pour le débogage
+    console.log('Produits sélectionnés:', newSelectionModel)
     setSelectedProductIds(new Set(newSelectionModel))
   }
 
@@ -54,8 +55,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       // Afficher un message d'erreur ou une notification si aucun produit n'est sélectionné
     }
   }
-
-  // Ajoutez un bouton ou un autre déclencheur pour appeler openBulkEditModal
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.cellFocusOut) {
@@ -227,6 +226,16 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     updatePreferences({ paginationModel: newModel })
   }
 
+  const toolbar = useCallback(
+    () => (
+      <CustomToolbar
+        onAddClick={handleAddClick}
+        onBulkEditClick={openBulkUpdateModal}
+      />
+    ),
+    [handleAddClick, openBulkUpdateModal], // Les dépendances
+  )
+
   return (
     <>
       <DataGridPro
@@ -268,13 +277,9 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         getRowId={(row) => row._id || row.id || `temp-${Date.now()}`}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
+        searchTerm={searchTerm}
         slots={{
-          toolbar: () => (
-            <CustomToolbar
-              onAddClick={handleAddClick}
-              onBulkEditClick={openBulkUpdateModal}
-            />
-          ),
+          toolbar: toolbar,
         }}
         disableRowSelectionOnClick
         slotProps={{
