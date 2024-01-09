@@ -15,7 +15,7 @@ const ProductPage = () => {
       <CategoryFilter />
 
       {/* Intégration du composant ProductSearch */}
-      <ProductSearch />
+      {/* <ProductSearch /> */}
 
       {/* ProductsGrid peut maintenant utiliser searchTerm pour filtrer les produits */}
       <ProductsGrid

@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from 'react'
 import {
-  DataGridPro,
+  DataGridPremium,
   frFR,
   GridRowEditStopReasons,
   GridRowModes,
-} from '@mui/x-data-grid-pro'
+} from '@mui/x-data-grid-premium'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import useFilteredProducts from './hooks/useFilteredProducts'
 import useColumns from './hooks/useColumns'
@@ -238,7 +238,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
 
   return (
     <>
-      <DataGridPro
+      <DataGridPremium
         columnVisibilityModel={gridPreferences.columnsVisibility}
         onColumnVisibilityModelChange={handleColumnVisibilityChange}
         onColumnVisibilityChange={handleColumnVisibilityChange}

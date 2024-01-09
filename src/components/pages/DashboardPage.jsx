@@ -1,7 +1,12 @@
 import React from 'react'
+import SalesLineChart from '../charts/SalesBarChart'
 
 const DashboardPage = () => {
-  return <div>Tableau de bord</div>
+  return (
+    <div>
+      <SalesLineChart />
+    </div>
+  )
 }
 
 export default DashboardPage
