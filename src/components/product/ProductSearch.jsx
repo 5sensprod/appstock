@@ -1,10 +1,10 @@
 import React from 'react'
 import { TextField, IconButton } from '@mui/material'
-import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
+import { useProductContext } from '../../contexts/ProductContext'
 import CloseIcon from '@mui/icons-material/Close'
 
 const ProductSearch = () => {
-  const { searchTerm, setSearchTerm } = useProductContextSimplified()
+  const { searchTerm, setSearchTerm } = useProductContext()
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
