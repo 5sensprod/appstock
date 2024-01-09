@@ -222,6 +222,11 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     updatePreferences({ columnsVisibility: newModel })
   }
 
+  // Gestionnaire pour les changements de taille de page
+  const handlePaginationModelChange = (newModel) => {
+    updatePreferences({ paginationModel: newModel })
+  }
+
   return (
     <>
       <DataGridPro
@@ -245,11 +250,17 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         }}
         initialState={{
           pagination: {
-            paginationModel: {
-              pageSize: 10,
-            },
+            paginationModel: gridPreferences.paginationModel, // Utilisez l'état du contexte
           },
         }}
+        pageSize={gridPreferences.paginationModel.pageSize}
+        onPageSizeChange={(newPageSize) => {
+          handlePaginationModelChange({
+            ...gridPreferences.paginationModel,
+            pageSize: newPageSize,
+          })
+        }}
+        onPaginationModelChange={handlePaginationModelChange}
         pageSizeOptions={[10, 25, 50]}
         pagination
         checkboxSelection

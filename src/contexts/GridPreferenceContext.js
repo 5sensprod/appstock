@@ -8,10 +8,14 @@ export const GridPreferenceProvider = ({ children }) => {
   // Définition de l'état initial des préférences
 
   const [gridPreferences, setGridPreferences] = useState({
+    paginationModel: {
+      pageSize: 10, // Valeur initiale pour les lignes par page
+      page: 0,
+    },
     pageSize: 10,
     columnsVisibility: {}, // Pour les colonnes cachées
     sortModel: [],
-    density: 'comfortable', // 'compact', 'standard', 'comfortable'
+    density: 'standard', // 'compact', 'standard', 'comfortable'
     quickFilterText: '', // Pour le GridToolbarQuickFilter
     // ... autres préférences
   })
