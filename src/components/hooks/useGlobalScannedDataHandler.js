@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { useProductContext } from '../../contexts/ProductContext'
+import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 
 const useGlobalScannedDataHandler = () => {
-  const { setSearchTerm } = useProductContext()
+  const { setSearchTerm } = useProductContextSimplified()
 
   useEffect(() => {
     window.handleScannedData = (scannedData) => {

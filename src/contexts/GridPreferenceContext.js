@@ -1,22 +1,21 @@
 import React, { createContext, useContext, useState } from 'react'
 
-// Création du contexte
 const GridPreferenceContext = createContext()
 
-// Provider du contexte
 export const GridPreferenceProvider = ({ children }) => {
   // Définition de l'état initial des préférences
+  const [searchTerm, setSearchTerm] = useState('')
 
   const [gridPreferences, setGridPreferences] = useState({
     paginationModel: {
-      pageSize: 10, // Valeur initiale pour les lignes par page
+      pageSize: 10,
       page: 0,
     },
     pageSize: 10,
     columnsVisibility: {}, // Pour les colonnes cachées
     sortModel: [],
     density: 'standard', // 'compact', 'standard', 'comfortable'
-    quickFilterText: '', // Pour le GridToolbarQuickFilter
+    quickFilterText: '',
     // ... autres préférences
   })
 
@@ -31,14 +30,13 @@ export const GridPreferenceProvider = ({ children }) => {
 
   return (
     <GridPreferenceContext.Provider
-      value={{ gridPreferences, updatePreferences }}
+      value={{ gridPreferences, updatePreferences, searchTerm, setSearchTerm }}
     >
       {children}
     </GridPreferenceContext.Provider>
   )
 }
 
-// Hook pour utiliser le contexte
 export const useGridPreferences = () => {
   const context = useContext(GridPreferenceContext)
   if (context === undefined) {

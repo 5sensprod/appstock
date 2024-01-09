@@ -42,10 +42,10 @@ const App = () => {
         <UIProvider>
           <CategoryTreeSelectProvider>
             <CompanyInfoProvider>
-              <ProductProvider>
-                <ProductProviderSimplified>
-                  <CartProvider>
-                    <GridPreferenceProvider>
+              <GridPreferenceProvider>
+                <ProductProvider>
+                  <ProductProviderSimplified>
+                    <CartProvider>
                       <CategoryProvider>
                         <Router>
                           {isAndroidWebView ? (
@@ -102,10 +102,10 @@ const App = () => {
                           )}
                         </Router>
                       </CategoryProvider>
-                    </GridPreferenceProvider>
-                  </CartProvider>
-                </ProductProviderSimplified>
-              </ProductProvider>
+                    </CartProvider>
+                  </ProductProviderSimplified>
+                </ProductProvider>
+              </GridPreferenceProvider>
             </CompanyInfoProvider>
           </CategoryTreeSelectProvider>
         </UIProvider>

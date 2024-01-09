@@ -19,6 +19,7 @@ export const CategoryProvider = ({ children }) => {
   const [categories, setCategories] = useState([])
   const [subCategoryCounts, setSubCategoryCounts] = useState([])
   const [productCountByCategory, setProductCountByCategory] = useState({})
+  const [selectedCategoryId, setSelectedCategoryId] = useState('')
 
   useEffect(() => {
     const loadCategoriesAndCounts = async () => {
@@ -129,13 +130,20 @@ export const CategoryProvider = ({ children }) => {
     }
   }
 
+  const handleCategoryChange = (event) => {
+    setSelectedCategoryId(event.target.value)
+  }
+
   const contextValue = {
     categories,
+    setCategories,
     subCategoryCounts,
     productCountByCategory,
     updateCategoryInContext,
     deleteCategoryFromContext,
     addCategoryToContext,
+    selectedCategoryId,
+    setSelectedCategoryId,
   }
 
   return (

@@ -16,7 +16,9 @@ export const useProductContextSimplified = () =>
 export const ProductProviderSimplified = ({ children }) => {
   const [products, setProducts] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [handleProductSelect, setHandleProductSelect] = useState('')
   const { baseUrl } = useConfig()
+  const [selectedProducts, setSelectedProducts] = useState(new Set())
 
   useEffect(() => {
     loadProducts()
@@ -100,6 +102,9 @@ export const ProductProviderSimplified = ({ children }) => {
     searchTerm,
     setSearchTerm,
     loadProducts,
+    selectedProducts,
+    setSelectedProducts,
+    handleProductSelect,
   }
 
   return (
