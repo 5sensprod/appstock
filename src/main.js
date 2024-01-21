@@ -21,18 +21,25 @@ ipcMain.handle('get-paths', async () => {
   const userDataPath = app.getPath('userData')
   const desktopPath = app.getPath('desktop')
   return {
-    dbPath: path.join(userDataPath, 'categories.db'), // Remplacez par le nom réel de votre base de données
-    backupDir: desktopPath, // Chemin du bureau
+    dbPaths: {
+      categories: path.join(userDataPath, 'categories.db'),
+      users: path.join(userDataPath, 'users.db'),
+      products: path.join(userDataPath, 'products.db'),
+      invoices: path.join(userDataPath, 'invoices.db'),
+    },
+    backupDir: desktopPath,
   }
 })
 
-ipcMain.handle('trigger-backup', async (event, dbPath, backupDir) => {
+ipcMain.handle('trigger-backup', async (event, dbPath, backupDir, dbName) => {
   try {
-    const result = await backupDatabase(dbPath, backupDir)
-    return 'Sauvegarde réussie' // Renvoyer directement le résultat
+    // Modifier backupDatabase pour prendre en charge le nom de la base de données
+    // Cela peut être utilisé pour personnaliser le nom du fichier de sauvegarde
+    const result = await backupDatabase(dbPath, backupDir, dbName)
+    return `Sauvegarde réussie pour ${dbName}`
   } catch (error) {
-    console.error('Erreur de sauvegarde:', error)
-    throw new Error(`Échec de la sauvegarde: ${error.message}`) // Lancer une erreur si échec
+    console.error(`Erreur de sauvegarde pour ${dbName}:`, error)
+    throw new Error(`Échec de la sauvegarde pour ${dbName}: ${error.message}`)
   }
 })
 

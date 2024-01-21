@@ -1,38 +1,30 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { triggerBackup, getPaths } from '../../ipcHelper'
 
 const BackupComponent = () => {
-  const [paths, setPaths] = useState(null)
-
   useEffect(() => {
-    const fetchPaths = async () => {
-      const fetchedPaths = await getPaths()
-      if (fetchedPaths) {
-        setPaths(fetchedPaths)
+    // Vous pouvez placer ici d'autres logiques d'initialisation si nécessaire
+    getPaths().then((paths) => {
+      if (!paths) {
+        console.log('Les chemins ne sont pas disponibles.')
       }
-    }
-
-    fetchPaths()
+      // Vous pouvez également utiliser les chemins ici pour d'autres opérations
+    })
   }, [])
 
   const handleBackup = async () => {
-    if (paths) {
-      const response = await triggerBackup(paths.dbPath, paths.backupDir)
-      if (response) {
-        alert('Sauvegarde réussie: ' + response)
-      } else {
-        alert('Échec de la sauvegarde')
-      }
-    } else {
-      console.log('Les chemins ne sont pas disponibles.')
+    try {
+      const response = await triggerBackup()
+      alert('Sauvegarde réussie: ' + response)
+    } catch (error) {
+      console.error('Échec de la sauvegarde:', error)
+      alert('Échec de la sauvegarde: ' + error.message)
     }
   }
 
   return (
     <div>
-      <button onClick={handleBackup} disabled={!paths}>
-        Déclencher la Sauvegarde
-      </button>
+      <button onClick={handleBackup}>Déclencher la Sauvegarde</button>
     </div>
   )
 }
