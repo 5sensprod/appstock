@@ -15,7 +15,7 @@ const BackupComponent = () => {
   const handleBackup = async () => {
     try {
       const response = await triggerBackup()
-      alert('Sauvegarde réussie: ' + response)
+      alert('Sauvegarde réussie ')
     } catch (error) {
       console.error('Échec de la sauvegarde:', error)
       alert('Échec de la sauvegarde: ' + error.message)
