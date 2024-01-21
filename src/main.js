@@ -5,6 +5,7 @@ const { getLocalIPv4Address } = require('./server/networkUtils')
 const Store = require('electron-store')
 const backupDatabase = require('./database/backup.js')
 const store = new Store()
+const schedule = require('node-schedule')
 let mainWindow
 
 ipcMain.on('print', (event, content) => {
@@ -95,7 +96,30 @@ app.on('ready', async () => {
   mainWindow.webContents.once('dom-ready', () => {
     mainWindow.webContents.send('localIp', currentIp)
   })
+
+  schedule.scheduleJob('30 18 * * 1-6', async () => {
+    try {
+      // Remplacer ipcMain.invoke par un appel direct à la fonction qui retourne les chemins
+      const paths = {
+        dbPaths: {
+          categories: path.join(app.getPath('userData'), 'categories.db'),
+          users: path.join(app.getPath('userData'), 'users.db'),
+          products: path.join(app.getPath('userData'), 'products.db'),
+          invoices: path.join(app.getPath('userData'), 'invoices.db'),
+        },
+        backupDir: app.getPath('desktop'),
+      }
+
+      for (const [dbName, dbPath] of Object.entries(paths.dbPaths)) {
+        await backupDatabase(dbPath, paths.backupDir, dbName)
+        console.log(`Sauvegarde automatique réussie pour ${dbName}`)
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde automatique:', error)
+    }
+  })
 })
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
