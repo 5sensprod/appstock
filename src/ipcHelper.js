@@ -34,3 +34,38 @@ export const sendPrintRequest = async (printContent) => {
     )
   }
 }
+
+export const getPaths = async () => {
+  if (window.electron) {
+    try {
+      const paths = await window.electron.ipcRenderer.invoke('get-paths')
+      return paths // Retourne les chemins récupérés
+    } catch (error) {
+      console.error('Erreur lors de la récupération des chemins:', error)
+      return null // Retourne null en cas d'erreur
+    }
+  } else {
+    console.log('Contexte Electron non disponible.')
+    return null // Une valeur de secours ou une autre logique
+  }
+}
+
+export const triggerBackup = async (dbPath, backupDir) => {
+  if (window.electron) {
+    try {
+      const response = await window.electron.ipcRenderer.invoke(
+        'trigger-backup',
+        dbPath,
+        backupDir,
+      )
+      return response // Retourne la réponse du processus principal
+    } catch (error) {
+      console.error('Erreur lors du déclenchement de la sauvegarde:', error)
+      throw error // Lancer l'erreur pour une gestion plus poussée
+    }
+  } else {
+    console.log(
+      'Contexte Electron non disponible. Impossible de déclencher la sauvegarde.',
+    )
+  }
+}

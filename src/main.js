@@ -3,6 +3,7 @@ const path = require('path')
 require('../src/server/server.js')
 const { getLocalIPv4Address } = require('./server/networkUtils')
 const Store = require('electron-store')
+const backupDatabase = require('./database/backup.js')
 const store = new Store()
 let mainWindow
 
@@ -14,6 +15,25 @@ ipcMain.on('print', (event, content) => {
       if (!success) console.log(errorType)
     })
   })
+})
+
+ipcMain.handle('get-paths', async () => {
+  const userDataPath = app.getPath('userData')
+  const desktopPath = app.getPath('desktop')
+  return {
+    dbPath: path.join(userDataPath, 'categories.db'), // Remplacez par le nom réel de votre base de données
+    backupDir: desktopPath, // Chemin du bureau
+  }
+})
+
+ipcMain.handle('trigger-backup', async (event, dbPath, backupDir) => {
+  try {
+    const result = await backupDatabase(dbPath, backupDir)
+    return 'Sauvegarde réussie' // Renvoyer directement le résultat
+  } catch (error) {
+    console.error('Erreur de sauvegarde:', error)
+    throw new Error(`Échec de la sauvegarde: ${error.message}`) // Lancer une erreur si échec
+  }
 })
 
 const createWindow = () => {
