@@ -1,12 +1,10 @@
-const { app, BrowserWindow, ipcMain, session, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, session } = require('electron')
 const path = require('path')
 require('../src/server/server.js')
 const { getLocalIPv4Address } = require('./server/networkUtils')
 const Store = require('electron-store')
 const backupDatabase = require('./database/backup.js')
 const store = new Store()
-const schedule = require('node-schedule')
-const { autoUpdater } = require('electron-updater')
 let mainWindow
 
 ipcMain.on('print', (event, content) => {
@@ -35,8 +33,6 @@ ipcMain.handle('get-paths', async () => {
 
 ipcMain.handle('trigger-backup', async (event, dbPath, backupDir, dbName) => {
   try {
-    // Modifier backupDatabase pour prendre en charge le nom de la base de données
-    // Cela peut être utilisé pour personnaliser le nom du fichier de sauvegarde
     const result = await backupDatabase(dbPath, backupDir, dbName)
     return `Sauvegarde réussie pour ${dbName}`
   } catch (error) {
@@ -68,41 +64,6 @@ const createWindow = () => {
 }
 app.on('ready', async () => {
   createWindow()
-  autoUpdater.checkForUpdatesAndNotify()
-
-  autoUpdater.on('update-available', () => {
-    dialog
-      .showMessageBox({
-        type: 'info',
-        title: 'Mise à jour disponible',
-        message:
-          "Une nouvelle version de l'application est disponible. Voulez-vous l'installer maintenant ?",
-        buttons: ['Oui', 'Plus tard'],
-      })
-      .then((result) => {
-        if (result.response === 0) {
-          // L'utilisateur a choisi 'Oui'
-          autoUpdater.downloadUpdate()
-        }
-      })
-  })
-
-  autoUpdater.on('update-downloaded', () => {
-    dialog
-      .showMessageBox({
-        type: 'info',
-        title: 'Mise à jour téléchargée',
-        message:
-          "La mise à jour a été téléchargée. L'application va redémarrer pour installer la mise à jour.",
-        buttons: ['Redémarrer maintenant', 'Plus tard'],
-      })
-      .then((result) => {
-        if (result.response === 0) {
-          // L'utilisateur a choisi de redémarrer maintenant
-          autoUpdater.quitAndInstall()
-        }
-      })
-  })
 
   // Récupération de l'adresse IP actuelle
   const currentIp = await getLocalIPv4Address()
@@ -132,30 +93,7 @@ app.on('ready', async () => {
   mainWindow.webContents.once('dom-ready', () => {
     mainWindow.webContents.send('localIp', currentIp)
   })
-
-  schedule.scheduleJob('30 18 * * 1-6', async () => {
-    try {
-      // Remplacer ipcMain.invoke par un appel direct à la fonction qui retourne les chemins
-      const paths = {
-        dbPaths: {
-          categories: path.join(app.getPath('userData'), 'categories.db'),
-          users: path.join(app.getPath('userData'), 'users.db'),
-          products: path.join(app.getPath('userData'), 'products.db'),
-          invoices: path.join(app.getPath('userData'), 'invoices.db'),
-        },
-        backupDir: app.getPath('desktop'),
-      }
-
-      for (const [dbName, dbPath] of Object.entries(paths.dbPaths)) {
-        await backupDatabase(dbPath, paths.backupDir, dbName)
-        console.log(`Sauvegarde automatique réussie pour ${dbName}`)
-      }
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde automatique:', error)
-    }
-  })
 })
-
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
