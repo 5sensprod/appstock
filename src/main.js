@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, session } = require('electron')
+const { app, BrowserWindow, ipcMain, session, dialog } = require('electron')
 const path = require('path')
 require('../src/server/server.js')
 const { getLocalIPv4Address } = require('./server/networkUtils')
@@ -69,6 +69,40 @@ const createWindow = () => {
 app.on('ready', async () => {
   createWindow()
   autoUpdater.checkForUpdatesAndNotify()
+
+  autoUpdater.on('update-available', () => {
+    dialog
+      .showMessageBox({
+        type: 'info',
+        title: 'Mise à jour disponible',
+        message:
+          "Une nouvelle version de l'application est disponible. Voulez-vous l'installer maintenant ?",
+        buttons: ['Oui', 'Plus tard'],
+      })
+      .then((result) => {
+        if (result.response === 0) {
+          // L'utilisateur a choisi 'Oui'
+          autoUpdater.downloadUpdate()
+        }
+      })
+  })
+
+  autoUpdater.on('update-downloaded', () => {
+    dialog
+      .showMessageBox({
+        type: 'info',
+        title: 'Mise à jour téléchargée',
+        message:
+          "La mise à jour a été téléchargée. L'application va redémarrer pour installer la mise à jour.",
+        buttons: ['Redémarrer maintenant', 'Plus tard'],
+      })
+      .then((result) => {
+        if (result.response === 0) {
+          // L'utilisateur a choisi de redémarrer maintenant
+          autoUpdater.quitAndInstall()
+        }
+      })
+  })
 
   // Récupération de l'adresse IP actuelle
   const currentIp = await getLocalIPv4Address()
