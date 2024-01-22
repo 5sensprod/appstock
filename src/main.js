@@ -6,6 +6,7 @@ const Store = require('electron-store')
 const backupDatabase = require('./database/backup.js')
 const store = new Store()
 const schedule = require('node-schedule')
+const { autoUpdater } = require('electron-updater')
 let mainWindow
 
 ipcMain.on('print', (event, content) => {
@@ -67,6 +68,7 @@ const createWindow = () => {
 }
 app.on('ready', async () => {
   createWindow()
+  autoUpdater.checkForUpdatesAndNotify()
 
   // Récupération de l'adresse IP actuelle
   const currentIp = await getLocalIPv4Address()

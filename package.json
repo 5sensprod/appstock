@@ -17,6 +17,10 @@
     "name": "chris",
     "email": "5sensprod@gmail.com"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/5sensprod/appstock"
+  },
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.23.5",
