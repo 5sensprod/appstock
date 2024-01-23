@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { triggerBackup, getPaths } from '../../ipcHelper'
+import { triggerDirectExport, getPaths } from '../../ipcHelper'
 
 const BackupComponent = () => {
   useEffect(() => {
@@ -8,23 +8,22 @@ const BackupComponent = () => {
       if (!paths) {
         console.log('Les chemins ne sont pas disponibles.')
       }
-      // Vous pouvez également utiliser les chemins ici pour d'autres opérations
     })
   }, [])
 
-  const handleBackup = async () => {
+  const handleExport = async () => {
     try {
-      const response = await triggerBackup()
-      alert('Sauvegarde réussie ')
+      const response = await triggerDirectExport()
+      alert('Exportation réussie')
     } catch (error) {
-      console.error('Échec de la sauvegarde:', error)
-      alert('Échec de la sauvegarde: ' + error.message)
+      console.error("Échec de l'exportation:", error)
+      alert("Échec de l'exportation: " + error.message)
     }
   }
 
   return (
     <div>
-      <button onClick={handleBackup}>Déclencher la Sauvegarde</button>
+      <button onClick={handleExport}>Déclencher la Sauvegarde</button>
     </div>
   )
 }

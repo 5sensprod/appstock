@@ -3,7 +3,6 @@ const path = require('path')
 require('../src/server/server.js')
 const { getLocalIPv4Address } = require('./server/networkUtils')
 const Store = require('electron-store')
-const backupDatabase = require('./database/backup.js')
 const store = new Store()
 let mainWindow
 const logToFile = require('./logger')
@@ -33,6 +32,19 @@ async function exportBackupToSftp(backupPath, dbName) {
   }
 }
 
+ipcMain.handle('export-directly', async (event, dbPath, dbName) => {
+  try {
+    console.log(`Début de l'exportation directe pour ${dbName}`)
+    await exportBackupToSftp(dbPath, dbName) // Utilise la même fonction d'exportation SFTP
+    console.log(`Exportation directe réussie pour ${dbName}`)
+  } catch (error) {
+    console.error(`Erreur lors de l'exportation directe pour ${dbName}:`, error)
+    throw new Error(
+      `Échec de l'exportation directe pour ${dbName}: ${error.message}`,
+    )
+  }
+})
+
 ipcMain.on('print', (event, content) => {
   let win = new BrowserWindow({ show: false })
   win.loadURL('data:text/html;charset=utf-8,' + encodeURI(content))
@@ -54,22 +66,6 @@ ipcMain.handle('get-paths', async () => {
       invoices: path.join(userDataPath, 'invoices.db'),
     },
     backupDir: desktopPath,
-  }
-})
-ipcMain.handle('trigger-backup', async (event, dbPath, backupDir, dbName) => {
-  try {
-    console.log(`Début de la sauvegarde pour ${dbName}`)
-
-    // La fonction backupDatabase retourne le nom du fichier de sauvegarde
-    const backupFileName = backupDatabase(dbPath, backupDir, dbName)
-    const backupPath = path.join(backupDir, backupFileName)
-    console.log(`Sauvegarde locale réussie pour ${dbName}: ${backupPath}`)
-
-    // Retourne le chemin de la sauvegarde pour une utilisation ultérieure
-    return backupPath
-  } catch (error) {
-    console.error(`Erreur dans la sauvegarde pour ${dbName}:`, error)
-    throw new Error(`Échec de la sauvegarde pour ${dbName}: ${error.message}`)
   }
 })
 

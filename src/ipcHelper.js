@@ -50,38 +50,22 @@ export const getPaths = async () => {
   }
 }
 
-export const triggerBackup = async () => {
+export const triggerDirectExport = async () => {
   if (window.electron) {
     try {
-      const { dbPaths, backupDir } = await getPaths()
-      let backupPaths = []
-
-      // Sauvegarde de toutes les bases de données d'abord
+      const { dbPaths } = await getPaths()
       for (const [dbName, dbPath] of Object.entries(dbPaths)) {
-        const backupPath = await window.electron.ipcRenderer.invoke(
-          'trigger-backup',
-          dbPath,
-          backupDir,
-          dbName,
-        )
-        backupPaths.push({ dbName, backupPath })
-      }
-
-      // Exportation de toutes les sauvegardes vers le SFTP ensuite
-      for (const { dbName, backupPath } of backupPaths) {
         await window.electron.ipcRenderer.invoke(
-          'export-to-sftp',
-          backupPath,
+          'export-directly',
+          dbPath,
           dbName,
         )
       }
     } catch (error) {
-      console.error('Erreur lors du déclenchement de la sauvegarde:', error)
+      console.error("Erreur lors de l'exportation directe:", error)
       throw error
     }
   } else {
-    console.log(
-      'Contexte Electron non disponible. Impossible de déclencher la sauvegarde.',
-    )
+    console.log('Contexte Electron non disponible.')
   }
 }
