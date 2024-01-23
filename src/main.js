@@ -11,9 +11,16 @@ const schedule = require('node-schedule')
 
 const SftpClient = require('electron-ssh2-sftp-client')
 
-async function exportBackupToSftp(backupPath, dbName) {
+const formatDate = () => {
+  const date = new Date()
+  return date.toISOString().split('T')[0].replace(/-/g, '') // Format YYYYMMDD
+}
+
+async function exportBackupToSftp(dbPath, dbName) {
   const sftp = new SftpClient()
-  const remoteFilePath = `/axe_backup/${path.basename(backupPath)}`
+  const formattedDate = formatDate()
+  const backupFileName = `${formattedDate}-${path.basename(dbPath)}`
+  const remoteFilePath = `/axe_backup/${backupFileName}`
 
   try {
     await sftp.connect({
@@ -23,7 +30,7 @@ async function exportBackupToSftp(backupPath, dbName) {
       password: config.SFTP_PASSWORD,
     })
 
-    await sftp.put(backupPath, remoteFilePath)
+    await sftp.put(dbPath, remoteFilePath) // Envoie le fichier DB original
     logToFile(`Backup exporté avec succès pour ${dbName}`)
   } catch (error) {
     logToFile(`Erreur lors de l'exportation du backup pour ${dbName}: ${error}`)
@@ -117,7 +124,7 @@ const getDatabasePaths = () => {
 }
 
 const scheduleExport = () => {
-  schedule.scheduleJob('23 4 * * 1-6', async () => {
+  schedule.scheduleJob('47 4 * * 1-6', async () => {
     try {
       const dbPaths = getDatabasePaths()
       for (const [dbName, dbPath] of Object.entries(dbPaths)) {
