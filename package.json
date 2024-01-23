@@ -8,7 +8,7 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "electron-forge publish",
+    "publish": "electron-forge publish --authToken $GH_TOKEN",
     "postinstall": "electron-rebuild",
     "lint": "echo \"No linting configured\""
   },
@@ -16,6 +16,17 @@
   "author": {
     "name": "chris",
     "email": "5sensprod@gmail.com"
+  },
+  "build": {
+    "appId": "com.cinqsensprod.appstock",
+    "productName": "appstock",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "5sensprod",
+        "repo": "appstock"
+      }
+    ]
   },
   "license": "MIT",
   "devDependencies": {
@@ -63,6 +74,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-ssh2-sftp-client": "^1.0.0",
     "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
     "formik": "^2.4.5",
     "fs-extra": "^11.2.0",
     "moment": "^2.29.4",
