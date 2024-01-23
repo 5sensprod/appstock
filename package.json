@@ -6,7 +6,6 @@
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
-    "build": "electron-builder build",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
@@ -61,7 +60,6 @@
     "axios": "^1.6.2",
     "cors": "^2.8.5",
     "date-fns": "^2.30.0",
-    "dotenv": "^16.3.2",
     "electron-squirrel-startup": "^1.0.0",
     "electron-ssh2-sftp-client": "^1.0.0",
     "electron-store": "^8.1.0",
