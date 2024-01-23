@@ -67,6 +67,7 @@
     "fs-extra": "^11.2.0",
     "moment": "^2.29.4",
     "nedb": "^1.8.0",
+    "node-schedule": "^2.1.1",
     "node-sftp-client": "^2.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

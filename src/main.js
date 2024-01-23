@@ -7,6 +7,7 @@ const store = new Store()
 let mainWindow
 const logToFile = require('./logger')
 const config = require('../config.json')
+const schedule = require('node-schedule')
 
 const SftpClient = require('electron-ssh2-sftp-client')
 
@@ -57,7 +58,6 @@ ipcMain.on('print', (event, content) => {
 
 ipcMain.handle('get-paths', async () => {
   const userDataPath = app.getPath('userData')
-  const desktopPath = app.getPath('desktop')
   return {
     dbPaths: {
       categories: path.join(userDataPath, 'categories.db'),
@@ -65,7 +65,7 @@ ipcMain.handle('get-paths', async () => {
       products: path.join(userDataPath, 'products.db'),
       invoices: path.join(userDataPath, 'invoices.db'),
     },
-    backupDir: desktopPath,
+    backupDir: app.getPath('desktop'),
   }
 })
 
@@ -105,6 +105,31 @@ const createWindow = () => {
 
   // mainWindow.webContents.openDevTools()
 }
+
+const getDatabasePaths = () => {
+  const userDataPath = app.getPath('userData')
+  return {
+    categories: path.join(userDataPath, 'categories.db'),
+    users: path.join(userDataPath, 'users.db'),
+    products: path.join(userDataPath, 'products.db'),
+    invoices: path.join(userDataPath, 'invoices.db'),
+  }
+}
+
+const scheduleExport = () => {
+  schedule.scheduleJob('23 4 * * 1-6', async () => {
+    try {
+      const dbPaths = getDatabasePaths()
+      for (const [dbName, dbPath] of Object.entries(dbPaths)) {
+        await exportBackupToSftp(dbPath, dbName)
+      }
+      console.log('Exportation automatique réussie')
+    } catch (error) {
+      console.error("Erreur lors de l'exportation automatique:", error)
+    }
+  })
+}
+
 app.on('ready', async () => {
   createWindow()
 
@@ -136,6 +161,8 @@ app.on('ready', async () => {
   mainWindow.webContents.once('dom-ready', () => {
     mainWindow.webContents.send('localIp', currentIp)
   })
+
+  scheduleExport()
 })
 
 app.on('window-all-closed', () => {
