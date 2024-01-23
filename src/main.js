@@ -13,7 +13,7 @@ const SftpClient = require('electron-ssh2-sftp-client')
 
 const formatDate = () => {
   const date = new Date()
-  return date.toISOString().split('T')[0].replace(/-/g, '') // Format YYYYMMDD
+  return date.toISOString().split('T')[0].replace(/-/g, '')
 }
 
 async function exportBackupToSftp(dbPath, dbName) {
@@ -30,7 +30,7 @@ async function exportBackupToSftp(dbPath, dbName) {
       password: config.SFTP_PASSWORD,
     })
 
-    await sftp.put(dbPath, remoteFilePath) // Envoie le fichier DB original
+    await sftp.put(dbPath, remoteFilePath)
     logToFile(`Backup exporté avec succès pour ${dbName}`)
   } catch (error) {
     logToFile(`Erreur lors de l'exportation du backup pour ${dbName}: ${error}`)
@@ -39,19 +39,6 @@ async function exportBackupToSftp(dbPath, dbName) {
     sftp.end()
   }
 }
-
-ipcMain.handle('export-directly', async (event, dbPath, dbName) => {
-  try {
-    console.log(`Début de l'exportation directe pour ${dbName}`)
-    await exportBackupToSftp(dbPath, dbName) // Utilise la même fonction d'exportation SFTP
-    console.log(`Exportation directe réussie pour ${dbName}`)
-  } catch (error) {
-    console.error(`Erreur lors de l'exportation directe pour ${dbName}:`, error)
-    throw new Error(
-      `Échec de l'exportation directe pour ${dbName}: ${error.message}`,
-    )
-  }
-})
 
 ipcMain.on('print', (event, content) => {
   let win = new BrowserWindow({ show: false })
@@ -63,23 +50,9 @@ ipcMain.on('print', (event, content) => {
   })
 })
 
-ipcMain.handle('get-paths', async () => {
-  const userDataPath = app.getPath('userData')
-  return {
-    dbPaths: {
-      categories: path.join(userDataPath, 'categories.db'),
-      users: path.join(userDataPath, 'users.db'),
-      products: path.join(userDataPath, 'products.db'),
-      invoices: path.join(userDataPath, 'invoices.db'),
-    },
-    backupDir: app.getPath('desktop'),
-  }
-})
-
 ipcMain.handle('export-to-sftp', async (event, backupPath, dbName) => {
   console.log(`Début de l'exportation SFTP pour ${dbName}`)
   try {
-    // Utilisez la fonction existante pour l'exportation SFTP
     await exportBackupToSftp(backupPath, dbName)
     console.log(`Exportation SFTP réussie pour ${dbName}`)
     return `Exportation SFTP réussie pour ${dbName}`
@@ -124,7 +97,7 @@ const getDatabasePaths = () => {
 }
 
 const scheduleExport = () => {
-  schedule.scheduleJob('47 4 * * 1-6', async () => {
+  schedule.scheduleJob('30 18 * * 1-6', async () => {
     try {
       const dbPaths = getDatabasePaths()
       for (const [dbName, dbPath] of Object.entries(dbPaths)) {

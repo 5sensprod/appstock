@@ -34,38 +34,3 @@ export const sendPrintRequest = async (printContent) => {
     )
   }
 }
-
-export const getPaths = async () => {
-  if (window.electron) {
-    try {
-      const paths = await window.electron.ipcRenderer.invoke('get-paths')
-      return paths // Retourne les chemins récupérés
-    } catch (error) {
-      console.error('Erreur lors de la récupération des chemins:', error)
-      return null // Retourne null en cas d'erreur
-    }
-  } else {
-    console.log('Contexte Electron non disponible.')
-    return null // Une valeur de secours ou une autre logique
-  }
-}
-
-export const triggerDirectExport = async () => {
-  if (window.electron) {
-    try {
-      const { dbPaths } = await getPaths()
-      for (const [dbName, dbPath] of Object.entries(dbPaths)) {
-        await window.electron.ipcRenderer.invoke(
-          'export-directly',
-          dbPath,
-          dbName,
-        )
-      }
-    } catch (error) {
-      console.error("Erreur lors de l'exportation directe:", error)
-      throw error
-    }
-  } else {
-    console.log('Contexte Electron non disponible.')
-  }
-}

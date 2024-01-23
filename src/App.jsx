@@ -24,7 +24,6 @@ import { CategoryProvider } from './contexts/CategoryContext'
 import { ProductProviderSimplified } from './contexts/ProductContextSimplified'
 import { CategoryTreeSelectProvider } from './contexts/CategoryTreeSelectContext'
 import { GridPreferenceProvider } from './contexts/GridPreferenceContext'
-import BackupComponent from './components/ui/BackupComponent'
 
 const licenseKey =
   'CompanyName=Equinix Asia Pacific pte ltd,LicensedGroup=equinixMendixPrivateLib,LicenseType=MultipleApplications,LicensedConcurrentDeveloperCount=2,LicensedProductionInstancesCount=0,AssetReference=AG-027567,SupportServicesEnd=18_June_2023_[v2]_MTY4NzA0MjgwMDAwMA==4be2c388f9a8a7443c72842dff53d5b2'
@@ -58,7 +57,6 @@ const App = () => {
                           ) : (
                             // Affichage normal avec MainLayout
                             <MainLayout>
-                              <BackupComponent />
                               <Routes>
                                 <Route path="/" element={<POSPage />} />
                                 <Route
