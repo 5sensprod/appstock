@@ -6,6 +6,32 @@ const Store = require('electron-store')
 const backupDatabase = require('./database/backup.js')
 const store = new Store()
 let mainWindow
+const logToFile = require('./logger')
+const config = require('../config.json')
+
+const SftpClient = require('electron-ssh2-sftp-client')
+
+async function exportBackupToSftp(backupPath, dbName) {
+  const sftp = new SftpClient()
+  const remoteFilePath = `/axe_backup/${path.basename(backupPath)}`
+
+  try {
+    await sftp.connect({
+      host: config.SFTP_HOST,
+      port: config.SFTP_PORT,
+      username: config.SFTP_USERNAME,
+      password: config.SFTP_PASSWORD,
+    })
+
+    await sftp.put(backupPath, remoteFilePath)
+    logToFile(`Backup exporté avec succès pour ${dbName}`)
+  } catch (error) {
+    logToFile(`Erreur lors de l'exportation du backup pour ${dbName}: ${error}`)
+    throw error
+  } finally {
+    sftp.end()
+  }
+}
 
 ipcMain.on('print', (event, content) => {
   let win = new BrowserWindow({ show: false })
@@ -30,14 +56,35 @@ ipcMain.handle('get-paths', async () => {
     backupDir: desktopPath,
   }
 })
-
 ipcMain.handle('trigger-backup', async (event, dbPath, backupDir, dbName) => {
   try {
-    const result = await backupDatabase(dbPath, backupDir, dbName)
-    return `Sauvegarde réussie pour ${dbName}`
+    console.log(`Début de la sauvegarde pour ${dbName}`)
+
+    // La fonction backupDatabase retourne le nom du fichier de sauvegarde
+    const backupFileName = backupDatabase(dbPath, backupDir, dbName)
+    const backupPath = path.join(backupDir, backupFileName)
+    console.log(`Sauvegarde locale réussie pour ${dbName}: ${backupPath}`)
+
+    // Retourne le chemin de la sauvegarde pour une utilisation ultérieure
+    return backupPath
   } catch (error) {
-    console.error(`Erreur de sauvegarde pour ${dbName}:`, error)
+    console.error(`Erreur dans la sauvegarde pour ${dbName}:`, error)
     throw new Error(`Échec de la sauvegarde pour ${dbName}: ${error.message}`)
+  }
+})
+
+ipcMain.handle('export-to-sftp', async (event, backupPath, dbName) => {
+  console.log(`Début de l'exportation SFTP pour ${dbName}`)
+  try {
+    // Utilisez la fonction existante pour l'exportation SFTP
+    await exportBackupToSftp(backupPath, dbName)
+    console.log(`Exportation SFTP réussie pour ${dbName}`)
+    return `Exportation SFTP réussie pour ${dbName}`
+  } catch (error) {
+    console.error(`Erreur lors de l'exportation SFTP pour ${dbName}:`, error)
+    throw new Error(
+      `Échec de l'exportation SFTP pour ${dbName}: ${error.message}`,
+    )
   }
 })
 
@@ -94,6 +141,7 @@ app.on('ready', async () => {
     mainWindow.webContents.send('localIp', currentIp)
   })
 })
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()

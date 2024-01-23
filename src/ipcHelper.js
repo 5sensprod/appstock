@@ -53,21 +53,31 @@ export const getPaths = async () => {
 export const triggerBackup = async () => {
   if (window.electron) {
     try {
-      const { dbPaths, backupDir } = await getPaths() // Obtenir les chemins des DB et le répertoire de sauvegarde
+      const { dbPaths, backupDir } = await getPaths()
+      let backupPaths = []
 
-      // Itérer sur chaque base de données et déclencher la sauvegarde
+      // Sauvegarde de toutes les bases de données d'abord
       for (const [dbName, dbPath] of Object.entries(dbPaths)) {
-        const response = await window.electron.ipcRenderer.invoke(
+        const backupPath = await window.electron.ipcRenderer.invoke(
           'trigger-backup',
           dbPath,
           backupDir,
-          dbName, // Ajouter le nom de la DB pour la sauvegarde
+          dbName,
         )
-        console.log(`Réponse de la sauvegarde pour ${dbName}:`, response)
+        backupPaths.push({ dbName, backupPath })
+      }
+
+      // Exportation de toutes les sauvegardes vers le SFTP ensuite
+      for (const { dbName, backupPath } of backupPaths) {
+        await window.electron.ipcRenderer.invoke(
+          'export-to-sftp',
+          backupPath,
+          dbName,
+        )
       }
     } catch (error) {
       console.error('Erreur lors du déclenchement de la sauvegarde:', error)
-      throw error // Lancer l'erreur pour une gestion plus poussée
+      throw error
     }
   } else {
     console.log(

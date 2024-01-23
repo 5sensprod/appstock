@@ -10,4 +10,5 @@ module.exports = function backupDatabase(dbPath, backupDir, dbName) {
   console.log('Backup file path:', backupPath)
   fse.copySync(dbPath, backupPath)
   console.log('Database backup was successful!')
+  return backupFileName
 }
