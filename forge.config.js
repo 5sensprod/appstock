@@ -46,4 +46,17 @@ module.exports = {
       },
     },
   ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: '5sensprod',
+          name: 'appstock',
+        },
+        prerelease: false,
+        draft: true,
+      },
+    },
+  ],
 }

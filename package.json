@@ -8,7 +8,7 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "electron-forge publish --authToken $GH_TOKEN",
+    "publish": "electron-forge publish",
     "postinstall": "electron-rebuild",
     "lint": "echo \"No linting configured\""
   },
@@ -16,17 +16,6 @@
   "author": {
     "name": "chris",
     "email": "5sensprod@gmail.com"
-  },
-  "build": {
-    "appId": "com.cinqsensprod.appstock",
-    "productName": "appstock",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "5sensprod",
-        "repo": "appstock"
-      }
-    ]
   },
   "license": "MIT",
   "devDependencies": {
@@ -39,6 +28,7 @@
     "@electron-forge/maker-zip": "^7.2.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "@electron-forge/plugin-webpack": "^7.2.0",
+    "@electron-forge/publisher-github": "^7.2.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "babel-loader": "^9.1.3",
     "css-loader": "^6.0.0",
