@@ -78,6 +78,9 @@ const useColumns = (
       },
       editable: false,
       disableColumnMenu: true,
+      hideable: true,
+      sortable: false,
+      hideable: false,
     },
     {
       field: 'reference',
@@ -85,6 +88,7 @@ const useColumns = (
       flex: 1,
       editable: true,
       aggregable: false,
+      groupable: false,
     },
     {
       field: 'prixVente',
@@ -92,6 +96,10 @@ const useColumns = (
       type: 'number',
       flex: 0.5,
       editable: true,
+      groupable: false,
+      align: 'right',
+      headerAlign: 'left',
+      align: 'left',
       availableAggregationFunctions: ['sum', 'max', 'avg', 'min'],
       renderCell: (params) => (
         <span>
@@ -107,6 +115,9 @@ const useColumns = (
       type: 'number',
       flex: 0.5,
       editable: true,
+      groupable: false,
+      headerAlign: 'left',
+      align: 'left',
       availableAggregationFunctions: ['sum', 'max', 'avg', 'min'],
       renderCell: (params) => (
         <span>
@@ -122,6 +133,9 @@ const useColumns = (
       type: 'number',
       flex: 0.5,
       editable: true,
+      groupable: false,
+      headerAlign: 'left',
+      align: 'left',
       availableAggregationFunctions: ['sum', 'max', 'min'],
     },
     {
@@ -169,6 +183,8 @@ const useColumns = (
       flex: 0.75,
       editable: true,
       disableColumnMenu: true,
+      sortable: true,
+      sortable: false,
     },
     {
       field: 'tva',
@@ -178,6 +194,12 @@ const useColumns = (
       editable: true,
       aggregable: false,
       disableColumnMenu: true,
+      sortable: false,
+      headerAlign: 'left',
+      align: 'left',
+      valueFormatter: (params) => {
+        return `${params.value}%` // Ajouter un symbole de pourcentage à la valeur
+      },
       renderEditCell: (params) => (
         <CustomSelect
           label="TVA"
@@ -199,6 +221,7 @@ const useColumns = (
       type: 'date',
       flex: 0.75,
       aggregable: false,
+      hideable: true,
       valueGetter: (params) => {
         if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
           return null // Ne rien afficher pour les lignes d'agrégation
