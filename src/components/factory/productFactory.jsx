@@ -21,7 +21,8 @@ function productFactory(
   handleOpenModal,
 ) {
   function createProductElement() {
-    const imageUrl = getProductImageUrl(photos, baseUrl)
+    const { url, isDefault } = getProductImageUrl(photos, baseUrl)
+    // const imageUrl = getProductImageUrl(photos, baseUrl)
     return (
       <Card
         key={_id}
@@ -35,8 +36,9 @@ function productFactory(
         <CardMedia
           component="img"
           height="140"
-          image={imageUrl}
+          image={url}
           alt={`Image de ${reference}`}
+          style={{ opacity: isDefault ? 0.1 : 1 }}
         />
         <Box flexGrow={1} overflow="hidden">
           <CardContent>

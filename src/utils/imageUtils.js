@@ -4,10 +4,14 @@ export function getDefaultImageUrl(baseUrl) {
 
 export function getProductImageUrl(images, baseUrl) {
   const defaultImagePath = getDefaultImageUrl(baseUrl)
-  return images && images.length > 0
-    ? `${baseUrl}/${images[0]}`
-    : defaultImagePath
+  const isDefaultImage = !(images && images.length > 0)
+
+  return {
+    url: isDefaultImage ? defaultImagePath : `${baseUrl}/${images[0]}`,
+    isDefault: isDefaultImage,
+  }
 }
+
 export function getLogoUrl(baseUrl) {
   return `${baseUrl}/catalogue/default/logo.png`
 }

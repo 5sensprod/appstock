@@ -8,7 +8,10 @@ import CancelIcon from '@mui/icons-material/Close'
 import { IconButton } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { GridRowModes } from '@mui/x-data-grid-pro'
+import {
+  GridRowModes,
+  GRID_AGGREGATION_ROOT_FOOTER_ROW_ID,
+} from '@mui/x-data-grid-premium'
 import CustomSelect from '../../ui/CustomSelect'
 import { TVA_RATES } from '../../../utils/constants'
 
@@ -42,6 +45,9 @@ const useColumns = (
       headerName: 'Actions',
       width: 100,
       renderCell: (params) => {
+        if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
+          return null
+        }
         const isNew = isNewRowFunction(params.row)
         const isInEditMode =
           rowModesModel[params.id]?.mode === GridRowModes.Edit
@@ -71,14 +77,22 @@ const useColumns = (
         )
       },
       editable: false,
+      disableColumnMenu: true,
     },
-    { field: 'reference', headerName: 'Référence', flex: 1, editable: true },
+    {
+      field: 'reference',
+      headerName: 'Référence',
+      flex: 1,
+      editable: true,
+      aggregable: false,
+    },
     {
       field: 'prixVente',
       headerName: 'Px Vente',
       type: 'number',
       flex: 0.5,
       editable: true,
+      availableAggregationFunctions: ['sum', 'max', 'avg', 'min'],
       renderCell: (params) => (
         <span>
           {params.value !== undefined
@@ -93,6 +107,7 @@ const useColumns = (
       type: 'number',
       flex: 0.5,
       editable: true,
+      availableAggregationFunctions: ['sum', 'max', 'avg', 'min'],
       renderCell: (params) => (
         <span>
           {params.value !== undefined
@@ -107,13 +122,20 @@ const useColumns = (
       type: 'number',
       flex: 0.5,
       editable: true,
+      availableAggregationFunctions: ['sum', 'max', 'min'],
     },
     {
       field: 'categorie',
       headerName: 'Catégorie',
       flex: 0.75,
       editable: true,
-      valueGetter: (params) => getCategoryPath(params.value) || 'Non classifié',
+      aggregable: false,
+      valueGetter: (params) => {
+        if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
+          return '' // Ne rien afficher pour les lignes d'agrégation
+        }
+        return getCategoryPath(params.value) || 'Non classifié'
+      },
       renderEditCell: (params) => {
         const currentCategoryName = params.api.getCellValue(
           params.id,
@@ -134,14 +156,28 @@ const useColumns = (
         )
       },
     },
-    { field: 'marque', headerName: 'Marque', flex: 0.75, editable: true },
-    { field: 'gencode', headerName: 'GenCode', flex: 0.75, editable: true },
+    {
+      field: 'marque',
+      headerName: 'Marque',
+      flex: 0.75,
+      editable: true,
+      aggregable: false,
+    },
+    {
+      field: 'gencode',
+      headerName: 'GenCode',
+      flex: 0.75,
+      editable: true,
+      disableColumnMenu: true,
+    },
     {
       field: 'tva',
       headerName: 'TVA',
       type: 'number',
       flex: 0.5,
       editable: true,
+      aggregable: false,
+      disableColumnMenu: true,
       renderEditCell: (params) => (
         <CustomSelect
           label="TVA"
@@ -162,8 +198,15 @@ const useColumns = (
       headerName: 'Date Ajout',
       type: 'date',
       flex: 0.75,
-      valueGetter: (params) =>
-        moment(params.value).isValid() ? moment(params.value).toDate() : null,
+      aggregable: false,
+      valueGetter: (params) => {
+        if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
+          return null // Ne rien afficher pour les lignes d'agrégation
+        }
+        return moment(params.value).isValid()
+          ? moment(params.value).toDate()
+          : null
+      },
     },
   ]
 

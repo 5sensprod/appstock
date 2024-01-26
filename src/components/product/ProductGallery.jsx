@@ -33,7 +33,7 @@ const ProductGallery = ({ products }) => {
   }
 
   const showProductModal = (product) => {
-    const imageUrl = getProductImageUrl(product.photos, baseUrl)
+    const imageInfo = getProductImageUrl(product.photos, baseUrl)
     const categoryName = getCategoryName(product.categorie) || 'Non catégorisé'
     const descriptionCourte = product.descriptionCourte || ''
     const description = product.description || ''
@@ -63,7 +63,7 @@ const ProductGallery = ({ products }) => {
           </Typography>
         </>
       ),
-      imageUrl,
+      imageUrl: imageInfo.url,
     })
   }
 
