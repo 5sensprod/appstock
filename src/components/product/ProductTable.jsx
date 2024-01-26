@@ -72,6 +72,8 @@ const ProductTable = ({ products }) => {
           />
         ) : null,
       flex: 1,
+      disableColumnMenu: true,
+      sortable: false,
     },
     { field: 'reference', headerName: 'Référence', flex: 1 },
     {
@@ -80,11 +82,38 @@ const ProductTable = ({ products }) => {
       type: 'number',
       flex: 1,
       renderCell: (params) => `${formatNumberFrench(params.value)} €`,
+      headerAlign: 'left',
+      align: 'left',
     },
-    { field: 'stock', headerName: 'Stock', type: 'number', flex: 1 },
-    { field: 'tva', headerName: 'TVA', type: 'number', flex: 1 },
+    {
+      field: 'stock',
+      headerName: 'Stock',
+      type: 'number',
+      flex: 1,
+      sortable: false,
+      headerAlign: 'left',
+      align: 'left',
+    },
+    {
+      field: 'tva',
+      headerName: 'TVA',
+      type: 'number',
+      flex: 1,
+      valueFormatter: (params) => {
+        return `${params.value}%` // Ajouter un symbole de pourcentage à la valeur
+      },
+      headerAlign: 'left',
+      align: 'left',
+      disableColumnMenu: true,
+    },
     { field: 'marque', headerName: 'Marque', flex: 1 },
-    { field: 'gencode', headerName: 'Gencode', flex: 1 },
+    {
+      field: 'gencode',
+      headerName: 'Gencode',
+      flex: 1,
+      sortable: false,
+      disableColumnMenu: true,
+    },
   ]
 
   const handleRowClick = (params) => {

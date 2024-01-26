@@ -78,7 +78,6 @@ const useColumns = (
       },
       editable: false,
       disableColumnMenu: true,
-      hideable: true,
       sortable: false,
       hideable: false,
     },
