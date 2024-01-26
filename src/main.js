@@ -8,7 +8,7 @@ let mainWindow
 const logToFile = require('./logger')
 const config = require('../config.json')
 const schedule = require('node-schedule')
-const { autoUpdater } = require('electron-updater')
+const { autoUpdater } = require('electron')
 
 const SftpClient = require('electron-ssh2-sftp-client')
 
@@ -153,6 +153,7 @@ autoUpdater.on('update-available', () => {
 
 autoUpdater.on('update-downloaded', () => {
   mainWindow.webContents.send('update_downloaded')
+  autoUpdater.quitAndInstall()
 })
 
 app.on('window-all-closed', () => {

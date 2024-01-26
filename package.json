@@ -64,7 +64,6 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-ssh2-sftp-client": "^1.0.0",
     "electron-store": "^8.1.0",
-    "electron-updater": "^6.1.7",
     "formik": "^2.4.5",
     "fs-extra": "^11.2.0",
     "moment": "^2.29.4",
