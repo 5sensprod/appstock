@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react'
 import { DataGrid, frFR, GridActionsCellItem } from '@mui/x-data-grid'
 import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
 import moment from 'moment'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
 import { createCategoryMap, formatProducts } from '../../utils/productUtils'
@@ -37,7 +36,7 @@ const excludedKeys = [
   '_id',
 ]
 
-const generateColumns = (products, redirectToEdit, promptDelete) => {
+const generateColumns = (products, redirectToEdit) => {
   let columns =
     products.length > 0
       ? Object.keys(products[0])
@@ -68,17 +67,12 @@ const generateColumns = (products, redirectToEdit, promptDelete) => {
     field: 'actions',
     type: 'actions',
     headerName: 'Actions',
-    flex: 1, // Utilisez flex au lieu de width pour les actions aussi
+    flex: 1,
     getActions: (params) => [
       <GridActionsCellItem
         icon={<EditIcon />}
         label="Modifier"
         onClick={() => redirectToEdit(params.id)}
-      />,
-      <GridActionsCellItem
-        icon={<DeleteIcon />}
-        label="Supprimer"
-        onClick={() => promptDelete(products.find((p) => p._id === params.id))}
       />,
     ],
   })
@@ -86,13 +80,7 @@ const generateColumns = (products, redirectToEdit, promptDelete) => {
   return columns
 }
 
-const ProductCatalog = ({
-  products,
-  onSelectionChange,
-  redirectToEdit,
-  promptDelete,
-  categories,
-}) => {
+const ProductCatalog = ({ products, redirectToEdit, categories }) => {
   const categoryMap = useMemo(() => createCategoryMap(categories), [categories])
   const displayProducts = useMemo(
     () => formatProducts(products, categoryMap),
@@ -100,8 +88,8 @@ const ProductCatalog = ({
   )
 
   const columns = useMemo(
-    () => generateColumns(products, redirectToEdit, promptDelete),
-    [products, redirectToEdit, promptDelete],
+    () => generateColumns(products, redirectToEdit),
+    [products, redirectToEdit],
   )
 
   if (products.length === 0) {
@@ -126,8 +114,6 @@ const ProductCatalog = ({
       }}
       pageSizeOptions={[10, 25, 50]}
       pagination
-      checkboxSelection
-      onRowSelectionModelChange={onSelectionChange}
       style={{ width: '100%' }}
     />
   )

@@ -8,7 +8,7 @@ import { CompanyInfoProvider } from './contexts/CompanyInfoContext'
 import { UIProvider } from './contexts/UIContext'
 import POSPage from './components/pages/POSPage'
 import DashboardPage from './components/pages/DashboardPage'
-import CatalogPage from './components/pages/CatalogPage'
+import CatalogPageSimple from './components/pages/CatalogPageSimple'
 import CategoryPage from './components/pages/CategoryPage'
 import ClientPage from './components/pages/ClientPage'
 import InvoicePage from './components/pages/InvoicePage'
@@ -65,7 +65,7 @@ const App = () => {
                                 />
                                 <Route
                                   path="/catalog"
-                                  element={<CatalogPage />}
+                                  element={<CatalogPageSimple />}
                                 />
                                 {/* <Route
                             path="/products/:productIds?/:categoryId?"

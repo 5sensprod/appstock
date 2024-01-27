@@ -9,6 +9,7 @@ import {
 } from '@mui/material'
 import { getProductImageUrl } from '../../utils/imageUtils'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import EditIcon from '@mui/icons-material/Edit'
 
 function productFactory(
   _id,
@@ -19,10 +20,10 @@ function productFactory(
   categorie,
   baseUrl,
   handleOpenModal,
+  redirectToEdit,
 ) {
   function createProductElement() {
     const { url, isDefault } = getProductImageUrl(photos, baseUrl)
-    // const imageUrl = getProductImageUrl(photos, baseUrl)
     return (
       <Card
         key={_id}
@@ -74,6 +75,9 @@ function productFactory(
           justifyContent="space-between"
           p={2}
         >
+          <IconButton onClick={() => redirectToEdit(_id)}>
+            <EditIcon /> {/* Icône d'édition */}
+          </IconButton>
           <IconButton onClick={() => handleOpenModal(_id)}>
             <VisibilityIcon />
           </IconButton>

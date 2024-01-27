@@ -1,5 +1,5 @@
 import React from 'react'
-import EditProduct from '../product/EditProduct'
+import EditProductSimple from '../PRODUCTS/EditProductSimple'
 import { useParams } from 'react-router-dom'
 
 const EditProductPage = () => {
@@ -8,7 +8,7 @@ const EditProductPage = () => {
   return (
     <div>
       <h1>Modifier le Produit</h1>
-      <EditProduct productId={productId} />
+      <EditProductSimple productId={productId} />
     </div>
   )
 }

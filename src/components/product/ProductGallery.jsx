@@ -5,11 +5,19 @@ import { useProductContext } from '../../contexts/ProductContext'
 import GenericModal from '../ui/GenericModal'
 import { getProductImageUrl } from '../../utils/imageUtils'
 import { useConfig } from '../../contexts/ConfigContext'
+import { useNavigate } from 'react-router-dom'
 
 const ProductGallery = ({ products }) => {
   const { baseUrl } = useConfig()
 
   const { categories } = useProductContext()
+
+  const navigate = useNavigate() // Ajouter le hook useNavigate
+
+  // Fonction pour rediriger vers la page d'édition
+  const redirectToEdit = (productId) => {
+    navigate(`/edit-product/${productId}`)
+  }
 
   const [modalInfo, setModalInfo] = useState({
     open: false,
@@ -87,7 +95,8 @@ const ProductGallery = ({ products }) => {
             product.photos,
             product.categorie,
             baseUrl,
-            () => showProductModal(product),
+            () => showProductModal(product), // Cette fonction doit être liée à VisibilityIcon
+            redirectToEdit, // Cette fonction doit être liée à EditIcon
           ).render()}
         </Box>
       ))}

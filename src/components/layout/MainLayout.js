@@ -12,7 +12,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt'
 import SellIcon from '@mui/icons-material/Sell'
 import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import DrawerHeader from './DrawerHeader'
-import CatalogCreateButton from './CatalogCreateButton'
+// import CatalogCreateButton from './CatalogCreateButton'
 import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import BackButton from './BackButton'
 import SideDrawer from './SideDrawer'
@@ -77,7 +77,7 @@ export default function MiniDrawer({ children }) {
       />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <CatalogCreateButton theme={theme} />
+        {/* <CatalogCreateButton theme={theme} /> */}
         <BackButton theme={theme} />
         {children}
       </Box>
