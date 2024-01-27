@@ -67,7 +67,7 @@ const CatalogPage = () => {
   }
 
   return (
-    <div style={{ width: 'fit-content' }}>
+    <div style={{ width: '100%' }}>
       <Box
         display="flex"
         alignItems="center"

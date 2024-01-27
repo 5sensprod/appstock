@@ -2,17 +2,17 @@ import React, { useMemo } from 'react'
 import { DataGrid, frFR, GridActionsCellItem } from '@mui/x-data-grid'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { format } from 'date-fns'
+import moment from 'moment'
 import { capitalizeFirstLetter } from '../../utils/formatUtils'
 import { createCategoryMap, formatProducts } from '../../utils/productUtils'
 
-const columnWidths = {
-  prixVente: 90,
-  prixAchat: 90,
-  stock: 60,
-  sousCategorie: 120,
-  reference: 250,
-  tva: 70,
+const columnFlex = {
+  prixVente: 0.5,
+  prixAchat: 0.5,
+  stock: 0.5,
+  categorie: 1.5,
+  reference: 2,
+  tva: 0.5,
 }
 
 const columnNames = {
@@ -20,7 +20,7 @@ const columnNames = {
   reference: 'Référence',
   prixVente: 'Prix Vente',
   prixAchat: 'Prix Achat',
-  sousCategorie: 'Sous Catégorie',
+  categorie: 'Catégorie',
   marque: 'Marque',
 }
 
@@ -29,6 +29,7 @@ const excludedKeys = [
   'description',
   'descriptionCourte',
   'SKU',
+  'sousCategorie',
   'photos',
   'videos',
   'ficheTechnique',
@@ -42,21 +43,24 @@ const generateColumns = (products, redirectToEdit, promptDelete) => {
       ? Object.keys(products[0])
           .filter((key) => !excludedKeys.includes(key))
           .map((key) => {
-            const width = columnWidths[key] || 150
-            if (key === 'dateSoumission') {
-              return {
-                field: key,
-                headerName: columnNames[key] || capitalizeFirstLetter(key),
-                width: 110,
-                valueFormatter: (params) =>
-                  format(new Date(params.value), 'dd/MM/yyyy'),
-              }
-            }
-            return {
+            let column = {
               field: key,
               headerName: columnNames[key] || capitalizeFirstLetter(key),
-              width,
+              flex: columnFlex[key] || 1,
             }
+
+            if (key === 'dateSoumission') {
+              column.valueFormatter = (params) =>
+                moment(params.value).format('DD/MM/YYYY')
+            } else if (key === 'prixVente' || key === 'prixAchat') {
+              column.valueFormatter = ({ value }) =>
+                value || value === 0 ? `${value} €` : ''
+            } else if (key === 'tva') {
+              column.valueFormatter = ({ value }) =>
+                value || value === 0 ? `${value} %` : ''
+            }
+
+            return column
           })
       : []
 
@@ -64,7 +68,7 @@ const generateColumns = (products, redirectToEdit, promptDelete) => {
     field: 'actions',
     type: 'actions',
     headerName: 'Actions',
-    width: 150,
+    flex: 1, // Utilisez flex au lieu de width pour les actions aussi
     getActions: (params) => [
       <GridActionsCellItem
         icon={<EditIcon />}
