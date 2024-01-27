@@ -197,6 +197,9 @@ const useColumns = (
       headerAlign: 'left',
       align: 'left',
       valueFormatter: (params) => {
+        if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
+          return '' // Ne rien afficher pour les lignes d'agrégation
+        }
         return `${params.value}%` // Ajouter un symbole de pourcentage à la valeur
       },
       renderEditCell: (params) => (

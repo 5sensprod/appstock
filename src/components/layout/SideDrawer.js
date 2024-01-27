@@ -49,6 +49,7 @@ const SideDrawer = ({
   open,
   handleDrawerClose,
   menuItems,
+  productItems,
   clientMenuItems,
   supplierMenuItems,
 }) => {
@@ -57,6 +58,8 @@ const SideDrawer = ({
       <DrawerHeader handleDrawerClose={handleDrawerClose} />
       <Divider />
       <MenuList menuItems={menuItems} open={open} />
+      <Divider />
+      <MenuList menuItems={productItems} open={open} />
       <Divider />
       <MenuList menuItems={clientMenuItems} open={open} />
       <Divider />

@@ -24,16 +24,22 @@ function productFactory(props) {
   } = props
 
   const cardStyles = {
-    width: '200px',
-    margin: '10px',
+    width: '280px',
+    // heigth: '450px',
+    padding: '10px',
     display: 'flex',
     flexDirection: 'column',
+    transition: 'box-shadow 0.3s ease-in-out', // Ajoutez une transition pour un effet lisse
+    boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)', // Style par défaut
+    '&:hover': {
+      boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.2)', // Style lors du survol
+    },
   }
 
   const { url, isDefault } = getProductImageUrl(photos, baseUrl)
 
   const render = () => (
-    <Card key={_id} style={cardStyles}>
+    <Card key={_id} sx={cardStyles}>
       <CardMedia
         component="img"
         height="140"

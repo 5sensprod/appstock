@@ -74,16 +74,17 @@ const ProductGallery = ({ products }) => {
 
   return (
     <div
-      style={{ display: 'flex', flexWrap: 'wrap', gap: '50px', width: '100%' }}
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '30px',
+        width: '100%',
+        marginTop: '30px',
+        justifyContent: 'center',
+      }}
     >
       {products.map((product) => (
-        <Box
-          key={product._id}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          style={{ height: '100%' }}
-        >
+        <Box key={product._id} display="flex" justifyContent="center">
           {productFactory({
             _id: product._id,
             reference: product.reference,
