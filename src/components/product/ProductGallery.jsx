@@ -9,15 +9,8 @@ import { useNavigate } from 'react-router-dom'
 
 const ProductGallery = ({ products }) => {
   const { baseUrl } = useConfig()
-
   const { categories } = useProductContext()
-
-  const navigate = useNavigate() // Ajouter le hook useNavigate
-
-  // Fonction pour rediriger vers la page d'édition
-  const redirectToEdit = (productId) => {
-    navigate(`/edit-product/${productId}`)
-  }
+  const navigate = useNavigate()
 
   const [modalInfo, setModalInfo] = useState({
     open: false,
@@ -55,7 +48,7 @@ const ProductGallery = ({ products }) => {
       photos: product.photos,
       content: (
         <>
-          {product.reference && ( // Afficher le titre si disponible
+          {product.reference && (
             <Typography variant="h6" component="div">
               {product.reference}
             </Typography>
@@ -75,6 +68,10 @@ const ProductGallery = ({ products }) => {
     })
   }
 
+  const redirectToEdit = (productId) => {
+    navigate(`/edit-product/${productId}`)
+  }
+
   return (
     <div
       style={{ display: 'flex', flexWrap: 'wrap', gap: '50px', width: '100%' }}
@@ -87,17 +84,17 @@ const ProductGallery = ({ products }) => {
           alignItems="center"
           style={{ height: '100%' }}
         >
-          {productFactory(
-            product._id,
-            product.reference,
-            product.descriptionCourte,
-            product.prixVente,
-            product.photos,
-            product.categorie,
-            baseUrl,
-            () => showProductModal(product), // Cette fonction doit être liée à VisibilityIcon
-            redirectToEdit, // Cette fonction doit être liée à EditIcon
-          ).render()}
+          {productFactory({
+            _id: product._id,
+            reference: product.reference,
+            descriptionCourte: product.descriptionCourte,
+            prixVente: product.prixVente,
+            photos: product.photos,
+            categorie: product.categorie,
+            baseUrl: baseUrl,
+            handleOpenModal: () => showProductModal(product),
+            redirectToEdit: redirectToEdit,
+          }).render()}
         </Box>
       ))}
       <GenericModal

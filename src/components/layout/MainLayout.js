@@ -35,15 +35,27 @@ export default function MiniDrawer({ children }) {
 
   const menuItems = [
     { text: 'Tableau de bord', icon: <DashboardIcon />, link: '/dashboard' },
-    { text: 'Caisse', icon: <PointOfSaleIcon />, link: '/' },
-    { text: 'Produits', icon: <StorefrontIcon />, link: '/products' },
-    { text: 'Catégories', icon: <BookmarkIcon />, link: '/category' },
-    { text: 'Catalogue', icon: <AutoStoriesIcon />, link: '/catalog' },
+    {
+      text: 'Caisse',
+      icon: <PointOfSaleIcon />,
+      link: '/',
+      subMenu: [
+        { text: 'Catalogue', icon: <AutoStoriesIcon />, link: '/catalog' },
+      ],
+    },
+    {
+      text: 'Produits',
+      icon: <StorefrontIcon />,
+      link: '/products',
+      subMenu: [
+        { text: 'Catégories', icon: <BookmarkIcon />, link: '/category' },
+      ],
+    },
   ]
 
   const clientMenuItems = [
-    { text: 'Clients', icon: <PeopleIcon />, link: '/client' },
     { text: 'Factures', icon: <ReceiptIcon />, link: '/invoice' },
+    { text: 'Clients', icon: <PeopleIcon />, link: '/client' },
   ]
 
   const supplierMenuItems = [
