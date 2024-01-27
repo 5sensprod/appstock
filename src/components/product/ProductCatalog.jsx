@@ -12,7 +12,7 @@ const columnWidths = {
   stock: 60,
   sousCategorie: 120,
   reference: 250,
-  tva: 50,
+  tva: 70,
 }
 
 const columnNames = {
@@ -124,7 +124,7 @@ const ProductCatalog = ({
       pagination
       checkboxSelection
       onRowSelectionModelChange={onSelectionChange}
-      style={{ width: 'fit-content' }}
+      style={{ width: '100%' }}
     />
   )
 }
