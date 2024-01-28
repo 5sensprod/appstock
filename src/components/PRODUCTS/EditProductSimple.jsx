@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { TextField, FormControl, Button } from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext.js'
@@ -12,7 +12,12 @@ const EditProductSimple = ({ productId, setInitialProductName }) => {
     handleSubmit,
     setValue,
     formState: { isDirty },
-  } = useForm()
+  } = useForm({
+    defaultValues: {
+      description: '',
+      descriptionCourte: '',
+    },
+  })
   const navigate = useNavigate()
   const { showToast } = useUI()
 

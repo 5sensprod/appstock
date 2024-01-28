@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import EditIcon from '@mui/icons-material/Edit'
+import IconButton from '@mui/material/IconButton'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditProductSimple from '../PRODUCTS/EditProductSimple'
-import ShowProductSimple from '../PRODUCTS/ShowProductSimple' // Import du nouveau composant
+import ShowProductSimple from '../PRODUCTS/ShowProductSimple'
 import { useParams } from 'react-router-dom'
-import { useProductContext } from '../../contexts/ProductContext' // Import si nécessaire
+import { useProductContext } from '../../contexts/ProductContext'
 
 const EditProductPage = () => {
   const { id: productId } = useParams()
-  const { products } = useProductContext() // Utiliser le contexte produit si nécessaire
+  const { products } = useProductContext()
   const [productName, setProductName] = useState('')
   const [productInfo, setProductInfo] = useState({
     description: '',
@@ -36,12 +37,13 @@ const EditProductPage = () => {
       <h1>
         {productName || 'Produit'}
         {isEditable ? (
-          <VisibilityIcon
-            onClick={toggleEditMode}
-            style={{ cursor: 'pointer' }}
-          />
+          <IconButton onClick={toggleEditMode} style={{ cursor: 'pointer' }}>
+            <VisibilityIcon />
+          </IconButton>
         ) : (
-          <EditIcon onClick={toggleEditMode} style={{ cursor: 'pointer' }} />
+          <IconButton onClick={toggleEditMode} style={{ cursor: 'pointer' }}>
+            <EditIcon />
+          </IconButton>
         )}
       </h1>
       {isEditable ? (
