@@ -1,7 +1,19 @@
-import React from 'react'
-import { Box, Card, CardMedia, Grid, Typography } from '@mui/material'
+import React, { useState } from 'react'
+import { Box, Card, CardMedia, Grid, Typography, Dialog } from '@mui/material'
 
 const Media = ({ photos, baseUrl }) => {
+  const [open, setOpen] = useState(false)
+  const [selectedPhoto, setSelectedPhoto] = useState(null)
+
+  const handleOpen = (photoUrl) => {
+    setSelectedPhoto(photoUrl)
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
   return (
     <>
       <Typography variant="h5">Photos</Typography>
@@ -12,7 +24,10 @@ const Media = ({ photos, baseUrl }) => {
               const photoUrl = `${baseUrl}/${photo}`
               return (
                 <Grid item xs={6} sm={4} md={2} lg={2} key={index}>
-                  <Card sx={{ '&:hover': { opacity: 0.8 } }}>
+                  <Card
+                    sx={{ '&:hover': { opacity: 0.8 } }}
+                    onClick={() => handleOpen(photoUrl)}
+                  >
                     <CardMedia
                       component="img"
                       image={photoUrl}
@@ -28,6 +43,13 @@ const Media = ({ photos, baseUrl }) => {
           <Typography>Aucune photo disponible</Typography>
         )}
       </Box>
+      <Dialog open={open} onClose={handleClose} sx={{ mt: 4 }}>
+        <img
+          src={selectedPhoto}
+          alt="Selected"
+          style={{ maxWidth: '100%', height: 'auto' }}
+        />
+      </Dialog>
     </>
   )
 }
