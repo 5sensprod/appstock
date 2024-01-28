@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
-import { Box, Card, CardMedia, Grid, Typography, Dialog } from '@mui/material'
+import { Box, Typography } from '@mui/material'
+import PhotoGrid from './PhotoGrid'
+import PhotoDialog from './PhotoDialog'
+import PhotoUpload from './PhotoUpload'
 
-const Media = ({ photos, baseUrl }) => {
-  const [open, setOpen] = useState(false)
+const Media = ({ photos, baseUrl, onAddPhoto }) => {
   const [selectedPhoto, setSelectedPhoto] = useState(null)
+  const [open, setOpen] = useState(false)
+  const [newPhoto, setNewPhoto] = useState(null)
 
   const handleOpen = (photoUrl) => {
     setSelectedPhoto(photoUrl)
@@ -14,42 +18,29 @@ const Media = ({ photos, baseUrl }) => {
     setOpen(false)
   }
 
+  const handleSubmit = () => {
+    if (newPhoto) {
+      onAddPhoto(newPhoto)
+      setNewPhoto(null)
+    }
+  }
+
   return (
     <>
       <Typography variant="h5">Photos</Typography>
-      <Box sx={{ p: 3 }}>
-        {photos && photos.length > 0 ? (
-          <Grid container spacing={1}>
-            {photos.map((photo, index) => {
-              const photoUrl = `${baseUrl}/${photo}`
-              return (
-                <Grid item xs={6} sm={4} md={2} lg={2} key={index}>
-                  <Card
-                    sx={{ '&:hover': { opacity: 0.8 } }}
-                    onClick={() => handleOpen(photoUrl)}
-                  >
-                    <CardMedia
-                      component="img"
-                      image={photoUrl}
-                      alt={`Photo ${index + 1}`}
-                      sx={{ width: '100%', height: 'auto' }}
-                    />
-                  </Card>
-                </Grid>
-              )
-            })}
-          </Grid>
-        ) : (
-          <Typography>Aucune photo disponible</Typography>
-        )}
-      </Box>
-      <Dialog open={open} onClose={handleClose} sx={{ mt: 4 }}>
-        <img
-          src={selectedPhoto}
-          alt="Selected"
-          style={{ maxWidth: '100%', height: 'auto' }}
+      <PhotoUpload onFileSelect={setNewPhoto} onSubmit={handleSubmit} />
+
+      {photos && photos.length > 0 ? (
+        <PhotoGrid
+          photos={photos}
+          baseUrl={baseUrl}
+          onPhotoClick={handleOpen}
         />
-      </Dialog>
+      ) : (
+        <Typography sx={{ m: 2 }}>Aucune photo disponible.</Typography>
+      )}
+
+      <PhotoDialog open={open} photoUrl={selectedPhoto} onClose={handleClose} />
     </>
   )
 }
