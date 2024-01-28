@@ -16,6 +16,30 @@ app.use(express.json())
 app.use(express.static(staticFilesPath))
 app.use(cors())
 
+const multer = require('multer')
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, cataloguePath)
+  },
+  filename: function (req, file, cb) {
+    // Générer un nom de fichier unique avec l'extension d'origine
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
+    const extension = path.extname(file.originalname)
+    cb(null, file.fieldname + '-' + uniqueSuffix + extension)
+  },
+})
+
+const upload = multer({ storage: storage })
+
+app.post('/api/upload', upload.single('photo'), (req, res) => {
+  console.log(req.file) // Informations sur le fichier uploadé
+  console.log(req.body) // Autres champs du formulaire
+  res.status(200).json({
+    message: 'Fichier uploadé avec succès',
+    filename: req.file.filename,
+    path: req.file.path,
+  })
+})
 const sseClients = new Map()
 
 app.get('/api/events', (req, res) => {

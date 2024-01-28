@@ -45,6 +45,17 @@ const EditProductPage = () => {
     setSelectedTab(newValue)
   }
 
+  const handleAddPhoto = (filename) => {
+    // Construisez le chemin complet de la nouvelle photo
+    const newPhotoPath = `${baseUrl}/catalogue/${filename}`
+
+    // Ajoutez le chemin complet au tableau des photos
+    setProductInfo((prevInfo) => ({
+      ...prevInfo,
+      photos: [...prevInfo.photos, newPhotoPath],
+    }))
+  }
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box display="flex" alignItems="center" gap={2}>
@@ -73,7 +84,11 @@ const EditProductPage = () => {
           ))}
 
         {selectedTab === 1 && (
-          <Media photos={productInfo.photos} baseUrl={baseUrl} />
+          <Media
+            photos={productInfo.photos}
+            baseUrl={baseUrl}
+            onAddPhoto={handleAddPhoto} // Passez la fonction ici
+          />
         )}
       </Box>
     </Box>

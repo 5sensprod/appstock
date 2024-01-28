@@ -22,16 +22,25 @@ export const fetchApi = async (endpoint, method = 'GET', data = null) => {
   const baseUrl = await getApiBaseUrl()
   const url = `${baseUrl}/${endpoint}`
 
+  const config = {}
+
+  // Si les données ne sont pas une instance de FormData, définissez le Content-Type sur application/json
+  if (!(data instanceof FormData)) {
+    config.headers = {
+      'Content-Type': 'application/json',
+    }
+  }
+
   switch (method) {
     case 'POST':
-      return (await axiosInstance.post(url, data)).data
+      return (await axiosInstance.post(url, data, config)).data
     case 'PUT':
-      return (await axiosInstance.put(url, data)).data
+      return (await axiosInstance.put(url, data, config)).data
     case 'DELETE':
-      return (await axiosInstance.delete(url)).data
+      return (await axiosInstance.delete(url, config)).data
     case 'GET':
     default:
-      return (await axiosInstance.get(url)).data
+      return (await axiosInstance.get(url, config)).data
   }
 }
 

@@ -9,6 +9,25 @@ async function getProducts() {
   }
 }
 
+async function uploadPhoto(formData) {
+  try {
+    console.log("Envoi de la requête d'upload...")
+    const data = await fetchApi('upload', 'POST', formData)
+
+    console.log('Données de la réponse :', data)
+
+    // Vérifiez si la réponse contient les informations attendues
+    if (data && data.message) {
+      return data
+    } else {
+      throw new Error('La réponse du serveur n’est pas au format attendu.')
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'upload de la photo:", error)
+    throw error
+  }
+}
+
 async function addProduct(productData) {
   try {
     // Assurez-vous que prixVente, prixAchat et stock sont des nombres
@@ -73,4 +92,5 @@ export {
   updateProductsBulk,
   deleteProduct,
   getProductCountByCategory,
+  uploadPhoto,
 }
