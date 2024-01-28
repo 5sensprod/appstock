@@ -36,10 +36,14 @@ function productFactory(props) {
     },
   }
 
+  const onCardClick = () => {
+    redirectToEdit(_id)
+  }
+
   const { url, isDefault } = getProductImageUrl(photos, baseUrl)
 
   const render = () => (
-    <Card key={_id} sx={cardStyles}>
+    <Card key={_id} sx={cardStyles} onClick={onCardClick}>
       <CardMedia
         component="img"
         height="140"
@@ -84,7 +88,12 @@ function productFactory(props) {
         <IconButton onClick={() => redirectToEdit(_id)}>
           <EditIcon />
         </IconButton>
-        <IconButton onClick={() => handleOpenModal(_id)}>
+        <IconButton
+          onClick={(e) => {
+            e.stopPropagation()
+            handleOpenModal(_id)
+          }}
+        >
           <VisibilityIcon />
         </IconButton>
         <Typography variant="body1" color="text.primary">

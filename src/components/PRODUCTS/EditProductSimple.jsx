@@ -1,29 +1,31 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { TextField, FormControl, Button } from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext.js'
 import { useNavigate } from 'react-router-dom'
 import { useUI } from '../../contexts/UIContext.js'
 
-const EditProductSimple = ({ productId }) => {
+const EditProductSimple = ({ productId, setInitialProductName }) => {
   const { updateProductInContext, products } = useProductContext()
-  const { control, handleSubmit, setValue } = useForm()
-  const [initialLoading, setInitialLoading] = useState(true)
-
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { isDirty },
+  } = useForm()
   const navigate = useNavigate()
   const { showToast } = useUI()
 
   useEffect(() => {
-    if (initialLoading && products.length > 0) {
-      const productToEdit = products.find((p) => p._id === productId)
-      if (productToEdit) {
-        ;['description', 'descriptionCourte'].forEach((key) => {
-          setValue(key, productToEdit[key])
-        })
-      }
-      setInitialLoading(false)
+    const productToEdit = products.find((p) => p._id === productId)
+    if (productToEdit) {
+      setInitialProductName(productToEdit.reference)
+
+      // Définir les valeurs initiales des champs de formulaire
+      setValue('description', productToEdit.description)
+      setValue('descriptionCourte', productToEdit.descriptionCourte)
     }
-  }, [products, productId, setValue, initialLoading])
+  }, [products, productId, setValue, setInitialProductName])
 
   const onSubmit = async (data) => {
     try {
@@ -42,7 +44,6 @@ const EditProductSimple = ({ productId }) => {
         <Controller
           name="description"
           control={control}
-          defaultValue=""
           render={({ field }) => (
             <TextField {...field} label="Description" multiline rows={4} />
           )}
@@ -52,7 +53,6 @@ const EditProductSimple = ({ productId }) => {
         <Controller
           name="descriptionCourte"
           control={control}
-          defaultValue=""
           render={({ field }) => (
             <TextField
               {...field}
@@ -63,8 +63,13 @@ const EditProductSimple = ({ productId }) => {
           )}
         />
       </FormControl>
-      <Button type="submit" variant="contained" color="primary">
-        Modifier
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        disabled={!isDirty}
+      >
+        Valider
       </Button>
     </form>
   )
