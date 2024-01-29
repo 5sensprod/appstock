@@ -14,8 +14,9 @@ const PhotoUpload = ({ onFilesSelect, onSubmit, fileInputRef }) => {
       <input
         type="file"
         multiple
-        accept=".png,.jpg,.jpeg,.webp" // Accepter seulement ces formats
         onChange={handleFileChange}
+        ref={fileInputRef}
+        accept=".png,.jpg,.jpeg,.webp"
       />
       <Button onClick={onSubmit} variant="contained" color="primary">
         Ajouter les photos
