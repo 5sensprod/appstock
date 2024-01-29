@@ -7,20 +7,19 @@ import Tab from '@mui/material/Tab'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditProductSimple from '../PRODUCTS/EditProductSimple'
 import ShowProductSimple from '../PRODUCTS/ShowProductSimple'
-import Media from '../PRODUCTS/Media' // Assurez-vous d'importer le composant Media
+import Media from '../PRODUCTS/Media'
 import { useParams } from 'react-router-dom'
 import { useProductContext } from '../../contexts/ProductContext'
-import { useConfig } from '../../contexts/ConfigContext' // Import si vous avez un contexte pour config
+import { useConfig } from '../../contexts/ConfigContext'
 
 const EditProductPage = () => {
   const { id: productId } = useParams()
   const { products } = useProductContext()
-  const { baseUrl } = useConfig() // Supposant que vous avez un contexte pour la config
+  const { baseUrl } = useConfig()
   const [productName, setProductName] = useState('')
   const [productInfo, setProductInfo] = useState({
     description: '',
     descriptionCourte: '',
-    photos: [],
   })
   const [isEditable, setIsEditable] = useState(false)
   const [selectedTab, setSelectedTab] = useState(0)
@@ -86,9 +85,8 @@ const EditProductPage = () => {
         {selectedTab === 1 && (
           <Media
             productId={productId}
-            photos={productInfo.photos}
             baseUrl={baseUrl}
-            onAddPhoto={handleAddPhoto} // Passez la fonction ici
+            onAddPhoto={handleAddPhoto}
           />
         )}
       </Box>

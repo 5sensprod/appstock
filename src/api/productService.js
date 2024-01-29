@@ -9,19 +9,24 @@ async function getProducts() {
   }
 }
 
-async function uploadPhoto(formData) {
+async function uploadPhoto(formData, productId) {
   try {
-    console.log("Envoi de la requête d'upload...")
-    const data = await fetchApi('upload', 'POST', formData)
+    const response = await fetchApi(
+      `products/${productId}/upload`,
+      'POST',
+      formData,
+      {
+        headers: {
+          // Ici, pas besoin de définir le Content-Type car FormData s'en occupe
+        },
+      },
+    )
 
-    console.log('Données de la réponse :', data)
-
-    // Vérifiez si la réponse contient les informations attendues
-    if (data && data.message) {
-      return data
-    } else {
-      throw new Error('La réponse du serveur n’est pas au format attendu.')
+    if (!response.ok) {
+      throw new Error('Problème lors de l’upload du fichier')
     }
+
+    return await response.json() // Ou `response.text()` si vous renvoyez du texte brut
   } catch (error) {
     console.error("Erreur lors de l'upload de la photo:", error)
     throw error

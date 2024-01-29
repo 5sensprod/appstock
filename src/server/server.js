@@ -32,9 +32,16 @@ app.get('/api/products/:productId/photos', (req, res) => {
 })
 
 const multer = require('multer')
+
+// Configuration de multer pour stocker les fichiers dans des dossiers spécifiques à chaque produit
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, cataloguePath)
+    const productId = req.params.productId // Récupération de l'ID du produit depuis l'URL
+    const productFolderPath = path.join(cataloguePath, productId)
+    if (!fs.existsSync(productFolderPath)) {
+      fs.mkdirSync(productFolderPath, { recursive: true })
+    }
+    cb(null, productFolderPath)
   },
   filename: function (req, file, cb) {
     // Générer un nom de fichier unique avec l'extension d'origine
@@ -46,15 +53,20 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage })
 
-app.post('/api/upload', upload.single('photo'), (req, res) => {
-  console.log(req.file) // Informations sur le fichier uploadé
-  console.log(req.body) // Autres champs du formulaire
-  res.status(200).json({
-    message: 'Fichier uploadé avec succès',
-    filename: req.file.filename,
-    path: req.file.path,
-  })
-})
+app.post(
+  '/api/products/:productId/upload',
+  upload.single('photo'),
+  (req, res) => {
+    // Gérer l'upload ici
+    console.log(req.file) // Informations sur le fichier uploadé
+    res.status(200).json({
+      message: 'Fichier uploadé avec succès',
+      filename: req.file.filename,
+      path: req.file.path,
+    })
+  },
+)
+
 const sseClients = new Map()
 
 app.get('/api/events', (req, res) => {

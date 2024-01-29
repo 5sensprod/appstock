@@ -51,6 +51,7 @@ const Media = ({ productId, baseUrl, onAddPhoto }) => {
       try {
         const formData = new FormData()
         formData.append('photo', newPhoto)
+
         const response = await uploadPhoto(formData, productId)
         console.log(response.message)
         setNewPhoto(null)
