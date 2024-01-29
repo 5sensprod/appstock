@@ -4,6 +4,7 @@ import PhotoGrid from './PhotoGrid'
 import PhotoDialog from './PhotoDialog'
 import PhotoUpload from './PhotoUpload'
 import { uploadPhoto, uploadPhotoFromUrl } from '../../api/productService'
+import { isValidUrl } from '../../utils/validateUtils'
 
 const Media = ({ productId, baseUrl }) => {
   const [photos, setPhotos] = useState([])
@@ -138,14 +139,14 @@ const Media = ({ productId, baseUrl }) => {
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
         />
-        {imageUrl.trim() !== '' && (
+        {isValidUrl(imageUrl) && (
           <Button
             onClick={handleUploadFromUrl}
             variant="contained"
             color="primary"
             size="small"
           >
-            Télécharger l'image
+            Valider
           </Button>
         )}
       </Box>
