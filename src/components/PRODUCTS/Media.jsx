@@ -5,9 +5,11 @@ import PhotoDialog from './PhotoDialog'
 import PhotoUpload from './PhotoUpload'
 import { isValidUrl } from '../../utils/validateUtils'
 import { useMedia } from './hooks/useMedia'
+import { useUI } from '../../contexts/UIContext'
 
 const Media = ({ productId, baseUrl }) => {
   const fileInputRef = useRef()
+  const { showToast, showConfirmDialog } = useUI()
   const {
     photos,
     selectedPhotos,
@@ -27,7 +29,7 @@ const Media = ({ productId, baseUrl }) => {
     newPhoto,
     setNewPhoto,
     resetSelectedFileNames,
-  } = useMedia(productId, baseUrl)
+  } = useMedia(productId, baseUrl, showToast, showConfirmDialog)
 
   return (
     <>

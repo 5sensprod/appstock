@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { uploadPhoto, uploadPhotoFromUrl } from '../../../api/productService'
 
-export const useMedia = (productId, baseUrl) => {
+export const useMedia = (productId, baseUrl, showToast) => {
   const [photos, setPhotos] = useState([])
   const [selectedPhotos, setSelectedPhotos] = useState([])
   const [selectedPhoto, setSelectedPhoto] = useState(null)
@@ -73,13 +73,14 @@ export const useMedia = (productId, baseUrl) => {
         }
 
         const response = await uploadPhoto(formData, productId)
-        console.log(response.message)
 
+        // Afficher un toast en cas de succès
         if (response.files) {
-          // Les fichiers ont été téléchargés avec succès, aucune action nécessaire ici
+          showToast('Image(s) ajoutée(s) avec succès', 'success')
         }
       } catch (error) {
         console.error("Erreur lors de l'upload", error)
+        showToast("Erreur lors de l'ajout de l'image", 'error')
       } finally {
         // Réinitialiser fileInputRef après le téléchargement
         if (fileInputRef.current) {
@@ -91,20 +92,21 @@ export const useMedia = (productId, baseUrl) => {
 
   const handleUploadFromUrl = async () => {
     if (!imageUrl) {
-      console.log("Veuillez saisir une URL d'image.")
+      showToast("Veuillez saisir une URL d'image.", 'info')
       return
     }
 
     try {
       await uploadPhotoFromUrl(productId, imageUrl)
-      console.log('Image téléchargée avec succès.')
       setImageUrl('')
       fetchPhotos()
+      showToast('Image téléchargée avec succès.', 'success')
     } catch (error) {
       console.error(
         "Erreur lors du téléchargement de l'image depuis l'URL:",
         error,
       )
+      showToast("Erreur lors du téléchargement de l'image.", 'error')
     }
   }
 
@@ -142,9 +144,10 @@ export const useMedia = (productId, baseUrl) => {
       // Mise à jour de l'état après la suppression réussie
       setSelectedPhotos([])
       fetchPhotos()
-      console.log('Photos supprimées avec succès')
+      showToast('Photo(s) supprimée(s) avec succès', 'success')
     } catch (error) {
       console.error('Erreur lors de la suppression des photos:', error)
+      showToast('Erreur lors de la suppression des images', 'error')
     }
   }
   return {
