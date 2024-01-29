@@ -1,0 +1,171 @@
+import { useState, useEffect } from 'react'
+import { uploadPhoto, uploadPhotoFromUrl } from '../../../api/productService'
+
+export const useMedia = (productId, baseUrl) => {
+  const [photos, setPhotos] = useState([])
+  const [selectedPhotos, setSelectedPhotos] = useState([])
+  const [selectedPhoto, setSelectedPhoto] = useState(null)
+  const [open, setOpen] = useState(false)
+  const [newPhoto, setNewPhoto] = useState([])
+  const [imageUrl, setImageUrl] = useState('')
+
+  useEffect(() => {
+    fetchPhotos()
+  }, [productId, baseUrl])
+
+  useEffect(() => {
+    const eventSource = new EventSource(`${baseUrl}/api/events`)
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      if (data.type === 'photo-added' && data.productId === productId) {
+        fetchPhotos()
+      }
+    }
+
+    return () => {
+      eventSource.close()
+    }
+  }, [productId, baseUrl])
+
+  const fetchPhotos = async () => {
+    try {
+      const response = await fetch(
+        `${baseUrl}/api/products/${productId}/photos`,
+      )
+      if (!response.ok) {
+        throw new Error('Erreur de réponse du serveur')
+      }
+      const photoFilenames = await response.json()
+      setPhotos(
+        photoFilenames.map(
+          (filename) => `${baseUrl}/catalogue/${productId}/${filename}`,
+        ),
+      )
+    } catch (error) {
+      console.error(
+        `Erreur lors de la récupération des photos pour le produit ${productId}:`,
+        error,
+      )
+    }
+  }
+
+  const handleOpen = (photoUrl) => {
+    setSelectedPhoto(photoUrl)
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const resetSelectedFileNames = (fileInputRef) => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+  const handleUpload = async (filesToSubmit, fileInputRef) => {
+    if (filesToSubmit && filesToSubmit.length > 0) {
+      try {
+        const formData = new FormData()
+        for (const file of filesToSubmit) {
+          formData.append('photos', file)
+        }
+
+        const response = await uploadPhoto(formData, productId)
+        console.log(response.message)
+
+        if (response.files) {
+          // Les fichiers ont été téléchargés avec succès, aucune action nécessaire ici
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'upload", error)
+      } finally {
+        // Réinitialiser fileInputRef après le téléchargement
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''
+        }
+      }
+    }
+  }
+
+  const handleUploadFromUrl = async () => {
+    if (!imageUrl) {
+      console.log("Veuillez saisir une URL d'image.")
+      return
+    }
+
+    try {
+      await uploadPhotoFromUrl(productId, imageUrl)
+      console.log('Image téléchargée avec succès.')
+      setImageUrl('')
+      fetchPhotos()
+    } catch (error) {
+      console.error(
+        "Erreur lors du téléchargement de l'image depuis l'URL:",
+        error,
+      )
+    }
+  }
+
+  const onToggleSelect = (photo) => {
+    setSelectedPhotos((prevSelected) => {
+      if (prevSelected.includes(photo)) {
+        return prevSelected.filter((p) => p !== photo)
+      } else {
+        return [...prevSelected, photo]
+      }
+    })
+  }
+
+  const handleDeleteSelected = async () => {
+    const filenamesToDelete = selectedPhotos.map((photo) =>
+      photo.split('/').pop(),
+    )
+
+    try {
+      const response = await fetch(
+        `${baseUrl}/api/products/${productId}/delete-photos`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ photosToDelete: filenamesToDelete }),
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression des photos')
+      }
+
+      // Mise à jour de l'état après la suppression réussie
+      setSelectedPhotos([])
+      fetchPhotos()
+      console.log('Photos supprimées avec succès')
+    } catch (error) {
+      console.error('Erreur lors de la suppression des photos:', error)
+    }
+  }
+  return {
+    photos,
+    selectedPhotos,
+    setSelectedPhotos,
+    selectedPhoto,
+    setSelectedPhoto,
+    open,
+    setOpen,
+    newPhoto,
+    setNewPhoto,
+    imageUrl,
+    setImageUrl,
+    fetchPhotos,
+    handleOpen,
+    handleClose,
+    resetSelectedFileNames,
+    handleUpload,
+    handleUploadFromUrl,
+    onToggleSelect,
+    handleDeleteSelected,
+  }
+}
