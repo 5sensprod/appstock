@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Box, Typography, Button } from '@mui/material'
+import { Box, Typography, Button, Input } from '@mui/material'
 import PhotoGrid from './PhotoGrid'
 import PhotoDialog from './PhotoDialog'
 import PhotoUpload from './PhotoUpload'
@@ -111,35 +111,43 @@ const Media = ({ productId, baseUrl }) => {
 
   return (
     <>
-      <Typography variant="h5">Photos</Typography>
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        Ajouter des photos
+      </Typography>
       <PhotoUpload
         onFilesSelect={setNewPhoto}
         onSubmit={handleUpload}
         fileInputRef={fileInputRef}
         resetSelectedFileNames={resetSelectedFileNames}
       />
+      <Typography variant="h5" sx={{ mt: 2 }}>
+        Ajouter via url
+      </Typography>
       <Box
         sx={{
-          mt: 4,
-          mb: 4,
+          mt: 2,
+          mb: 6,
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '10px',
         }}
       >
-        <input
+        <Input
           type="text"
           placeholder="Entrez l'URL de l'image"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
         />
-        <Button
-          onClick={handleUploadFromUrl}
-          variant="contained"
-          color="primary"
-        >
-          Télécharger l'image
-        </Button>
+        {imageUrl.trim() !== '' && (
+          <Button
+            onClick={handleUploadFromUrl}
+            variant="contained"
+            color="primary"
+            size="small"
+          >
+            Télécharger l'image
+          </Button>
+        )}
       </Box>
       <PhotoGrid photos={photos} onPhotoClick={handleOpen} />
       <PhotoDialog open={open} photoUrl={selectedPhoto} onClose={handleClose} />

@@ -20,7 +20,7 @@ const PhotoUpload = ({
     const filesWithButtons = newFiles.map((file) => ({
       file,
       name: file.name,
-      id: Math.random().toString(36).substring(7), // Générer un identifiant unique
+      id: Math.random().toString(36).substring(7),
     }))
 
     setSelectedFiles((prevSelectedFiles) => [
@@ -79,6 +79,7 @@ const PhotoUpload = ({
         onClick={() => fileInputRef.current.click()}
         variant="contained"
         color="primary"
+        size="small"
       >
         Sélectionner les fichiers
       </Button>
@@ -93,7 +94,7 @@ const PhotoUpload = ({
         accept=".png,.jpg,.jpeg,.webp"
         style={{ display: 'none' }}
       />
-      <Box sx={{ textAlign: 'left', width: '100%' }}>
+      <Box sx={{ textAlign: 'left', width: '100%', mb: 2 }}>
         {selectedFiles.map((file) => (
           <div key={file.id}>
             {file.name.length > 40
@@ -110,9 +111,16 @@ const PhotoUpload = ({
         ))}
       </Box>
 
-      <Button onClick={handleSubmit} variant="contained" color="primary">
-        Ajouter les photos
-      </Button>
+      {selectedFiles.length > 0 && (
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          color="success"
+          size="small"
+        >
+          Ajouter
+        </Button>
+      )}
     </Box>
   )
 }
