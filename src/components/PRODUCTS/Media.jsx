@@ -111,20 +111,6 @@ const Media = ({ productId, baseUrl }) => {
     }
   }
 
-  const handleSelectPhoto = (photo) => {
-    setSelectedPhotos((prevSelected) =>
-      prevSelected.includes(photo)
-        ? prevSelected.filter((p) => p !== photo)
-        : [...prevSelected, photo],
-    )
-  }
-
-  const handleToggleSelect = (photo) => {
-    setSelectedPhotos((prev) =>
-      prev.includes(photo) ? prev.filter((p) => p !== photo) : [...prev, photo],
-    )
-  }
-
   const onToggleSelect = (photo) => {
     setSelectedPhotos((prevSelected) => {
       if (prevSelected.includes(photo)) {
