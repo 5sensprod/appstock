@@ -4,6 +4,7 @@ const { upload } = require('../server')
 const fs = require('fs')
 const path = require('path')
 const { cataloguePath } = require('../server')
+const axios = require('axios')
 
 module.exports = (db, sendSseEvent) => {
   const { products, categories } = db
@@ -54,6 +55,44 @@ module.exports = (db, sendSseEvent) => {
       message: 'Fichiers uploadés avec succès',
       files: uploadedFilesInfo,
     })
+  })
+
+  router.post('/:productId/upload-url', async (req, res) => {
+    const { imageUrl } = req.body
+    const productId = req.params.productId
+    console.log(`Téléchargement de l'image depuis : ${imageUrl}`)
+    console.log(`ProductId : ${productId}`)
+
+    if (!imageUrl) {
+      return res.status(400).json({ message: "URL de l'image manquante." })
+    }
+
+    try {
+      const productFolderPath = path.join(cataloguePath, productId)
+      if (!fs.existsSync(productFolderPath)) {
+        fs.mkdirSync(productFolderPath, { recursive: true })
+      }
+
+      const response = await axios.get(imageUrl, { responseType: 'stream' })
+      const fileExtension = path.extname(new URL(imageUrl).pathname)
+      const filename = `image-${Date.now()}${fileExtension}`
+      const filePath = path.join(productFolderPath, filename)
+
+      const writer = fs.createWriteStream(filePath)
+      response.data.pipe(writer)
+
+      writer.on('finish', () => {
+        sendSseEvent({ type: 'photo-added', productId, photo: filename })
+        res
+          .status(200)
+          .json({ message: 'Image téléchargée avec succès', filename })
+      })
+    } catch (error) {
+      console.error("Erreur lors du téléchargement de l'image:", error)
+      res
+        .status(500)
+        .json({ message: "Erreur lors du téléchargement de l'image." })
+    }
   })
 
   router.get('/', (req, res) => {

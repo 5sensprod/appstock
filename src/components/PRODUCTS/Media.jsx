@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, Button } from '@mui/material'
 import PhotoGrid from './PhotoGrid'
 import PhotoDialog from './PhotoDialog'
 import PhotoUpload from './PhotoUpload'
-import { uploadPhoto } from '../../api/productService'
+import { uploadPhoto, uploadPhotoFromUrl } from '../../api/productService'
 
 const Media = ({ productId, baseUrl }) => {
   const [photos, setPhotos] = useState([])
@@ -11,6 +11,7 @@ const Media = ({ productId, baseUrl }) => {
   const [open, setOpen] = useState(false)
   const [newPhoto, setNewPhoto] = useState(null)
   const fileInputRef = useRef()
+  const [imageUrl, setImageUrl] = useState('')
 
   // Définissez fetchPhotos à l'extérieur des useEffect
   const fetchPhotos = async () => {
@@ -86,6 +87,25 @@ const Media = ({ productId, baseUrl }) => {
     }
   }
 
+  const handleUploadFromUrl = async () => {
+    if (!imageUrl) {
+      console.log("Veuillez saisir une URL d'image.")
+      return
+    }
+
+    try {
+      await uploadPhotoFromUrl(productId, imageUrl)
+      console.log('Image téléchargée avec succès.')
+      setImageUrl('')
+      fetchPhotos()
+    } catch (error) {
+      console.error(
+        "Erreur lors du téléchargement de l'image depuis l'URL:",
+        error,
+      )
+    }
+  }
+
   return (
     <>
       <Typography variant="h5">Photos</Typography>
@@ -94,6 +114,21 @@ const Media = ({ productId, baseUrl }) => {
         onSubmit={handleUpload}
         fileInputRef={fileInputRef}
       />
+      <Box>
+        <input
+          type="text"
+          placeholder="Entrez l'URL de l'image"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+        />
+        <Button
+          onClick={handleUploadFromUrl}
+          variant="contained"
+          color="primary"
+        >
+          Télécharger l'image
+        </Button>
+      </Box>
       <PhotoGrid photos={photos} onPhotoClick={handleOpen} />
       <PhotoDialog open={open} photoUrl={selectedPhoto} onClose={handleClose} />
     </>

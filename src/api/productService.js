@@ -35,6 +35,26 @@ async function uploadPhoto(formData, productId) {
   }
 }
 
+async function uploadPhotoFromUrl(productId, imageUrl) {
+  try {
+    const response = await fetchApi(
+      `products/${productId}/upload-url`,
+      'POST',
+      { imageUrl },
+    )
+
+    // Si la réponse est un succès, retournez simplement la réponse
+    // Sans vérifier explicitement la propriété 'message'
+    return response
+  } catch (error) {
+    console.error(
+      "Erreur lors du téléchargement de l'image depuis l'URL:",
+      error,
+    )
+    throw error
+  }
+}
+
 async function addProduct(productData) {
   try {
     // Assurez-vous que prixVente, prixAchat et stock sont des nombres
@@ -100,4 +120,5 @@ export {
   deleteProduct,
   getProductCountByCategory,
   uploadPhoto,
+  uploadPhotoFromUrl,
 }
