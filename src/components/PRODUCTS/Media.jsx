@@ -118,7 +118,15 @@ const Media = ({ productId, baseUrl }) => {
         fileInputRef={fileInputRef}
         resetSelectedFileNames={resetSelectedFileNames}
       />
-      <Box>
+      <Box
+        sx={{
+          mt: 4,
+          mb: 4,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <input
           type="text"
           placeholder="Entrez l'URL de l'image"
