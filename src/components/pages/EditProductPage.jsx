@@ -85,6 +85,7 @@ const EditProductPage = () => {
 
         {selectedTab === 1 && (
           <Media
+            productId={productId}
             photos={productInfo.photos}
             baseUrl={baseUrl}
             onAddPhoto={handleAddPhoto} // Passez la fonction ici

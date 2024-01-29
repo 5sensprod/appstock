@@ -8,6 +8,7 @@ const http = require('http')
 const cors = require('cors')
 const { getLocalIPv4Address } = require('./networkUtils')
 const staticFilesPath = path.join(__dirname, '..', 'renderer', 'main_window')
+const fs = require('fs')
 
 const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const cataloguePath = path.join(userDataPath, 'catalogue')
@@ -15,6 +16,20 @@ app.use('/catalogue', express.static(cataloguePath))
 app.use(express.json())
 app.use(express.static(staticFilesPath))
 app.use(cors())
+
+app.get('/api/products/:productId/photos', (req, res) => {
+  const productId = req.params.productId
+  const productFolderPath = path.join(cataloguePath, productId)
+
+  try {
+    const photos = fs.readdirSync(productFolderPath)
+    res.json(photos)
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Erreur lors de la récupération des photos.' })
+  }
+})
 
 const multer = require('multer')
 const storage = multer.diskStorage({
