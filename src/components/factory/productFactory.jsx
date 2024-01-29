@@ -32,6 +32,7 @@ function productFactory(props) {
     transition: 'box-shadow 0.3s ease-in-out', // Ajoutez une transition pour un effet lisse
     boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)', // Style par défaut
     '&:hover': {
+      cursor: 'pointer',
       boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.2)', // Style lors du survol
     },
   }

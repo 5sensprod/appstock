@@ -13,7 +13,20 @@ const PhotoGrid = ({
         const isSelected = selectedPhotos.includes(photo)
         return (
           <Grid item xs={6} sm={4} md={2} lg={2} key={index}>
-            <Card sx={{ position: 'relative' }}>
+            <Card
+              sx={{
+                position: 'relative',
+                transition:
+                  'box-shadow 0.2s ease-in-out, opacity 0.3s ease-in-out', // Ajoutez une transition pour un effet lisse
+                boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)', // Style par défaut
+                opacity: 1, // Opacité par défaut
+                '&:hover': {
+                  cursor: 'pointer',
+                  boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.2)',
+                  opacity: 0.6, // Réduire l'opacité lors du survol
+                },
+              }}
+            >
               <CardMedia
                 component="img"
                 image={photo}
