@@ -7,20 +7,33 @@ const PhotoUpload = ({
   fileInputRef,
   resetSelectedFileNames,
 }) => {
-  const [selectedFileNames, setSelectedFileNames] = useState([])
+  const [selectedFiles, setSelectedFiles] = useState([])
   const [isDragOver, setIsDragOver] = useState(false)
 
   const handleFiles = (files) => {
     const newFiles = Array.from(files)
     onFilesSelect((prevFiles) => [...prevFiles, ...newFiles])
-    setSelectedFileNames((prevNames) => [
-      ...prevNames,
-      ...newFiles.map((file) => file.name),
+
+    const filesWithButtons = newFiles.map((file) => ({
+      file,
+      name: file.name,
+      id: Math.random().toString(36).substring(7), // Générer un identifiant unique
+    }))
+
+    setSelectedFiles((prevSelectedFiles) => [
+      ...prevSelectedFiles,
+      ...filesWithButtons,
     ])
   }
 
   const handleFileChange = (e) => {
     handleFiles(e.target.files)
+  }
+
+  const handleDeleteFile = (id) => {
+    setSelectedFiles((prevSelectedFiles) =>
+      prevSelectedFiles.filter((file) => file.id !== id),
+    )
   }
 
   const handleDragOver = (e) => {
@@ -39,8 +52,9 @@ const PhotoUpload = ({
   }
 
   const handleSubmit = () => {
-    onSubmit()
-    setSelectedFileNames([])
+    const filesToSubmit = selectedFiles.map((file) => file.file)
+    onSubmit(filesToSubmit)
+    setSelectedFiles([])
     resetSelectedFileNames()
   }
 
@@ -56,6 +70,13 @@ const PhotoUpload = ({
         backgroundColor: isDragOver ? '#f0f0f0' : 'transparent',
       }}
     >
+      <Button
+        onClick={() => fileInputRef.current.click()}
+        variant="contained"
+        color="primary"
+      >
+        Sélectionner les fichiers
+      </Button>
       <input
         type="file"
         multiple
@@ -64,17 +85,14 @@ const PhotoUpload = ({
         accept=".png,.jpg,.jpeg,.webp"
         style={{ display: 'none' }}
       />
-      <Button
-        onClick={() => fileInputRef.current.click()}
-        variant="contained"
-        color="primary"
-      >
-        Sélectionner les fichiers
-      </Button>
+      {selectedFiles.map((file) => (
+        <div key={file.id}>
+          {file.name}{' '}
+          <button onClick={() => handleDeleteFile(file.id)}>Supprimer</button>
+        </div>
+      ))}
+
       <p>ou glissez-déposez les fichiers ici</p>
-      <Typography variant="caption" display="block" gutterBottom>
-        {selectedFileNames.join(', ')}
-      </Typography>
       <Button onClick={handleSubmit} variant="contained" color="primary">
         Ajouter les photos
       </Button>

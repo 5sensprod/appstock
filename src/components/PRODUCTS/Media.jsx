@@ -70,11 +70,11 @@ const Media = ({ productId, baseUrl }) => {
     }
   }
 
-  const handleUpload = async () => {
-    if (newPhoto && newPhoto.length > 0) {
+  const handleUpload = async (filesToSubmit) => {
+    if (filesToSubmit && filesToSubmit.length > 0) {
       try {
         const formData = new FormData()
-        for (const file of newPhoto) {
+        for (const file of filesToSubmit) {
           formData.append('photos', file)
         }
 
@@ -82,8 +82,7 @@ const Media = ({ productId, baseUrl }) => {
         console.log(response.message)
 
         if (response.files) {
-          setNewPhoto([])
-          resetSelectedFileNames()
+          // Les fichiers ont été téléchargés avec succès, aucune action nécessaire ici
         }
       } catch (error) {
         console.error("Erreur lors de l'upload", error)
