@@ -32,19 +32,32 @@ const storage = multer.diskStorage({
     cb(null, productFolderPath)
   },
   filename: function (req, file, cb) {
-    // Vérifiez l'extension ici
     const extension = path.extname(file.originalname).toLowerCase()
-    if (extension === '.png' || extension === '.jpg' || extension === '.jpeg') {
-      // Définissez uniqueSuffix ici, à l'intérieur de la fonction filename
+    const allowedExtensions = ['.png', '.jpg', '.jpeg', '.webp']
+    if (allowedExtensions.includes(extension)) {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
       cb(null, file.fieldname + '-' + uniqueSuffix + extension)
     } else {
-      cb(new Error('Type de fichier non autorisé'), null)
+      cb(new Error('Type de fichier non autorisé'), false)
     }
   },
 })
 
-const upload = multer({ storage: storage })
+const fileFilter = (req, file, cb) => {
+  const extension = path.extname(file.originalname).toLowerCase()
+  if (
+    extension !== '.png' &&
+    extension !== '.jpg' &&
+    extension !== '.jpeg' &&
+    extension !== '.webp'
+  ) {
+    req.fileValidationError = 'Type de fichier non autorisé'
+    return cb(null, false)
+  }
+  cb(null, true)
+}
+
+const upload = multer({ storage: storage, fileFilter: fileFilter })
 module.exports.upload = upload
 
 const sseClients = new Map()

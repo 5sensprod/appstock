@@ -29,6 +29,9 @@ module.exports = (db, sendSseEvent) => {
 
   // Route pour téléverser une photo
   router.post('/:productId/upload', upload.array('photos'), (req, res) => {
+    if (req.fileValidationError) {
+      return res.status(400).json({ message: req.fileValidationError })
+    }
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: 'Aucun fichier fourni.' })
     }

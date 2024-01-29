@@ -4,6 +4,7 @@ import PhotoGrid from './PhotoGrid'
 import PhotoDialog from './PhotoDialog'
 import PhotoUpload from './PhotoUpload'
 import { uploadPhoto } from '../../api/productService'
+import { useUI } from '../../contexts/UIContext'
 
 const Media = ({ productId, baseUrl }) => {
   const [photos, setPhotos] = useState([])
@@ -11,6 +12,7 @@ const Media = ({ productId, baseUrl }) => {
   const [open, setOpen] = useState(false)
   const [newPhoto, setNewPhoto] = useState(null)
   const fileInputRef = useRef()
+  const { showToast } = useUI()
 
   // Définissez fetchPhotos à l'extérieur des useEffect
   const fetchPhotos = async () => {
@@ -71,17 +73,29 @@ const Media = ({ productId, baseUrl }) => {
           formData.append('photos', file)
         }
 
-        const response = await uploadPhoto(formData, productId)
-        console.log(response.message)
+        const uploadResult = await uploadPhoto(formData, productId)
 
-        if (response.files) {
+        if (uploadResult.ok) {
+          console.log(uploadResult.data.message)
           setNewPhoto(null)
-          if (fileInputRef.current) {
-            fileInputRef.current.value = ''
+          showToast('Photos téléversées avec succès.', 'success')
+        } else {
+          // Personnalisez le message d'erreur
+          let errorMessage = "Erreur lors de l'upload des photos."
+          if (
+            uploadResult.errorData &&
+            uploadResult.errorData.message.includes(
+              'Type de fichier non autorisé',
+            )
+          ) {
+            errorMessage =
+              'Type de fichier non autorisé. Seuls les fichiers PNG, JPG, JPEG et WEBP sont acceptés.'
           }
+          showToast(errorMessage, 'error')
         }
       } catch (error) {
         console.error("Erreur lors de l'upload", error)
+        showToast("Erreur lors de l'upload des photos.", 'error')
       }
     }
   }
