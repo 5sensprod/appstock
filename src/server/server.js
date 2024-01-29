@@ -12,24 +12,12 @@ const fs = require('fs')
 
 const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const cataloguePath = path.join(userDataPath, 'catalogue')
+module.exports.cataloguePath = cataloguePath
+
 app.use('/catalogue', express.static(cataloguePath))
 app.use(express.json())
 app.use(express.static(staticFilesPath))
 app.use(cors())
-
-app.get('/api/products/:productId/photos', (req, res) => {
-  const productId = req.params.productId
-  const productFolderPath = path.join(cataloguePath, productId)
-
-  try {
-    const photos = fs.readdirSync(productFolderPath)
-    res.json(photos)
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Erreur lors de la récupération des photos.' })
-  }
-})
 
 const multer = require('multer')
 
@@ -52,20 +40,7 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: storage })
-
-app.post(
-  '/api/products/:productId/upload',
-  upload.single('photo'),
-  (req, res) => {
-    // Gérer l'upload ici
-    console.log(req.file) // Informations sur le fichier uploadé
-    res.status(200).json({
-      message: 'Fichier uploadé avec succès',
-      filename: req.file.filename,
-      path: req.file.path,
-    })
-  },
-)
+module.exports.upload = upload
 
 const sseClients = new Map()
 

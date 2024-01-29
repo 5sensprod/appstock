@@ -1,8 +1,42 @@
 const express = require('express')
 const router = express.Router()
+const { upload } = require('../server')
+const fs = require('fs')
+const path = require('path')
+const { cataloguePath } = require('../server')
 
 module.exports = (db, sendSseEvent) => {
   const { products, categories } = db
+
+  // Route pour récupérer les photos d'un produit
+  router.get('/:productId/photos', (req, res) => {
+    const productId = req.params.productId
+    const productFolderPath = path.join(cataloguePath, productId)
+
+    try {
+      const photos = fs.readdirSync(productFolderPath)
+      res.json(photos)
+    } catch (error) {
+      console.error(
+        `Erreur lors de la récupération des photos pour le produit ${productId}:`,
+        error,
+      )
+      res
+        .status(500)
+        .json({ message: 'Erreur lors de la récupération des photos.' })
+    }
+  })
+
+  // Route pour téléverser une photo
+  router.post('/:productId/upload', upload.single('photo'), (req, res) => {
+    // Gérer l'upload ici
+    console.log(req.file) // Informations sur le fichier uploadé
+    res.status(200).json({
+      message: 'Fichier uploadé avec succès',
+      filename: req.file.filename,
+      path: req.file.path,
+    })
+  })
 
   router.get('/', (req, res) => {
     products.find({}, (err, docs) => {
