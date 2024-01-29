@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Box, Typography } from '@mui/material'
 import PhotoGrid from './PhotoGrid'
 import PhotoDialog from './PhotoDialog'
 import PhotoUpload from './PhotoUpload'
 import { uploadPhoto } from '../../api/productService'
 
-const Media = ({ productId, baseUrl, onAddPhoto }) => {
+const Media = ({ productId, baseUrl }) => {
   const [photos, setPhotos] = useState([])
   const [selectedPhoto, setSelectedPhoto] = useState(null)
   const [open, setOpen] = useState(false)
   const [newPhoto, setNewPhoto] = useState(null)
+  const fileInputRef = useRef()
 
   // Définissez fetchPhotos à l'extérieur des useEffect
   const fetchPhotos = async () => {
@@ -75,24 +76,24 @@ const Media = ({ productId, baseUrl, onAddPhoto }) => {
 
         if (response.files) {
           setNewPhoto(null)
-          // Ici, vous pouvez mettre à jour l'état avec les nouvelles photos
-          // SSE devrait prendre le relais pour l'affichage
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+          }
         }
       } catch (error) {
-        // Ici, gérez l'erreur proprement
         console.error("Erreur lors de l'upload", error)
       }
     }
   }
 
-  const handleFilesSelect = (files) => {
-    setNewPhoto(files) // `files` est un tableau de fichiers
-  }
-
   return (
     <>
       <Typography variant="h5">Photos</Typography>
-      <PhotoUpload onFilesSelect={handleFilesSelect} onSubmit={handleUpload} />
+      <PhotoUpload
+        onFilesSelect={setNewPhoto}
+        onSubmit={handleUpload}
+        fileInputRef={fileInputRef}
+      />
       <PhotoGrid photos={photos} onPhotoClick={handleOpen} />
       <PhotoDialog open={open} photoUrl={selectedPhoto} onClose={handleClose} />
     </>
