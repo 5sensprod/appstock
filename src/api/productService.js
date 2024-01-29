@@ -17,18 +17,21 @@ async function uploadPhoto(formData, productId) {
       formData,
     )
 
-    // Si la réponse du serveur est OK (statut HTTP 2xx), renvoyez les données
-    if (response.ok) {
-      return { ok: true, data: response.data }
+    // Log la réponse complète du serveur
+    console.log('Réponse du serveur:', response)
+
+    // Si la réponse est un succès, retournez la réponse
+    if (response.message === 'Fichiers uploadés avec succès') {
+      return response
     } else {
-      // Si le statut HTTP n'est pas 2xx, renvoyez le message d'erreur
-      const errorData = await response.json()
-      return { ok: false, errorData }
+      // Si la réponse contient un autre message, il y a eu un problème
+      throw new Error(
+        response.message || 'Problème lors de l’upload du fichier',
+      )
     }
   } catch (error) {
     console.error("Erreur lors de l'upload de la photo:", error)
-    // Retournez l'erreur pour un traitement ultérieur
-    return { ok: false, error: error.message }
+    throw error
   }
 }
 
