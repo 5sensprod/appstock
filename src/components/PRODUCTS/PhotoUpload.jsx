@@ -82,6 +82,9 @@ const PhotoUpload = ({
       >
         Sélectionner les fichiers
       </Button>
+      <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
+        ou glissez-déposez les fichiers ici
+      </Typography>
       <input
         type="file"
         multiple
@@ -90,7 +93,7 @@ const PhotoUpload = ({
         accept=".png,.jpg,.jpeg,.webp"
         style={{ display: 'none' }}
       />
-      <div style={{ textAlign: 'left', width: '100%' }}>
+      <Box sx={{ textAlign: 'left', width: '100%' }}>
         {selectedFiles.map((file) => (
           <div key={file.id}>
             {file.name.length > 40
@@ -105,8 +108,8 @@ const PhotoUpload = ({
             </IconButton>
           </div>
         ))}
-      </div>
-      <p>ou glissez-déposez les fichiers ici</p>
+      </Box>
+
       <Button onClick={handleSubmit} variant="contained" color="primary">
         Ajouter les photos
       </Button>
