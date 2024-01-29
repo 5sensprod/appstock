@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { Box, Button, Typography } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import ClearIcon from '@mui/icons-material/Clear'
+import IconButton from '@mui/material/IconButton'
 
 const PhotoUpload = ({
   onFilesSelect,
@@ -66,8 +69,10 @@ const PhotoUpload = ({
       style={{
         border: '1px dashed gray',
         padding: '20px',
-        textAlign: 'center',
         backgroundColor: isDragOver ? '#f0f0f0' : 'transparent',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}
     >
       <Button
@@ -85,13 +90,22 @@ const PhotoUpload = ({
         accept=".png,.jpg,.jpeg,.webp"
         style={{ display: 'none' }}
       />
-      {selectedFiles.map((file) => (
-        <div key={file.id}>
-          {file.name}{' '}
-          <button onClick={() => handleDeleteFile(file.id)}>Supprimer</button>
-        </div>
-      ))}
-
+      <div style={{ textAlign: 'left', width: '100%' }}>
+        {selectedFiles.map((file) => (
+          <div key={file.id}>
+            {file.name.length > 40
+              ? file.name.substring(0, 40) + '...'
+              : file.name}{' '}
+            <IconButton
+              color="error"
+              aria-label="Supprimer"
+              onClick={() => handleDeleteFile(file.id)}
+            >
+              <ClearIcon fontSize="small" />
+            </IconButton>
+          </div>
+        ))}
+      </div>
       <p>ou glissez-déposez les fichiers ici</p>
       <Button onClick={handleSubmit} variant="contained" color="primary">
         Ajouter les photos
