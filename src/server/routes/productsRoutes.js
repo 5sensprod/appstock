@@ -95,6 +95,26 @@ module.exports = (db, sendSseEvent) => {
     }
   })
 
+  router.post('/:productId/delete-photos', async (req, res) => {
+    const productId = req.params.productId
+    const { photosToDelete } = req.body // Un tableau de noms de fichiers
+
+    try {
+      photosToDelete.forEach((filename) => {
+        const filePath = path.join(cataloguePath, productId, filename)
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath) // Supprime le fichier
+        }
+      })
+      res.json({ message: 'Photos supprimées avec succès' })
+    } catch (error) {
+      console.error('Erreur lors de la suppression des photos:', error)
+      res
+        .status(500)
+        .json({ message: 'Erreur lors de la suppression des photos' })
+    }
+  })
+
   router.get('/', (req, res) => {
     products.find({}, (err, docs) => {
       if (err) res.status(500).send(err)

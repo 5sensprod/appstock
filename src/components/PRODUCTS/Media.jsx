@@ -122,11 +122,33 @@ const Media = ({ productId, baseUrl }) => {
   }
 
   const handleDeleteSelected = async () => {
-    // Logique pour supprimer les photos sélectionnées
-    console.log('Supprimer ces photos:', selectedPhotos)
-    // Supprimez les photos du serveur ici, puis mettez à jour l'état photos
-    // setPhotos(photos.filter(p => !selectedPhotos.includes(p)));
-    setSelectedPhotos([])
+    const filenamesToDelete = selectedPhotos.map((photo) =>
+      photo.split('/').pop(),
+    )
+
+    try {
+      const response = await fetch(
+        `${baseUrl}/api/products/${productId}/delete-photos`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ photosToDelete: filenamesToDelete }),
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression des photos')
+      }
+
+      // Mise à jour de l'état après la suppression réussie
+      setSelectedPhotos([])
+      fetchPhotos()
+      console.log('Photos supprimées avec succès')
+    } catch (error) {
+      console.error('Erreur lors de la suppression des photos:', error)
+    }
   }
 
   return (
