@@ -15,18 +15,19 @@ async function uploadPhoto(formData, productId) {
       `products/${productId}/upload`,
       'POST',
       formData,
-      {
-        headers: {
-          // Ici, pas besoin de définir le Content-Type car FormData s'en occupe
-        },
-      },
     )
 
-    if (!response.ok) {
-      throw new Error('Problème lors de l’upload du fichier')
-    }
+    // Log la réponse complète du serveur
+    console.log('Réponse du serveur:', response)
 
-    return await response.json() // Ou `response.text()` si vous renvoyez du texte brut
+    // Vérifiez si la réponse contient le message attendu
+    if (response.message === 'Fichier uploadé avec succès') {
+      return response // Retournez la réponse si l'upload est un succès
+    } else {
+      throw new Error(
+        response.message || 'Problème lors de l’upload du fichier',
+      )
+    }
   } catch (error) {
     console.error("Erreur lors de l'upload de la photo:", error)
     throw error

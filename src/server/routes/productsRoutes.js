@@ -36,6 +36,12 @@ module.exports = (db, sendSseEvent) => {
       filename: req.file.filename,
       path: req.file.path,
     })
+    sendSseEvent({ type: 'photo-added', productId: req.params.productId })
+    res.status(200).json({
+      message: 'Fichier uploadé avec succès',
+      filename: req.file.filename,
+      path: req.file.path,
+    })
   })
 
   router.get('/', (req, res) => {

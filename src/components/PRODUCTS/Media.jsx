@@ -11,30 +11,46 @@ const Media = ({ productId, baseUrl, onAddPhoto }) => {
   const [open, setOpen] = useState(false)
   const [newPhoto, setNewPhoto] = useState(null)
 
+  // Définissez fetchPhotos à l'extérieur des useEffect
+  const fetchPhotos = async () => {
+    try {
+      const response = await fetch(
+        `${baseUrl}/api/products/${productId}/photos`,
+      )
+      if (!response.ok) {
+        throw new Error('Erreur de réponse du serveur')
+      }
+      const photoFilenames = await response.json()
+      setPhotos(
+        photoFilenames.map(
+          (filename) => `${baseUrl}/catalogue/${productId}/${filename}`,
+        ),
+      )
+    } catch (error) {
+      console.error(
+        `Erreur lors de la récupération des photos pour le produit ${productId}:`,
+        error,
+      )
+    }
+  }
+
   useEffect(() => {
-    const fetchPhotos = async () => {
-      try {
-        const response = await fetch(
-          `${baseUrl}/api/products/${productId}/photos`,
-        )
-        if (!response.ok) {
-          throw new Error('Erreur de réponse du serveur')
-        }
-        const photoFilenames = await response.json()
-        setPhotos(
-          photoFilenames.map(
-            (filename) => `${baseUrl}/catalogue/${productId}/${filename}`,
-          ),
-        )
-      } catch (error) {
-        console.error(
-          `Erreur lors de la récupération des photos pour le produit ${productId}:`,
-          error,
-        )
+    fetchPhotos()
+  }, [productId, baseUrl])
+
+  useEffect(() => {
+    const eventSource = new EventSource(`${baseUrl}/api/events`)
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      if (data.type === 'photo-added' && data.productId === productId) {
+        fetchPhotos()
       }
     }
 
-    fetchPhotos()
+    return () => {
+      eventSource.close()
+    }
   }, [productId, baseUrl])
 
   const handleOpen = (photoUrl) => {
