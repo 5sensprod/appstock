@@ -9,7 +9,7 @@ const Media = ({ productId, baseUrl }) => {
   const [photos, setPhotos] = useState([])
   const [selectedPhoto, setSelectedPhoto] = useState(null)
   const [open, setOpen] = useState(false)
-  const [newPhoto, setNewPhoto] = useState(null)
+  const [newPhoto, setNewPhoto] = useState([])
   const fileInputRef = useRef()
   const [imageUrl, setImageUrl] = useState('')
 
@@ -64,6 +64,12 @@ const Media = ({ productId, baseUrl }) => {
     setOpen(false)
   }
 
+  const resetSelectedFileNames = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
   const handleUpload = async () => {
     if (newPhoto && newPhoto.length > 0) {
       try {
@@ -76,10 +82,8 @@ const Media = ({ productId, baseUrl }) => {
         console.log(response.message)
 
         if (response.files) {
-          setNewPhoto(null)
-          if (fileInputRef.current) {
-            fileInputRef.current.value = ''
-          }
+          setNewPhoto([])
+          resetSelectedFileNames()
         }
       } catch (error) {
         console.error("Erreur lors de l'upload", error)
@@ -113,6 +117,7 @@ const Media = ({ productId, baseUrl }) => {
         onFilesSelect={setNewPhoto}
         onSubmit={handleUpload}
         fileInputRef={fileInputRef}
+        resetSelectedFileNames={resetSelectedFileNames}
       />
       <Box>
         <input
