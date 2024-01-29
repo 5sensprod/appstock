@@ -13,6 +13,7 @@ const Media = ({ productId, baseUrl }) => {
   const [newPhoto, setNewPhoto] = useState([])
   const fileInputRef = useRef()
   const [imageUrl, setImageUrl] = useState('')
+  const [selectedPhotos, setSelectedPhotos] = useState([])
 
   // Définissez fetchPhotos à l'extérieur des useEffect
   const fetchPhotos = async () => {
@@ -110,6 +111,38 @@ const Media = ({ productId, baseUrl }) => {
     }
   }
 
+  const handleSelectPhoto = (photo) => {
+    setSelectedPhotos((prevSelected) =>
+      prevSelected.includes(photo)
+        ? prevSelected.filter((p) => p !== photo)
+        : [...prevSelected, photo],
+    )
+  }
+
+  const handleToggleSelect = (photo) => {
+    setSelectedPhotos((prev) =>
+      prev.includes(photo) ? prev.filter((p) => p !== photo) : [...prev, photo],
+    )
+  }
+
+  const onToggleSelect = (photo) => {
+    setSelectedPhotos((prevSelected) => {
+      if (prevSelected.includes(photo)) {
+        return prevSelected.filter((p) => p !== photo)
+      } else {
+        return [...prevSelected, photo]
+      }
+    })
+  }
+
+  const handleDeleteSelected = async () => {
+    // Logique pour supprimer les photos sélectionnées
+    console.log('Supprimer ces photos:', selectedPhotos)
+    // Supprimez les photos du serveur ici, puis mettez à jour l'état photos
+    // setPhotos(photos.filter(p => !selectedPhotos.includes(p)));
+    setSelectedPhotos([])
+  }
+
   return (
     <>
       <Typography variant="h5" sx={{ mb: 2 }}>
@@ -150,7 +183,29 @@ const Media = ({ productId, baseUrl }) => {
           </Button>
         )}
       </Box>
-      <PhotoGrid photos={photos} onPhotoClick={handleOpen} />
+      <Typography variant="h5" sx={{ mt: 2, mb: 2 }}>
+        Galerie
+      </Typography>
+      <PhotoGrid
+        photos={photos}
+        onPhotoClick={handleOpen}
+        onToggleSelect={onToggleSelect}
+        selectedPhotos={selectedPhotos}
+      />
+      {selectedPhotos.length > 0 && (
+        <Button
+          onClick={handleDeleteSelected}
+          variant="contained"
+          color="error"
+          size="small"
+          sx={{
+            mt: 4,
+            mb: 6,
+          }}
+        >
+          Supprimer la sélection
+        </Button>
+      )}
       <PhotoDialog open={open} photoUrl={selectedPhoto} onClose={handleClose} />
     </>
   )
