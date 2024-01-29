@@ -28,19 +28,31 @@ module.exports = (db, sendSseEvent) => {
   })
 
   // Route pour téléverser une photo
-  router.post('/:productId/upload', upload.single('photo'), (req, res) => {
-    // Gérer l'upload ici
-    console.log(req.file) // Informations sur le fichier uploadé
-    res.status(200).json({
-      message: 'Fichier uploadé avec succès',
-      filename: req.file.filename,
-      path: req.file.path,
+  router.post('/:productId/upload', upload.array('photos'), (req, res) => {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: 'Aucun fichier fourni.' })
+    }
+
+    const uploadedFilesInfo = req.files.map((file) => ({
+      originalname: file.originalname,
+      filename: file.filename,
+      path: file.path,
+    }))
+
+    console.log(uploadedFilesInfo) // Pour déboguer et voir les infos des fichiers uploadés
+
+    // Envoyer un événement SSE pour chaque fichier uploadé
+    uploadedFilesInfo.forEach((fileInfo) => {
+      sendSseEvent({
+        type: 'photo-added',
+        productId: req.params.productId,
+        photo: fileInfo.filename,
+      })
     })
-    sendSseEvent({ type: 'photo-added', productId: req.params.productId })
+
     res.status(200).json({
-      message: 'Fichier uploadé avec succès',
-      filename: req.file.filename,
-      path: req.file.path,
+      message: 'Fichiers uploadés avec succès',
+      files: uploadedFilesInfo,
     })
   })
 

@@ -32,10 +32,15 @@ const storage = multer.diskStorage({
     cb(null, productFolderPath)
   },
   filename: function (req, file, cb) {
-    // Générer un nom de fichier unique avec l'extension d'origine
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
-    const extension = path.extname(file.originalname)
-    cb(null, file.fieldname + '-' + uniqueSuffix + extension)
+    // Vérifiez l'extension ici
+    const extension = path.extname(file.originalname).toLowerCase()
+    if (extension === '.png' || extension === '.jpg' || extension === '.jpeg') {
+      // Définissez uniqueSuffix ici, à l'intérieur de la fonction filename
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
+      cb(null, file.fieldname + '-' + uniqueSuffix + extension)
+    } else {
+      cb(new Error('Type de fichier non autorisé'), null)
+    }
   },
 })
 

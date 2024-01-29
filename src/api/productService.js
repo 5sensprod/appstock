@@ -20,10 +20,11 @@ async function uploadPhoto(formData, productId) {
     // Log la réponse complète du serveur
     console.log('Réponse du serveur:', response)
 
-    // Vérifiez si la réponse contient le message attendu
-    if (response.message === 'Fichier uploadé avec succès') {
-      return response // Retournez la réponse si l'upload est un succès
+    // Si la réponse est un succès, retournez la réponse
+    if (response.message === 'Fichiers uploadés avec succès') {
+      return response
     } else {
+      // Si la réponse contient un autre message, il y a eu un problème
       throw new Error(
         response.message || 'Problème lors de l’upload du fichier',
       )

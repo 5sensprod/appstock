@@ -63,25 +63,36 @@ const Media = ({ productId, baseUrl, onAddPhoto }) => {
   }
 
   const handleUpload = async () => {
-    if (newPhoto) {
+    if (newPhoto && newPhoto.length > 0) {
       try {
         const formData = new FormData()
-        formData.append('photo', newPhoto)
+        for (const file of newPhoto) {
+          formData.append('photos', file)
+        }
 
         const response = await uploadPhoto(formData, productId)
         console.log(response.message)
-        setNewPhoto(null)
-        onAddPhoto(response.filename)
+
+        if (response.files) {
+          setNewPhoto(null)
+          // Ici, vous pouvez mettre à jour l'état avec les nouvelles photos
+          // SSE devrait prendre le relais pour l'affichage
+        }
       } catch (error) {
+        // Ici, gérez l'erreur proprement
         console.error("Erreur lors de l'upload", error)
       }
     }
   }
 
+  const handleFilesSelect = (files) => {
+    setNewPhoto(files) // `files` est un tableau de fichiers
+  }
+
   return (
     <>
       <Typography variant="h5">Photos</Typography>
-      <PhotoUpload onFileSelect={setNewPhoto} onSubmit={handleUpload} />
+      <PhotoUpload onFilesSelect={handleFilesSelect} onSubmit={handleUpload} />
       <PhotoGrid photos={photos} onPhotoClick={handleOpen} />
       <PhotoDialog open={open} photoUrl={selectedPhoto} onClose={handleClose} />
     </>
