@@ -3,7 +3,7 @@ import { Typography, Box } from '@mui/material'
 import { productFactory } from '../factory/productFactory'
 import { useProductContext } from '../../contexts/ProductContext'
 import GenericModal from '../ui/GenericModal'
-import { getProductImageUrl } from '../../utils/imageUtils'
+// import { getProductImageUrl } from '../../utils/imageUtils'
 import { useConfig } from '../../contexts/ConfigContext'
 import { useNavigate } from 'react-router-dom'
 
@@ -34,7 +34,8 @@ const ProductGallery = ({ products }) => {
   }
 
   const showProductModal = (product) => {
-    const imageInfo = getProductImageUrl(product.photos, baseUrl)
+    const imageUrl = product.featuredImageUrl
+
     const categoryName = getCategoryName(product.categorie) || 'Non catégorisé'
     const descriptionCourte = product.descriptionCourte || ''
     const description = product.description || ''
@@ -64,7 +65,7 @@ const ProductGallery = ({ products }) => {
           </Typography>
         </>
       ),
-      imageUrl: imageInfo.url,
+      imageUrl: imageUrl,
     })
   }
 
@@ -90,9 +91,9 @@ const ProductGallery = ({ products }) => {
             reference: product.reference,
             descriptionCourte: product.descriptionCourte,
             prixVente: product.prixVente,
-            photos: product.photos,
             categorie: product.categorie,
             baseUrl: baseUrl,
+            featuredImageUrl: product.featuredImageUrl,
             handleOpenModal: () => showProductModal(product),
             redirectToEdit: redirectToEdit,
           }).render()}

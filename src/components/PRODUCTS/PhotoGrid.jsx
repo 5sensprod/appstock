@@ -17,13 +17,13 @@ const PhotoGrid = ({
               sx={{
                 position: 'relative',
                 transition:
-                  'box-shadow 0.2s ease-in-out, opacity 0.3s ease-in-out', // Ajoutez une transition pour un effet lisse
-                boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)', // Style par défaut
-                opacity: 1, // Opacité par défaut
+                  'box-shadow 0.2s ease-in-out, opacity 0.3s ease-in-out',
+                boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)',
+                opacity: 1,
                 '&:hover': {
                   cursor: 'pointer',
                   boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.2)',
-                  opacity: 0.6, // Réduire l'opacité lors du survol
+                  opacity: 0.6,
                 },
               }}
             >
@@ -39,7 +39,7 @@ const PhotoGrid = ({
                   position: 'absolute',
                   bottom: 5,
                   right: 5,
-                  backgroundColor: 'white',
+                  backgroundColor: '#F0F0F0',
                   borderRadius: '10%',
                 }}
               >

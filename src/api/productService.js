@@ -1,8 +1,18 @@
 import { fetchApi } from './axiosConfig'
+import defaultImage from '../assets/default.png'
 
-async function getProducts() {
+async function getProducts(baseUrl) {
   try {
-    return await fetchApi('products')
+    const products = await fetchApi('products')
+    products.forEach((product) => {
+      if (product.featuredImage) {
+        product.featuredImageUrl = `${baseUrl}/catalogue/${product._id}/${product.featuredImage}`
+      } else {
+        // Utiliser l'image par défaut importée
+        product.featuredImageUrl = defaultImage
+      }
+    })
+    return products
   } catch (error) {
     console.error('Erreur lors de la récupération des produits:', error)
     return []

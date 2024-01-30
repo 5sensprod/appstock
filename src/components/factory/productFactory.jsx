@@ -7,7 +7,7 @@ import {
   Box,
   IconButton,
 } from '@mui/material'
-import { getProductImageUrl } from '../../utils/imageUtils'
+// import { getProductImageUrl } from '../../utils/imageUtils'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'
 
@@ -17,8 +17,7 @@ function productFactory(props) {
     reference,
     descriptionCourte,
     prixVente,
-    photos,
-    baseUrl,
+    featuredImageUrl,
     handleOpenModal,
     redirectToEdit,
   } = props
@@ -29,11 +28,11 @@ function productFactory(props) {
     padding: '10px',
     display: 'flex',
     flexDirection: 'column',
-    transition: 'box-shadow 0.3s ease-in-out', // Ajoutez une transition pour un effet lisse
-    boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)', // Style par défaut
+    transition: 'box-shadow 0.3s ease-in-out',
+    boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)',
     '&:hover': {
       cursor: 'pointer',
-      boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.2)', // Style lors du survol
+      boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.2)',
     },
   }
 
@@ -41,16 +40,14 @@ function productFactory(props) {
     redirectToEdit(_id)
   }
 
-  const { url, isDefault } = getProductImageUrl(photos, baseUrl)
-
   const render = () => (
     <Card key={_id} sx={cardStyles} onClick={onCardClick}>
       <CardMedia
         component="img"
         height="140"
-        image={url}
+        image={featuredImageUrl}
         alt={`Image de ${reference}`}
-        style={{ opacity: isDefault ? 0.1 : 1 }}
+        style={{ opacity: featuredImageUrl.includes('default.png') ? 0.1 : 1 }} // Réglage de l'opacité si c'est l'image par défaut
       />
       <Box flexGrow={1} overflow="hidden">
         <CardContent>
