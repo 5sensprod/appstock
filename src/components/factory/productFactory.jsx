@@ -18,6 +18,7 @@ function productFactory(props) {
     descriptionCourte,
     prixVente,
     photos,
+    featuredImage,
     baseUrl,
     handleOpenModal,
     redirectToEdit,
@@ -37,6 +38,10 @@ function productFactory(props) {
     },
   }
 
+  const imageUrl = featuredImage
+    ? `${baseUrl}/catalogue/${_id}/${featuredImage}`
+    : getProductImageUrl(photos, baseUrl).url
+
   const { url, isDefault } = getProductImageUrl(photos, baseUrl)
 
   const onCardClick = () => {
@@ -48,7 +53,7 @@ function productFactory(props) {
       <CardMedia
         component="img"
         height="140"
-        image={url}
+        image={imageUrl} // Utilisez ici imageUrl
         alt={`Image de ${reference}`}
         style={{ opacity: isDefault ? 0.1 : 1 }}
       />

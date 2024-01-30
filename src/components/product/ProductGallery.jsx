@@ -34,7 +34,11 @@ const ProductGallery = ({ products }) => {
   }
 
   const showProductModal = (product) => {
-    const imageInfo = getProductImageUrl(product.photos, baseUrl)
+    // Utiliser l'image mise en avant si disponible, sinon utiliser l'image par défaut
+    const imageUrl = product.featuredImage
+      ? `${baseUrl}/catalogue/${product._id}/${product.featuredImage}`
+      : getProductImageUrl(product.photos, baseUrl).url
+
     const categoryName = getCategoryName(product.categorie) || 'Non catégorisé'
     const descriptionCourte = product.descriptionCourte || ''
     const description = product.description || ''
@@ -45,7 +49,6 @@ const ProductGallery = ({ products }) => {
     setModalInfo({
       open: true,
       title: product.reference || 'Titre non disponible',
-      photos: product.photos,
       content: (
         <>
           {product.reference && (
@@ -64,7 +67,7 @@ const ProductGallery = ({ products }) => {
           </Typography>
         </>
       ),
-      imageUrl: imageInfo.url,
+      imageUrl, // Utiliser directement imageUrl ici
     })
   }
 
@@ -91,6 +94,7 @@ const ProductGallery = ({ products }) => {
             descriptionCourte: product.descriptionCourte,
             prixVente: product.prixVente,
             photos: product.photos,
+            featuredImage: product.featuredImage,
             categorie: product.categorie,
             baseUrl: baseUrl,
             handleOpenModal: () => showProductModal(product),
