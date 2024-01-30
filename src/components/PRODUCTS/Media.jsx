@@ -1,5 +1,13 @@
 import React, { useRef } from 'react'
-import { Box, Typography, Button, Input, Card, CardMedia } from '@mui/material'
+import {
+  Box,
+  Typography,
+  Button,
+  Input,
+  Card,
+  CardMedia,
+  Grid,
+} from '@mui/material'
 import PhotoGrid from './PhotoGrid'
 import PhotoDialog from './PhotoDialog'
 import PhotoUpload from './PhotoUpload'
@@ -90,52 +98,66 @@ const Media = ({ productId }) => {
           </Button>
         )}
       </Box>
-      {featuredImageUrl && (
-        <Box sx={{ mt: 2, mb: 2 }}>
-          <Typography variant="h5">Mise en Avant</Typography>
-          <Card>
-            <CardMedia
-              component="img"
-              image={featuredImageUrl}
-              alt="Image mise en avant"
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          {' '}
+          {/* Contenu de gauche */}
+          {featuredImageUrl && (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="h5" sx={{ mb: 2 }}>
+                Mise en Avant
+              </Typography>
+              <Card>
+                <CardMedia
+                  component="img"
+                  image={featuredImageUrl}
+                  alt="Image mise en avant"
+                />
+              </Card>
+            </Box>
+          )}
+        </Grid>
+
+        <Grid item xs={6}>
+          {' '}
+          {/* Contenu de droite */}
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              Galerie
+            </Typography>
+            <PhotoGrid
+              photos={photos}
+              onPhotoClick={handleOpen}
+              onToggleSelect={onToggleSelect}
+              selectedPhotos={selectedPhotos}
+              featuredImageName={featuredImageName}
+              productId={productId}
             />
-          </Card>
-        </Box>
-      )}
-      <Typography variant="h5" sx={{ mt: 2, mb: 2 }}>
-        Galerie
-      </Typography>
-      <PhotoGrid
-        photos={photos}
-        onPhotoClick={handleOpen}
-        onToggleSelect={onToggleSelect}
-        selectedPhotos={selectedPhotos}
-        featuredImageName={featuredImageName}
-        productId={productId}
-      />
-      <Box sx={{ mt: 2 }}>
-        {selectedPhotos.length === 1 && (
-          <Button
-            onClick={handleSetFeatured}
-            variant="contained"
-            color="primary"
-            size="small"
-          >
-            Mettre en Avant
-          </Button>
-        )}
-        {selectedPhotos.length > 0 && (
-          <Button
-            onClick={handleDeleteSelected}
-            variant="contained"
-            color="error"
-            size="small"
-            sx={{ ml: 2 }}
-          >
-            Supprimer la sélection
-          </Button>
-        )}
-      </Box>
+            <Box sx={{ display: 'flex', gap: '16px', mt: 2 }}>
+              {selectedPhotos.length === 1 && (
+                <Button
+                  onClick={handleSetFeatured}
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                >
+                  Mettre en Avant
+                </Button>
+              )}
+              {selectedPhotos.length > 0 && (
+                <Button
+                  onClick={handleDeleteSelected}
+                  variant="contained"
+                  color="error"
+                  size="small"
+                >
+                  Supprimer
+                </Button>
+              )}
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
       <PhotoDialog open={open} photoUrl={selectedPhoto} onClose={handleClose} />
     </>
   )
