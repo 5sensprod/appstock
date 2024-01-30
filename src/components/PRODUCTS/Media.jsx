@@ -45,6 +45,8 @@ const Media = ({ productId }) => {
       const featuredImageName = selectedPhotos[0].split('/').pop()
       await updateFeaturedImage(productId, featuredImageName)
       showToast('Image mise en avant définie avec succès', 'success')
+      setFeaturedImageName(featuredImageName) // Mise à jour de l'état
+      setSelectedPhotos([]) // Réinitialisation des photos sélectionnées
     }
   }
 
@@ -109,7 +111,7 @@ const Media = ({ productId }) => {
         onToggleSelect={onToggleSelect}
         selectedPhotos={selectedPhotos}
         featuredImageName={featuredImageName}
-        productId={productId} // Ajoutez ceci
+        productId={productId}
       />
       <Box sx={{ mt: 2 }}>
         {selectedPhotos.length === 1 && (
