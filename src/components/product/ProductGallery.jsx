@@ -34,10 +34,9 @@ const ProductGallery = ({ products }) => {
   }
 
   const showProductModal = (product) => {
-    // Utiliser l'image mise en avant si disponible, sinon utiliser l'image par défaut
     const imageUrl = product.featuredImage
       ? `${baseUrl}/catalogue/${product._id}/${product.featuredImage}`
-      : getProductImageUrl(product.photos, baseUrl).url
+      : `${baseUrl}/catalogue/default/default.png` // Utiliser l'image par défaut si aucune featuredImage
 
     const categoryName = getCategoryName(product.categorie) || 'Non catégorisé'
     const descriptionCourte = product.descriptionCourte || ''
@@ -93,7 +92,6 @@ const ProductGallery = ({ products }) => {
             reference: product.reference,
             descriptionCourte: product.descriptionCourte,
             prixVente: product.prixVente,
-            photos: product.photos,
             featuredImage: product.featuredImage,
             categorie: product.categorie,
             baseUrl: baseUrl,

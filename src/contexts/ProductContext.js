@@ -86,6 +86,32 @@ export const ProductProvider = ({ children }) => {
         if (data.type === 'countByCategory-updated') {
           setProductCountByCategory(data.countByCategory)
         }
+        // Ajout de la gestion pour l'événement 'featured-image-updated'
+        if (data.type === 'featured-image-updated') {
+          setProducts((currentProducts) =>
+            currentProducts.map((product) =>
+              product._id === data.productId
+                ? { ...product, featuredImage: data.featuredImage }
+                : product,
+            ),
+          )
+        }
+        if (data.type === 'photo-added') {
+          setProducts((currentProducts) =>
+            currentProducts.map((product) => {
+              if (product._id === data.productId) {
+                // Si product.photos est null ou undefined, utilisez un tableau vide
+                const updatedPhotos = product.photos
+                  ? [...product.photos, data.photo]
+                  : [data.photo]
+
+                return { ...product, photos: updatedPhotos }
+              } else {
+                return product
+              }
+            }),
+          )
+        }
       }
 
       return () => {

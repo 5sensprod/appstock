@@ -34,7 +34,12 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     // Vérifiez l'extension ici
     const extension = path.extname(file.originalname).toLowerCase()
-    if (extension === '.png' || extension === '.jpg' || extension === '.jpeg') {
+    if (
+      extension === '.png' ||
+      extension === '.jpg' ||
+      extension === '.jpeg' ||
+      extension === '.webp'
+    ) {
       // Définissez uniqueSuffix ici, à l'intérieur de la fonction filename
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
       cb(null, file.fieldname + '-' + uniqueSuffix + extension)

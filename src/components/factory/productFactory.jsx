@@ -17,7 +17,6 @@ function productFactory(props) {
     reference,
     descriptionCourte,
     prixVente,
-    photos,
     featuredImage,
     baseUrl,
     handleOpenModal,
@@ -40,9 +39,9 @@ function productFactory(props) {
 
   const imageUrl = featuredImage
     ? `${baseUrl}/catalogue/${_id}/${featuredImage}`
-    : getProductImageUrl(photos, baseUrl).url
+    : `${baseUrl}/catalogue/default/default.png`
 
-  const { url, isDefault } = getProductImageUrl(photos, baseUrl)
+  const isDefaultImage = !featuredImage
 
   const onCardClick = () => {
     redirectToEdit(_id)
@@ -55,7 +54,7 @@ function productFactory(props) {
         height="140"
         image={imageUrl} // Utilisez ici imageUrl
         alt={`Image de ${reference}`}
-        style={{ opacity: isDefault ? 0.1 : 1 }}
+        style={{ opacity: isDefaultImage ? 0.1 : 1 }}
       />
       <Box flexGrow={1} overflow="hidden">
         <CardContent>

@@ -85,9 +85,6 @@ export const useMedia = (productId, baseUrl, showToast) => {
           (filename) => `${baseUrl}/catalogue/${productId}/${filename}`,
         ),
       )
-
-      // Pour l'instant, la mise à jour de featuredImageName n'est pas possible ici
-      // setFeaturedImageName(data.featuredImage); // Cette ligne doit être ajustée
     } catch (error) {
       console.error(
         `Erreur lors de la récupération des photos pour le produit ${productId}:`,
