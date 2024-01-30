@@ -1,14 +1,17 @@
 import React, { useRef } from 'react'
-import { Box, Typography, Button, Input } from '@mui/material'
+import { Box, Typography, Button, Input, Card, CardMedia } from '@mui/material'
 import PhotoGrid from './PhotoGrid'
 import PhotoDialog from './PhotoDialog'
 import PhotoUpload from './PhotoUpload'
 import { isValidUrl } from '../../utils/validateUtils'
 import { useMedia } from './hooks/useMedia'
 import { useUI } from '../../contexts/UIContext'
+import { updateFeaturedImage, getFeaturedImage } from '../../api/productService'
+import { useConfig } from '../../contexts/ConfigContext'
 
-const Media = ({ productId, baseUrl }) => {
+const Media = ({ productId }) => {
   const fileInputRef = useRef()
+  const { baseUrl } = useConfig()
   const { showToast, showConfirmDialog } = useUI()
   const {
     photos,
@@ -16,6 +19,7 @@ const Media = ({ productId, baseUrl }) => {
     setSelectedPhotos,
     selectedPhoto,
     setSelectedPhoto,
+    featuredImageName,
     open,
     setOpen,
     imageUrl,
@@ -29,7 +33,20 @@ const Media = ({ productId, baseUrl }) => {
     newPhoto,
     setNewPhoto,
     resetSelectedFileNames,
+    setFeaturedImageName,
   } = useMedia(productId, baseUrl, showToast, showConfirmDialog)
+
+  const featuredImageUrl = featuredImageName
+    ? `${baseUrl}/catalogue/${productId}/${featuredImageName}`
+    : null
+
+  const handleSetFeatured = async () => {
+    if (selectedPhotos.length === 1) {
+      const featuredImageName = selectedPhotos[0].split('/').pop()
+      await updateFeaturedImage(productId, featuredImageName)
+      showToast('Image mise en avant définie avec succès', 'success')
+    }
+  }
 
   return (
     <>
@@ -71,6 +88,18 @@ const Media = ({ productId, baseUrl }) => {
           </Button>
         )}
       </Box>
+      {featuredImageUrl && (
+        <Box sx={{ mt: 2, mb: 2 }}>
+          <Typography variant="h5">Mise en Avant</Typography>
+          <Card>
+            <CardMedia
+              component="img"
+              image={featuredImageUrl}
+              alt="Image mise en avant"
+            />
+          </Card>
+        </Box>
+      )}
       <Typography variant="h5" sx={{ mt: 2, mb: 2 }}>
         Galerie
       </Typography>
@@ -79,18 +108,32 @@ const Media = ({ productId, baseUrl }) => {
         onPhotoClick={handleOpen}
         onToggleSelect={onToggleSelect}
         selectedPhotos={selectedPhotos}
+        featuredImageName={featuredImageName}
+        productId={productId} // Ajoutez ceci
       />
-      {selectedPhotos.length > 0 && (
-        <Button
-          onClick={handleDeleteSelected}
-          variant="contained"
-          color="error"
-          size="small"
-          sx={{ mt: 4, mb: 6 }}
-        >
-          Supprimer la sélection
-        </Button>
-      )}
+      <Box sx={{ mt: 2 }}>
+        {selectedPhotos.length === 1 && (
+          <Button
+            onClick={handleSetFeatured}
+            variant="contained"
+            color="primary"
+            size="small"
+          >
+            Mettre en Avant
+          </Button>
+        )}
+        {selectedPhotos.length > 0 && (
+          <Button
+            onClick={handleDeleteSelected}
+            variant="contained"
+            color="error"
+            size="small"
+            sx={{ ml: 2 }}
+          >
+            Supprimer la sélection
+          </Button>
+        )}
+      </Box>
       <PhotoDialog open={open} photoUrl={selectedPhoto} onClose={handleClose} />
     </>
   )

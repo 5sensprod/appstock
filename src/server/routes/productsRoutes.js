@@ -28,6 +28,21 @@ module.exports = (db, sendSseEvent) => {
     }
   })
 
+  router.get('/:productId/featuredImage', (req, res) => {
+    const { productId } = req.params
+
+    // Récupérer le produit par son ID
+    db.products.findOne({ _id: productId }, (err, product) => {
+      if (err) {
+        res.status(500).json({
+          message: "Erreur lors de la récupération de l'image mise en avant",
+        })
+      } else {
+        res.status(200).json({ featuredImage: product.featuredImage })
+      }
+    })
+  })
+
   // Route pour téléverser une photo
   router.post('/:productId/upload', upload.array('photos'), (req, res) => {
     if (!req.files || req.files.length === 0) {
@@ -93,6 +108,42 @@ module.exports = (db, sendSseEvent) => {
         .status(500)
         .json({ message: "Erreur lors du téléchargement de l'image." })
     }
+  })
+
+  router.post('/:productId/updateFeaturedImage', (req, res) => {
+    const { productId } = req.params
+    const { featuredImage } = req.body
+
+    products.update(
+      { _id: productId },
+      { $set: { featuredImage } },
+      {},
+      (err, numReplaced) => {
+        if (err) {
+          console.error(
+            "Erreur lors de la mise à jour de l'image mise en avant:",
+            err,
+          )
+          res.status(500).json({
+            message: "Erreur lors de la mise à jour de l'image mise en avant.",
+          })
+        } else {
+          sendSseEvent({
+            type: 'featured-image-updated',
+            productId: productId,
+            featuredImage: featuredImage,
+          })
+          console.log('SSE event sent:', {
+            type: 'featured-image-updated',
+            productId,
+            featuredImage,
+          }) // Log pour confirmer l'envoi de l'événement SSE
+          res
+            .status(200)
+            .json({ message: 'Image mise en avant mise à jour avec succès' })
+        }
+      },
+    )
   })
 
   router.post('/:productId/delete-photos', async (req, res) => {

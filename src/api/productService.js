@@ -19,6 +19,43 @@ async function getProducts(baseUrl) {
   }
 }
 
+async function getFeaturedImage(productId) {
+  try {
+    const response = await fetchApi(
+      `products/${productId}/featuredImage`,
+      'GET',
+    )
+    return response // Retourner la réponse qui doit contenir le nom de l'image mise en avant
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération de l'image mise en avant:",
+      error,
+    )
+    throw error
+  }
+}
+
+async function updateFeaturedImage(productId, featuredImageName) {
+  try {
+    const response = await fetchApi(
+      `products/${productId}/updateFeaturedImage`,
+      'POST',
+      { featuredImage: featuredImageName },
+    )
+
+    // Logique pour gérer la réponse
+    console.log('Réponse du serveur:', response)
+
+    return response
+  } catch (error) {
+    console.error(
+      "Erreur lors de la mise à jour de l'image mise en avant:",
+      error,
+    )
+    throw error
+  }
+}
+
 async function uploadPhoto(formData, productId) {
   try {
     const response = await fetchApi(
@@ -131,4 +168,6 @@ export {
   getProductCountByCategory,
   uploadPhoto,
   uploadPhotoFromUrl,
+  updateFeaturedImage,
+  getFeaturedImage,
 }

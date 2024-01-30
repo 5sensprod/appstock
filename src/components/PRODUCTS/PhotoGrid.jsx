@@ -6,11 +6,14 @@ const PhotoGrid = ({
   onPhotoClick,
   onToggleSelect,
   selectedPhotos,
+  featuredImageName,
+  productId,
 }) => {
   return (
     <Grid container spacing={1}>
       {photos.map((photo, index) => {
         const isSelected = selectedPhotos.includes(photo)
+        const isFeatured = photo.includes(featuredImageName)
         return (
           <Grid item xs={6} sm={4} md={2} lg={2} key={index}>
             <Card
@@ -34,25 +37,27 @@ const PhotoGrid = ({
                 sx={{ width: '100%', height: 'auto' }}
                 onClick={() => onPhotoClick(photo)}
               />
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: 5,
-                  right: 5,
-                  backgroundColor: '#F0F0F0',
-                  borderRadius: '10%',
-                }}
-              >
-                <Checkbox
-                  checked={isSelected}
-                  onChange={() => onToggleSelect(photo)}
-                  size="small"
+              {!isFeatured && (
+                <Box
                   sx={{
-                    padding: '0 1px 1px 1px ',
-                    '& .MuiSvgIcon-root': { fontSize: 20 },
+                    position: 'absolute',
+                    bottom: 5,
+                    right: 5,
+                    backgroundColor: '#F0F0F0',
+                    borderRadius: '10%',
                   }}
-                />
-              </Box>
+                >
+                  <Checkbox
+                    checked={isSelected}
+                    onChange={() => onToggleSelect(photo)}
+                    size="small"
+                    sx={{
+                      padding: '0 1px 1px 1px ',
+                      '& .MuiSvgIcon-root': { fontSize: 20 },
+                    }}
+                  />
+                </Box>
+              )}
             </Card>
           </Grid>
         )

@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react'
-import { uploadPhoto, uploadPhotoFromUrl } from '../../../api/productService'
+import {
+  uploadPhoto,
+  uploadPhotoFromUrl,
+  getFeaturedImage,
+} from '../../../api/productService'
 
 export const useMedia = (productId, baseUrl, showToast) => {
   const [photos, setPhotos] = useState([])
@@ -8,25 +12,57 @@ export const useMedia = (productId, baseUrl, showToast) => {
   const [open, setOpen] = useState(false)
   const [newPhoto, setNewPhoto] = useState([])
   const [imageUrl, setImageUrl] = useState('')
+  const [featuredImageName, setFeaturedImageName] = useState(null)
 
   useEffect(() => {
     fetchPhotos()
+    fetchFeaturedImage()
   }, [productId, baseUrl])
+
+  const fetchFeaturedImage = async () => {
+    try {
+      const response = await getFeaturedImage(productId)
+      if (response && response.featuredImage) {
+        setFeaturedImageName(response.featuredImage)
+      }
+    } catch (error) {
+      console.error(
+        `Erreur lors de la récupération de l'image mise en avant pour le produit ${productId}:`,
+        error,
+      )
+    }
+  }
 
   useEffect(() => {
     const eventSource = new EventSource(`${baseUrl}/api/events`)
+    console.log('Event Source URL useMedia:', eventSource)
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data)
+
       if (data.type === 'photo-added' && data.productId === productId) {
         fetchPhotos()
+      }
+
+      // Ajouter la gestion pour les événements de mise à jour de l'image mise en avant
+      if (
+        data.type === 'featured-image-updated' &&
+        data.productId === productId
+      ) {
+        setFeaturedImageName(data.featuredImage)
+        console.log(
+          'Featured image updated for product:',
+          data.productId,
+          'with image:',
+          data.featuredImage,
+        ) // Ajouter ce log pour la vérification
       }
     }
 
     return () => {
       eventSource.close()
     }
-  }, [productId, baseUrl])
+  }, [productId, baseUrl, setFeaturedImageName])
 
   const fetchPhotos = async () => {
     try {
@@ -37,11 +73,21 @@ export const useMedia = (productId, baseUrl, showToast) => {
         throw new Error('Erreur de réponse du serveur')
       }
       const photoFilenames = await response.json()
+
+      // Vérifiez que la réponse est bien un tableau
+      if (!Array.isArray(photoFilenames)) {
+        console.error('Format de données inattendu:', photoFilenames)
+        return
+      }
+
       setPhotos(
         photoFilenames.map(
           (filename) => `${baseUrl}/catalogue/${productId}/${filename}`,
         ),
       )
+
+      // Pour l'instant, la mise à jour de featuredImageName n'est pas possible ici
+      // setFeaturedImageName(data.featuredImage); // Cette ligne doit être ajustée
     } catch (error) {
       console.error(
         `Erreur lors de la récupération des photos pour le produit ${productId}:`,
@@ -170,5 +216,7 @@ export const useMedia = (productId, baseUrl, showToast) => {
     handleUploadFromUrl,
     onToggleSelect,
     handleDeleteSelected,
+    featuredImageName,
+    setFeaturedImageName,
   }
 }
