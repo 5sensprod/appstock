@@ -3,7 +3,7 @@ import {
   uploadPhoto,
   uploadPhotoFromUrl,
   getFeaturedImage,
-} from '../../../api/productService'
+} from '../../../api/mediaService'
 
 export const useMedia = (productId, baseUrl, showToast) => {
   const [photos, setPhotos] = useState([])

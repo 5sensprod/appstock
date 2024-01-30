@@ -14,7 +14,7 @@ import PhotoUpload from './PhotoUpload'
 import { isValidUrl } from '../../utils/validateUtils'
 import { useMedia } from './hooks/useMedia'
 import { useUI } from '../../contexts/UIContext'
-import { updateFeaturedImage, getFeaturedImage } from '../../api/productService'
+import { updateFeaturedImage } from '../../api/mediaService'
 import { useConfig } from '../../contexts/ConfigContext'
 
 const Media = ({ productId }) => {
