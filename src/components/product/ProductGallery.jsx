@@ -3,7 +3,6 @@ import { Typography, Box } from '@mui/material'
 import { productFactory } from '../factory/productFactory'
 import { useProductContext } from '../../contexts/ProductContext'
 import GenericModal from '../ui/GenericModal'
-import { getProductImageUrl } from '../../utils/imageUtils'
 import { useConfig } from '../../contexts/ConfigContext'
 import { useNavigate } from 'react-router-dom'
 import DOMPurify from 'dompurify'
@@ -25,27 +24,13 @@ const ProductGallery = ({ products }) => {
     return category ? category.name : 'Non catégorisé'
   }
 
-  const transformNewLinesToJSX = (text) => {
-    return text.split('\n').map((line, index) => (
-      <span key={index}>
-        {line}
-        <br />
-      </span>
-    ))
-  }
-
   const showProductModal = (product) => {
     const imageUrl = product.featuredImage
       ? `${baseUrl}/catalogue/${product._id}/${product.featuredImage}`
-      : `${baseUrl}/catalogue/default/default.png` // Utiliser l'image par défaut si aucune featuredImage
+      : `${baseUrl}/catalogue/default/default.png`
 
     const categoryName = getCategoryName(product.categorie) || 'Non catégorisé'
-    const cleandescription = DOMPurify.sanitize(product.description || '')
     const cleanDescription = DOMPurify.sanitize(product.description || '')
-
-    // Utilisez les versions nettoyées pour l'affichage
-    const jsxdescription = transformNewLinesToJSX(cleanDescription)
-    const jsxDescription = transformNewLinesToJSX(cleanDescription)
 
     setModalInfo({
       open: true,
@@ -61,14 +46,11 @@ const ProductGallery = ({ products }) => {
             {categoryName}
           </Typography>
           <Typography variant="body1" component="div">
-            {jsxDescription}
-          </Typography>
-          <Typography variant="body2" component="div">
-            {jsxDescription}
+            <span dangerouslySetInnerHTML={{ __html: cleanDescription }} />
           </Typography>
         </>
       ),
-      imageUrl, // Utiliser directement imageUrl ici
+      imageUrl,
     })
   }
 
@@ -98,8 +80,7 @@ const ProductGallery = ({ products }) => {
               description: product.description,
               prixVente: product.prixVente,
               featuredImage: product.featuredImage,
-              categorie: product.categorie,
-              categoryName: categoryName, // Ajouter le nom de la catégorie ici
+              categoryName: categoryName,
               baseUrl: baseUrl,
               handleOpenModal: () => showProductModal(product),
               redirectToEdit: redirectToEdit,
@@ -108,13 +89,11 @@ const ProductGallery = ({ products }) => {
         )
       })}
       <GenericModal
-        baseUrl={baseUrl}
         open={modalInfo.open}
         onClose={() => setModalInfo({ ...modalInfo, open: false })}
         title={modalInfo.title}
         content={modalInfo.content}
         imageUrl={modalInfo.imageUrl}
-        photos={modalInfo.photos}
       />
     </div>
   )
