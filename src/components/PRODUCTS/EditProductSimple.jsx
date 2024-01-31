@@ -4,6 +4,8 @@ import { TextField, FormControl, Button } from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext.js'
 import { useNavigate } from 'react-router-dom'
 import { useUI } from '../../contexts/UIContext.js'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
 
 const EditProductSimple = ({ productId, setInitialProductName }) => {
   const { updateProductInContext, products } = useProductContext()
@@ -46,21 +48,19 @@ const EditProductSimple = ({ productId, setInitialProductName }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl fullWidth margin="normal">
+        <p>Fiche technique</p>
         <Controller
           name="descriptionCourte"
           control={control}
-          render={({ field }) => (
-            <TextField {...field} label="Fiche Technique" multiline rows={2} />
-          )}
+          render={({ field }) => <ReactQuill {...field} theme="snow" />}
         />
       </FormControl>
       <FormControl fullWidth margin="normal">
+        <p>Description</p>
         <Controller
           name="description"
           control={control}
-          render={({ field }) => (
-            <TextField {...field} label="Description" multiline rows={4} />
-          )}
+          render={({ field }) => <ReactQuill {...field} theme="snow" />}
         />
       </FormControl>
       <Button
