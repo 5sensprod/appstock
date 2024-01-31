@@ -87,21 +87,26 @@ const ProductGallery = ({ products }) => {
         justifyContent: 'center',
       }}
     >
-      {products.map((product) => (
-        <Box key={product._id} display="flex" justifyContent="center">
-          {productFactory({
-            _id: product._id,
-            reference: product.reference,
-            description: product.description,
-            prixVente: product.prixVente,
-            featuredImage: product.featuredImage,
-            categorie: product.categorie,
-            baseUrl: baseUrl,
-            handleOpenModal: () => showProductModal(product),
-            redirectToEdit: redirectToEdit,
-          }).render()}
-        </Box>
-      ))}
+      {products.map((product) => {
+        const categoryName = getCategoryName(product.categorie)
+
+        return (
+          <Box key={product._id} display="flex" justifyContent="center">
+            {productFactory({
+              _id: product._id,
+              reference: product.reference,
+              description: product.description,
+              prixVente: product.prixVente,
+              featuredImage: product.featuredImage,
+              categorie: product.categorie,
+              categoryName: categoryName, // Ajouter le nom de la catégorie ici
+              baseUrl: baseUrl,
+              handleOpenModal: () => showProductModal(product),
+              redirectToEdit: redirectToEdit,
+            }).render()}
+          </Box>
+        )
+      })}
       <GenericModal
         baseUrl={baseUrl}
         open={modalInfo.open}

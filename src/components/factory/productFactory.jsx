@@ -14,6 +14,7 @@ function productFactory(props) {
     featuredImage,
     baseUrl,
     redirectToEdit,
+    categoryName,
   } = props
 
   const textdescription = !isEmptyContent(description)
@@ -77,7 +78,7 @@ function productFactory(props) {
           {formatPrice(prixVente)}
         </Typography>
         <Typography variant="body1" color="text.primary">
-          {categorie}
+          {categoryName}
         </Typography>
       </Box>
     </Card>
