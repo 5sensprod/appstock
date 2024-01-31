@@ -4,6 +4,7 @@ import { CardMedia, Typography } from '@mui/material'
 import GenericModal from '../ui/GenericModal'
 import ProductDescription from './ProductDescription'
 import ProductFicheTechnique from './ProductFicheTechnique'
+import { formatPrice } from '../../utils/priceUtils'
 
 const ProductModal = ({ product, baseUrl, open, onClose }) => {
   if (!product) return null
@@ -24,8 +25,13 @@ const ProductModal = ({ product, baseUrl, open, onClose }) => {
       <Typography variant="h6" fontWeight="bold">
         {product.reference}
       </Typography>
+      <Typography>{formatPrice(product.prixVente)}</Typography>
       {tabValue === 0 ? (
-        <ProductDescription productInfo={product} showTitle={false} />
+        <ProductDescription
+          productInfo={product}
+          showTitle={false}
+          showPrice={false}
+        />
       ) : (
         <ProductFicheTechnique productInfo={product} showTitle={false} />
       )}
