@@ -2,14 +2,16 @@ import React from 'react'
 import { Typography, Box } from '@mui/material'
 import DOMPurify from 'dompurify'
 import { openExternalLink } from '../../ipcHelper'
+import { isEmptyContent } from '../../utils/textHtmlUtils'
 
 const ShowProductSimple = ({ productInfo }) => {
-  const cleanDescription = DOMPurify.sanitize(
-    productInfo.description || 'Aucune information',
-  )
-  const cleanDescriptionCourte = DOMPurify.sanitize(
-    productInfo.descriptionCourte || 'Aucune information',
-  )
+  const cleanDescription = isEmptyContent(productInfo.description)
+    ? 'Aucune information'
+    : DOMPurify.sanitize(productInfo.description)
+
+  const cleanDescriptionCourte = isEmptyContent(productInfo.descriptionCourte)
+    ? 'Aucune information'
+    : DOMPurify.sanitize(productInfo.descriptionCourte)
 
   const handleLinkClick = (event) => {
     const target = event.target
