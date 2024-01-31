@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, CardContent, CardMedia, Typography, Box } from '@mui/material'
-import { stripHtml } from '../../utils/textHtmlUtils'
+import { stripHtml, isEmptyContent } from '../../utils/textHtmlUtils'
 import { cardStyles } from './cardStyles'
 import { formatPrice } from '../../utils/priceUtils'
 
@@ -16,7 +16,7 @@ function productFactory(props) {
     redirectToEdit,
   } = props
 
-  const textDescriptionCourte = descriptionCourte
+  const textDescriptionCourte = !isEmptyContent(descriptionCourte)
     ? stripHtml(descriptionCourte)
     : 'Aucune information'
 
