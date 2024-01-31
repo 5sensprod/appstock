@@ -3,6 +3,7 @@ import React from 'react'
 import { Typography } from '@mui/material'
 import GenericModal from '../ui/GenericModal'
 import DOMPurify from 'dompurify'
+import ShowProductSimple from './ShowProductSimple'
 
 const ProductModal = ({ product, baseUrl, open, onClose }) => {
   if (!product) return null
@@ -19,21 +20,7 @@ const ProductModal = ({ product, baseUrl, open, onClose }) => {
       open={open}
       onClose={onClose}
       title={product.reference || 'Titre non disponible'}
-      content={
-        <>
-          {product.reference && (
-            <Typography variant="h6" component="div">
-              {product.reference}
-            </Typography>
-          )}
-          <Typography variant="body1" component="div">
-            {categoryName}
-          </Typography>
-          <Typography variant="body1" component="div">
-            <span dangerouslySetInnerHTML={{ __html: cleanDescription }} />
-          </Typography>
-        </>
-      }
+      content={<ShowProductSimple productInfo={product} />}
       imageUrl={imageUrl}
     />
   )

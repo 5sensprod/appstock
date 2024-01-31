@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Tabs, Tab, Modal, Box, Typography, CardMedia } from '@mui/material'
-import Carousel from 'react-material-ui-carousel'
 const style = {
   position: 'absolute',
   top: '50%',
@@ -39,15 +38,13 @@ const GenericModal = ({
             aria-label="modal tabs"
           >
             <Tab label="Description" />
-            <Tab label="Média" />
+            <Tab label="Fiche technique" />
           </Tabs>
         </Box>
 
         {tabValue === 0 && (
           <Box sx={{ p: 3 }}>
-            <Typography variant="body1" component="div">
-              {content}
-            </Typography>
+            {React.cloneElement(content, { baseUrl: baseUrl })}
             {imageUrl && (
               <CardMedia
                 component="img"
@@ -59,27 +56,7 @@ const GenericModal = ({
           </Box>
         )}
 
-        {tabValue === 1 && (
-          <Box sx={{ p: 3 }}>
-            {photos && photos.length > 0 ? (
-              <Carousel>
-                {photos.map((photo, index) => {
-                  const photoUrl = `${baseUrl}/${photo}`
-                  return (
-                    <CardMedia
-                      key={index}
-                      component="img"
-                      image={photoUrl}
-                      alt={`Photo ${index + 1}`}
-                    />
-                  )
-                })}
-              </Carousel>
-            ) : (
-              <Typography>Aucune photo disponible</Typography>
-            )}
-          </Box>
-        )}
+        {tabValue === 1 && <Box sx={{ p: 3 }}>{<p>Fiche technique</p>}</Box>}
       </Box>
     </Modal>
   )
