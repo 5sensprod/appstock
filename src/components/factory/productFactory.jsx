@@ -8,7 +8,7 @@ function productFactory(props) {
   const {
     _id,
     reference,
-    descriptionCourte,
+    description,
     prixVente,
     categorie,
     featuredImage,
@@ -16,8 +16,8 @@ function productFactory(props) {
     redirectToEdit,
   } = props
 
-  const textDescriptionCourte = !isEmptyContent(descriptionCourte)
-    ? stripHtml(descriptionCourte)
+  const textdescription = !isEmptyContent(description)
+    ? stripHtml(description)
     : 'Aucune information'
 
   const imageUrl = featuredImage
@@ -63,7 +63,7 @@ function productFactory(props) {
               overflow: 'hidden',
             }}
           >
-            {textDescriptionCourte}
+            {textdescription}
           </Typography>
         </CardContent>
       </Box>

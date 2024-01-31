@@ -6,6 +6,7 @@ import GenericModal from '../ui/GenericModal'
 import { getProductImageUrl } from '../../utils/imageUtils'
 import { useConfig } from '../../contexts/ConfigContext'
 import { useNavigate } from 'react-router-dom'
+import DOMPurify from 'dompurify'
 
 const ProductGallery = ({ products }) => {
   const { baseUrl } = useConfig()
@@ -39,11 +40,12 @@ const ProductGallery = ({ products }) => {
       : `${baseUrl}/catalogue/default/default.png` // Utiliser l'image par défaut si aucune featuredImage
 
     const categoryName = getCategoryName(product.categorie) || 'Non catégorisé'
-    const descriptionCourte = product.descriptionCourte || ''
-    const description = product.description || ''
+    const cleandescription = DOMPurify.sanitize(product.description || '')
+    const cleanDescription = DOMPurify.sanitize(product.description || '')
 
-    const jsxDescriptionCourte = transformNewLinesToJSX(descriptionCourte)
-    const jsxDescription = transformNewLinesToJSX(description)
+    // Utilisez les versions nettoyées pour l'affichage
+    const jsxdescription = transformNewLinesToJSX(cleanDescription)
+    const jsxDescription = transformNewLinesToJSX(cleanDescription)
 
     setModalInfo({
       open: true,
@@ -59,7 +61,7 @@ const ProductGallery = ({ products }) => {
             {categoryName}
           </Typography>
           <Typography variant="body1" component="div">
-            {jsxDescriptionCourte}
+            {jsxDescription}
           </Typography>
           <Typography variant="body2" component="div">
             {jsxDescription}
@@ -90,7 +92,7 @@ const ProductGallery = ({ products }) => {
           {productFactory({
             _id: product._id,
             reference: product.reference,
-            descriptionCourte: product.descriptionCourte,
+            description: product.description,
             prixVente: product.prixVente,
             featuredImage: product.featuredImage,
             categorie: product.categorie,
