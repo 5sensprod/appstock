@@ -10,6 +10,9 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete'
 import ReplayIcon from '@mui/icons-material/Replay'
 import { formatPrice } from '../../utils/priceUtils'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import ProductModal from '../PRODUCTS/ProductModal'
+import { useConfig } from '../../contexts/ConfigContext'
 
 const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
   const originalPrice = item.prixVente
@@ -18,6 +21,17 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
       ? formatPrice(item.prixModifie)
       : formatPrice(originalPrice),
   )
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { baseUrl } = useConfig()
+
+  const handleModalOpen = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+  }
 
   const isPriceEdited =
     item.prixModifie !== undefined && item.prixModifie !== originalPrice
@@ -56,8 +70,11 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
   return (
     <Card variant="outlined">
       <CardContent>
-        <Box mb={2}>
+        <Box mb={2} display="flex" alignItems="center" gap="20px">
           <Typography variant="h6">{item.reference}</Typography>
+          <IconButton onClick={handleModalOpen} size="small" color="success">
+            <VisibilityIcon fontSize="small" />
+          </IconButton>
         </Box>
         <Box mb={0}>
           <TextField
@@ -100,6 +117,12 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
           </IconButton>
         </Box>
       </CardContent>
+      <ProductModal
+        product={item}
+        baseUrl={baseUrl}
+        open={isModalOpen}
+        onClose={handleModalClose}
+      />
     </Card>
   )
 }
