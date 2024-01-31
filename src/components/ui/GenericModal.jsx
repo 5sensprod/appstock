@@ -10,17 +10,10 @@ const style = {
   width: 600,
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 4,
+  p: 1,
 }
 
-const GenericModal = ({
-  open,
-  onClose,
-  title,
-  content,
-  tabValue,
-  setTabValue,
-}) => {
+const GenericModal = ({ open, onClose, content, tabValue, setTabValue }) => {
   if (!open) return null
 
   const handleTabChange = (event, newValue) => {
@@ -30,7 +23,8 @@ const GenericModal = ({
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={style}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ p: 3 }}>{content}</Box>
+        <Box sx={{ borderTop: 1, borderColor: 'divider' }}>
           <Tabs
             value={tabValue}
             onChange={handleTabChange}
@@ -40,7 +34,6 @@ const GenericModal = ({
             <Tab label="Fiche technique" />
           </Tabs>
         </Box>
-        <Box sx={{ p: 3 }}>{content}</Box>
       </Box>
     </Modal>
   )
