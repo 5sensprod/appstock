@@ -14,8 +14,8 @@ const EditProductSimple = ({ productId, setInitialProductName }) => {
     formState: { isDirty },
   } = useForm({
     defaultValues: {
-      description: '',
       descriptionCourte: '',
+      description: '',
     },
   })
   const navigate = useNavigate()
@@ -27,8 +27,8 @@ const EditProductSimple = ({ productId, setInitialProductName }) => {
       setInitialProductName(productToEdit.reference)
 
       // Définir les valeurs initiales des champs de formulaire
-      setValue('description', productToEdit.description)
       setValue('descriptionCourte', productToEdit.descriptionCourte)
+      setValue('description', productToEdit.description)
     }
   }, [products, productId, setValue, setInitialProductName])
 
@@ -47,24 +47,19 @@ const EditProductSimple = ({ productId, setInitialProductName }) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl fullWidth margin="normal">
         <Controller
-          name="description"
+          name="descriptionCourte"
           control={control}
           render={({ field }) => (
-            <TextField {...field} label="Description" multiline rows={4} />
+            <TextField {...field} label="Fiche Technique" multiline rows={2} />
           )}
         />
       </FormControl>
       <FormControl fullWidth margin="normal">
         <Controller
-          name="descriptionCourte"
+          name="description"
           control={control}
           render={({ field }) => (
-            <TextField
-              {...field}
-              label="Description Courte"
-              multiline
-              rows={2}
-            />
+            <TextField {...field} label="Description" multiline rows={4} />
           )}
         />
       </FormControl>
