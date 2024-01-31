@@ -10,7 +10,6 @@ function productFactory(props) {
     reference,
     description,
     prixVente,
-    categorie,
     featuredImage,
     baseUrl,
     redirectToEdit,
