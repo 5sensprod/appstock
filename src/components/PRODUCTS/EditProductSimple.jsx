@@ -52,7 +52,13 @@ const EditProductSimple = ({ productId, setInitialProductName }) => {
         <Controller
           name="descriptionCourte"
           control={control}
-          render={({ field }) => <ReactQuill {...field} theme="snow" />}
+          render={({ field }) => (
+            <ReactQuill
+              {...field}
+              theme="snow"
+              placeholder="Entrez la description du produit ici..."
+            />
+          )}
         />
       </FormControl>
       <FormControl fullWidth margin="normal">
@@ -60,7 +66,13 @@ const EditProductSimple = ({ productId, setInitialProductName }) => {
         <Controller
           name="description"
           control={control}
-          render={({ field }) => <ReactQuill {...field} theme="snow" />}
+          render={({ field }) => (
+            <ReactQuill
+              {...field}
+              theme="snow"
+              placeholder="Entrez la description du produit ici..."
+            />
+          )}
         />
       </FormControl>
       <Button
