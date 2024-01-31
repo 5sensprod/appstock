@@ -44,7 +44,6 @@ export const useMedia = (productId, baseUrl, showToast) => {
         fetchPhotos()
       }
 
-      // Ajouter la gestion pour les événements de mise à jour de l'image mise en avant
       if (
         data.type === 'featured-image-updated' &&
         data.productId === productId
@@ -55,7 +54,15 @@ export const useMedia = (productId, baseUrl, showToast) => {
           data.productId,
           'with image:',
           data.featuredImage,
-        ) // Ajouter ce log pour la vérification
+        )
+      }
+
+      // Nouveau cas pour gérer l'événement 'photo-deleted'
+      if (data.type === 'photo-deleted' && data.productId === productId) {
+        // Mettre à jour l'état des photos en enlevant la photo supprimée
+        setPhotos((currentPhotos) =>
+          currentPhotos.filter((photoUrl) => !photoUrl.endsWith(data.photo)),
+        )
       }
     }
 
@@ -63,7 +70,6 @@ export const useMedia = (productId, baseUrl, showToast) => {
       eventSource.close()
     }
   }, [productId, baseUrl, setFeaturedImageName])
-
   const fetchPhotos = async () => {
     try {
       const response = await fetch(

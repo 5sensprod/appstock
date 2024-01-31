@@ -155,8 +155,16 @@ module.exports = (db, sendSseEvent) => {
         const filePath = path.join(cataloguePath, productId, filename)
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath) // Supprime le fichier
+
+          // Envoyer un événement SSE pour chaque photo supprimée
+          sendSseEvent({
+            type: 'photo-deleted',
+            productId: productId,
+            photo: filename,
+          })
         }
       })
+
       res.json({ message: 'Photos supprimées avec succès' })
     } catch (error) {
       console.error('Erreur lors de la suppression des photos:', error)

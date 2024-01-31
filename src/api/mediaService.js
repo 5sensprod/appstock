@@ -81,34 +81,32 @@ async function uploadPhotoFromUrl(productId, imageUrl) {
   }
 }
 
-async function fetchPhotos(baseUrl, productId) {
+async function deletePhotos(baseUrl, productId, photosToDelete) {
   try {
-    const response = await fetch(`${baseUrl}/api/products/${productId}/photos`)
+    const response = await fetch(
+      `${baseUrl}/api/products/${productId}/delete-photos`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ photosToDelete }),
+      },
+    )
+
     if (!response.ok) {
-      throw new Error('Erreur de réponse du serveur')
-    }
-    const photoFilenames = await response.json()
-
-    // Vérifiez que la réponse est bien un tableau
-    if (!Array.isArray(photoFilenames)) {
-      console.error('Format de données inattendu:', photoFilenames)
-      return []
+      throw new Error('Erreur lors de la suppression des photos')
     }
 
-    return photoFilenames.map(
-      (filename) => `${baseUrl}/catalogue/${productId}/${filename}`,
-    )
+    return await response.json() // ou simplement return si vous n'avez pas besoin des données de réponse
   } catch (error) {
-    console.error(
-      `Erreur lors de la récupération des photos pour le produit ${productId}:`,
-      error,
-    )
-    return [] // Retourne un tableau vide en cas d'erreur
+    console.error('Erreur lors de la suppression des photos:', error)
+    throw error // Propager l'erreur pour la gérer dans le composant appelant
   }
 }
 
 export {
-  fetchPhotos,
+  deletePhotos,
   getFeaturedImage,
   updateFeaturedImage,
   uploadPhoto,
