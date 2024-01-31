@@ -1,28 +1,43 @@
 // src/components/PRODUCTS/ProductModal.jsx
-import React from 'react'
-import { Typography } from '@mui/material'
+import React, { useState } from 'react'
+import { CardMedia } from '@mui/material'
 import GenericModal from '../ui/GenericModal'
-import DOMPurify from 'dompurify'
-import ShowProductSimple from './ShowProductSimple'
+import ProductDescription from './ProductDescription'
+import ProductFicheTechnique from './ProductFicheTechnique'
 
 const ProductModal = ({ product, baseUrl, open, onClose }) => {
   if (!product) return null
 
+  const [tabValue, setTabValue] = useState(0)
   const imageUrl = product.featuredImage
     ? `${baseUrl}/catalogue/${product._id}/${product.featuredImage}`
     : `${baseUrl}/catalogue/default/default.png`
 
-  const categoryName = product.categoryName || 'Non catégorisé'
-  const cleanDescription = DOMPurify.sanitize(product.description || '')
-
+  const content = (
+    <>
+      <CardMedia
+        component="img"
+        height="140"
+        image={imageUrl}
+        alt={product.reference || 'Image du produit'}
+      />
+      {tabValue === 0 ? (
+        <ProductDescription productInfo={product} />
+      ) : (
+        <ProductFicheTechnique productInfo={product} />
+      )}
+    </>
+  )
   return (
     <GenericModal
       open={open}
       onClose={onClose}
       title={product.reference || 'Titre non disponible'}
-      content={<ShowProductSimple productInfo={product} />}
-      imageUrl={imageUrl}
-    />
+      content={content}
+      tabValue={tabValue}
+      setTabValue={setTabValue}
+      // ... autres props si nécessaire
+    ></GenericModal>
   )
 }
 

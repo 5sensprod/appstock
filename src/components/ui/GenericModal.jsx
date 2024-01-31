@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
-import { Tabs, Tab, Modal, Box, Typography, CardMedia } from '@mui/material'
+// src/components/ui/GenericModal.jsx
+import React from 'react'
+import { Modal, Box, Tabs, Tab } from '@mui/material'
+
 const style = {
   position: 'absolute',
   top: '50%',
@@ -16,13 +18,10 @@ const GenericModal = ({
   onClose,
   title,
   content,
-  imageUrl,
-  photos,
-  baseUrl = '',
+  tabValue,
+  setTabValue,
 }) => {
   if (!open) return null
-
-  const [tabValue, setTabValue] = useState(0)
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue)
@@ -41,22 +40,7 @@ const GenericModal = ({
             <Tab label="Fiche technique" />
           </Tabs>
         </Box>
-
-        {tabValue === 0 && (
-          <Box sx={{ p: 3 }}>
-            {React.cloneElement(content, { baseUrl: baseUrl })}
-            {imageUrl && (
-              <CardMedia
-                component="img"
-                height="140"
-                image={imageUrl}
-                alt={title}
-              />
-            )}
-          </Box>
-        )}
-
-        {tabValue === 1 && <Box sx={{ p: 3 }}>{<p>Fiche technique</p>}</Box>}
+        <Box sx={{ p: 3 }}>{content}</Box>
       </Box>
     </Modal>
   )
