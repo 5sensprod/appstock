@@ -10,6 +10,7 @@ import {
 import { getProductImageUrl } from '../../utils/imageUtils'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'
+import { stripHtml } from '../../utils/textHtmlUtils'
 
 function productFactory(props) {
   const {
@@ -22,6 +23,10 @@ function productFactory(props) {
     handleOpenModal,
     redirectToEdit,
   } = props
+
+  const textDescriptionCourte = descriptionCourte
+    ? stripHtml(descriptionCourte)
+    : 'Aucune information'
 
   const cardStyles = {
     width: '280px',
@@ -76,11 +81,11 @@ function productFactory(props) {
             style={{
               display: '-webkit-box',
               WebkitBoxOrient: 'vertical',
-              WebkitLineClamp: 3,
+              WebkitLineClamp: 4,
               overflow: 'hidden',
             }}
           >
-            {descriptionCourte}
+            {textDescriptionCourte}
           </Typography>
         </CardContent>
       </Box>
