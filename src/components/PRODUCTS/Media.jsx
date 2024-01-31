@@ -68,6 +68,7 @@ const Media = ({ productId }) => {
         onSubmit={(files) => handleUpload(files, fileInputRef)}
         fileInputRef={fileInputRef}
         resetSelectedFileNames={() => resetSelectedFileNames(fileInputRef)}
+        showToast={showToast}
       />
       <Typography variant="h5" sx={{ mt: 2 }}>
         Ajouter via URL

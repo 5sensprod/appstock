@@ -1,34 +1,49 @@
 import React, { useState } from 'react'
 import { Box, Button, Typography } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
 import ClearIcon from '@mui/icons-material/Clear'
 import IconButton from '@mui/material/IconButton'
+import { isValidFileExtension } from '../../utils/uploadUtils'
 
 const PhotoUpload = ({
   onFilesSelect,
   onSubmit,
   fileInputRef,
   resetSelectedFileNames,
+  showToast,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState([])
   const [isDragOver, setIsDragOver] = useState(false)
 
   const handleFiles = (files) => {
     const newFiles = Array.from(files)
-    onFilesSelect((prevFiles) => [...prevFiles, ...newFiles])
 
-    const filesWithButtons = newFiles.map((file) => ({
-      file,
-      name: file.name,
-      id: Math.random().toString(36).substring(7),
-    }))
+    // Filtrer les fichiers non valides
+    const validFiles = newFiles.filter((file) =>
+      isValidFileExtension(file.name),
+    )
+    const invalidFiles = newFiles.length - validFiles.length
 
-    setSelectedFiles((prevSelectedFiles) => [
-      ...prevSelectedFiles,
-      ...filesWithButtons,
-    ])
+    if (invalidFiles > 0) {
+      showToast(
+        `${invalidFiles} fichier(s) non ajouté(s) : extensions autorisées - .png, .jpg, .jpeg, .webp.`,
+        'error',
+      )
+    }
+
+    if (validFiles.length > 0) {
+      onFilesSelect((prevFiles) => [...prevFiles, ...validFiles])
+      const filesWithButtons = validFiles.map((file) => ({
+        file,
+        name: file.name,
+        id: Math.random().toString(36).substring(7),
+      }))
+
+      setSelectedFiles((prevSelectedFiles) => [
+        ...prevSelectedFiles,
+        ...filesWithButtons,
+      ])
+    }
   }
-
   const handleFileChange = (e) => {
     handleFiles(e.target.files)
   }
