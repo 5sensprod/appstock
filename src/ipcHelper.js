@@ -34,3 +34,18 @@ export const sendPrintRequest = async (printContent) => {
     )
   }
 }
+
+export const openExternalLink = (url) => {
+  if (window.electron) {
+    try {
+      // Envoyer la demande d'ouverture de lien externe au processus principal
+      window.electron.ipcRenderer.send('open-external-link', url)
+    } catch (error) {
+      console.error("Erreur lors de l'ouverture du lien externe:", error)
+    }
+  } else {
+    console.log(
+      "Contexte Electron non disponible. Impossible d'ouvrir le lien externe.",
+    )
+  }
+}

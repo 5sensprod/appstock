@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, session } = require('electron')
+const { app, BrowserWindow, ipcMain, session, shell } = require('electron')
 const path = require('path')
 require('../src/server/server.js')
 const { getLocalIPv4Address } = require('./server/networkUtils')
@@ -48,6 +48,10 @@ ipcMain.on('print', (event, content) => {
       if (!success) console.log(errorType)
     })
   })
+})
+
+ipcMain.on('open-external-link', (event, url) => {
+  shell.openExternal(url)
 })
 
 ipcMain.handle('export-to-sftp', async (event, backupPath, dbName) => {
