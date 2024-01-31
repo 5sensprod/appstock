@@ -1,16 +1,8 @@
 import React from 'react'
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Box,
-  IconButton,
-} from '@mui/material'
-import { getProductImageUrl } from '../../utils/imageUtils'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import EditIcon from '@mui/icons-material/Edit'
+import { Card, CardContent, CardMedia, Typography, Box } from '@mui/material'
 import { stripHtml } from '../../utils/textHtmlUtils'
+import { cardStyles } from './cardStyles'
+import { formatPrice } from '../../utils/priceUtils'
 
 function productFactory(props) {
   const {
@@ -18,29 +10,15 @@ function productFactory(props) {
     reference,
     descriptionCourte,
     prixVente,
+    categorie,
     featuredImage,
     baseUrl,
-    handleOpenModal,
     redirectToEdit,
   } = props
 
   const textDescriptionCourte = descriptionCourte
     ? stripHtml(descriptionCourte)
     : 'Aucune information'
-
-  const cardStyles = {
-    width: '280px',
-    // heigth: '450px',
-    padding: '10px',
-    display: 'flex',
-    flexDirection: 'column',
-    transition: 'box-shadow 0.3s ease-in-out', // Ajoutez une transition pour un effet lisse
-    boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)', // Style par défaut
-    '&:hover': {
-      cursor: 'pointer',
-      boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.2)', // Style lors du survol
-    },
-  }
 
   const imageUrl = featuredImage
     ? `${baseUrl}/catalogue/${_id}/${featuredImage}`
@@ -57,7 +35,7 @@ function productFactory(props) {
       <CardMedia
         component="img"
         height="140"
-        image={imageUrl} // Utilisez ici imageUrl
+        image={imageUrl}
         alt={`Image de ${reference}`}
         style={{ opacity: isDefaultImage ? 0.1 : 1 }}
       />
@@ -95,19 +73,11 @@ function productFactory(props) {
         justifyContent="space-between"
         p={2}
       >
-        <IconButton onClick={() => redirectToEdit(_id)}>
-          <EditIcon />
-        </IconButton>
-        <IconButton
-          onClick={(e) => {
-            e.stopPropagation()
-            handleOpenModal(_id)
-          }}
-        >
-          <VisibilityIcon />
-        </IconButton>
         <Typography variant="body1" color="text.primary">
-          {`Prix: ${prixVente} €`}
+          {formatPrice(prixVente)}
+        </Typography>
+        <Typography variant="body1" color="text.primary">
+          {categorie}
         </Typography>
       </Box>
     </Card>
