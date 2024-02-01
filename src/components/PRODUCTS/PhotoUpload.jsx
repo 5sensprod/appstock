@@ -14,35 +14,61 @@ const PhotoUpload = ({
   const [selectedFiles, setSelectedFiles] = useState([])
   const [isDragOver, setIsDragOver] = useState(false)
 
+  const maxWidth = 1024
+  const maxHeight = 1024
+  2
+  const checkImageResolution = (file, onSuccess, onFailure) => {
+    const img = new Image()
+    img.src = URL.createObjectURL(file)
+
+    img.onload = () => {
+      const width = img.naturalWidth
+      const height = img.naturalHeight
+
+      URL.revokeObjectURL(img.src)
+
+      if (width <= maxWidth && height <= maxHeight) {
+        onSuccess(file)
+      } else {
+        onFailure(file)
+      }
+    }
+  }
+
   const handleFiles = (files) => {
     const newFiles = Array.from(files)
 
-    // Filtrer les fichiers non valides
-    const validFiles = newFiles.filter((file) =>
-      isValidFileExtension(file.name),
-    )
-    const invalidFiles = newFiles.length - validFiles.length
+    newFiles.forEach((file) => {
+      if (isValidFileExtension(file.name)) {
+        checkImageResolution(
+          file,
+          (validFile) => {
+            // Logique pour traiter le fichier valide
+            const fileWithButton = {
+              file: validFile,
+              name: validFile.name,
+              id: Math.random().toString(36).substring(7),
+            }
 
-    if (invalidFiles > 0) {
-      showToast(
-        `${invalidFiles} fichier(s) non ajouté(s) : extensions autorisées - .png, .jpg, .jpeg, .webp.`,
-        'error',
-      )
-    }
+            setSelectedFiles((prevSelectedFiles) => [
+              ...prevSelectedFiles,
+              fileWithButton,
+            ])
 
-    if (validFiles.length > 0) {
-      onFilesSelect((prevFiles) => [...prevFiles, ...validFiles])
-      const filesWithButtons = validFiles.map((file) => ({
-        file,
-        name: file.name,
-        id: Math.random().toString(36).substring(7),
-      }))
-
-      setSelectedFiles((prevSelectedFiles) => [
-        ...prevSelectedFiles,
-        ...filesWithButtons,
-      ])
-    }
+            onFilesSelect((prevFiles) => [...prevFiles, validFile])
+          },
+          (invalidFile) => {
+            // Logique pour traiter le fichier invalide
+            showToast(
+              'Une ou plusieurs images ne répondent pas aux critères de résolution.',
+              'error',
+            )
+          },
+        )
+      } else {
+        showToast('Fichier non ajouté : extension non autorisée.', 'error')
+      }
+    })
   }
   const handleFileChange = (e) => {
     handleFiles(e.target.files)
