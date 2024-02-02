@@ -31,16 +31,21 @@ export const fetchApi = async (endpoint, method = 'GET', data = null) => {
     }
   }
 
-  switch (method) {
-    case 'POST':
-      return (await axiosInstance.post(url, data, config)).data
-    case 'PUT':
-      return (await axiosInstance.put(url, data, config)).data
-    case 'DELETE':
-      return (await axiosInstance.delete(url, config)).data
-    case 'GET':
-    default:
-      return (await axiosInstance.get(url, config)).data
+  try {
+    switch (method) {
+      case 'POST':
+        return (await axiosInstance.post(url, data, config)).data
+      case 'PUT':
+        return (await axiosInstance.put(url, data, config)).data
+      case 'DELETE':
+        return (await axiosInstance.delete(url, config)).data
+      case 'GET':
+      default:
+        return (await axiosInstance.get(url, config)).data
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'appel à l'API:", error)
+    throw error
   }
 }
 

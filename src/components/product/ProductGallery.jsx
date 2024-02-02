@@ -51,9 +51,14 @@ const ProductGallery = ({ products }) => {
   const [currentPage, setCurrentPage] = useState(1)
   const productsPerPage = 10
 
+  // Tri des produits par date de soumission en ordre décroissant
+  const sortedProducts = products.sort(
+    (a, b) => new Date(b.dateSoumission) - new Date(a.dateSoumission),
+  )
+
   const indexOfLastProduct = currentPage * productsPerPage
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage
-  const currentProducts = products.slice(
+  const currentProducts = sortedProducts.slice(
     indexOfFirstProduct,
     indexOfLastProduct,
   )

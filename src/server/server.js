@@ -121,7 +121,7 @@ app.get('/main_window/index.js', (req, res) => {
 let serverReady = false
 setTimeout(() => {
   serverReady = true
-}, 10000) // Par exemple, après 10 secondes pour la simulation
+}, 1000) // Par exemple, après 10 secondes pour la simulation
 
 app.get('/api/serverStatus', (req, res) => {
   if (serverReady) {
