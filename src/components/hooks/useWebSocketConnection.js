@@ -8,26 +8,53 @@ const useWebSocketConnection = () => {
   const { setSearchTerm } = useProductContext()
   const { baseUrl } = useConfig()
   const [wsUrl, setWsUrl] = useState('')
+  const [isServerReady, setIsServerReady] = useState(false) // Ajout de cet état
 
   useEffect(() => {
-    const updateWsUrl = (url) => {
-      setWsUrl(url)
+    const checkServerStatus = async () => {
+      try {
+        const data = await fetchApi('serverStatus') // Notez que c'est 'serverStatus', pas '/api/serverStatus'
+        if (data.status === 'ready') {
+          setIsServerReady(true) // Serveur prêt, on peut établir la connexion WebSocket
+        } else {
+          // Si le serveur n'est pas prêt, retenter après un délai
+          setTimeout(checkServerStatus, 2000)
+        }
+      } catch (error) {
+        console.error(
+          "Erreur lors de la vérification de l'état du serveur:",
+          error,
+        )
+        setTimeout(checkServerStatus, 2000)
+      }
     }
 
-    if (isRunningInElectron()) {
-      const wsBaseUrl = baseUrl.replace(/^http/, 'ws').replace('/api', '')
-      updateWsUrl(wsBaseUrl)
-    } else {
-      fetchApi('getLocalIp')
-        .then((data) => {
-          const newWsUrl = `ws://${data.ip}:5000`
-          updateWsUrl(newWsUrl)
-        })
-        .catch((error) => {
-          console.error("Erreur lors de la récupération de l'IP:", error)
-        })
+    checkServerStatus()
+  }, [])
+
+  useEffect(() => {
+    if (!isServerReady) {
+      return // Ne pas essayer de se connecter tant que le serveur n'est pas prêt
     }
-  }, [baseUrl])
+
+    const updateWsUrl = () => {
+      if (isRunningInElectron()) {
+        const wsBaseUrl = baseUrl.replace(/^http/, 'ws').replace('/api', '')
+        setWsUrl(wsBaseUrl)
+      } else {
+        fetchApi('getLocalIp')
+          .then((data) => {
+            const newWsUrl = `ws://${data.ip}:5000`
+            setWsUrl(newWsUrl)
+          })
+          .catch((error) => {
+            console.error("Erreur lors de la récupération de l'IP:", error)
+          })
+      }
+    }
+
+    updateWsUrl()
+  }, [baseUrl, isServerReady])
 
   // Gestion des événements WebSocket
   const handleWsMessage = useCallback(

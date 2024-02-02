@@ -17,7 +17,11 @@ module.exports.cataloguePath = cataloguePath
 app.use('/catalogue', express.static(cataloguePath))
 app.use(express.json())
 app.use(express.static(staticFilesPath))
-app.use(cors())
+app.use(
+  cors({
+    origin: '*', // ou '*' pour autoriser toutes les origines
+  }),
+)
 
 const multer = require('multer')
 
@@ -111,6 +115,20 @@ app.use(errorHandler)
 
 app.get('/main_window/index.js', (req, res) => {
   res.sendFile(path.join(staticFilesPath, 'index.js'))
+})
+
+// Simuler un état de "préparation" du serveur qui devient vrai après un certain délai
+let serverReady = false
+setTimeout(() => {
+  serverReady = true
+}, 10000) // Par exemple, après 10 secondes pour la simulation
+
+app.get('/api/serverStatus', (req, res) => {
+  if (serverReady) {
+    res.json({ status: 'ready' })
+  } else {
+    res.status(503).json({ status: 'not ready' })
+  }
 })
 
 server.listen(port, () => {
