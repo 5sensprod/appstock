@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Stack, Pagination } from '@mui/material'
+import { Box, Stack, Pagination, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useProductContext } from '../../contexts/ProductContext'
 import { useConfig } from '../../contexts/ConfigContext'
@@ -76,33 +76,39 @@ const ProductGallery = ({ products }) => {
 
   return (
     <>
-      <CustomPagination
-        productsPerPage={productsPerPage}
-        totalProducts={products.length}
-        currentPage={currentPage}
-        paginate={paginate}
-      />
-      <Stack
-        direction="row"
-        justifyContent="center"
-        mt={2}
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          width: '100%',
-          gap: '10px',
-        }}
-      >
-        {currentProducts.map((product) => (
-          <ProductItem
-            key={product._id}
-            product={product}
-            getCategoryName={getCategoryName}
-            baseUrl={baseUrl}
-            redirectToEdit={redirectToEdit}
+      {currentProducts.length === 0 ? (
+        <Typography variant="h6">Aucun produit trouvé</Typography>
+      ) : (
+        <>
+          <CustomPagination
+            productsPerPage={productsPerPage}
+            totalProducts={products.length}
+            currentPage={currentPage}
+            paginate={paginate}
           />
-        ))}
-      </Stack>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            mt={2}
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              width: '100%',
+              gap: '10px',
+            }}
+          >
+            {currentProducts.map((product) => (
+              <ProductItem
+                key={product._id}
+                product={product}
+                getCategoryName={getCategoryName}
+                baseUrl={baseUrl}
+                redirectToEdit={redirectToEdit}
+              />
+            ))}
+          </Stack>
+        </>
+      )}
     </>
   )
 }

@@ -9,7 +9,7 @@ import NoMatchButton from '../ui/NoMatchButton'
 import ProductSearch from './ProductSearch'
 import { useProductContext } from '../../contexts/ProductContext'
 import { useCategoryContext } from '../../contexts/CategoryContext'
-import { Box, Button } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 
 const ProductManager = () => {
   const {
@@ -100,18 +100,18 @@ const ProductManager = () => {
           selectedProducts={selectedProducts}
         />
       ) : (
-        <div>
+        <>
           {showAddProductForm ? (
             <p>Ajouter un nouveau produit</p>
           ) : (
-            <p>Aucun produit trouvé.</p>
+            <Typography variant="h6">Aucun produit trouvé</Typography>
           )}
           <NoMatchButton
             show={!showAddProductForm && showAddProductButton}
             buttonText="Ajouter"
             onClick={handleShowAddForm}
           />
-        </div>
+        </>
       )}
       {showAddProductForm && (
         <CreateProductShort

@@ -45,7 +45,7 @@ export const CategoryProvider = ({ children }) => {
     EventEmitter.subscribe('PRODUCT_CRUD_OPERATION', onProductCrudOperation)
 
     // Établir une connexion SSE
-    const eventSource = new EventSource(`${baseUrl}/api/events`)
+    const eventSource = new EventSource(`http://192.168.1.10:5000/api/events`)
 
     eventSource.onmessage = (event) => {
       const {

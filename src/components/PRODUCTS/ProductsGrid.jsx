@@ -5,6 +5,7 @@ import {
   GridRowEditStopReasons,
   GridRowModes,
 } from '@mui/x-data-grid-premium'
+import { Typography } from '@mui/material'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import useFilteredProducts from './hooks/useFilteredProducts'
 import useColumns from './hooks/useColumns'
@@ -238,57 +239,61 @@ const ProductsGrid = ({ selectedCategoryId }) => {
 
   return (
     <>
-      <DataGridPremium
-        columnVisibilityModel={gridPreferences.columnsVisibility}
-        onColumnVisibilityModelChange={handleColumnVisibilityChange}
-        onColumnVisibilityChange={handleColumnVisibilityChange}
-        localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-        rows={filteredProducts}
-        columns={columns}
-        sortModel={sortModel}
-        // selectionModel={Array.from(selectedProductIds)}
-        onRowSelectionModelChange={handleSelectionModelChange}
-        onSortModelChange={setSortModel}
-        rowModesModel={rowModesModel}
-        density={gridPreferences.density}
-        onDensityChange={(params) => handleDensityChange(params.value)}
-        onRowModesModelChange={setRowModesModel}
-        onRowEditStop={handleRowEditStop}
-        onCellDoubleClick={(params, event) => {
-          event.defaultMuiPrevented = true
-        }}
-        initialState={{
-          pagination: {
-            paginationModel: gridPreferences.paginationModel, // Utilisez l'état du contexte
-          },
-        }}
-        pageSize={gridPreferences.paginationModel.pageSize}
-        onPageSizeChange={(newPageSize) => {
-          handlePaginationModelChange({
-            ...gridPreferences.paginationModel,
-            pageSize: newPageSize,
-          })
-        }}
-        onPaginationModelChange={handlePaginationModelChange}
-        pageSizeOptions={[10, 25, 50]}
-        pagination
-        checkboxSelection
-        checkboxSelectionVisibleOnly
-        getRowId={(row) => row._id || row.id || `temp-${Date.now()}`}
-        processRowUpdate={processRowUpdate}
-        onProcessRowUpdateError={handleProcessRowUpdateError}
-        searchTerm={searchTerm}
-        slots={{
-          toolbar: toolbar,
-        }}
-        disableRowSelectionOnClick
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-          },
-        }}
-        style={{ width: '100%' }}
-      />
+      {filteredProducts.length === 0 ? (
+        <Typography variant="h6">Aucun produit trouvé</Typography>
+      ) : (
+        <DataGridPremium
+          columnVisibilityModel={gridPreferences.columnsVisibility}
+          onColumnVisibilityModelChange={handleColumnVisibilityChange}
+          onColumnVisibilityChange={handleColumnVisibilityChange}
+          localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+          rows={filteredProducts}
+          columns={columns}
+          sortModel={sortModel}
+          // selectionModel={Array.from(selectedProductIds)}
+          onRowSelectionModelChange={handleSelectionModelChange}
+          onSortModelChange={setSortModel}
+          rowModesModel={rowModesModel}
+          density={gridPreferences.density}
+          onDensityChange={(params) => handleDensityChange(params.value)}
+          onRowModesModelChange={setRowModesModel}
+          onRowEditStop={handleRowEditStop}
+          onCellDoubleClick={(params, event) => {
+            event.defaultMuiPrevented = true
+          }}
+          initialState={{
+            pagination: {
+              paginationModel: gridPreferences.paginationModel, // Utilisez l'état du contexte
+            },
+          }}
+          pageSize={gridPreferences.paginationModel.pageSize}
+          onPageSizeChange={(newPageSize) => {
+            handlePaginationModelChange({
+              ...gridPreferences.paginationModel,
+              pageSize: newPageSize,
+            })
+          }}
+          onPaginationModelChange={handlePaginationModelChange}
+          pageSizeOptions={[10, 25, 50]}
+          pagination
+          checkboxSelection
+          checkboxSelectionVisibleOnly
+          getRowId={(row) => row._id || row.id || `temp-${Date.now()}`}
+          processRowUpdate={processRowUpdate}
+          onProcessRowUpdateError={handleProcessRowUpdateError}
+          searchTerm={searchTerm}
+          slots={{
+            toolbar: toolbar,
+          }}
+          disableRowSelectionOnClick
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
+          }}
+          style={{ width: '100%' }}
+        />
+      )}
       {isBulkUpdateModalOpen && (
         <BulkUpdateProduct
           selectedProductIds={selectedProductIds}
