@@ -56,7 +56,7 @@ export default function MiniDrawer({ children }) {
 
   React.useEffect(() => {
     const currentItem = menuItems
-      .concat(clientMenuItems, supplierMenuItems)
+      .concat(productItems, clientMenuItems, supplierMenuItems)
       .find((item) => item.link === location.pathname)
     if (currentItem) {
       updatePageTitle(currentItem.text) // Mettez à jour le titre en utilisant le contexte
