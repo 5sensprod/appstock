@@ -15,17 +15,41 @@ import { TVA_RATES } from '../../utils/constants'
 import CategorySelect from '../CATEGORIES/CategorySelect'
 
 const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
-  const { register, handleSubmit, reset, control } = useForm()
+  const { register, handleSubmit, reset, control } = useForm({
+    defaultValues: {
+      tva: null,
+    },
+  })
   const [loading, setLoading] = useState(false)
 
   const onSubmit = async (data) => {
     setLoading(true)
+
+    // Conversion des valeurs en nombres
+    const formattedData = Object.entries(data).reduce((acc, [key, value]) => {
+      if (value !== '') {
+        acc[key] = ['prixVente', 'prixAchat', 'stock'].includes(key)
+          ? parseFloat(value) || 0
+          : value
+      }
+      return acc
+    }, {})
+
+    const filteredData = Object.entries(formattedData).reduce(
+      (acc, [key, value]) => {
+        // Filtre comme avant, pas besoin de changer cette logique
+        if (value !== '' && value != null) {
+          acc[key] = value
+        }
+        return acc
+      },
+      {},
+    )
+
     try {
       const updates = Array.from(selectedProductIds).map((id) => ({
         id,
-        changes: {
-          ...data, // Encapsulez les champs de mise à jour dans l'objet 'changes'
-        },
+        changes: filteredData, // Utilise les données formatées
       }))
 
       await updateProductsBulk(updates)
@@ -40,6 +64,7 @@ const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
       setLoading(false)
     }
   }
+
   return (
     <Dialog open onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Mise à jour en masse</DialogTitle>
@@ -70,7 +95,12 @@ const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
             name="tva"
             control={control}
             render={({ field }) => (
-              <CustomSelect label="TVA" options={TVA_RATES} {...field} />
+              <CustomSelect
+                label="TVA"
+                options={TVA_RATES}
+                {...field}
+                value={field.value || ''} // Assurez-vous que la valeur n'est jamais `null`
+              />
             )}
           />
           <Controller

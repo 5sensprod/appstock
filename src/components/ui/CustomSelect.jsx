@@ -2,7 +2,10 @@ import React, { forwardRef } from 'react'
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 
 const CustomSelect = forwardRef(
-  ({ label, options, onChange, value, showLabel = true, ...props }, ref) => {
+  (
+    { label, options, onChange, value = '', showLabel = true, ...props },
+    ref,
+  ) => {
     return (
       <FormControl fullWidth margin="normal">
         {showLabel && <InputLabel>{label}</InputLabel>}
@@ -10,7 +13,8 @@ const CustomSelect = forwardRef(
           ref={ref}
           value={value}
           onChange={onChange}
-          label={showLabel ? label : ''}
+          label={label}
+          displayEmpty
           {...props}
         >
           {options.map((option) => (
