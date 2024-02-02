@@ -7,9 +7,26 @@ import { Box } from '@mui/material'
 import { formatNumberFrench } from '../../utils/priceUtils'
 import { useConfig } from '../../contexts/ConfigContext'
 
+const prepareProductDataForDisplay = (products, baseUrl) => {
+  const defaultImageUrl = `${baseUrl}/catalogue/default/default.png`
+
+  return products.map((product) => {
+    const isDefaultImage = !product.featuredImage
+    return {
+      ...product,
+      photoUrl: isDefaultImage
+        ? defaultImageUrl
+        : `${baseUrl}/catalogue/${product._id}/${product.featuredImage}`,
+      isDefaultImage, // Ajout de cette propriété pour chaque produit
+    }
+  })
+}
+
 const ProductTable = ({ products }) => {
   const { baseUrl } = useConfig()
+  const preparedProducts = prepareProductDataForDisplay(products, baseUrl)
   const { addToCart } = useContext(CartContext)
+  const defaultImageUrl = `${baseUrl}/catalogue/default/default.png`
 
   const PREF_KEY = 'productTablePreferences'
 
@@ -62,15 +79,18 @@ const ProductTable = ({ products }) => {
     {
       field: 'photo',
       headerName: 'Photo',
-      renderCell: (params) =>
-        params.row.photos && params.row.photos.length > 0 ? (
-          <Box
-            component="img"
-            src={`${baseUrl}/${params.row.photos[0]}`}
-            alt={params.row.reference}
-            sx={{ width: 100, height: 'auto' }}
-          />
-        ) : null,
+      renderCell: (params) => (
+        <Box
+          component="img"
+          src={params.row.photoUrl}
+          alt={params.row.reference}
+          sx={{
+            width: 100,
+            height: 'auto',
+            opacity: params.row.isDefaultImage ? 0.06 : 1,
+          }}
+        />
+      ),
       flex: 1,
       disableColumnMenu: true,
       sortable: false,
@@ -128,7 +148,7 @@ const ProductTable = ({ products }) => {
         onColumnVisibilityModelChange={handleColumnVisibilityChange}
         density={gridPreferences.density}
         onDensityChange={(params) => handleDensityChange(params.value)}
-        rows={products}
+        rows={preparedProducts}
         columns={columns}
         initialState={{
           pagination: {
