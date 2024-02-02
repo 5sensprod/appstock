@@ -71,9 +71,8 @@ const ProductManager = () => {
   }
 
   return (
-    <div>
+    <>
       <Box />
-      <h1>Produits</h1>
       {isAndroidWebView && (
         <Button variant="contained" onClick={handleScanClick}>
           Scanner un code-barres
@@ -82,14 +81,16 @@ const ProductManager = () => {
 
       {!showAddProductForm && (
         <>
-          <Box my={2}>
+          <Box mb={2}>
             <ProductSearch />
           </Box>
-          <SelectCategory
-            categories={categories}
-            selectedCategoryId={selectedCategoryId}
-            onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
-          />
+          <Box mb={2}>
+            <SelectCategory
+              categories={categories}
+              selectedCategoryId={selectedCategoryId}
+              onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
+            />
+          </Box>
         </>
       )}
 
@@ -122,7 +123,7 @@ const ProductManager = () => {
         />
       )}
       <Box />
-    </div>
+    </>
   )
 }
 

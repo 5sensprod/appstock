@@ -11,17 +11,21 @@ const ProductPage = () => {
   const { searchTerm } = useProductContextSimplified()
 
   return (
-    <Grid container direction="column" spacing={2} mt={6}>
-      <CategoryFilter />
+    <Grid container direction="column" spacing={1} mt={1}>
+      <Grid item xs={12} md={6}>
+        <CategoryFilter />
+      </Grid>
 
       {/* Intégration du composant ProductSearch */}
       {/* <ProductSearch /> */}
 
       {/* ProductsGrid peut maintenant utiliser searchTerm pour filtrer les produits */}
-      <ProductsGrid
-        selectedCategoryId={selectedCategory.categoryId}
-        searchTerm={searchTerm}
-      />
+      <Grid item xs={12} md={6}>
+        <ProductsGrid
+          selectedCategoryId={selectedCategory.categoryId}
+          searchTerm={searchTerm}
+        />
+      </Grid>
     </Grid>
   )
 }

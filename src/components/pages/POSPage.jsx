@@ -5,7 +5,7 @@ import Cart from '../Cart/Cart'
 
 const POSPage = () => {
   return (
-    <Grid container spacing={2} mt={6}>
+    <Grid container spacing={1} mt={1}>
       <Grid item xs={12} md={6}>
         <ProductManager />
       </Grid>
