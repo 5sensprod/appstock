@@ -14,8 +14,16 @@ module.exports = (db, sendSseEvent) => {
     const productId = req.params.productId
     const productFolderPath = path.join(cataloguePath, productId)
 
+    // Vérifier si le dossier du produit existe
+    if (!fs.existsSync(productFolderPath)) {
+      // Le dossier n'existe pas signifie aucun fichier photo pour ce produit
+      // Renvoyer une réponse avec un tableau vide
+      return res.status(200).json([])
+    }
+
     try {
       const photos = fs.readdirSync(productFolderPath)
+      // Filtre ou traitement supplémentaire si nécessaire
       res.json(photos)
     } catch (error) {
       console.error(
@@ -31,15 +39,24 @@ module.exports = (db, sendSseEvent) => {
   router.get('/:productId/featuredImage', (req, res) => {
     const { productId } = req.params
 
-    // Récupérer le produit par son ID
     db.products.findOne({ _id: productId }, (err, product) => {
       if (err) {
-        res.status(500).json({
-          message: "Erreur lors de la récupération de l'image mise en avant",
+        console.error('Erreur lors de la récupération du produit', err)
+        return res.status(500).json({
+          message:
+            "Erreur serveur lors de la récupération de l'image mise en avant",
         })
-      } else {
-        res.status(200).json({ featuredImage: product.featuredImage })
       }
+
+      if (!product) {
+        return res.status(404).json({
+          message: 'Produit non trouvé',
+        })
+      }
+
+      // Même si le produit n'a pas d'image mise en avant, cela n'est pas considéré comme une erreur
+      const featuredImage = product.featuredImage || null // Ou une valeur par défaut
+      res.status(200).json({ featuredImage })
     })
   })
 
@@ -330,14 +347,27 @@ module.exports = (db, sendSseEvent) => {
 
   router.delete('/:id', (req, res) => {
     const id = req.params.id
+    const productFolderPath = path.join(cataloguePath, id) // Assurez-vous que cataloguePath est correctement défini
 
     products.remove({ _id: id }, {}, (err, numRemoved) => {
       if (err) {
         console.error('Erreur lors de la suppression du produit:', err)
         return res.status(500).send(err)
       }
-      sendSseEvent({ type: 'product-deleted', id: id })
-      res.status(200).json({ message: 'Produit supprimé' })
+
+      // Supprimer le dossier du produit et son contenu
+      fs.rm(productFolderPath, { recursive: true, force: true }, (err) => {
+        if (err) {
+          console.error(
+            'Erreur lors de la suppression du dossier du produit:',
+            err,
+          )
+          // Vous pouvez choisir de ne pas bloquer la réponse en cas d'erreur de suppression du dossier
+        }
+
+        sendSseEvent({ type: 'product-deleted', id: id })
+        res.status(200).json({ message: 'Produit supprimé' })
+      })
     })
   })
 

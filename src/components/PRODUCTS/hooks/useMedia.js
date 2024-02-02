@@ -70,6 +70,7 @@ export const useMedia = (productId, baseUrl, showToast) => {
       eventSource.close()
     }
   }, [productId, baseUrl, setFeaturedImageName])
+
   const fetchPhotos = async () => {
     try {
       const response = await fetch(
@@ -80,9 +81,9 @@ export const useMedia = (productId, baseUrl, showToast) => {
       }
       const photoFilenames = await response.json()
 
-      // Vérifiez que la réponse est bien un tableau
-      if (!Array.isArray(photoFilenames)) {
-        console.error('Format de données inattendu:', photoFilenames)
+      // Gère le cas où aucun fichier n'est retourné (répertoire vide ou inexistant)
+      if (!Array.isArray(photoFilenames) || photoFilenames.length === 0) {
+        setPhotos([]) // Initialise à un tableau vide si aucun fichier n'est trouvé
         return
       }
 
@@ -96,6 +97,8 @@ export const useMedia = (productId, baseUrl, showToast) => {
         `Erreur lors de la récupération des photos pour le produit ${productId}:`,
         error,
       )
+      // Ici, vous pourriez choisir de gérer l'erreur de manière utilisateur-friendly
+      setPhotos([]) // Éviter que l'application se brise, initialiser à vide ou gérer autrement
     }
   }
 
