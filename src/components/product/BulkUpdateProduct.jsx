@@ -108,10 +108,8 @@ const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
             control={control}
             render={({ field }) => (
               <Box mt={2} mb={1}>
-                {' '}
-                {/* Ajout de marges */}
                 <CategorySelect
-                  value={field.value}
+                  value={field.value || ''} // Fournit une chaîne vide comme valeur par défaut
                   onChange={(categoryId) => field.onChange(categoryId)}
                   size="medium"
                   label="Catégorie"
