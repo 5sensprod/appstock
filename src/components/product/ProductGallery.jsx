@@ -145,7 +145,6 @@ const ProductGallery = ({ products }) => {
           </Stack>
         </>
       )}
-      z
     </>
   )
 }
