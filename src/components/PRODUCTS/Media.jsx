@@ -60,7 +60,7 @@ const Media = ({ productId }) => {
 
   return (
     <>
-      <Typography variant="h5" sx={{ mb: 2 }}>
+      <Typography variant="h5" sx={{ mb: 2, mt: 5 }}>
         Ajouter des photos
       </Typography>
       <PhotoUpload

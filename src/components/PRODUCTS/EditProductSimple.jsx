@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { TextField, FormControl, Button } from '@mui/material'
+import { TextField, FormControl, Button, Typography } from '@mui/material'
 import { useProductContext } from '../../contexts/ProductContext.js'
 import { useNavigate } from 'react-router-dom'
 import { useUI } from '../../contexts/UIContext.js'
@@ -48,7 +48,9 @@ const EditProductSimple = ({ productId, setInitialProductName }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl fullWidth margin="normal">
-        <p>Fiche technique</p>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Fiche technique
+        </Typography>
         <Controller
           name="descriptionCourte"
           control={control}
@@ -62,7 +64,9 @@ const EditProductSimple = ({ productId, setInitialProductName }) => {
         />
       </FormControl>
       <FormControl fullWidth margin="normal">
-        <p>Description</p>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Description
+        </Typography>
         <Controller
           name="description"
           control={control}

@@ -11,7 +11,11 @@ const ProductFicheTechnique = ({ productInfo, showTitle = true }) => {
 
   return (
     <Box marginTop={2}>
-      {showTitle && <Typography variant="h5">Fiche technique</Typography>}
+      {showTitle && (
+        <Typography variant="h5" mb={2}>
+          Fiche technique
+        </Typography>
+      )}
       {isDescriptionCourteEmpty ? (
         <Typography variant="body1">Aucune information</Typography>
       ) : (

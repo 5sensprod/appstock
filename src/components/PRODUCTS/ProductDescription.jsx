@@ -13,7 +13,11 @@ const ProductDescription = ({
 
   return (
     <Box marginTop={2}>
-      {showTitle && <Typography variant="h5">Description</Typography>}
+      {showTitle && (
+        <Typography variant="h5" mb={2}>
+          Description
+        </Typography>
+      )}
       {isDescriptionEmpty ? (
         <Typography variant="body1">Aucune information</Typography>
       ) : (
