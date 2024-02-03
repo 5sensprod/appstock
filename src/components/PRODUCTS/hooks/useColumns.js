@@ -147,7 +147,7 @@ const useColumns = (
         if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
           return '' // Ne rien afficher pour les lignes d'agrégation
         }
-        return getCategoryPath(params.value) || 'Non classifié'
+        return getCategoryPath(params.value) || 'Non catégorisé'
       },
       renderEditCell: (params) => {
         const currentCategoryName = params.api.getCellValue(

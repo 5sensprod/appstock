@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import IconButton from '@mui/material/IconButton'
-import Box from '@mui/material/Box'
-import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
+import { Box, Tabs, Tab, Typography } from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditProductSimple from '../PRODUCTS/EditProductSimple'
 import ShowProductSimple from '../PRODUCTS/ShowProductSimple'
@@ -11,10 +9,11 @@ import Media from '../PRODUCTS/Media'
 import { useParams } from 'react-router-dom'
 import { useProductContext } from '../../contexts/ProductContext'
 import { useConfig } from '../../contexts/ConfigContext'
+import { formatPrice } from '../../utils/priceUtils'
 
 const EditProductPage = () => {
   const { id: productId } = useParams()
-  const { products } = useProductContext()
+  const { products, getCategoryPath } = useProductContext()
   const { baseUrl } = useConfig()
   const [productName, setProductName] = useState('')
   const [productInfo, setProductInfo] = useState({
@@ -23,6 +22,10 @@ const EditProductPage = () => {
   })
   const [isEditable, setIsEditable] = useState(false)
   const [selectedTab, setSelectedTab] = useState(0)
+  const [categoryPath, setCategoryPath] = useState('')
+  const [brandName, setBrandName] = useState('')
+  const [salePrice, setSalePrice] = useState('')
+  const [gencode, setGencode] = useState('')
 
   useEffect(() => {
     const product = products.find((p) => p._id === productId)
@@ -33,8 +36,13 @@ const EditProductPage = () => {
         descriptionCourte: product.descriptionCourte,
         photos: product.photos,
       })
+      const path = getCategoryPath(product.categorie)
+      setCategoryPath(path)
+      setBrandName(product.marque || 'Non spécifiée')
+      setSalePrice(formatPrice(product.prixVente))
+      setGencode(product.gencode || 'Gencode non spécifié')
     }
-  }, [products, productId])
+  }, [products, productId, getCategoryPath])
 
   const toggleEditMode = () => {
     setIsEditable((prev) => !prev)
@@ -57,20 +65,34 @@ const EditProductPage = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box display="flex" alignItems="center" gap={2}>
-        <h1>{productName || 'Produit'}</h1>
+      <Box display="flex" alignItems="center" gap={2} mt={4}>
+        <Typography variant="h4" component="h2">
+          {productName || 'Produit'}
+        </Typography>
+        {/* Affichez le chemin de la catégorie ici, sous le titre du produit */}
+
         {selectedTab === 0 && (
           <IconButton onClick={toggleEditMode} style={{ cursor: 'pointer' }}>
             {isEditable ? <VisibilityIcon /> : <EditIcon />}
           </IconButton>
         )}
       </Box>
-
+      <Typography variant="subtitle2" component="h2">
+        {categoryPath}
+      </Typography>
+      <Typography variant="subtitle2" component="h2">
+        Marque : {brandName}
+      </Typography>
+      <Typography variant="subtitle2" component="h2">
+        Prix public : {salePrice}
+      </Typography>
+      <Typography variant="subtitle2" component="h2" mb={2}>
+        Gencode : {gencode}
+      </Typography>
       <Tabs value={selectedTab} onChange={handleTabChange}>
         <Tab label="Présentation" />
         <Tab label="Médias" />
       </Tabs>
-
       <Box sx={{ mt: 3 }}>
         {selectedTab === 0 &&
           (isEditable ? (

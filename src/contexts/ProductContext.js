@@ -125,6 +125,37 @@ export const ProductProvider = ({ children }) => {
     }
   }, [baseUrl])
 
+  const getCategoryPath = (categoryId) => {
+    // Vérifie si categoryId est une chaîne vide ou null
+    if (!categoryId) {
+      return 'Non catégorisé'
+    }
+
+    let path = []
+    let currentCategory = categories.find((cat) => cat._id === categoryId)
+
+    while (currentCategory) {
+      path.unshift(currentCategory.name)
+      currentCategory = categories.find(
+        (cat) => cat._id === currentCategory.parentId,
+      )
+    }
+
+    return path.length > 0 ? path.join(' > ') : 'Non catégorisé'
+  }
+
+  const getParentCategoryName = (categoryId) => {
+    let currentCategory = categories.find((cat) => cat._id === categoryId)
+
+    while (currentCategory && currentCategory.parentId) {
+      currentCategory = categories.find(
+        (cat) => cat._id === currentCategory.parentId,
+      )
+    }
+
+    return currentCategory ? currentCategory.name : 'Non catégorisé'
+  }
+
   const handleCategoryChange = (event) => {
     setSelectedCategoryId(event.target.value)
   }
@@ -267,6 +298,8 @@ export const ProductProvider = ({ children }) => {
     selectedSubCategoryId,
     setSelectedSubCategoryId,
     handleSubCategoryChange,
+    getCategoryPath,
+    getParentCategoryName,
   }
 
   return (

@@ -5,7 +5,13 @@ import { useProductContext } from '../../contexts/ProductContext'
 import { useConfig } from '../../contexts/ConfigContext'
 import { productFactory } from '../factory/productFactory'
 
-const ProductItem = ({ product, getCategoryName, baseUrl, redirectToEdit }) => (
+const ProductItem = ({
+  product,
+  getCategoryPath,
+  getParentCategoryName,
+  baseUrl,
+  redirectToEdit,
+}) => (
   <Box key={product._id} display="flex" justifyContent="center">
     {productFactory({
       _id: product._id,
@@ -13,7 +19,7 @@ const ProductItem = ({ product, getCategoryName, baseUrl, redirectToEdit }) => (
       description: product.description,
       prixVente: product.prixVente,
       featuredImage: product.featuredImage,
-      categoryName: getCategoryName(product.categorie),
+      categoryName: getParentCategoryName(product.categorie), // Utilisez-la ici
       baseUrl: baseUrl,
       redirectToEdit: redirectToEdit,
     }).render()}
@@ -45,7 +51,8 @@ const CustomPagination = ({
 
 const ProductGallery = ({ products }) => {
   const { baseUrl } = useConfig()
-  const { categories } = useProductContext()
+  const { categories, getCategoryPath, getParentCategoryName } =
+    useProductContext()
   const navigate = useNavigate()
 
   const [currentPage, setCurrentPage] = useState(1)
@@ -65,10 +72,38 @@ const ProductGallery = ({ products }) => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
-  const getCategoryName = (categoryId) => {
-    const category = categories.find((c) => c._id === categoryId)
-    return category ? category.name : 'Non catégorisé'
-  }
+  // const getCategoryName = (categoryId) => {
+  //   const category = categories.find((c) => c._id === categoryId)
+  //   return category ? category.name : 'Non catégorisé'
+  // }
+
+  // const getCategoryPath = (categoryId) => {
+  //   let path = []
+  //   let currentCategory = categories.find((cat) => cat._id === categoryId)
+
+  //   while (currentCategory) {
+  //     path.unshift(currentCategory.name) // Ajoute le nom de la catégorie au début du chemin
+  //     // Cherche la catégorie parent jusqu'à ce qu'il n'y ait plus de parent
+  //     currentCategory = categories.find(
+  //       (cat) => cat._id === currentCategory.parentId,
+  //     )
+  //   }
+
+  //   return path.join(' > ') // Rejoint tous les noms avec ' > ' pour former un chemin
+  // }
+
+  // const getParentCategoryName = (categoryId) => {
+  //   let currentCategory = categories.find((cat) => cat._id === categoryId)
+
+  //   // Remonte la hiérarchie jusqu'à trouver la catégorie parente la plus élevée
+  //   while (currentCategory && currentCategory.parentId) {
+  //     currentCategory = categories.find(
+  //       (cat) => cat._id === currentCategory.parentId,
+  //     )
+  //   }
+
+  //   return currentCategory ? currentCategory.name : 'Non catégorisé'
+  // }
 
   const redirectToEdit = (productId) => {
     navigate(`/edit-product/${productId}`)
@@ -101,7 +136,8 @@ const ProductGallery = ({ products }) => {
               <ProductItem
                 key={product._id}
                 product={product}
-                getCategoryName={getCategoryName}
+                getCategoryPath={getCategoryPath} // Si vous souhaitez également passer cette fonction
+                getParentCategoryName={getParentCategoryName}
                 baseUrl={baseUrl}
                 redirectToEdit={redirectToEdit}
               />
@@ -109,6 +145,7 @@ const ProductGallery = ({ products }) => {
           </Stack>
         </>
       )}
+      z
     </>
   )
 }
