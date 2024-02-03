@@ -18,7 +18,7 @@ const SelectCategory = ({
         label={label}
       >
         <MenuItem value="">
-          <em>Aucune</em>
+          <em>Toutes les catégories</em>
         </MenuItem>
         {categories
           .filter((cat) => cat.parentId === null)
