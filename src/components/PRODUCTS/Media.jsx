@@ -100,8 +100,7 @@ const Media = ({ productId }) => {
         )}
       </Box>
       <Grid container spacing={2}>
-        <Grid item xs={6}>
-          {' '}
+        <Grid item>
           {/* Contenu de gauche */}
           {featuredImageUrl && (
             <Box sx={{ mt: 2 }}>
@@ -113,14 +112,20 @@ const Media = ({ productId }) => {
                   component="img"
                   image={featuredImageUrl}
                   alt="Image mise en avant"
+                  sx={{
+                    width: '300px',
+                    height: '300px',
+                    objectFit: 'cover',
+                    padding: '8px',
+                    borderRadius: '8px',
+                  }}
                 />
               </Card>
             </Box>
           )}
         </Grid>
 
-        <Grid item xs={6}>
-          {' '}
+        <Grid item>
           {/* Contenu de droite */}
           <Box sx={{ mt: 2 }}>
             <Typography variant="h5" sx={{ mb: 2 }}>

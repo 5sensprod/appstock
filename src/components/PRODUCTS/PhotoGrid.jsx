@@ -10,12 +10,12 @@ const PhotoGrid = ({
   productId,
 }) => {
   return (
-    <Grid container spacing={1}>
+    <Grid container spacing={2}>
       {photos.map((photo, index) => {
         const isSelected = selectedPhotos.includes(photo)
         const isFeatured = photo.includes(featuredImageName)
         return (
-          <Grid item xs={6} sm={4} md={2} lg={2} key={index}>
+          <Grid item key={index}>
             <Card
               sx={{
                 position: 'relative',
@@ -34,7 +34,14 @@ const PhotoGrid = ({
                 component="img"
                 image={photo}
                 alt={`Photo ${index + 1}`}
-                sx={{ width: '100%', height: 'auto' }}
+                // sx={{ width: '100%', height: 'auto' }}
+                sx={{
+                  width: '100px',
+                  height: '100px',
+                  objectFit: 'cover',
+                  padding: '5px',
+                  borderRadius: '8px',
+                }}
                 onClick={() => onPhotoClick(photo)}
               />
               {!isFeatured && (
@@ -43,7 +50,7 @@ const PhotoGrid = ({
                     position: 'absolute',
                     bottom: 5,
                     right: 5,
-                    backgroundColor: '#F0F0F0',
+                    backgroundColor: 'white',
                     borderRadius: '10%',
                   }}
                 >
