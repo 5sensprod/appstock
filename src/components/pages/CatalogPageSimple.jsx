@@ -6,17 +6,25 @@ import SelectCategory from '../category/SelectCategory'
 import useSearch from '../hooks/useSearch'
 import ProductGallery from '../product/ProductGallery'
 import { Box } from '@mui/material'
+import { useCategoryContext } from '../../contexts/CategoryContext'
 
 const CatalogPageSimple = () => {
   const {
-    categories,
+    // categories,
     products,
     searchTerm,
     selectedCategoryId,
     handleCategoryChange,
   } = useProductContext()
 
-  const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
+  const { categories } = useCategoryContext()
+
+  const filteredProducts = useSearch(
+    products,
+    searchTerm,
+    selectedCategoryId,
+    categories,
+  )
   const navigate = useNavigate()
 
   const redirectToEdit = (productId) => {
