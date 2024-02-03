@@ -5,11 +5,9 @@ const SelectCategory = ({
   categories,
   selectedCategoryId,
   onCategoryChange,
-  parentFilter = null,
   label = 'Catégorie',
   disabled = false,
 }) => {
-  const filteredCategories = categories.filter((cat) => cat.parentId === null)
   return (
     <FormControl fullWidth disabled={disabled} size="small">
       <InputLabel id="category-select-label">{label}</InputLabel>
@@ -20,15 +18,15 @@ const SelectCategory = ({
         label={label}
       >
         <MenuItem value="">
-          <em>
-            {parentFilter ? 'Aucune sous-catégorie' : 'Toutes les catégories'}
-          </em>
+          <em>Aucune</em>
         </MenuItem>
-        {filteredCategories.map((category) => (
-          <MenuItem key={category._id} value={category._id}>
-            {category.name}
-          </MenuItem>
-        ))}
+        {categories
+          .filter((cat) => cat.parentId === null)
+          .map((category) => (
+            <MenuItem key={category._id} value={category._id}>
+              {category.name}
+            </MenuItem>
+          ))}
       </Select>
     </FormControl>
   )
