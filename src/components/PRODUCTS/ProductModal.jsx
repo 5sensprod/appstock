@@ -1,5 +1,5 @@
 // src/components/PRODUCTS/ProductModal.jsx
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { CardMedia, Typography } from '@mui/material'
 import GenericModal from '../ui/GenericModal'
 import ProductDescription from './ProductDescription'
@@ -10,9 +10,10 @@ const ProductModal = ({ product, baseUrl, open, onClose }) => {
   if (!product) return null
 
   const [tabValue, setTabValue] = useState(0)
-  const imageUrl = product.featuredImage
-    ? `${baseUrl}/catalogue/${product._id}/${product.featuredImage}`
-    : `${baseUrl}/catalogue/default/default.png`
+  const [brandName, setBrandName] = useState('')
+  // const imageUrl = product.featuredImage
+  //   ? `${baseUrl}/catalogue/${product._id}/${product.featuredImage}`
+  //   : `${baseUrl}/catalogue/default/default.png`
 
   const content = (
     <>
@@ -24,6 +25,9 @@ const ProductModal = ({ product, baseUrl, open, onClose }) => {
       /> */}
       <Typography variant="h6" fontWeight="bold">
         {product.reference}
+      </Typography>
+      <Typography variant="subtitle2" component="h2">
+        Marque : {product.marque || 'Non spécifiée'}
       </Typography>
       <Typography>{formatPrice(product.prixVente)}</Typography>
       {tabValue === 0 ? (
