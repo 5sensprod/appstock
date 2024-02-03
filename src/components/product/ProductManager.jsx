@@ -28,7 +28,12 @@ const ProductManager = () => {
   const [showAddProductForm, setShowAddProductForm] = useState(false)
   const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
 
-  const filteredProducts = useSearch(products, searchTerm, selectedCategoryId)
+  const filteredProducts = useSearch(
+    products,
+    searchTerm,
+    selectedCategoryId,
+    categories,
+  )
 
   const isSearchingByReferenceOnly =
     searchTerm.trim() !== '' && selectedCategoryId === ''

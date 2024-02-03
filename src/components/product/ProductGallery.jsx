@@ -7,7 +7,6 @@ import { productFactory } from '../factory/productFactory'
 
 const ProductItem = ({
   product,
-  getCategoryPath,
   getParentCategoryName,
   baseUrl,
   redirectToEdit,
@@ -19,7 +18,7 @@ const ProductItem = ({
       description: product.description,
       prixVente: product.prixVente,
       featuredImage: product.featuredImage,
-      categoryName: getParentCategoryName(product.categorie), // Utilisez-la ici
+      categoryName: getParentCategoryName(product.categorie),
       baseUrl: baseUrl,
       redirectToEdit: redirectToEdit,
     }).render()}
@@ -72,39 +71,6 @@ const ProductGallery = ({ products }) => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
-  // const getCategoryName = (categoryId) => {
-  //   const category = categories.find((c) => c._id === categoryId)
-  //   return category ? category.name : 'Non catégorisé'
-  // }
-
-  // const getCategoryPath = (categoryId) => {
-  //   let path = []
-  //   let currentCategory = categories.find((cat) => cat._id === categoryId)
-
-  //   while (currentCategory) {
-  //     path.unshift(currentCategory.name) // Ajoute le nom de la catégorie au début du chemin
-  //     // Cherche la catégorie parent jusqu'à ce qu'il n'y ait plus de parent
-  //     currentCategory = categories.find(
-  //       (cat) => cat._id === currentCategory.parentId,
-  //     )
-  //   }
-
-  //   return path.join(' > ') // Rejoint tous les noms avec ' > ' pour former un chemin
-  // }
-
-  // const getParentCategoryName = (categoryId) => {
-  //   let currentCategory = categories.find((cat) => cat._id === categoryId)
-
-  //   // Remonte la hiérarchie jusqu'à trouver la catégorie parente la plus élevée
-  //   while (currentCategory && currentCategory.parentId) {
-  //     currentCategory = categories.find(
-  //       (cat) => cat._id === currentCategory.parentId,
-  //     )
-  //   }
-
-  //   return currentCategory ? currentCategory.name : 'Non catégorisé'
-  // }
-
   const redirectToEdit = (productId) => {
     navigate(`/edit-product/${productId}`)
   }
@@ -136,7 +102,6 @@ const ProductGallery = ({ products }) => {
               <ProductItem
                 key={product._id}
                 product={product}
-                getCategoryPath={getCategoryPath} // Si vous souhaitez également passer cette fonction
                 getParentCategoryName={getParentCategoryName}
                 baseUrl={baseUrl}
                 redirectToEdit={redirectToEdit}

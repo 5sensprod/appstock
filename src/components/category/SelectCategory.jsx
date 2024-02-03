@@ -9,10 +9,7 @@ const SelectCategory = ({
   label = 'Catégorie',
   disabled = false,
 }) => {
-  const filteredCategories = parentFilter
-    ? categories.filter((cat) => cat.parentId === parentFilter)
-    : categories.filter((cat) => cat.parentId === null)
-
+  const filteredCategories = categories.filter((cat) => cat.parentId === null)
   return (
     <FormControl fullWidth disabled={disabled} size="small">
       <InputLabel id="category-select-label">{label}</InputLabel>
