@@ -1,7 +1,7 @@
 export const cardStyles = {
   width: '280px',
   // heigth: '450px',
-  padding: '10px',
+  padding: '5x',
   display: 'flex',
   flexDirection: 'column',
   transition: 'box-shadow 0.3s ease-in-out',
