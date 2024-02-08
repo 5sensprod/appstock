@@ -4,6 +4,9 @@ import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
 import { updateUser } from '../../api/userService'
 import ShowUser from './ShowUser'
 import EditUser from './EditUser'
+import EditIcon from '@mui/icons-material/Edit'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import IconButton from '@mui/material/IconButton'
 
 const UserDetails = () => {
   const companyInfo = useContext(CompanyInfoContext)
@@ -42,21 +45,30 @@ const UserDetails = () => {
     setEditMode(false)
   }
 
-  return !editMode ? (
-    <ShowUser
-      userInfo={userInfo}
-      onEdit={() => {
-        setEditMode(true)
-        setInitialUserInfo(userInfo)
-      }}
-    />
-  ) : (
-    <EditUser
-      userInfo={userInfo}
-      onChange={handleChange}
-      onSubmit={handleSubmit}
-      onCancel={handleCancel}
-    />
+  const toggleEditMode = () => {
+    setEditMode(!editMode)
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <h1>{userInfo.name}</h1>
+        <IconButton onClick={editMode ? handleCancel : () => setEditMode(true)}>
+          {editMode ? <VisibilityIcon /> : <EditIcon />}
+        </IconButton>
+      </div>
+
+      {!editMode ? (
+        <ShowUser userInfo={userInfo} />
+      ) : (
+        <EditUser
+          userInfo={userInfo}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+        />
+      )}
+    </div>
   )
 }
 
