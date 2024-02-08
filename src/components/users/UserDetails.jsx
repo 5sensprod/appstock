@@ -1,10 +1,14 @@
+// src/components/users/UserDetails.jsx
 import React, { useContext, useState, useEffect } from 'react'
 import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
 import { updateUser } from '../../api/userService'
+import ShowUser from './ShowUser'
+import EditUser from './EditUser'
 
 const UserDetails = () => {
   const companyInfo = useContext(CompanyInfoContext)
   const [userInfo, setUserInfo] = useState({})
+  const [initialUserInfo, setInitialUserInfo] = useState({})
   const [editMode, setEditMode] = useState(false)
 
   const handleChange = (e) => {
@@ -18,6 +22,7 @@ const UserDetails = () => {
   useEffect(() => {
     if (companyInfo) {
       setUserInfo(companyInfo)
+      setInitialUserInfo(companyInfo)
     }
   }, [companyInfo])
 
@@ -26,43 +31,33 @@ const UserDetails = () => {
     try {
       await updateUser(userInfo)
       setEditMode(false)
+      setInitialUserInfo(userInfo)
     } catch (error) {
       console.error("Erreur lors de la mise à jour de l'utilisateur:", error)
     }
   }
 
-  // Rendu conditionnel basé sur editMode
-  if (!editMode) {
-    return (
-      <div>
-        <p>Nom: {userInfo.name}</p>
-        <p>Adresse: {userInfo.address}</p>
-        <p>Ville: {userInfo.city}</p>
-        <p>Email: {userInfo.email}</p>
-        <p>Téléphone: {userInfo.phone}</p>
-        <button onClick={() => setEditMode(true)}>Modifier</button>
-      </div>
-    )
-  } else {
-    return (
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Nom:</label>
-          <input
-            type="text"
-            name="name"
-            value={userInfo.name || ''}
-            onChange={handleChange}
-          />
-        </div>
-        {/* Ajoutez d'autres champs ici */}
-        <button type="submit">Enregistrer les modifications</button>
-        <button type="button" onClick={() => setEditMode(false)}>
-          Annuler
-        </button>
-      </form>
-    )
+  const handleCancel = () => {
+    setUserInfo(initialUserInfo)
+    setEditMode(false)
   }
+
+  return !editMode ? (
+    <ShowUser
+      userInfo={userInfo}
+      onEdit={() => {
+        setEditMode(true)
+        setInitialUserInfo(userInfo)
+      }}
+    />
+  ) : (
+    <EditUser
+      userInfo={userInfo}
+      onChange={handleChange}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+    />
+  )
 }
 
 export default UserDetails
