@@ -7,7 +7,7 @@ import { getLogoUrl } from '../../utils/imageUtils'
 import { useConfig } from '../../contexts/ConfigContext'
 
 const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
-  const companyInfo = useContext(CompanyInfoContext)
+  const { companyInfo } = useContext(CompanyInfoContext)
   const { baseUrl } = useConfig()
   // Formatage de la date pour l'affichage
   const formattedDate =
