@@ -1,9 +1,11 @@
 // src/api/invoiceService.js
 import { fetchApi } from './axiosConfig'
 
-export const getInvoices = async () => {
+export const getInvoices = async (startDate, endDate) => {
   try {
-    return await fetchApi('invoices')
+    // Exemple de construction de l'URL avec des paramètres de query pour les dates
+    const url = `invoices?startDate=${startDate}&endDate=${endDate}`
+    return await fetchApi(url)
   } catch (error) {
     console.error('Erreur lors de la récupération des factures:', error)
     return []

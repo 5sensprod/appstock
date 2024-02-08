@@ -11,37 +11,99 @@ import {
 } from 'recharts'
 import { getInvoices } from '../../api/invoiceService'
 import moment from 'moment'
+import { formatPrice } from '../../utils/priceUtils'
 
-const SalesLineChart = () => {
+const SalesLineChart = ({ selectedRange }) => {
   const [salesData, setSalesData] = useState([])
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div
+          style={{
+            backgroundColor: '#fff',
+            padding: '5px',
+            border: '1px solid #ccc',
+          }}
+        >
+          <p>C.A TTC : {formatPrice(payload[0].value)}</p>
+        </div>
+      )
+    }
+
+    return null
+  }
+  const convertRangeToDate = (range) => {
+    switch (range) {
+      case 'this_week':
+        return {
+          startDate: moment().startOf('week').toISOString(),
+          endDate: moment().endOf('week').toISOString(),
+        }
+      case 'this_month':
+        return {
+          startDate: moment().startOf('month').toISOString(),
+          endDate: moment().endOf('month').toISOString(),
+        }
+      case 'this_quarter':
+        return {
+          startDate: moment().startOf('quarter').toISOString(),
+          endDate: moment().endOf('quarter').toISOString(),
+        }
+      case 'this_year':
+        return {
+          startDate: moment().startOf('year').toISOString(),
+          endDate: moment().endOf('year').toISOString(),
+        }
+      case 'custom':
+        // Pour une plage personnalisée, vous devrez fournir une manière pour l'utilisateur
+        // de choisir les dates de début et de fin, et les utiliser ici.
+        // Ceci est juste un placeholder.
+        return {
+          startDate: '2024-01-01T00:00:00.000Z',
+          endDate: '2024-12-31T23:59:59.999Z',
+        }
+      default:
+        // Valeur par défaut couvrant toute la plage de données si aucune sélection ou valeur inattendue
+        return {
+          startDate: '2024-01-01T00:00:00.000Z',
+          endDate: '2024-12-31T23:59:59.999Z',
+        }
+    }
+  }
 
   useEffect(() => {
     const fetchAndProcessInvoices = async () => {
-      const invoices = await getInvoices()
+      // Simplement pour illustrer, ajustez selon votre implémentation réelle
+      const { startDate, endDate } = convertRangeToDate(selectedRange)
+      const invoices = await getInvoices(startDate, endDate)
 
-      if (Array.isArray(invoices)) {
-        const salesByDate = invoices.reduce((acc, invoice) => {
-          const date = moment(invoice.date).format('YYYY-MM-DD')
-          if (!acc[date]) {
-            acc[date] = 0
-          }
-          acc[date] += parseFloat(invoice.totalTTC)
-          return acc
-        }, {})
+      const filteredInvoices = invoices.filter((invoice) => {
+        const invoiceDate = moment(invoice.date)
+        return invoiceDate.isBetween(startDate, endDate, null, '[]') // Inclusif
+      })
 
-        const formattedData = Object.entries(salesByDate)
-          .map(([date, totalSales]) => ({
-            date,
-            totalSales,
-          }))
-          .sort((a, b) => new Date(a.date) - new Date(b.date))
+      const salesByDate = filteredInvoices.reduce((acc, invoice) => {
+        const date = moment(invoice.date).format('YYYY-MM-DD')
+        if (!acc[date]) {
+          acc[date] = 0
+        }
+        acc[date] += parseFloat(invoice.totalTTC)
+        return acc
+      }, {})
 
-        setSalesData(formattedData)
-      }
+      const formattedData = Object.entries(salesByDate)
+        .map(([date, totalSales]) => ({
+          date,
+          totalSales,
+        }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+
+      setSalesData(formattedData)
     }
 
     fetchAndProcessInvoices()
-  }, [])
+  }, [selectedRange]) // S'assurer que useEffect se déclenche à nouveau lorsque selectedRange change
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -62,13 +124,14 @@ const SalesLineChart = () => {
           }
         />
         <YAxis />
-        <Tooltip />
+        <Tooltip content={<CustomTooltip />} />
         <Legend />
         <Line
           type="monotone"
           dataKey="totalSales"
           stroke="#8884d8"
           activeDot={{ r: 8 }}
+          legendType="none"
         />
       </LineChart>
     </ResponsiveContainer>
