@@ -54,6 +54,7 @@
     "@mui/x-data-grid": "^6.18.4",
     "@mui/x-data-grid-premium": "^6.18.5",
     "@mui/x-data-grid-pro": "^6.18.5",
+    "@mui/x-date-pickers": "^6.19.3",
     "@mui/x-tree-view": "^6.17.0",
     "ag-grid-community": "^28.0.2",
     "ag-grid-enterprise": "^28.0.2",

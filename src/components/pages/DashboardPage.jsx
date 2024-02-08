@@ -5,9 +5,15 @@ import DateRangePicker from '../ui/DateRangePicker'
 
 const DashboardPage = () => {
   const [selectedRange, setSelectedRange] = useState('this_month')
+  const [dateRange, setDateRange] = useState({ startDate: null, endDate: null })
 
   const handleRangeChange = (event) => {
     setSelectedRange(event.target.value)
+  }
+
+  const handleDateChange = ({ startDate, endDate }) => {
+    setDateRange({ startDate, endDate })
+    // Mettez à jour ici si nécessaire pour effectuer d'autres actions lorsque les dates changent
   }
 
   return (
@@ -16,8 +22,9 @@ const DashboardPage = () => {
       <DateRangePicker
         selectedRange={selectedRange}
         onChange={handleRangeChange}
+        onDateChange={handleDateChange}
       />
-      <SalesLineChart selectedRange={selectedRange} />
+      <SalesLineChart selectedRange={selectedRange} dateRange={dateRange} />
     </div>
   )
 }

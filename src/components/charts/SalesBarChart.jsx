@@ -13,7 +13,7 @@ import { getInvoices } from '../../api/invoiceService'
 import moment from 'moment'
 import { formatPrice } from '../../utils/priceUtils'
 
-const SalesLineChart = ({ selectedRange }) => {
+const SalesLineChart = ({ selectedRange, dateRange }) => {
   const [salesData, setSalesData] = useState([])
 
   const CustomTooltip = ({ active, payload }) => {
@@ -34,6 +34,13 @@ const SalesLineChart = ({ selectedRange }) => {
     return null
   }
   const convertRangeToDate = (range) => {
+    if (range === 'custom' && dateRange.startDate && dateRange.endDate) {
+      // Utilisez les dates personnalisées si l'option 'custom' est sélectionnée
+      return {
+        startDate: moment(dateRange.startDate).toISOString(),
+        endDate: moment(dateRange.endDate).toISOString(),
+      }
+    }
     switch (range) {
       case 'this_week':
         return {
@@ -103,7 +110,7 @@ const SalesLineChart = ({ selectedRange }) => {
     }
 
     fetchAndProcessInvoices()
-  }, [selectedRange]) // S'assurer que useEffect se déclenche à nouveau lorsque selectedRange change
+  }, [selectedRange, dateRange]) // S'assurer que useEffect se déclenche à nouveau lorsque selectedRange change
 
   return (
     <ResponsiveContainer width="100%" height={300}>
