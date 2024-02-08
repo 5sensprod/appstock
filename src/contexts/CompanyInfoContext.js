@@ -1,4 +1,5 @@
 // src/contexts/CompanyInfoContext.js
+
 import React, { createContext, useState, useEffect } from 'react'
 import { getCompanyInfo } from '../api/userService'
 
@@ -9,7 +10,6 @@ export const CompanyInfoProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchCompanyInfo = async () => {
-      // Logique pour récupérer les informations de l'entreprise
       try {
         const info = await getCompanyInfo()
         setCompanyInfo(info[0])
@@ -21,8 +21,13 @@ export const CompanyInfoProvider = ({ children }) => {
     fetchCompanyInfo()
   }, [])
 
+  // Ajoutez cette fonction pour permettre la mise à jour du contexte
+  const updateCompanyInfo = (updatedInfo) => {
+    setCompanyInfo(updatedInfo)
+  }
+
   return (
-    <CompanyInfoContext.Provider value={companyInfo}>
+    <CompanyInfoContext.Provider value={{ companyInfo, updateCompanyInfo }}>
       {children}
     </CompanyInfoContext.Provider>
   )

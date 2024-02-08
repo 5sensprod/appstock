@@ -27,7 +27,17 @@ module.exports = (db) => {
       } else if (numReplaced === 0) {
         res.status(404).send('Utilisateur non trouvé')
       } else {
-        res.status(200).json({ message: 'Utilisateur mis à jour avec succès' })
+        // Après la mise à jour réussie, récupérez et renvoyez les données mises à jour de l'utilisateur
+        users.findOne({ _id: id }, (findErr, doc) => {
+          if (findErr) {
+            res.status(500).send(findErr)
+          } else if (!doc) {
+            res.status(404).send('Utilisateur mis à jour non trouvé')
+          } else {
+            // Renvoie l'utilisateur mis à jour
+            res.status(200).json(doc)
+          }
+        })
       }
     })
   })

@@ -1,4 +1,3 @@
-// src/components/users/UserDetails.jsx
 import React, { useContext, useState, useEffect } from 'react'
 import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
 import { updateUser } from '../../api/userService'
@@ -9,7 +8,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import IconButton from '@mui/material/IconButton'
 
 const UserDetails = () => {
-  const companyInfo = useContext(CompanyInfoContext)
+  const { companyInfo, updateCompanyInfo } = useContext(CompanyInfoContext)
   const [userInfo, setUserInfo] = useState({})
   const [initialUserInfo, setInitialUserInfo] = useState({})
   const [editMode, setEditMode] = useState(false)
@@ -32,14 +31,15 @@ const UserDetails = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await updateUser(userInfo)
-      setEditMode(false)
-      setInitialUserInfo(userInfo)
+      const updatedUser = await updateUser(userInfo) // Mise à jour de l'utilisateur
+      console.log('Utilisateur mis à jour:', updatedUser) // Diagnostic
+      updateCompanyInfo(updatedUser) // Met à jour le contexte (si utilisé)
+      setUserInfo(updatedUser) // Met à jour l'état local avec les nouvelles informations
+      setEditMode(false) // Assurez-vous de réinitialiser le mode d'édition
     } catch (error) {
       console.error("Erreur lors de la mise à jour de l'utilisateur:", error)
     }
   }
-
   const handleCancel = () => {
     setUserInfo(initialUserInfo)
     setEditMode(false)
@@ -48,7 +48,8 @@ const UserDetails = () => {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <h1>{userInfo.name}</h1>
+        {/* Utilisez directement companyInfo pour le titre */}
+        <h1>{companyInfo?.name}</h1>
         <IconButton onClick={editMode ? handleCancel : () => setEditMode(true)}>
           {editMode ? <VisibilityIcon /> : <EditIcon />}
         </IconButton>
