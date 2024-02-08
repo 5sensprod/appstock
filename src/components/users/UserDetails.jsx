@@ -45,10 +45,6 @@ const UserDetails = () => {
     setEditMode(false)
   }
 
-  const toggleEditMode = () => {
-    setEditMode(!editMode)
-  }
-
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
