@@ -4,10 +4,8 @@ import { updateUser } from '../../api/userService'
 
 const UserDetails = () => {
   const companyInfo = useContext(CompanyInfoContext)
-  const [userInfo, setUserInfo] = useState({}) // Initialise avec les infos de l'entreprise ou un objet vide
+  const [userInfo, setUserInfo] = useState({})
   const [editMode, setEditMode] = useState(false)
-
-  // Pas besoin d'utiliser useEffect pour récupérer l'utilisateur si on suppose que CompanyInfoContext fournit déjà les détails complets
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -26,16 +24,12 @@ const UserDetails = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await updateUser(userInfo) // Assurez-vous que cette fonction gère l'_id correctement pour la mise à jour
-      alert('Mise à jour réussie!')
-      setEditMode(false) // Retour au mode lecture
+      await updateUser(userInfo)
+      setEditMode(false)
     } catch (error) {
       console.error("Erreur lors de la mise à jour de l'utilisateur:", error)
-      alert('Erreur lors de la mise à jour.')
     }
   }
-
-  console.log(companyInfo)
 
   // Rendu conditionnel basé sur editMode
   if (!editMode) {
@@ -52,7 +46,6 @@ const UserDetails = () => {
   } else {
     return (
       <form onSubmit={handleSubmit}>
-        {/* Exemple de champ pour modifier le nom, répétez pour les autres propriétés */}
         <div>
           <label>Nom:</label>
           <input
