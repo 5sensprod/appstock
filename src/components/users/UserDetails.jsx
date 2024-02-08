@@ -31,11 +31,10 @@ const UserDetails = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const updatedUser = await updateUser(userInfo) // Mise à jour de l'utilisateur
-      console.log('Utilisateur mis à jour:', updatedUser) // Diagnostic
-      updateCompanyInfo(updatedUser) // Met à jour le contexte (si utilisé)
-      setUserInfo(updatedUser) // Met à jour l'état local avec les nouvelles informations
-      setEditMode(false) // Assurez-vous de réinitialiser le mode d'édition
+      const updatedUser = await updateUser(userInfo)
+      updateCompanyInfo(updatedUser)
+      setUserInfo(updatedUser)
+      setEditMode(false)
     } catch (error) {
       console.error("Erreur lors de la mise à jour de l'utilisateur:", error)
     }
@@ -48,7 +47,6 @@ const UserDetails = () => {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        {/* Utilisez directement companyInfo pour le titre */}
         <h1>{companyInfo?.name}</h1>
         <IconButton onClick={editMode ? handleCancel : () => setEditMode(true)}>
           {editMode ? <VisibilityIcon /> : <EditIcon />}
