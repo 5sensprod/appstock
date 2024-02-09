@@ -110,8 +110,8 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
         margin={{
           top: 5,
           right: 30,
-          left: 20,
-          bottom: 5,
+          left: -10,
+          bottom: 20,
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
@@ -120,6 +120,8 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
           tickFormatter={(value) =>
             moment(value, 'YYYY-MM-DD').format('DD/MM/YYYY')
           }
+          height={60} // Augmente la hauteur de l'axe X pour créer plus d'espace
+          tick={{ dy: 10 }} // Décale les étiquettes vers le bas
         />
         <YAxis />
         <Tooltip content={<CustomTooltip />} />

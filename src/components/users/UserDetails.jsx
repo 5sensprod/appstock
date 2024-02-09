@@ -6,6 +6,7 @@ import EditUser from './EditUser'
 import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import IconButton from '@mui/material/IconButton'
+import { Box, Tabs, Tab, Typography } from '@mui/material'
 
 const UserDetails = () => {
   const { companyInfo, updateCompanyInfo } = useContext(CompanyInfoContext)
@@ -45,13 +46,19 @@ const UserDetails = () => {
   }
 
   return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <h1>{companyInfo?.name}</h1>
+    <Box sx={{ width: '100%' }}>
+      <Box display="flex" alignItems="center" gap={2} mt={2}>
+        <Typography
+          variant="h5"
+          component="h2"
+          style={{ textTransform: 'uppercase' }}
+        >
+          {companyInfo?.name}
+        </Typography>
         <IconButton onClick={editMode ? handleCancel : () => setEditMode(true)}>
           {editMode ? <VisibilityIcon /> : <EditIcon />}
         </IconButton>
-      </div>
+      </Box>
 
       {!editMode ? (
         <ShowUser userInfo={userInfo} />
@@ -63,7 +70,7 @@ const UserDetails = () => {
           onCancel={handleCancel}
         />
       )}
-    </div>
+    </Box>
   )
 }
 
