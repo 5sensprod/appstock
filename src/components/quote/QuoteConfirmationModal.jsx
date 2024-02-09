@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Modal, Box, Button, Typography } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { QuoteContext } from '../../contexts/QuoteContext'
+import { formatPrice } from '../../utils/priceUtils'
 
 const style = {
   position: 'absolute',
@@ -37,11 +38,62 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
   }, [cartItems, cartTotals])
 
   const columns = [
-    { field: 'reference', headerName: 'Référence', width: 150 },
-    { field: 'quantity', headerName: 'Quantité', type: 'number', width: 110 },
-    { field: 'prixHT', headerName: 'Prix HT', type: 'number', width: 130 },
-    { field: 'tauxTVA', headerName: 'Taux TVA', type: 'number', width: 130 },
+    {
+      field: 'reference',
+      headerName: 'Référence',
+      width: 150,
+      sortable: false,
+      flex: 1,
+    },
+    {
+      field: 'quantity',
+      headerName: 'Quantité',
+      type: 'number',
+      width: 110,
+      sortable: false,
+      flex: 1,
+    },
+    {
+      field: 'prixHT',
+      headerName: 'Prix HT',
+      type: 'number',
+      width: 130,
+      flex: 1,
+      renderCell: (params) => formatPrice(Number(params.value)),
+    },
+    {
+      field: 'tauxTVA',
+      headerName: 'TVA',
+      type: 'number',
+      width: 130,
+      sortable: false,
+      flex: 1,
+    },
     // Ajoutez d'autres colonnes si nécessaire
+  ]
+
+  // Colonnes pour la grille des totaux
+  const totalColumns = [
+    {
+      field: 'type',
+      headerName: 'Type',
+      width: 150,
+      flex: 1,
+    },
+    {
+      field: 'amount',
+      headerName: 'Montant',
+      width: 150,
+      flex: 1,
+      type: 'number',
+      // Utilisez renderCell pour appliquer formatPrice à la valeur de chaque cellule
+      renderCell: (params) => formatPrice(Number(params.value)),
+    },
+  ]
+  // Préparer les données pour la grille des totaux
+  const totalRows = [
+    { id: 1, type: 'Total HT', amount: preparedQuoteData.totalHT },
+    { id: 2, type: 'Total TTC', amount: preparedQuoteData.totalTTC },
   ]
 
   const handleConfirm = async () => {
@@ -66,11 +118,27 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
         <Typography id="modal-title" variant="h6" component="h2">
           Confirmez le devis
         </Typography>
-        <div style={{ height: 400, width: '100%' }}>
+        <div style={{ width: '100%', marginBottom: 5 }}>
           <DataGrid
             rows={preparedQuoteData.items || []}
             columns={columns}
             pageSize={5}
+            hideFooter={true}
+            disableColumnMenu={true}
+          />
+        </div>
+        <div style={{ width: '35%', marginLeft: 'auto', marginRight: 0 }}>
+          <DataGrid
+            rows={totalRows}
+            columns={totalColumns}
+            hideFooter={true}
+            disableColumnMenu={true}
+            autoHeight={true}
+            sx={{
+              '& .MuiDataGrid-columnHeaders': {
+                display: 'none',
+              },
+            }}
           />
         </div>
         <Box mt={2} display="flex" justifyContent="space-between">
