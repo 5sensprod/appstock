@@ -35,7 +35,7 @@ const Cart = () => {
 
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [quoteData, setQuoteData] = useState({
-    items: [], // Initialiser avec la structure attendue
+    items: [],
     totalHT: 0,
     totalTTC: 0,
   })
@@ -43,7 +43,7 @@ const Cart = () => {
   const prepareQuoteData = () => {
     const data = {
       items: cartItems.map((item, index) => ({
-        id: item._id || index, // Assurez-vous que chaque item a un `id` unique
+        id: item._id || index,
         reference: item.reference,
         quantity: item.quantity,
         prixHT: item.prixHT,
@@ -70,7 +70,6 @@ const Cart = () => {
   }
 
   const calculateChange = () => {
-    // Utiliser le total modifié si un ajustement a été appliqué, sinon utiliser le total original
     const total =
       adjustmentAmount !== 0
         ? cartTotals.modifiedTotal
@@ -87,8 +86,6 @@ const Cart = () => {
             <>
               {cartItems.map((item) => (
                 <Box key={item._id} mb={2}>
-                  {' '}
-                  {/* Déplacez la prop 'key' ici */}
                   <CartItem
                     item={item}
                     updateQuantity={updateQuantity}
@@ -133,8 +130,6 @@ const Cart = () => {
                     {paymentType === 'Cash' && (
                       <Box my={2}>
                         <Typography variant="h6">
-                          {' '}
-                          {/* Vous pouvez utiliser une chaîne de caractères pour des valeurs CSS spécifiques */}
                           Monnaie à rendre : {calculateChange().toFixed(2)} €
                         </Typography>
                       </Box>
@@ -165,7 +160,6 @@ const Cart = () => {
                 >
                   Payer
                 </Button>
-                {/* <AddQuoteButton /> */}
                 <Button
                   variant="outlined"
                   color="secondary"
