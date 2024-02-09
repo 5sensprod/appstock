@@ -17,6 +17,7 @@ import useHandlePayClick from '../../hooks/useHandlePayClick'
 import InvoiceModal from '../invoice/InvoiceModal'
 import OnHoldInvoices from '../invoice/OnHoldInvoices'
 import CartTotal from './CartTotal'
+import QuoteConfirmationModal from '../quote/QuoteConfirmationModal'
 
 const Cart = () => {
   const {
@@ -31,6 +32,29 @@ const Cart = () => {
     adjustmentAmount,
     cartTotals,
   } = useContext(CartContext)
+
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
+  const [quoteData, setQuoteData] = useState({
+    items: [], // Initialiser avec la structure attendue
+    totalHT: 0,
+    totalTTC: 0,
+  })
+
+  const prepareQuoteData = () => {
+    const data = {
+      items: cartItems.map((item, index) => ({
+        id: item._id || index, // Assurez-vous que chaque item a un `id` unique
+        reference: item.reference,
+        quantity: item.quantity,
+        prixHT: item.prixHT,
+        tauxTVA: item.tauxTVA,
+      })),
+      totalHT: cartTotals.totalHT,
+      totalTTC: cartTotals.totalTTC,
+    }
+    setQuoteData(data)
+    setIsQuoteModalOpen(true)
+  }
 
   const [paymentType, setPaymentType] = useState('CB')
   const [amountPaid, setAmountPaid] = useState('')
@@ -54,6 +78,7 @@ const Cart = () => {
     const paid = parseFloat(amountPaid)
     return paid > total ? paid - total : 0
   }
+
   return (
     <>
       <Grid container spacing={2}>
@@ -140,6 +165,14 @@ const Cart = () => {
                 >
                   Payer
                 </Button>
+                {/* <AddQuoteButton /> */}
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={prepareQuoteData}
+                >
+                  Générer Devis
+                </Button>
               </Box>
             </>
           ) : (
@@ -156,6 +189,12 @@ const Cart = () => {
         </Grid>
       )}
       <InvoiceModal />
+      <QuoteConfirmationModal
+        open={isQuoteModalOpen}
+        onClose={() => setIsQuoteModalOpen(false)}
+        cartItems={cartItems}
+        cartTotals={cartTotals}
+      />
     </>
   )
 }

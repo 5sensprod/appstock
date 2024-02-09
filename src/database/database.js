@@ -2,7 +2,6 @@ const { app } = require('electron')
 const Datastore = require('nedb')
 const path = require('path')
 
-// Exporter une fonction pour initialiser les bases de données
 module.exports = function initializeDatabases() {
   return app.whenReady().then(() => {
     const userDataPath = app.getPath('userData')
@@ -23,7 +22,11 @@ module.exports = function initializeDatabases() {
       filename: path.join(userDataPath, 'invoices.db'),
       autoload: true,
     })
+    const quotes = new Datastore({
+      filename: path.join(userDataPath, 'quotes.db'),
+      autoload: true,
+    })
 
-    return { users, products, categories, invoices }
+    return { users, products, categories, invoices, quotes }
   })
 }
