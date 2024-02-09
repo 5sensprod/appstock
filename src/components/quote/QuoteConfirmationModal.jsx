@@ -9,7 +9,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 600,
+  width: 700,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -26,8 +26,13 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
       id: index,
       reference: item.reference,
       quantity: item.quantity,
-      prixHT: item.prixHT,
+      prixHT: item.prixHT, // Prix unitaire HT
       tauxTVA: item.tauxTVA,
+      // Calculez le total TTC par produit
+      totalTTCParProduit: (
+        (parseFloat(item.puTTC) ||
+          parseFloat(item.prixHT) * (1 + item.tauxTVA / 100)) * item.quantity
+      ).toFixed(2),
     }))
     const quoteData = {
       items: items,
@@ -69,7 +74,15 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
       sortable: false,
       flex: 1,
     },
-    // Ajoutez d'autres colonnes si nécessaire
+    {
+      field: 'totalTTCParProduit',
+      headerName: 'Total TTC',
+      type: 'number',
+      width: 180,
+      sortable: false,
+      flex: 1,
+      renderCell: (params) => formatPrice(Number(params.value)),
+    },
   ]
 
   // Colonnes pour la grille des totaux
