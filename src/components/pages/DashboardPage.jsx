@@ -32,11 +32,13 @@ const DashboardPage = () => {
           Les ventes
         </Typography>
       </Box>
-      <DateRangePicker
-        selectedRange={selectedRange}
-        onChange={handleRangeChange}
-        onDateChange={handleDateChange}
-      />
+      <Box my={2}>
+        <DateRangePicker
+          selectedRange={selectedRange}
+          onChange={handleRangeChange}
+          onDateChange={handleDateChange}
+        />
+      </Box>
 
       <Box my={2}>
         <SalesLineChart selectedRange={selectedRange} dateRange={dateRange} />

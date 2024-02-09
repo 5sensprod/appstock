@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { MenuItem, TextField } from '@mui/material'
+import { Box, MenuItem, TextField } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
@@ -35,21 +35,24 @@ const DateRangePicker = ({ selectedRange, onChange, onDateChange }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
-      <TextField
-        select
-        label="Période"
-        value={selectedRange}
-        onChange={onChange}
-        fullWidth
-      >
-        {ranges.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </TextField>
+      <Box my={2}>
+        <TextField
+          select
+          label="Période"
+          value={selectedRange}
+          onChange={onChange}
+          // fullWidth
+          style={{ width: '258px' }}
+        >
+          {ranges.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Box>
       {selectedRange === 'custom' && (
-        <>
+        <Box display="flex" alignItems="center" gap={2} mt={2}>
           <DatePicker
             label="Date de début"
             value={startDate}
@@ -62,7 +65,7 @@ const DateRangePicker = ({ selectedRange, onChange, onDateChange }) => {
             onChange={handleEndDateChange}
             renderInput={(params) => <TextField {...params} />}
           />
-        </>
+        </Box>
       )}
     </LocalizationProvider>
   )

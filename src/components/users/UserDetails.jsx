@@ -6,7 +6,7 @@ import EditUser from './EditUser'
 import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import IconButton from '@mui/material/IconButton'
-import { Box, Tabs, Tab, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 
 const UserDetails = () => {
   const { companyInfo, updateCompanyInfo } = useContext(CompanyInfoContext)

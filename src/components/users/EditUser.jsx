@@ -1,67 +1,71 @@
-// src/components/users/EditUser.jsx
 import React from 'react'
+import { TextField, Button, Box } from '@mui/material' // Importez les composants nécessaires depuis MUI
 
 const EditUser = ({ userInfo, onChange, onSubmit, onCancel }) => {
   return (
     <form onSubmit={onSubmit}>
-      <div>
-        <label>Nom:</label>
-        <input
+      <Box mt={2} sx={{ '& > div': { marginBottom: 2 } }}>
+        <TextField
+          label="Nom"
           type="text"
           name="name"
           value={userInfo.name || ''}
           onChange={onChange}
+          fullWidth
+          variant="outlined"
         />
-      </div>
-      <div>
-        <label>Adresse:</label>
-        <input
+        <TextField
+          label="Adresse"
           type="text"
           name="address"
           value={userInfo.address || ''}
           onChange={onChange}
+          fullWidth
+          variant="outlined"
         />
-      </div>
-      <div>
-        <label>Ville:</label>
-        <input
+        <TextField
+          label="Ville"
           type="text"
           name="city"
           value={userInfo.city || ''}
           onChange={onChange}
+          fullWidth
+          variant="outlined"
         />
-      </div>
-      <div>
-        <label>Email:</label>
-        <input
+        <TextField
+          label="Email"
           type="text"
           name="email"
           value={userInfo.email || ''}
           onChange={onChange}
+          fullWidth
+          variant="outlined"
         />
-      </div>
-      <div>
-        <label>Téléphone:</label>
-        <input
+        <TextField
+          label="Téléphone"
           type="text"
           name="phone"
           value={userInfo.phone || ''}
           onChange={onChange}
+          fullWidth
+          variant="outlined"
         />
-      </div>
-      <div>
-        <label>Numéro d'identification fiscale:</label>
-        <input
+        <TextField
+          label="Numéro d'identification fiscale"
           type="text"
           name="taxId"
           value={userInfo.taxId || ''}
           onChange={onChange}
+          fullWidth
+          variant="outlined"
         />
-      </div>
-      <button type="submit">Enregistrer les modifications</button>
-      <button type="button" onClick={onCancel}>
+      </Box>
+      <Button variant="contained" type="submit" sx={{ mr: 2 }}>
+        Enregistrer
+      </Button>
+      <Button variant="outlined" onClick={onCancel}>
         Annuler
-      </button>
+      </Button>
     </form>
   )
 }

@@ -108,7 +108,7 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
       <LineChart
         data={salesData}
         margin={{
-          top: 5,
+          top: 20,
           right: 30,
           left: -10,
           bottom: 20,
