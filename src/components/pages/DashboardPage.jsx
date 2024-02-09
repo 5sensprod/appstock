@@ -13,7 +13,6 @@ const DashboardPage = () => {
 
   const handleDateChange = ({ startDate, endDate }) => {
     setDateRange({ startDate, endDate })
-    // Mettez à jour ici si nécessaire pour effectuer d'autres actions lorsque les dates changent
   }
 
   return (

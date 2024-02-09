@@ -18,6 +18,7 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
+      const dateStr = moment(payload[0].payload.date).format('DD/MM/YYYY')
       return (
         <div
           style={{
@@ -26,6 +27,7 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
             border: '1px solid #ccc',
           }}
         >
+          <p>{dateStr}</p>
           <p>C.A TTC : {formatPrice(payload[0].value)}</p>
         </div>
       )
@@ -35,7 +37,6 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
   }
   const convertRangeToDate = (range) => {
     if (range === 'custom' && dateRange.startDate && dateRange.endDate) {
-      // Utilisez les dates personnalisées si l'option 'custom' est sélectionnée
       return {
         startDate: moment(dateRange.startDate).toISOString(),
         endDate: moment(dateRange.endDate).toISOString(),
@@ -62,16 +63,7 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
           startDate: moment().startOf('year').toISOString(),
           endDate: moment().endOf('year').toISOString(),
         }
-      case 'custom':
-        // Pour une plage personnalisée, vous devrez fournir une manière pour l'utilisateur
-        // de choisir les dates de début et de fin, et les utiliser ici.
-        // Ceci est juste un placeholder.
-        return {
-          startDate: '2024-01-01T00:00:00.000Z',
-          endDate: '2024-12-31T23:59:59.999Z',
-        }
       default:
-        // Valeur par défaut couvrant toute la plage de données si aucune sélection ou valeur inattendue
         return {
           startDate: '2024-01-01T00:00:00.000Z',
           endDate: '2024-12-31T23:59:59.999Z',
@@ -81,13 +73,12 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
 
   useEffect(() => {
     const fetchAndProcessInvoices = async () => {
-      // Simplement pour illustrer, ajustez selon votre implémentation réelle
       const { startDate, endDate } = convertRangeToDate(selectedRange)
       const invoices = await getInvoices(startDate, endDate)
 
       const filteredInvoices = invoices.filter((invoice) => {
         const invoiceDate = moment(invoice.date)
-        return invoiceDate.isBetween(startDate, endDate, null, '[]') // Inclusif
+        return invoiceDate.isBetween(startDate, endDate, null, '[]')
       })
 
       const salesByDate = filteredInvoices.reduce((acc, invoice) => {
@@ -110,7 +101,7 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
     }
 
     fetchAndProcessInvoices()
-  }, [selectedRange, dateRange]) // S'assurer que useEffect se déclenche à nouveau lorsque selectedRange change
+  }, [selectedRange, dateRange])
 
   return (
     <ResponsiveContainer width="100%" height={300}>
