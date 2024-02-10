@@ -108,7 +108,6 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
   ]
 
   const handleConfirm = async () => {
-    // Inclure les informations du client dans preparedQuoteData
     const quoteDataWithCustomerInfo = {
       ...preparedQuoteData,
       customerInfo: {
@@ -119,9 +118,9 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
     }
 
     try {
-      await addQuote(quoteDataWithCustomerInfo) // Utilisez la version mise à jour des données
+      await addQuote(quoteDataWithCustomerInfo)
       alert('Devis ajouté avec succès!')
-      onClose() // Fermer la modal
+      onClose()
     } catch (error) {
       console.error("Erreur lors de l'ajout du devis:", error)
       alert("Erreur lors de l'ajout du devis.")
@@ -135,7 +134,13 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
     >
-      <Box sx={style}>
+      <Box
+        sx={{
+          ...style,
+          maxHeight: '600px',
+          overflowY: 'auto',
+        }}
+      >
         <Typography id="modal-title" variant="h6" component="h2">
           Confirmez le devis
         </Typography>
