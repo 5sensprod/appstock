@@ -31,6 +31,7 @@ const Cart = () => {
     setInvoiceData,
     adjustmentAmount,
     cartTotals,
+    clearCart,
   } = useContext(CartContext)
 
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
@@ -144,15 +145,6 @@ const Cart = () => {
                 }}
                 my={4}
               >
-                {!isCurrentCartOnHold && cartItems.length > 0 && (
-                  <Button
-                    onClick={holdInvoice}
-                    variant="contained"
-                    sx={{ marginRight: '8px' }}
-                  >
-                    Mettre en attente
-                  </Button>
-                )}
                 <Button
                   onClick={() => handlePayment(paymentType)}
                   variant="contained"
@@ -160,12 +152,30 @@ const Cart = () => {
                 >
                   Payer
                 </Button>
+                {!isCurrentCartOnHold && cartItems.length > 0 && (
+                  <Button
+                    onClick={holdInvoice}
+                    variant="contained"
+                    sx={{ marginLeft: '8px' }}
+                  >
+                    Mettre en attente
+                  </Button>
+                )}
                 <Button
                   variant="outlined"
                   color="secondary"
                   onClick={prepareQuoteData}
+                  style={{ marginLeft: '8px' }}
                 >
                   Générer Devis
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={clearCart}
+                  style={{ marginLeft: '8px' }} // Ajouter un peu d'espace entre les boutons
+                >
+                  Vider panier
                 </Button>
               </Box>
             </>
