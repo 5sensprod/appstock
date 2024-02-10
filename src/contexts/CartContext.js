@@ -283,6 +283,20 @@ export const CartProvider = ({ children }) => {
     })
   }
 
+  // Vider panier
+  const clearCart = () => {
+    setCartItems([])
+    // Réinitialiser également les totaux si nécessaire
+    setCartTotals({
+      totalHT: 0,
+      totalTTC: 0,
+      totalTaxes: 0,
+      originalTotal: 0,
+      modifiedTotal: 0,
+    })
+    // Vous pouvez également réinitialiser d'autres états liés au panier ici si nécessaire
+  }
+
   return (
     <CartContext.Provider
       value={{
@@ -305,6 +319,7 @@ export const CartProvider = ({ children }) => {
         setIsModalOpen,
         invoiceData,
         setInvoiceData,
+        clearCart,
       }}
     >
       {children}

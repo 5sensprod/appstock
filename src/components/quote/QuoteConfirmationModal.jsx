@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Modal, Box, Button, Typography, TextField } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { QuoteContext } from '../../contexts/QuoteContext'
+import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
 
 const style = {
@@ -18,6 +19,7 @@ const style = {
 
 const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
   const { addQuote } = useContext(QuoteContext)
+  const { clearCart } = useContext(CartContext)
   const [preparedQuoteData, setPreparedQuoteData] = useState([])
   const [customerName, setCustomerName] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
@@ -121,10 +123,25 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
       await addQuote(quoteDataWithCustomerInfo)
       alert('Devis ajouté avec succès!')
       onClose()
+      clearCart()
+      setCustomerName('')
+      setCustomerEmail('')
+      setCustomerPhone('')
     } catch (error) {
       console.error("Erreur lors de l'ajout du devis:", error)
       alert("Erreur lors de l'ajout du devis.")
     }
+  }
+
+  const resetFormAndCloseModal = () => {
+    // Réinitialiser les informations du client
+    setCustomerName('')
+    setCustomerEmail('')
+    setCustomerPhone('')
+
+    // Optionnel: clearCart(); Si vous souhaitez également vider le panier lors de l'annulation
+
+    onClose() // Utilisez la fonction de fermeture existante pour fermer la modal
   }
 
   return (
@@ -137,7 +154,7 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
       <Box
         sx={{
           ...style,
-          maxHeight: '600px',
+          maxHeight: '800px',
           overflowY: 'auto',
         }}
       >
@@ -208,7 +225,7 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
           >
             Valider
           </Button>
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant="outlined" onClick={resetFormAndCloseModal}>
             Annuler
           </Button>
         </Box>
