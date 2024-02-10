@@ -5,6 +5,7 @@ import SalesLineChart from '../charts/SalesBarChart'
 import UserDetails from '../users/UserDetails'
 import DateRangePicker from '../ui/DateRangePicker'
 import Typography from '@mui/material/Typography'
+import QuoteGrid from '../quote/QuoteGrid'
 
 const DashboardPage = () => {
   const [selectedRange, setSelectedRange] = useState('this_month')
@@ -42,6 +43,18 @@ const DashboardPage = () => {
 
       <Box my={2}>
         <SalesLineChart selectedRange={selectedRange} dateRange={dateRange} />
+      </Box>
+      <Box my={2}>
+        <Typography
+          variant="h5"
+          component="h2"
+          style={{ textTransform: 'uppercase' }}
+        >
+          Les devis
+        </Typography>
+        <Box my={2}>
+          <QuoteGrid />
+        </Box>
       </Box>
     </Box>
   )
