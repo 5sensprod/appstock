@@ -10,8 +10,6 @@ import {
 
 export const CartContext = createContext()
 
-// const taxRate = 0.2
-
 export const CartProvider = ({ children }) => {
   const { updateProductInContext } = useProductContextSimplified()
   const [cartItems, setCartItems] = useState([])
@@ -30,7 +28,7 @@ export const CartProvider = ({ children }) => {
 
   const enrichCartItem = (item) => {
     const priceToUse = item.prixModifie ?? item.prixVente
-    const taxRateForItem = item.tva / 100 // Assurez-vous que le taux de TVA est en pourcentage
+    const taxRateForItem = item.tva / 100
     const prixHT = priceToUse / (1 + taxRateForItem)
     const montantTVA = calculateTax(prixHT, taxRateForItem)
     const tauxTVA = item.tva // Utilisez directement le taux de TVA du produit
