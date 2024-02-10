@@ -37,14 +37,34 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
     item.prixModifie !== undefined && item.prixModifie !== originalPrice
 
   const handlePriceChange = (event) => {
-    setPriceInput(event.target.value)
+    const value = event.target.value
+    // Autorise uniquement les nombres, +, -, % et remplace les virgules par des points.
+    const validValue = value.replace(',', '.').match(/^[-+]?[0-9]*\.?[0-9]*%?$/)
+    if (validValue) {
+      setPriceInput(value)
+    }
   }
 
   const confirmPriceChange = () => {
-    const newPrice = parseFloat(
-      priceInput.replace(/[^0-9,.-]/g, '').replace(',', '.'),
-    )
-    if (!isNaN(newPrice) && newPrice >= 0) {
+    let newPrice
+    const isPercentageChange = priceInput.includes('%')
+    const numericValue = parseFloat(priceInput.replace(/[^0-9.-]/g, ''))
+
+    if (isNaN(numericValue)) return // Sortie si la valeur n'est pas un nombre
+
+    if (isPercentageChange) {
+      // Calcule le nouveau prix en fonction du pourcentage
+      const percentage = numericValue / 100
+      newPrice = originalPrice + originalPrice * percentage
+    } else if (priceInput.startsWith('+') || priceInput.startsWith('-')) {
+      // Ajoute ou soustrait la valeur directement si elle commence par + ou -
+      newPrice = originalPrice + numericValue
+    } else {
+      // Sinon, utilise la valeur comme nouveau prix
+      newPrice = numericValue
+    }
+
+    if (newPrice >= 0) {
       updatePrice(item._id, newPrice)
       setPriceInput(formatPrice(newPrice))
     }
