@@ -77,3 +77,15 @@ export const formatNumberFrench = (number) => {
   // Convertir la valeur nettoyée en un nombre flottant et le formater
   return parseFloat(number).toLocaleString('fr-FR')
 }
+
+export const recalculateTotalHTFromDiscountedTTC = (discountedTTC, taxRate) => {
+  const taxDecimal = taxRate / 100
+  return discountedTTC / (1 + taxDecimal)
+}
+
+export const recalculateTotalTaxFromHTandTTC = (
+  recalculatedHT,
+  discountedTTC,
+) => {
+  return discountedTTC - recalculatedHT
+}

@@ -6,6 +6,8 @@ import {
   calculateTax,
   calculateTotalItem,
   applyCartDiscountOrMarkup,
+  recalculateTotalHTFromDiscountedTTC,
+  recalculateTotalTaxFromHTandTTC,
 } from '../utils/priceUtils'
 
 export const CartContext = createContext()
@@ -65,39 +67,46 @@ export const CartProvider = ({ children }) => {
   }
 
   const updateTotalWithAdjustment = (adjustment) => {
-    // Appliquer l'ajustement au total TTC
-    const newModifiedTotal = applyCartDiscountOrMarkup(
+    // Appliquer l'ajustement au total TTC pour obtenir le total TTC ajusté
+    const adjustedTotalTTC = applyCartDiscountOrMarkup(
       cartTotals.totalTTC,
       adjustment,
     )
 
-    // Recalculer le total HT et les taxes pour chaque article
+    // Initialiser les valeurs pour le recalcul
     let newTotalHT = 0
-    let newTotalTaxes = 0
+    let totalTaxAmount = 0
+
+    // Recalculer le total HT et les taxes basés sur le total TTC ajusté
     cartItems.forEach((item) => {
       const taxRateForItem = item.tva / 100
+      // Calculer la part du prix HT de chaque produit basé sur le prix ajusté et le taux de TVA
       const priceToUse = item.prixModifie ?? item.prixVente
-      const adjustedPrice = applyCartDiscountOrMarkup(priceToUse, adjustment)
-      const prixHT = adjustedPrice / (1 + taxRateForItem)
-      const montantTVA = adjustedPrice - prixHT
+      const itemTotalTTC = priceToUse * item.quantity
+      const itemShareOfTotalTTC =
+        (itemTotalTTC / cartTotals.totalTTC) * adjustedTotalTTC
+      const itemTotalHT = itemShareOfTotalTTC / (1 + taxRateForItem)
+      const itemTaxAmount = itemShareOfTotalTTC - itemTotalHT
 
-      newTotalHT += prixHT
-      newTotalTaxes += montantTVA
+      // Ajouter à la somme totale HT et au montant total de la TVA
+      newTotalHT += itemTotalHT
+      totalTaxAmount += itemTaxAmount
     })
 
-    setCartTotals({
-      ...cartTotals,
+    // Mettre à jour les totaux dans l'état du contexte
+    setCartTotals((prevTotals) => ({
+      ...prevTotals,
       totalHT: newTotalHT,
-      totalTaxes: newTotalTaxes,
-      modifiedTotal: newModifiedTotal,
-    })
+      totalTaxes: totalTaxAmount,
+      modifiedTotal: adjustedTotalTTC,
+    }))
 
     setAdjustmentAmount(adjustment)
 
     if (invoiceData) {
       setInvoiceData({
         ...invoiceData,
-        totalModified: newModifiedTotal,
+        totalModified: adjustedTotalTTC,
         adjustment: adjustment,
       })
     }
