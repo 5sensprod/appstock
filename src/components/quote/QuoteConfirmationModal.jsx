@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Modal, Box, Button, Typography } from '@mui/material'
+import { Modal, Box, Button, Typography, TextField } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { QuoteContext } from '../../contexts/QuoteContext'
 import { formatPrice } from '../../utils/priceUtils'
@@ -19,6 +19,9 @@ const style = {
 const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
   const { addQuote } = useContext(QuoteContext)
   const [preparedQuoteData, setPreparedQuoteData] = useState([])
+  const [customerName, setCustomerName] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
+  const [customerPhone, setCustomerPhone] = useState('')
 
   // Préparez les données dès que cartItems ou cartTotals changent
   useEffect(() => {
@@ -105,10 +108,20 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
   ]
 
   const handleConfirm = async () => {
+    // Inclure les informations du client dans preparedQuoteData
+    const quoteDataWithCustomerInfo = {
+      ...preparedQuoteData,
+      customerInfo: {
+        name: customerName,
+        email: customerEmail,
+        phone: customerPhone,
+      },
+    }
+
     try {
-      await addQuote(preparedQuoteData)
+      await addQuote(quoteDataWithCustomerInfo) // Utilisez la version mise à jour des données
       alert('Devis ajouté avec succès!')
-      onClose()
+      onClose() // Fermer la modal
     } catch (error) {
       console.error("Erreur lors de l'ajout du devis:", error)
       alert("Erreur lors de l'ajout du devis.")
@@ -149,8 +162,45 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
             }}
           />
         </div>
+        {!customerName && !customerEmail && !customerPhone && (
+          <Typography variant="body2" mt={2}>
+            Veuillez renseigner au moins un des champs suivants.
+          </Typography>
+        )}
+        <TextField
+          label="Nom du client"
+          size="small"
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+          fullWidth
+          margin="normal"
+        />
+
+        <TextField
+          label="Email du client"
+          size="small"
+          value={customerEmail}
+          onChange={(e) => setCustomerEmail(e.target.value)}
+          type="email"
+          fullWidth
+          margin="normal"
+        />
+
+        <TextField
+          label="Téléphone du client"
+          size="small"
+          value={customerPhone}
+          onChange={(e) => setCustomerPhone(e.target.value)}
+          type="tel"
+          fullWidth
+          margin="normal"
+        />
         <Box mt={2} display="flex" justifyContent="space-between">
-          <Button variant="contained" onClick={handleConfirm}>
+          <Button
+            variant="contained"
+            onClick={handleConfirm}
+            disabled={!customerName && !customerEmail && !customerPhone}
+          >
             Valider
           </Button>
           <Button variant="outlined" onClick={onClose}>
