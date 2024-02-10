@@ -114,12 +114,11 @@ export const CartProvider = ({ children }) => {
       totalTTC: newCartTotals.totalTTC,
       totalTaxes: newCartTotals.totalTaxes,
       originalTotal: newCartTotals.totalTTC,
-      // Ne pas mettre à jour modifiedTotal ici
+      // Ne pas mettre à jour modifiedTotal ici pour éviter de perdre l'ajustement lors des mises à jour du panier
     }))
 
-    // Réappliquer la remise ou la majoration déjà définie
-    if (adjustmentAmount !== 0) {
-      // Utilisez un callback pour garantir que vous travaillez avec les totaux les plus récents
+    // Réappliquer la remise ou la majoration déjà définie si adjustmentAmount n'est pas 0
+    if (adjustmentAmount !== 0 && cartItems.length > 0) {
       setCartTotals((prevTotals) => {
         const adjustedTotal = applyCartDiscountOrMarkup(
           prevTotals.totalTTC,
@@ -130,6 +129,11 @@ export const CartProvider = ({ children }) => {
           modifiedTotal: adjustedTotal,
         }
       })
+    }
+
+    // Réinitialiser adjustmentAmount si le panier est vide
+    if (cartItems.length === 0) {
+      setAdjustmentAmount(0)
     }
   }, [cartItems, adjustmentAmount])
 

@@ -17,12 +17,27 @@ const CartTotal = () => {
   }
 
   const handleAdjustmentConfirm = () => {
-    const numericAdjustment = parseFloat(adjustment)
+    let adjustmentValue = adjustment
+    let numericAdjustment = 0
+
+    if (adjustmentValue.endsWith('%')) {
+      // Retirez le signe % et convertissez en un nombre
+      const percentage = parseFloat(adjustmentValue.slice(0, -1))
+      if (!isNaN(percentage) && percentage !== 0) {
+        // Calculez le montant de l'ajustement en tant que pourcentage du total original
+        numericAdjustment = (percentage / 100) * cartTotals.originalTotal
+      }
+    } else {
+      // Traitement pour les valeurs numériques directes
+      numericAdjustment = parseFloat(adjustmentValue)
+    }
+
+    // Vérifiez si l'ajustement est numérique et non nul
     if (!isNaN(numericAdjustment) && numericAdjustment !== 0) {
       updateTotalWithAdjustment(numericAdjustment)
       setIsAdjustmentValidated(true)
     } else {
-      resetAdjustment() // Réinitialiser si la valeur est 0 ou non numérique
+      resetAdjustment() // Réinitialiser si la valeur est invalide
     }
   }
 
