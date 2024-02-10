@@ -17,7 +17,13 @@ const style = {
   p: 4,
 }
 
-const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
+const QuoteConfirmationModal = ({
+  open,
+  onClose,
+  cartItems,
+  cartTotals,
+  adjustmentAmount,
+}) => {
   const { addQuote } = useContext(QuoteContext)
   const { clearCart } = useContext(CartContext)
   const [preparedQuoteData, setPreparedQuoteData] = useState([])
@@ -34,9 +40,11 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
       prixHT: item.prixHT,
       tauxTVA: item.tauxTVA,
       totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
+      remiseMajorationLabel: item.remiseMajorationLabel,
+      remiseMajorationValue: item.remiseMajorationValue,
     }))
     const quoteData = {
-      items: items,
+      items,
       totalHT: cartTotals.totalHT,
       totalTTC: cartTotals.totalTTC,
     }
@@ -76,6 +84,19 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
       flex: 1,
     },
     {
+      field: 'remiseMajoration',
+      headerName: 'Remise/Majoration',
+      width: 180,
+      sortable: false,
+      flex: 1,
+      renderCell: (params) => {
+        // Assurez-vous que la remiseMajorationValue est traitée correctement comme un pourcentage
+        const value = params.row.remiseMajorationValue
+        const label = params.row.remiseMajorationLabel || 'Remise' // Utilisez un label par défaut si aucun n'est fourni
+        return value > 0 ? `${label}: ${value}%` : 'N/A'
+      },
+    },
+    {
       field: 'totalTTCParProduit',
       headerName: 'Total TTC',
       type: 'number',
@@ -108,6 +129,27 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
     { id: 1, type: 'Total HT', amount: preparedQuoteData.totalHT },
     { id: 2, type: 'Total TTC', amount: preparedQuoteData.totalTTC },
   ]
+
+  // Vérifier si une remise/majoration globale est appliquée et l'ajouter aux lignes
+  if (adjustmentAmount !== 0) {
+    const adjustmentType = adjustmentAmount > 0 ? 'Majoration ' : 'Remise '
+    const totalTTCAjusté =
+      parseFloat(preparedQuoteData.totalTTC) + adjustmentAmount // Assurez-vous que cela correspond à votre logique d'ajustement
+
+    // Ajouter une ligne pour le montant de la remise/majoration
+    totalRows.push({
+      id: totalRows.length + 1, // Assurer l'unicité de l'ID
+      type: adjustmentType,
+      amount: Math.abs(adjustmentAmount),
+    })
+
+    // Ajouter une ligne pour le Net à payer
+    totalRows.push({
+      id: totalRows.length + 1, // Assurer l'unicité de l'ID après l'ajout précédent
+      type: 'Net à payer',
+      amount: totalTTCAjusté,
+    })
+  }
 
   const handleConfirm = async () => {
     const quoteDataWithCustomerInfo = {

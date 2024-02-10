@@ -198,6 +198,7 @@ const Cart = () => {
         onClose={() => setIsQuoteModalOpen(false)}
         cartItems={cartItems}
         cartTotals={cartTotals}
+        adjustmentAmount={adjustmentAmount} // Ajout de cette ligne
       />
     </>
   )
