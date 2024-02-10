@@ -285,8 +285,20 @@ export const CartProvider = ({ children }) => {
 
   // Vider panier
   const clearCart = () => {
+    // Parcourir les articles du panier actuel pour rétablir le stock
+    cartItems.forEach((item) => {
+      if (item.stock !== null) {
+        // Calculer le nouveau stock
+        const newStock = item.stock + item.quantity
+        // Mettre à jour le stock du produit dans le contexte
+        updateProductInContext(item._id, { stock: newStock })
+      }
+    })
+
+    // Vider le panier après la mise à jour du stock
     setCartItems([])
-    // Réinitialiser également les totaux si nécessaire
+
+    // Réinitialiser les totaux du panier
     setCartTotals({
       totalHT: 0,
       totalTTC: 0,
@@ -294,7 +306,8 @@ export const CartProvider = ({ children }) => {
       originalTotal: 0,
       modifiedTotal: 0,
     })
-    // Vous pouvez également réinitialiser d'autres états liés au panier ici si nécessaire
+
+    // Réinitialiser d'autres états liés au panier ici si nécessaire
   }
 
   return (
