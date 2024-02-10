@@ -26,7 +26,7 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
       id: index,
       reference: item.reference,
       quantity: item.quantity,
-      prixHT: item.prixHT, // Prix unitaire HT
+      prixHT: item.prixHT,
       tauxTVA: item.tauxTVA,
       totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
     }))
