@@ -30,6 +30,11 @@ const QuoteConfirmationModal = ({
   const [customerName, setCustomerName] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
+  const hasMajoration = cartItems.some(
+    (item) =>
+      item.remiseMajorationValue > 0 &&
+      item.remiseMajorationLabel === 'Majoration',
+  )
 
   // Préparez les données dès que cartItems ou cartTotals changent
   useEffect(() => {
@@ -65,7 +70,7 @@ const QuoteConfirmationModal = ({
       type: 'number',
       width: 110,
       sortable: false,
-      flex: 1,
+      flex: 0.5,
     },
     {
       field: 'prixHT',
@@ -81,19 +86,17 @@ const QuoteConfirmationModal = ({
       type: 'number',
       width: 130,
       sortable: false,
-      flex: 1,
+      flex: 0.5,
     },
     {
       field: 'remiseMajoration',
-      headerName: 'Remise/Majoration',
+      headerName: hasMajoration ? 'Majoration' : 'Remise', // Choix dynamique basé sur la présence de majorations
       width: 180,
       sortable: false,
       flex: 1,
       renderCell: (params) => {
-        // Assurez-vous que la remiseMajorationValue est traitée correctement comme un pourcentage
         const value = params.row.remiseMajorationValue
-        const label = params.row.remiseMajorationLabel || 'Remise' // Utilisez un label par défaut si aucun n'est fourni
-        return value > 0 ? `${label}: ${value}%` : 'N/A'
+        return value > 0 ? `${value}%` : '0'
       },
     },
     {
