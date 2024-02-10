@@ -6,8 +6,6 @@ import {
   calculateTax,
   calculateTotalItem,
   applyCartDiscountOrMarkup,
-  recalculateTotalHTFromDiscountedTTC,
-  recalculateTotalTaxFromHTandTTC,
 } from '../utils/priceUtils'
 
 export const CartContext = createContext()
@@ -73,36 +71,30 @@ export const CartProvider = ({ children }) => {
       adjustment,
     )
 
-    // Initialiser les valeurs pour le recalcul
-    let newTotalHT = 0
-    let totalTaxAmount = 0
+    // Supposons que vous disposez d'une méthode pour obtenir un taux de TVA moyen si nécessaire
+    // Cela pourrait être nécessaire si vous gérez plusieurs taux de TVA différents
+    const averageTaxRate =
+      cartItems.length > 0
+        ? cartItems.reduce((acc, item) => acc + item.tva / cartItems.length, 0)
+        : 0
 
-    // Recalculer le total HT et les taxes basés sur le total TTC ajusté
-    cartItems.forEach((item) => {
-      const taxRateForItem = item.tva / 100
-      // Calculer la part du prix HT de chaque produit basé sur le prix ajusté et le taux de TVA
-      const priceToUse = item.prixModifie ?? item.prixVente
-      const itemTotalTTC = priceToUse * item.quantity
-      const itemShareOfTotalTTC =
-        (itemTotalTTC / cartTotals.totalTTC) * adjustedTotalTTC
-      const itemTotalHT = itemShareOfTotalTTC / (1 + taxRateForItem)
-      const itemTaxAmount = itemShareOfTotalTTC - itemTotalHT
+    // Calculer le nouveau total HT à partir du total TTC ajusté
+    const newTotalHT = adjustedTotalTTC / (1 + averageTaxRate / 100)
 
-      // Ajouter à la somme totale HT et au montant total de la TVA
-      newTotalHT += itemTotalHT
-      totalTaxAmount += itemTaxAmount
-    })
+    // Recalculer le total des taxes à partir du nouveau total HT et du total TTC ajusté
+    const newTotalTaxes = adjustedTotalTTC - newTotalHT
 
     // Mettre à jour les totaux dans l'état du contexte
     setCartTotals((prevTotals) => ({
       ...prevTotals,
       totalHT: newTotalHT,
-      totalTaxes: totalTaxAmount,
+      totalTaxes: newTotalTaxes,
       modifiedTotal: adjustedTotalTTC,
     }))
 
     setAdjustmentAmount(adjustment)
 
+    // Mettre à jour les données de la facture si nécessaire
     if (invoiceData) {
       setInvoiceData({
         ...invoiceData,
