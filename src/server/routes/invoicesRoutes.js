@@ -30,8 +30,25 @@ module.exports = (db) => {
   router.post('/', (req, res) => {
     const dateTimeString = getDateTimeString()
     const invoiceNumber = `${dateTimeString}`
+
+    // Traitement des éléments pour s'assurer que les prix et les totaux sont des nombres flottants arrondis
+    let itemsFormatted = req.body.items.map((item) => ({
+      ...item,
+      quantite: parseInt(item.quantite, 10),
+      puHT: parseFloat(parseFloat(item.puHT).toFixed(2)),
+      puTTC: parseFloat(parseFloat(item.puTTC).toFixed(2)),
+      tauxTVA: parseFloat(item.tauxTVA),
+      totalItem: parseFloat(parseFloat(item.totalItem).toFixed(2)),
+      montantTVA: parseFloat(parseFloat(item.montantTVA).toFixed(2)),
+      remiseMajorationValue: parseFloat(item.remiseMajorationValue),
+    }))
+
     let newInvoice = {
       ...req.body,
+      items: itemsFormatted,
+      totalHT: parseFloat(parseFloat(req.body.totalHT).toFixed(2)),
+      totalTVA: parseFloat(parseFloat(req.body.totalTVA).toFixed(2)),
+      totalTTC: parseFloat(parseFloat(req.body.totalTTC).toFixed(2)),
       invoiceNumber,
       date: new Date().toISOString(),
     }
@@ -40,11 +57,10 @@ module.exports = (db) => {
       if (err) {
         res.status(500).send("Erreur lors de l'ajout de la facture.")
       } else {
-        res.status(201).send(invoice)
+        res.status(201).json(invoice)
       }
     })
   })
-
   // Mettre à jour une facture
   router.put('/:id', (req, res) => {
     const { id } = req.params

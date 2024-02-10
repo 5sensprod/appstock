@@ -28,11 +28,7 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
       quantity: item.quantity,
       prixHT: item.prixHT, // Prix unitaire HT
       tauxTVA: item.tauxTVA,
-      // Calculez le total TTC par produit
-      totalTTCParProduit: (
-        (parseFloat(item.puTTC) ||
-          parseFloat(item.prixHT) * (1 + item.tauxTVA / 100)) * item.quantity
-      ).toFixed(2),
+      totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
     }))
     const quoteData = {
       items: items,
@@ -99,7 +95,6 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
       width: 150,
       flex: 1,
       type: 'number',
-      // Utilisez renderCell pour appliquer formatPrice à la valeur de chaque cellule
       renderCell: (params) => formatPrice(Number(params.value)),
     },
   ]
@@ -111,9 +106,9 @@ const QuoteConfirmationModal = ({ open, onClose, cartItems, cartTotals }) => {
 
   const handleConfirm = async () => {
     try {
-      await addQuote(preparedQuoteData) // Utilisez addQuote pour sauvegarder dans la base de données
+      await addQuote(preparedQuoteData)
       alert('Devis ajouté avec succès!')
-      onClose() // Fermez la modal
+      onClose()
     } catch (error) {
       console.error("Erreur lors de l'ajout du devis:", error)
       alert("Erreur lors de l'ajout du devis.")

@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 
 module.exports = (db) => {
-  // Obtenir tous les devis
   router.get('/', (req, res) => {
     db.quotes.find({}, (err, quotes) => {
       if (err) {
@@ -13,14 +12,47 @@ module.exports = (db) => {
     })
   })
 
+  const getDateTimeString = () => {
+    const now = new Date()
+    return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(
+      2,
+      '0',
+    )}${String(now.getDate()).padStart(2, '0')}-${String(
+      now.getHours(),
+    ).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(
+      now.getSeconds(),
+    ).padStart(2, '0')}`
+  }
+
   // Ajouter un nouveau devis
   router.post('/', (req, res) => {
-    const quote = req.body
-    db.quotes.insert(quote, (err, newQuote) => {
+    const dateTimeString = getDateTimeString()
+    const quoteNumber = `Q-${dateTimeString}`
+
+    let itemsFormatted = req.body.items.map((item) => ({
+      ...item,
+      quantity: parseInt(item.quantity, 10),
+      prixHT: parseFloat(item.prixHT),
+      tauxTVA: parseFloat(item.tauxTVA),
+      totalTTCParProduit: parseFloat(
+        parseFloat(item.totalTTCParProduit).toFixed(2),
+      ),
+    }))
+
+    let newQuote = {
+      ...req.body,
+      items: itemsFormatted,
+      totalHT: parseFloat(parseFloat(req.body.totalHT).toFixed(2)),
+      totalTTC: parseFloat(parseFloat(req.body.totalTTC).toFixed(2)),
+      quoteNumber,
+      date: new Date().toISOString(),
+    }
+
+    db.quotes.insert(newQuote, (err, quote) => {
       if (err) {
         res.status(500).send("Erreur lors de l'ajout du devis.")
       } else {
-        res.status(201).json(newQuote)
+        res.status(201).json(quote)
       }
     })
   })
