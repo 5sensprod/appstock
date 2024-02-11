@@ -28,6 +28,8 @@ const QuoteGrid = () => {
         tva: item.tauxTVA, // Assumer que tva et tauxTVA sont identiques et utilisés de manière interchangeable
         tauxTVA: item.tauxTVA,
         prixHT: item.prixHT,
+        // priceToUse: item.prixTTC,
+
         totalItem: item.totalTTCParProduit,
         montantTVA: montantTVA.toFixed(2), // Ajouter le montant de la TVA calculé ici
         remiseMajorationLabel: item.remiseMajorationLabel,

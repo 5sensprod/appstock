@@ -33,6 +33,7 @@ module.exports = (db) => {
       ...item,
       quantity: parseInt(item.quantity, 10),
       prixHT: parseFloat(item.prixHT),
+      prixTTC: parseFloat(item.prixTTC),
       tauxTVA: parseFloat(item.tauxTVA),
       totalTTCParProduit: parseFloat(
         parseFloat(item.totalTTCParProduit).toFixed(2),
