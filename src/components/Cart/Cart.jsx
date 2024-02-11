@@ -42,6 +42,7 @@ const Cart = () => {
     updateQuote,
     setActiveQuoteDetails,
     activeQuoteDetails,
+    handleDeleteQuote,
   } = useQuotes()
 
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
@@ -148,6 +149,11 @@ const Cart = () => {
     deactivateQuote()
     clearCart()
     navigate('/dashboard#les-devis')
+  }
+
+  const handleDeleteAndClear = async () => {
+    await handleDeleteQuote() // Supprime le devis
+    clearCart() // Vide le panier
   }
 
   return (
@@ -267,12 +273,11 @@ const Cart = () => {
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={deactivateQuote}
+                      onClick={handleDeleteAndClear}
                       sx={{ ml: 2 }}
                     >
                       Supprimer ce devis
                     </Button>
-                    {/* Implémenter la logique de sortie ici */}
                     <Button
                       variant="contained"
                       onClick={handleExitQuoteMode}

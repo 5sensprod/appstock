@@ -84,5 +84,20 @@ module.exports = (db) => {
     )
   })
 
+  // Supprimer un devis existant
+  router.delete('/:id', (req, res) => {
+    const quoteId = req.params.id
+
+    db.quotes.remove({ _id: quoteId }, {}, (err, numRemoved) => {
+      if (err) {
+        res.status(500).send('Erreur lors de la suppression du devis.')
+      } else if (numRemoved) {
+        res.status(200).json({ message: 'Devis supprimé avec succès.' })
+      } else {
+        res.status(404).send('Devis non trouvé.')
+      }
+    })
+  })
+
   return router
 }

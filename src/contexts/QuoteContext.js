@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import * as quoteService from '../api/quoteService'
+import { CartContext } from './CartContext'
 
 // Création du contexte
 export const QuoteContext = createContext()
@@ -108,6 +109,13 @@ export const QuoteProvider = ({ children }) => {
     setCustomerPhone('')
   }
 
+  const handleDeleteQuote = async () => {
+    if (activeQuoteDetails && activeQuoteDetails.id) {
+      await deleteQuote(activeQuoteDetails.id)
+      deactivateQuote()
+    }
+  }
+
   return (
     <QuoteContext.Provider
       value={{
@@ -123,12 +131,13 @@ export const QuoteProvider = ({ children }) => {
         setCustomerEmail,
         customerPhone,
         setCustomerPhone,
-        isActiveQuote, // Exposer l'état et les fonctions pour gérer le devis actif
+        isActiveQuote,
         activeQuoteDetails,
         activateQuote,
         setActiveQuoteDetails,
         deactivateQuote,
         setIsActiveQuote,
+        handleDeleteQuote,
       }}
     >
       {children}
