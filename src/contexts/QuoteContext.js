@@ -16,6 +16,12 @@ export const QuoteProvider = ({ children }) => {
   const [customerEmail, setCustomerEmail] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
 
+  const [isActiveQuote, setIsActiveQuote] = useState(false)
+  const [activeQuoteDetails, setActiveQuoteDetails] = useState({
+    quoteNumber: '',
+    contact: '',
+  })
+
   // Charger tous les devis au démarrage
   useEffect(() => {
     const fetchQuotes = async () => {
@@ -80,6 +86,28 @@ export const QuoteProvider = ({ children }) => {
     }
   }
 
+  // Activer un devis
+  const activateQuote = (quote) => {
+    setIsActiveQuote(true)
+    setActiveQuoteDetails(quote)
+    // Optionnellement, initialisez également les informations du client si elles sont disponibles
+    if (quote.customerInfo) {
+      setCustomerName(quote.customerInfo.name || '')
+      setCustomerEmail(quote.customerInfo.email || '')
+      setCustomerPhone(quote.customerInfo.phone || '')
+    }
+  }
+
+  // Désactiver le devis actif
+  const deactivateQuote = () => {
+    setIsActiveQuote(false)
+    setActiveQuoteDetails({})
+    // Réinitialiser les informations du client si nécessaire
+    setCustomerName('')
+    setCustomerEmail('')
+    setCustomerPhone('')
+  }
+
   return (
     <QuoteContext.Provider
       value={{
@@ -95,6 +123,10 @@ export const QuoteProvider = ({ children }) => {
         setCustomerEmail,
         customerPhone,
         setCustomerPhone,
+        isActiveQuote, // Exposer l'état et les fonctions pour gérer le devis actif
+        activeQuoteDetails,
+        activateQuote,
+        deactivateQuote,
       }}
     >
       {children}

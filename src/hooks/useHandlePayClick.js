@@ -2,6 +2,7 @@
 import { useContext } from 'react'
 import { CartContext } from '../contexts/CartContext'
 import { addInvoice } from '../api/invoiceService'
+import { useQuotes } from '../contexts/QuoteContext'
 
 const useHandlePayClick = () => {
   const {
@@ -12,6 +13,8 @@ const useHandlePayClick = () => {
     cartTotals,
     adjustmentAmount,
   } = useContext(CartContext)
+
+  const { deactivateQuote } = useQuotes()
 
   const handlePayClick = async (paymentType) => {
     const invoiceItems = cartItems.map((item) => ({
@@ -45,10 +48,10 @@ const useHandlePayClick = () => {
 
     try {
       const newInvoice = await addInvoice(newInvoiceData)
-      console.log('New invoice added:', newInvoice)
       setInvoiceData(newInvoice)
       setCartItems([])
       setIsModalOpen(true)
+      deactivateQuote()
     } catch (error) {
       console.error('An error occurred while adding the invoice:', error)
     }

@@ -15,11 +15,21 @@ const QuoteGrid = () => {
     setCustomerName,
     setCustomerEmail,
     setCustomerPhone,
+    activateQuote,
   } = useContext(QuoteContext)
   const { setCartItems } = useContext(CartContext)
   const navigate = useNavigate()
 
   const handleViewQuote = (quote) => {
+    // Activer le mode devis avec les détails du devis sélectionné
+    activateQuote({
+      quoteNumber: quote.quoteNumber, // Assurez-vous que l'objet quote contient bien un champ quoteNumber
+      contact: quote.customerInfo
+        ? `${quote.customerInfo.name || ''} ${quote.customerInfo.email || ''} ${quote.customerInfo.phone || ''}`.trim()
+        : 'Non spécifié',
+      // Vous pouvez ajouter d'autres détails pertinents ici
+    })
+
     // Mise à jour des informations du client dans le contexte
     if (quote.customerInfo) {
       const { name, email, phone } = quote.customerInfo
