@@ -43,6 +43,7 @@ const QuoteConfirmationModal = ({
       reference: item.reference,
       quantity: item.quantity,
       prixHT: item.prixHT,
+      prixTTC: item.puTTC,
       tauxTVA: item.tauxTVA,
       totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
       remiseMajorationLabel: item.remiseMajorationLabel,
@@ -75,6 +76,14 @@ const QuoteConfirmationModal = ({
     {
       field: 'prixHT',
       headerName: 'Prix HT',
+      type: 'number',
+      width: 130,
+      flex: 1,
+      renderCell: (params) => formatPrice(Number(params.value)),
+    },
+    {
+      field: 'prixTTC',
+      headerName: 'Prix TTC',
       type: 'number',
       width: 130,
       flex: 1,
