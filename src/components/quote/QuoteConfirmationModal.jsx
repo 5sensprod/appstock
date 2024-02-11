@@ -36,6 +36,8 @@ const QuoteConfirmationModal = ({
       item.remiseMajorationLabel === 'Majoration',
   )
 
+  const hasAdjustment = cartItems.some((item) => item.remiseMajorationValue > 0)
+
   // Préparez les données dès que cartItems ou cartTotals changent
   useEffect(() => {
     const items = cartItems.map((item, index) => ({

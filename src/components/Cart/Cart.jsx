@@ -34,6 +34,8 @@ const Cart = () => {
     clearCart,
   } = useContext(CartContext)
 
+  console.log('cartItems:', cartItems)
+
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [quoteData, setQuoteData] = useState({
     items: [],
@@ -48,7 +50,8 @@ const Cart = () => {
         reference: item.reference,
         quantity: item.quantity,
         prixHT: item.prixHT,
-        tauxTVA: item.tauxTVA,
+        prixTTC: item.prixVente,
+        tauxTVA: item.tva,
       })),
       totalHT: cartTotals.totalHT,
       totalTTC: cartTotals.totalTTC,
