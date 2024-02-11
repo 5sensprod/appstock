@@ -5,6 +5,7 @@ import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
 import { IconButton } from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { useNavigate } from 'react-router-dom'
 
 const QuoteGrid = () => {
@@ -16,9 +17,23 @@ const QuoteGrid = () => {
     setCustomerEmail,
     setCustomerPhone,
     activateQuote,
+    deleteQuote,
   } = useContext(QuoteContext)
+
   const { setCartItems } = useContext(CartContext)
   const navigate = useNavigate()
+
+  const handleDeleteQuoteFromGrid = async (id) => {
+    // Optionnel : Afficher une confirmation ici
+
+    try {
+      await deleteQuote(id) // Appel à la fonction deleteQuote du contexte
+      // Nettoyage supplémentaire si nécessaire, par exemple, vider le panier ou afficher une notification
+    } catch (error) {
+      console.error('Erreur lors de la suppression du devis:', error)
+      // Optionnel : Gérer l'affichage des erreurs ou des notifications ici
+    }
+  }
 
   const handleViewQuote = (quote) => {
     // Activer le mode devis avec les détails du devis sélectionné
@@ -79,15 +94,24 @@ const QuoteGrid = () => {
       field: 'actions',
       headerName: 'Actions',
       sortable: false,
-      width: 100,
+      width: 150, // Vous pourriez vouloir ajuster la largeur pour accueillir les deux icônes
       renderCell: (params) => (
-        <IconButton
-          onClick={() => handleViewQuote(params.row)}
-          color="primary"
-          aria-label="view quote"
-        >
-          <VisibilityIcon />
-        </IconButton>
+        <div>
+          <IconButton
+            onClick={() => handleViewQuote(params.row)}
+            color="primary"
+            aria-label="view quote"
+          >
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => handleDeleteQuoteFromGrid(params.id)}
+            color="error"
+            aria-label="delete quote"
+          >
+            <DeleteIcon />
+          </IconButton>
+        </div>
       ),
     },
 
