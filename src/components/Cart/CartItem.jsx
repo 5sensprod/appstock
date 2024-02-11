@@ -14,7 +14,13 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import ProductModal from '../PRODUCTS/ProductModal'
 import { useConfig } from '../../contexts/ConfigContext'
 
-const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
+const CartItem = ({
+  item,
+  updatePrice,
+  updateQuantity,
+  removeItem,
+  onItemChange,
+}) => {
   const originalPrice = item.prixVente
   const [priceInput, setPriceInput] = useState(
     item.prixModifie
@@ -43,6 +49,7 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
     if (validValue) {
       setPriceInput(value)
     }
+    onItemChange()
   }
 
   const confirmPriceChange = () => {
@@ -67,6 +74,7 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
     if (newPrice >= 0) {
       updatePrice(item._id, newPrice)
       setPriceInput(formatPrice(newPrice))
+      onItemChange() // S'assurer que ceci est appelé après la mise à jour
     }
   }
 
@@ -81,6 +89,7 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
     } else {
       removeItem(item._id)
     }
+    onItemChange()
   }
 
   const handleRemoveClick = () => {

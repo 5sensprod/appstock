@@ -41,13 +41,14 @@ const DashboardPage = () => {
         />
       </Box>
 
-      <Box my={2}>
+      <Box my={2} maxWidth={853}>
         <SalesLineChart selectedRange={selectedRange} dateRange={dateRange} />
       </Box>
-      <Box my={2}>
+      <Box id="les-devis" my={2}>
         <Typography
           variant="h5"
           component="h2"
+          id="les-devis"
           style={{ textTransform: 'uppercase' }}
         >
           Les devis

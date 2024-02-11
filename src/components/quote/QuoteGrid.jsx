@@ -94,19 +94,19 @@ const QuoteGrid = () => {
     {
       field: 'quoteNumber',
       headerName: 'Numéro du devis',
-      flex: 1,
+      width: 200,
     },
     {
       field: 'date',
       headerName: 'Date',
-      width: 130,
-      flex: 1,
+      width: 150,
+      // flex: 1,
     },
     {
       field: 'contact',
       headerName: 'Contact',
-      width: 200,
-      flex: 1,
+      width: 150,
+      // flex: 1,
       valueGetter: (params) => {
         const info = params.row.customerInfo
         if (!info) return 'Non renseigné'
@@ -117,14 +117,15 @@ const QuoteGrid = () => {
       field: 'itemCount',
       headerName: "Nombre d'articles",
       type: 'number',
-      width: 150,
-      flex: 1,
+      width: 100,
+      // flex: 1,
       valueGetter: (params) => params.row.items.length,
     },
     {
       field: 'totalTTC',
       headerName: 'Total TTC',
-      flex: 1,
+      width: 100,
+      // flex: 1,
       valueFormatter: ({ value }) => formatPrice(value),
     },
   ]
@@ -143,7 +144,7 @@ const QuoteGrid = () => {
   if (error) return <div>Erreur: {error}</div>
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ width: 852 }}>
       <DataGrid
         rows={rows}
         columns={columns}

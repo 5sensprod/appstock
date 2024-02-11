@@ -19,6 +19,7 @@ import OnHoldInvoices from '../invoice/OnHoldInvoices'
 import CartTotal from './CartTotal'
 import QuoteConfirmationModal from '../quote/QuoteConfirmationModal'
 import { useQuotes } from '../../contexts/QuoteContext'
+import { useNavigate } from 'react-router-dom'
 
 const Cart = () => {
   const {
@@ -50,23 +51,13 @@ const Cart = () => {
     totalTTC: 0,
   })
 
-  const [initialCartItems, setInitialCartItems] = useState([])
   const [hasChanges, setHasChanges] = useState(false)
 
-  // Potentiellement écouter un changement sur isActiveQuote ou un identifiant spécifique dans activeQuoteDetails
-  useEffect(() => {
-    if (isActiveQuote) {
-      // Supposons que cela se déclenche lors de l'activation d'un devis
-      setInitialCartItems([...cartItems])
-    }
-  }, [isActiveQuote, cartItems]) // Écouter isActiveQuote pour réinitialiser les initialCartItems
+  const handleItemChange = () => {
+    setHasChanges(true)
+  }
 
-  useEffect(() => {
-    // Vérifier si les cartItems actuels diffèrent des cartItems initiaux
-    const changesDetected =
-      JSON.stringify(cartItems) !== JSON.stringify(initialCartItems)
-    setHasChanges(changesDetected)
-  }, [cartItems, initialCartItems])
+  const navigate = useNavigate()
 
   const prepareQuoteData = () => {
     const data = {
@@ -143,7 +134,8 @@ const Cart = () => {
         await updateQuote(activeQuoteDetails.id, quoteData)
         alert('Le devis a été sauvegardé avec succès.')
         deactivateQuote() // Optionnel : Désactiver le mode devis après mise à jour
-        // Autres actions post-mise à jour...
+        clearCart()
+        navigate('/dashboard#les-devis')
       } catch (error) {
         console.error('Erreur lors de la sauvegarde du devis:', error)
         alert('Erreur lors de la sauvegarde du devis.')
@@ -153,9 +145,9 @@ const Cart = () => {
     }
   }
   const handleExitQuoteMode = () => {
-    deactivateQuote() // Désactive le mode devis
-    clearCart() // Optionnel: Vide le panier si nécessaire
-    // navigate('/'); // Optionnel: Naviguer vers la page d'accueil ou une autre page
+    deactivateQuote()
+    clearCart()
+    navigate('/dashboard#les-devis')
   }
 
   return (
@@ -171,6 +163,7 @@ const Cart = () => {
                     updateQuantity={updateQuantity}
                     updatePrice={updatePrice}
                     removeItem={removeItem}
+                    onItemChange={handleItemChange}
                   />
                 </Box>
               ))}
@@ -266,7 +259,7 @@ const Cart = () => {
                     <Button
                       variant="contained"
                       onClick={handleSaveQuote}
-                      // disabled
+                      disabled={!hasChanges}
                       sx={{ ml: 2 }}
                     >
                       Sauvegarder le devis
