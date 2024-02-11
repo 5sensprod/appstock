@@ -22,12 +22,13 @@ const QuoteGrid = () => {
 
   const handleViewQuote = (quote) => {
     // Activer le mode devis avec les détails du devis sélectionné
+    // Activer le mode devis avec les détails du devis sélectionné, incluant l'_id
     activateQuote({
-      quoteNumber: quote.quoteNumber, // Assurez-vous que l'objet quote contient bien un champ quoteNumber
+      id: quote._id, // Transmettre explicitement l'_id du devis
+      quoteNumber: quote.quoteNumber,
       contact: quote.customerInfo
         ? `${quote.customerInfo.name || ''} ${quote.customerInfo.email || ''} ${quote.customerInfo.phone || ''}`.trim()
         : 'Non spécifié',
-      // Vous pouvez ajouter d'autres détails pertinents ici
     })
 
     // Mise à jour des informations du client dans le contexte

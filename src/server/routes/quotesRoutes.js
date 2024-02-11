@@ -2,6 +2,26 @@ const express = require('express')
 const router = express.Router()
 
 module.exports = (db) => {
+  function formatQuoteData(body) {
+    const itemsFormatted = body.items.map((item) => ({
+      ...item,
+      quantity: parseInt(item.quantity, 10),
+      prixHT: parseFloat(item.prixHT),
+      prixTTC: parseFloat(item.prixTTC),
+      tauxTVA: parseFloat(item.tauxTVA),
+      prixOriginal: parseFloat(item.prixOriginal),
+      totalTTCParProduit: parseFloat(item.totalTTCParProduit).toFixed(2),
+    }))
+
+    return {
+      ...body,
+      items: itemsFormatted,
+      totalHT: parseFloat(body.totalHT).toFixed(2),
+      totalTTC: parseFloat(body.totalTTC).toFixed(2),
+      date: new Date().toISOString(), // Vous pouvez décider de mettre à jour la date ici ou la laisser telle quelle pour la mise à jour
+    }
+  }
+
   router.get('/', (req, res) => {
     db.quotes.find({}, (err, quotes) => {
       if (err) {
@@ -26,29 +46,9 @@ module.exports = (db) => {
 
   // Ajouter un nouveau devis
   router.post('/', (req, res) => {
-    const dateTimeString = getDateTimeString()
-    const quoteNumber = `Q-${dateTimeString}`
-
-    let itemsFormatted = req.body.items.map((item) => ({
-      ...item,
-      quantity: parseInt(item.quantity, 10),
-      prixHT: parseFloat(item.prixHT),
-      prixTTC: parseFloat(item.prixTTC),
-      tauxTVA: parseFloat(item.tauxTVA),
-      prixOriginal: parseFloat(item.prixOriginal),
-      totalTTCParProduit: parseFloat(
-        parseFloat(item.totalTTCParProduit).toFixed(2),
-      ),
-    }))
-
-    let newQuote = {
-      ...req.body,
-      items: itemsFormatted,
-      totalHT: parseFloat(parseFloat(req.body.totalHT).toFixed(2)),
-      totalTTC: parseFloat(parseFloat(req.body.totalTTC).toFixed(2)),
-      quoteNumber,
-      date: new Date().toISOString(),
-    }
+    const quoteNumber = `Q-${getDateTimeString()}`
+    const newQuote = formatQuoteData(req.body)
+    newQuote.quoteNumber = quoteNumber // Ajouter le numéro de devis après formatage
 
     db.quotes.insert(newQuote, (err, quote) => {
       if (err) {
@@ -59,7 +59,30 @@ module.exports = (db) => {
     })
   })
 
-  // Mettez ici d'autres méthodes pour gérer les devis (update, delete, etc.)
+  // Mettre à jour un devis existant
+  router.put('/:id', (req, res) => {
+    const quoteId = req.params.id
+    const updatedQuote = formatQuoteData(req.body) // Utiliser la même fonction pour formater les données
+
+    db.quotes.update(
+      { _id: quoteId },
+      { $set: updatedQuote },
+      {},
+      (err, numReplaced) => {
+        if (err) {
+          res.status(500).send('Erreur lors de la mise à jour du devis.')
+        } else if (numReplaced) {
+          res.status(200).json({
+            message: 'Devis mis à jour avec succès',
+            _id: quoteId,
+            updatedQuote,
+          })
+        } else {
+          res.status(404).send('Devis non trouvé.')
+        }
+      },
+    )
+  })
 
   return router
 }

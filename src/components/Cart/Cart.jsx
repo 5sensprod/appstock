@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { CartContext } from '../../contexts/CartContext'
 import CartItem from './CartItem'
 import OrderSummary from '../OrderSummary/OrderSummary'
@@ -35,8 +35,13 @@ const Cart = () => {
     clearCart,
   } = useContext(CartContext)
 
-  const { isActiveQuote, deactivateQuote, updateQuote, activeQuoteDetails } =
-    useQuotes()
+  const {
+    isActiveQuote,
+    deactivateQuote,
+    updateQuote,
+    setActiveQuoteDetails,
+    activeQuoteDetails,
+  } = useQuotes()
 
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [quoteData, setQuoteData] = useState({
@@ -44,6 +49,24 @@ const Cart = () => {
     totalHT: 0,
     totalTTC: 0,
   })
+
+  const [initialCartItems, setInitialCartItems] = useState([])
+  const [hasChanges, setHasChanges] = useState(false)
+
+  // Potentiellement écouter un changement sur isActiveQuote ou un identifiant spécifique dans activeQuoteDetails
+  useEffect(() => {
+    if (isActiveQuote) {
+      // Supposons que cela se déclenche lors de l'activation d'un devis
+      setInitialCartItems([...cartItems])
+    }
+  }, [isActiveQuote, cartItems]) // Écouter isActiveQuote pour réinitialiser les initialCartItems
+
+  useEffect(() => {
+    // Vérifier si les cartItems actuels diffèrent des cartItems initiaux
+    const changesDetected =
+      JSON.stringify(cartItems) !== JSON.stringify(initialCartItems)
+    setHasChanges(changesDetected)
+  }, [cartItems, initialCartItems])
 
   const prepareQuoteData = () => {
     const data = {
@@ -67,6 +90,28 @@ const Cart = () => {
     setQuoteData(data)
     setIsQuoteModalOpen(true)
   }
+
+  useEffect(() => {
+    setQuoteData({
+      items: cartItems.map((item) => ({
+        id: item._id,
+        reference: item.reference,
+        quantity: item.quantity,
+        prixHT: parseFloat(item.prixHT).toFixed(2),
+        prixTTC: item.prixModifie
+          ? parseFloat(item.prixModifie).toFixed(2)
+          : parseFloat(item.prixVente).toFixed(2),
+        prixOriginal: parseFloat(item.prixVente).toFixed(2),
+        tauxTVA: item.tva,
+        totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
+        remiseMajorationLabel: item.remiseMajorationLabel || '',
+        remiseMajorationValue: item.remiseMajorationValue || 0,
+      })),
+      totalHT: parseFloat(cartTotals.totalHT).toFixed(2),
+      totalTTC: parseFloat(cartTotals.totalTTC).toFixed(2),
+      // Assurez-vous d'inclure toutes les données nécessaires
+    })
+  }, [cartItems, cartTotals])
 
   const [paymentType, setPaymentType] = useState('CB')
   const [amountPaid, setAmountPaid] = useState('')
@@ -92,13 +137,13 @@ const Cart = () => {
 
   // Définir handleSaveQuote pour mettre à jour le devis actif
   const handleSaveQuote = async () => {
-    // Supposons que activeQuoteDetails contient l'ID du devis actif
-    // et que quoteData est la structure de données que vous voulez sauvegarder
     if (activeQuoteDetails && activeQuoteDetails.id) {
       try {
+        console.log(quoteData)
         await updateQuote(activeQuoteDetails.id, quoteData)
         alert('Le devis a été sauvegardé avec succès.')
-        // Effectuer d'autres actions au besoin, comme fermer une modale ou naviguer
+        deactivateQuote() // Optionnel : Désactiver le mode devis après mise à jour
+        // Autres actions post-mise à jour...
       } catch (error) {
         console.error('Erreur lors de la sauvegarde du devis:', error)
         alert('Erreur lors de la sauvegarde du devis.')
@@ -107,7 +152,6 @@ const Cart = () => {
       alert('Aucun devis actif à sauvegarder.')
     }
   }
-
   const handleExitQuoteMode = () => {
     deactivateQuote() // Désactive le mode devis
     clearCart() // Optionnel: Vide le panier si nécessaire
@@ -222,7 +266,7 @@ const Cart = () => {
                     <Button
                       variant="contained"
                       onClick={handleSaveQuote}
-                      disabled
+                      // disabled
                       sx={{ ml: 2 }}
                     >
                       Sauvegarder le devis

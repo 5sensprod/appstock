@@ -126,7 +126,9 @@ export const QuoteProvider = ({ children }) => {
         isActiveQuote, // Exposer l'état et les fonctions pour gérer le devis actif
         activeQuoteDetails,
         activateQuote,
+        setActiveQuoteDetails,
         deactivateQuote,
+        setIsActiveQuote,
       }}
     >
       {children}
