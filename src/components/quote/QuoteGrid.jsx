@@ -5,40 +5,62 @@ import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
 import { IconButton } from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import { useNavigate } from 'react-router-dom'
 
 const QuoteGrid = () => {
-  const { quotes, isLoading, error } = useContext(QuoteContext)
+  const {
+    quotes,
+    isLoading,
+    error,
+    setCustomerName,
+    setCustomerEmail,
+    setCustomerPhone,
+  } = useContext(QuoteContext)
   const { setCartItems } = useContext(CartContext)
+  const navigate = useNavigate()
 
   const handleViewQuote = (quote) => {
+    // Mise à jour des informations du client dans le contexte
+    if (quote.customerInfo) {
+      const { name, email, phone } = quote.customerInfo
+      setCustomerName(name || '')
+      setCustomerEmail(email || '')
+      setCustomerPhone(phone || '')
+    }
     const cartItemsFromQuote = quote.items.map((item) => {
-      // Calculer le montant de la TVA pour chaque article
+      // Assurez-vous que les valeurs sont correctement traitées comme des nombres
       const prixHT = parseFloat(item.prixHT)
-      const prixTTC = parseFloat(item.prixTTC)
+      // Utilisez prixTTC si disponible, sinon fallback sur prixOriginal pour refléter le prix actuel de l'article
+      const prixTTC =
+        item.prixTTC !== null
+          ? parseFloat(item.prixTTC)
+          : parseFloat(item.prixOriginal)
       const quantity = item.quantity
+
+      // Calculer le montant de la TVA pour chaque article
+      // Le montant de la TVA par article est la différence entre le prix TTC (ou prix modifié) et le prix HT, multipliée par la quantité
       const montantTVA = (prixTTC - prixHT) * quantity
 
       return {
         ...item,
-        _id: item.id,
+        _id: item.id, // Assurez-vous d'utiliser l'identifiant unique de l'article
         reference: item.reference,
         quantity: item.quantity,
-        prixVente: item.prixTTC, // Assumer que prixVente correspond au prixTTC pour la logique de l'application
-        puTTC: item.prixTTC,
-        tva: item.tauxTVA, // Assumer que tva et tauxTVA sont identiques et utilisés de manière interchangeable
-        tauxTVA: item.tauxTVA,
-        prixHT: item.prixHT,
-        // priceToUse: item.prixTTC,
-
-        totalItem: item.totalTTCParProduit,
-        montantTVA: montantTVA.toFixed(2), // Ajouter le montant de la TVA calculé ici
-        remiseMajorationLabel: item.remiseMajorationLabel,
-        remiseMajorationValue: item.remiseMajorationValue,
-        // Le calcul de prixModifie pourrait être inclus ici si nécessaire, en fonction de la logique spécifique de l'application
+        prixVente: item.prixOriginal, // Utiliser prixOriginal pour conserver le prix de vente original
+        puTTC: prixTTC, // Utiliser prixTTC comme le prix actuel de l'article, reflétant le prix modifié si applicable
+        tva: item.tauxTVA, // Utiliser tauxTVA pour le taux de TVA
+        tauxTVA: item.tauxTVA, // Répéter pour clarté, bien que redondant avec tva
+        prixHT: prixHT.toFixed(2), // Formaté pour cohérence
+        totalItem: (prixTTC * quantity).toFixed(2), // Calculer le total TTC basé sur le prix TTC actuel et la quantité
+        montantTVA: montantTVA.toFixed(2), // Ajouter le montant de la TVA calculé
+        remiseMajorationLabel: item.remiseMajorationLabel || '', // Inclure le label de remise/majoration
+        remiseMajorationValue: item.remiseMajorationValue || 0, // Inclure la valeur de remise/majoration
+        prixModifie: item.prixTTC, // Conserver explicitement prixModifie pour indiquer le prix modifié, même s'il est null
       }
     })
 
     setCartItems(cartItemsFromQuote)
+    navigate('/')
   }
 
   const columns = [

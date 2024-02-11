@@ -12,6 +12,9 @@ export const QuoteProvider = ({ children }) => {
   const [quotes, setQuotes] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [customerName, setCustomerName] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
+  const [customerPhone, setCustomerPhone] = useState('')
 
   // Charger tous les devis au démarrage
   useEffect(() => {
@@ -79,7 +82,20 @@ export const QuoteProvider = ({ children }) => {
 
   return (
     <QuoteContext.Provider
-      value={{ quotes, addQuote, updateQuote, deleteQuote, isLoading, error }}
+      value={{
+        quotes,
+        addQuote,
+        updateQuote,
+        deleteQuote,
+        isLoading,
+        error,
+        customerName,
+        setCustomerName,
+        customerEmail,
+        setCustomerEmail,
+        customerPhone,
+        setCustomerPhone,
+      }}
     >
       {children}
     </QuoteContext.Provider>

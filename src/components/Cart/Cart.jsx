@@ -45,17 +45,22 @@ const Cart = () => {
 
   const prepareQuoteData = () => {
     const data = {
-      items: cartItems.map((item, index) => ({
-        id: item._id || index,
+      items: cartItems.map((item) => ({
+        id: item._id,
         reference: item.reference,
         quantity: item.quantity,
-        prixHT: item.prixHT,
-        prixOriginal: item.prixVente,
-        prixTTC: item.prixModifié,
+        prixHT: parseFloat(item.prixHT).toFixed(2),
+        prixTTC: item.prixModifie
+          ? parseFloat(item.prixModifie).toFixed(2)
+          : parseFloat(item.prixVente).toFixed(2),
+        prixOriginal: parseFloat(item.prixVente).toFixed(2),
         tauxTVA: item.tva,
+        totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
+        remiseMajorationLabel: item.remiseMajorationLabel || '',
+        remiseMajorationValue: item.remiseMajorationValue || 0,
       })),
-      totalHT: cartTotals.totalHT,
-      totalTTC: cartTotals.totalTTC,
+      totalHT: parseFloat(cartTotals.totalHT).toFixed(2),
+      totalTTC: parseFloat(cartTotals.totalTTC).toFixed(2),
     }
     setQuoteData(data)
     setIsQuoteModalOpen(true)

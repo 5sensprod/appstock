@@ -24,12 +24,18 @@ const QuoteConfirmationModal = ({
   cartTotals,
   adjustmentAmount,
 }) => {
-  const { addQuote } = useContext(QuoteContext)
+  const {
+    addQuote,
+    customerName,
+    setCustomerName,
+    customerEmail,
+    setCustomerEmail,
+    customerPhone,
+    setCustomerPhone,
+  } = useContext(QuoteContext)
   const { clearCart } = useContext(CartContext)
   const [preparedQuoteData, setPreparedQuoteData] = useState([])
-  const [customerName, setCustomerName] = useState('')
-  const [customerEmail, setCustomerEmail] = useState('')
-  const [customerPhone, setCustomerPhone] = useState('')
+
   const hasMajoration = cartItems.some(
     (item) =>
       item.remiseMajorationValue > 0 &&
@@ -41,21 +47,23 @@ const QuoteConfirmationModal = ({
   // Préparez les données dès que cartItems ou cartTotals changent
   useEffect(() => {
     const items = cartItems.map((item, index) => ({
-      id: index,
+      id: item._id || index,
       reference: item.reference,
       quantity: item.quantity,
-      prixOriginal: item.prixVente,
-      prixHT: item.prixHT,
-      prixTTC: item.prixModifie,
+      prixHT: parseFloat(item.prixHT).toFixed(2),
+      prixTTC: item.prixModifie
+        ? parseFloat(item.prixModifie).toFixed(2)
+        : parseFloat(item.prixVente).toFixed(2),
+      prixOriginal: parseFloat(item.prixVente).toFixed(2),
       tauxTVA: item.tauxTVA,
       totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
-      remiseMajorationLabel: item.remiseMajorationLabel,
-      remiseMajorationValue: item.remiseMajorationValue,
+      remiseMajorationLabel: item.remiseMajorationLabel || '',
+      remiseMajorationValue: item.remiseMajorationValue || 0,
     }))
     const quoteData = {
       items,
-      totalHT: cartTotals.totalHT,
-      totalTTC: cartTotals.totalTTC,
+      totalHT: parseFloat(cartTotals.totalHT).toFixed(2),
+      totalTTC: parseFloat(cartTotals.totalTTC).toFixed(2),
     }
     setPreparedQuoteData(quoteData)
   }, [cartItems, cartTotals])
@@ -90,11 +98,7 @@ const QuoteConfirmationModal = ({
       type: 'number',
       width: 130,
       flex: 1,
-      renderCell: (params) => {
-        // Vérifie si params.value (prixTTC) est null
-        const valueToFormat = params.value ?? params.row.prixOriginal // Utilise prixOriginal si prixTTC est null
-        return formatPrice(Number(valueToFormat))
-      },
+      renderCell: (params) => formatPrice(Number(params.value)),
     },
     {
       field: 'tauxTVA',
