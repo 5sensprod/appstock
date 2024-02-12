@@ -24,7 +24,7 @@ const QuoteGrid = () => {
   } = useContext(QuoteContext)
 
   const generatePdf = useGeneratePdf()
-  const { showToast } = useUI()
+  const { showToast, showConfirmDialog } = useUI()
 
   const onPdfIconClick = (quoteId) => {
     generatePdf(quoteId, (message) => showToast(message, 'success'))
@@ -33,23 +33,23 @@ const QuoteGrid = () => {
   const { setCartItems } = useContext(CartContext)
   const navigate = useNavigate()
 
-  const handleDeleteQuoteFromGrid = async (id) => {
-    console.log("Tentative de suppression du devis avec l'ID:", id) // Log l'ID du devis à supprimer
-
-    // Optionnel : Afficher une confirmation ici
-
-    try {
-      await deleteQuote(id) // Appel à la fonction deleteQuote du contexte
-      console.log('Devis supprimé avec succès, ID:', id) // Confirmation de la suppression réussie
-
-      // Après la suppression, log l'état des devis pour vérifier la mise à jour
-      console.log('État des devis après suppression:', quotes)
-
-      // Nettoyage supplémentaire si nécessaire, par exemple, vider le panier ou afficher une notification
-    } catch (error) {
-      console.error('Erreur lors de la suppression du devis:', error) // Log l'erreur en cas de problème
-      // Optionnel : Gérer l'affichage des erreurs ou des notifications ici
-    }
+  const handleDeleteQuoteFromGrid = (id) => {
+    // Utiliser showConfirmDialog pour demander confirmation avant la suppression
+    showConfirmDialog(
+      'Suppression de devis',
+      'Êtes-vous sûr de vouloir supprimer ce devis ?',
+      async () => {
+        try {
+          // Tente de supprimer le devis
+          await deleteQuote(id) // Supposons que deleteQuote est une fonction asynchrone dans QuoteContext
+          showToast('Devis supprimé avec succès', 'success')
+          // Optionnel : rafraîchir la liste des devis ici si nécessaire
+        } catch (error) {
+          console.error('Erreur lors de la suppression du devis:', error)
+          showToast('Erreur lors de la suppression du devis', 'error')
+        }
+      },
+    )
   }
 
   const handleViewQuote = (quote) => {
