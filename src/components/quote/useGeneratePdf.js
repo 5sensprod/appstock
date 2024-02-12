@@ -10,7 +10,7 @@ export const useGeneratePdf = () => {
 
   // Calculer la date de validité (30 jours après la date du devis)
 
-  const generatePdf = async (quoteId) => {
+  const generatePdf = async (quoteId, onSuccess) => {
     try {
       const quoteDetails = await getQuoteDetailsById(quoteId)
       const doc = new jsPDF()
@@ -173,6 +173,10 @@ export const useGeneratePdf = () => {
 
       // Enregistrement du PDF
       doc.save(`Devis-${quoteDetails.quoteNumber}.pdf`)
+      if (onSuccess)
+        onSuccess(
+          `Devis-${quoteDetails.quoteNumber}.pdf a été créé avec succès.`,
+        )
     } catch (error) {
       console.error('Erreur lors de la génération du PDF:', error)
     }

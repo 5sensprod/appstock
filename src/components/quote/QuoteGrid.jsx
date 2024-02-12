@@ -9,6 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { useNavigate } from 'react-router-dom'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
 import { useGeneratePdf } from './useGeneratePdf'
+import { useUI } from '../../contexts/UIContext'
 
 const QuoteGrid = () => {
   const {
@@ -23,9 +24,10 @@ const QuoteGrid = () => {
   } = useContext(QuoteContext)
 
   const generatePdf = useGeneratePdf()
+  const { showToast } = useUI()
 
   const onPdfIconClick = (quoteId) => {
-    generatePdf(quoteId)
+    generatePdf(quoteId, (message) => showToast(message, 'success'))
   }
 
   const { setCartItems } = useContext(CartContext)
@@ -109,7 +111,7 @@ const QuoteGrid = () => {
       field: 'actions',
       headerName: 'Actions',
       sortable: false,
-      width: 150, // Vous pourriez vouloir ajuster la largeur pour accueillir les deux icônes
+      width: 150,
       renderCell: (params) => (
         <div>
           <IconButton
