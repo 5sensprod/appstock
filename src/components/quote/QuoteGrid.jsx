@@ -8,7 +8,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useNavigate } from 'react-router-dom'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
-import { jsPDF } from 'jspdf'
 import { useGeneratePdf } from './useGeneratePdf'
 
 const QuoteGrid = () => {
@@ -103,19 +102,6 @@ const QuoteGrid = () => {
 
     setCartItems(cartItemsFromQuote)
     navigate('/')
-  }
-
-  const handleCreatePdf = async (rowData) => {
-    // Exemple avec jsPDF, adaptez selon vos besoins et vos données
-    const doc = new jsPDF()
-
-    doc.text(`Devis Numéro: ${rowData.quoteNumber}`, 10, 10)
-    doc.text(`Total HT: ${rowData.totalHT}`, 10, 20)
-    doc.text(`Total TTC: ${rowData.totalTTC}`, 10, 30)
-    // Ajoutez ici plus de détails selon vos besoins
-
-    // Enregistrement du PDF
-    doc.save(`Devis-${rowData.quoteNumber}.pdf`)
   }
 
   const columns = [
