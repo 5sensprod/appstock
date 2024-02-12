@@ -9,6 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { useNavigate } from 'react-router-dom'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
 import { jsPDF } from 'jspdf'
+import { useGeneratePdf } from './useGeneratePdf'
 
 const QuoteGrid = () => {
   const {
@@ -21,6 +22,12 @@ const QuoteGrid = () => {
     activateQuote,
     deleteQuote,
   } = useContext(QuoteContext)
+
+  const generatePdf = useGeneratePdf()
+
+  const onPdfIconClick = (quoteId) => {
+    generatePdf(quoteId)
+  }
 
   const { setCartItems } = useContext(CartContext)
   const navigate = useNavigate()
@@ -120,7 +127,7 @@ const QuoteGrid = () => {
       renderCell: (params) => (
         <div>
           <IconButton
-            onClick={() => handleCreatePdf(params.row)}
+            onClick={() => onPdfIconClick(params.row._id)}
             color="primary"
             aria-label="create pdf"
           >

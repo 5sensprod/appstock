@@ -34,6 +34,20 @@ module.exports = (db) => {
     })
   })
 
+  router.get('/:id', (req, res) => {
+    const quoteId = req.params.id
+
+    db.quotes.findOne({ _id: quoteId }, (err, quote) => {
+      if (err) {
+        res.status(500).send('Erreur lors de la récupération du devis.')
+      } else if (quote) {
+        res.status(200).json(quote)
+      } else {
+        res.status(404).send('Devis non trouvé.')
+      }
+    })
+  })
+
   const getDateTimeString = () => {
     const now = new Date()
     return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(
