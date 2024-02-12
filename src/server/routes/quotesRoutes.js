@@ -10,15 +10,17 @@ module.exports = (db) => {
       prixTTC: parseFloat(item.prixTTC),
       tauxTVA: parseFloat(item.tauxTVA),
       prixOriginal: parseFloat(item.prixOriginal),
-      totalTTCParProduit: parseFloat(item.totalTTCParProduit).toFixed(2),
+      totalTTCParProduit: parseFloat(
+        parseFloat(item.totalTTCParProduit).toFixed(2),
+      ), // Convertir en nombre après toFixed
     }))
 
     return {
       ...body,
       items: itemsFormatted,
-      totalHT: parseFloat(body.totalHT).toFixed(2),
-      totalTTC: parseFloat(body.totalTTC).toFixed(2),
-      date: new Date().toISOString(), // Vous pouvez décider de mettre à jour la date ici ou la laisser telle quelle pour la mise à jour
+      totalHT: parseFloat(parseFloat(body.totalHT).toFixed(2)), // Convertir en nombre après toFixed
+      totalTTC: parseFloat(parseFloat(body.totalTTC).toFixed(2)), // Convertir en nombre après toFixed
+      date: new Date().toISOString(),
     }
   }
 

@@ -168,7 +168,7 @@ const QuoteGrid = () => {
   if (error) return <div>Erreur: {error}</div>
 
   return (
-    <div style={{ width: 852 }}>
+    <div style={{ width: 902 }}>
       <DataGrid
         rows={rows}
         columns={columns}
