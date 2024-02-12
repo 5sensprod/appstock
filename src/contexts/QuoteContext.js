@@ -62,7 +62,7 @@ export const QuoteProvider = ({ children }) => {
       await quoteService.updateQuote(id, quoteData)
       setQuotes(
         quotes.map((quote) =>
-          quote.id === id ? { ...quote, ...quoteData } : quote,
+          quote._id === id ? { ...quote, ...quoteData } : quote,
         ),
       )
       setError(null)
@@ -78,7 +78,7 @@ export const QuoteProvider = ({ children }) => {
     setIsLoading(true)
     try {
       await quoteService.deleteQuote(id)
-      setQuotes(quotes.filter((quote) => quote.id !== id))
+      setQuotes(quotes.filter((quote) => quote._id !== id))
       setError(null)
     } catch (err) {
       setError(err.message)

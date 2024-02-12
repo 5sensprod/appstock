@@ -24,13 +24,20 @@ const QuoteGrid = () => {
   const navigate = useNavigate()
 
   const handleDeleteQuoteFromGrid = async (id) => {
+    console.log("Tentative de suppression du devis avec l'ID:", id) // Log l'ID du devis à supprimer
+
     // Optionnel : Afficher une confirmation ici
 
     try {
       await deleteQuote(id) // Appel à la fonction deleteQuote du contexte
+      console.log('Devis supprimé avec succès, ID:', id) // Confirmation de la suppression réussie
+
+      // Après la suppression, log l'état des devis pour vérifier la mise à jour
+      console.log('État des devis après suppression:', quotes)
+
       // Nettoyage supplémentaire si nécessaire, par exemple, vider le panier ou afficher une notification
     } catch (error) {
-      console.error('Erreur lors de la suppression du devis:', error)
+      console.error('Erreur lors de la suppression du devis:', error) // Log l'erreur en cas de problème
       // Optionnel : Gérer l'affichage des erreurs ou des notifications ici
     }
   }
@@ -149,8 +156,7 @@ const QuoteGrid = () => {
       field: 'totalTTC',
       headerName: 'Total TTC',
       width: 100,
-      // flex: 1,
-      valueFormatter: ({ value }) => formatPrice(value),
+      valueFormatter: ({ value }) => formatPrice(parseFloat(value)),
     },
   ]
 
