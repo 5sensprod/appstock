@@ -60,7 +60,7 @@ export const useGeneratePdf = () => {
 
       doc.setFontSize(10)
       doc.text(
-        `Valable jusqu'au : ${validiteDevis.toLocaleDateString()}`,
+        `Validité : ${validiteDevis.toLocaleDateString()}`,
         10,
         currentYPosition,
       )
@@ -72,10 +72,18 @@ export const useGeneratePdf = () => {
         10,
         currentYPosition,
       )
+      currentYPosition += 7
+
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(10)
+      doc.text(`CONTACT`, 10, currentYPosition)
+
       currentYPosition += 5
 
       // Construction de la chaîne de caractères pour les informations du client
-      let clientInfoStr = `Client :`
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(12)
+
       const { name, email, phone } = quoteDetails.customerInfo
       // Vérifie et affiche le nom s'il est disponible
       if (name) {
@@ -94,10 +102,6 @@ export const useGeneratePdf = () => {
         doc.text(`Téléphone : ${phone}`, 10, currentYPosition)
         currentYPosition += 5
       }
-
-      // Affichage des informations du client dans le PDF
-      doc.text(clientInfoStr, 10, currentYPosition)
-      currentYPosition += 5
 
       // Tableau des articles
       const itemHeaders = [
