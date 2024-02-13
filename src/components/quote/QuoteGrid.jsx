@@ -53,9 +53,8 @@ const QuoteGrid = () => {
   }
 
   const handleViewQuote = (quote) => {
-    console.log('Détails du devis sélectionné:', quote) // Pour vérifier les informations initiales du devis
+    // console.log('Détails du devis sélectionné:', quote) Pour vérifier les informations initiales du devis
     // Activer le mode devis avec les détails du devis sélectionné
-    // Activer le mode devis avec les détails du devis sélectionné, incluant l'_id
     activateQuote({
       id: quote._id, // Transmettre explicitement l'_id du devis
       quoteNumber: quote.quoteNumber,
@@ -100,7 +99,7 @@ const QuoteGrid = () => {
       }
     })
 
-    console.log('Articles du devis après enrichissement:', cartItemsFromQuote) // Pour vérifier les
+    // console.log('Articles du devis après enrichissement:', cartItemsFromQuote) Pour vérifier les
 
     setCartItems(cartItemsFromQuote)
     navigate('/')
