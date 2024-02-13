@@ -132,8 +132,22 @@ const Cart = () => {
   const handleSaveQuote = async () => {
     if (activeQuoteDetails && activeQuoteDetails.id) {
       try {
-        console.log(quoteData)
-        await updateQuote(activeQuoteDetails.id, quoteData)
+        // Exemple de vérification et ajustement des valeurs numériques dans quoteData
+        const adjustedQuoteData = {
+          ...quoteData,
+          items: quoteData.items.map((item) => ({
+            ...item,
+            prixHT: parseFloat(item.prixHT),
+            prixTTC: parseFloat(item.prixTTC),
+            prixOriginal: parseFloat(item.prixOriginal),
+            quantity: parseInt(item.quantity, 10),
+            remiseMajorationValue: parseFloat(item.remiseMajorationValue),
+            totalTTCParProduit: parseFloat(item.totalTTCParProduit),
+          })),
+        }
+
+        console.log(adjustedQuoteData)
+        await updateQuote(activeQuoteDetails.id, adjustedQuoteData)
         showToast('Le devis a été sauvegardé avec succès.', 'success')
         clearCart()
         deactivateQuote()

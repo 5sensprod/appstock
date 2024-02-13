@@ -53,6 +53,7 @@ const QuoteGrid = () => {
   }
 
   const handleViewQuote = (quote) => {
+    console.log('Détails du devis sélectionné:', quote) // Pour vérifier les informations initiales du devis
     // Activer le mode devis avec les détails du devis sélectionné
     // Activer le mode devis avec les détails du devis sélectionné, incluant l'_id
     activateQuote({
@@ -71,36 +72,35 @@ const QuoteGrid = () => {
       setCustomerPhone(phone || '')
     }
     const cartItemsFromQuote = quote.items.map((item) => {
-      // Assurez-vous que les valeurs sont correctement traitées comme des nombres
       const prixHT = parseFloat(item.prixHT)
-      // Utilisez prixTTC si disponible, sinon fallback sur prixOriginal pour refléter le prix actuel de l'article
       const prixTTC =
         item.prixTTC !== null
           ? parseFloat(item.prixTTC)
           : parseFloat(item.prixOriginal)
-      const quantity = item.quantity
+      const quantity = parseInt(item.quantity, 10) // Assurez-vous que la quantité est un entier
 
-      // Calculer le montant de la TVA pour chaque article
-      // Le montant de la TVA par article est la différence entre le prix TTC (ou prix modifié) et le prix HT, multipliée par la quantité
+      // Calcul du montant de la TVA pour chaque article
       const montantTVA = (prixTTC - prixHT) * quantity
 
       return {
         ...item,
-        _id: item.id, // Assurez-vous d'utiliser l'identifiant unique de l'article
+        _id: item.id,
         reference: item.reference,
-        quantity: item.quantity,
-        prixVente: item.prixOriginal, // Utiliser prixOriginal pour conserver le prix de vente original
-        puTTC: prixTTC, // Utiliser prixTTC comme le prix actuel de l'article, reflétant le prix modifié si applicable
-        tva: item.tauxTVA, // Utiliser tauxTVA pour le taux de TVA
-        tauxTVA: item.tauxTVA, // Répéter pour clarté, bien que redondant avec tva
-        prixHT: prixHT.toFixed(2), // Formaté pour cohérence
-        totalItem: (prixTTC * quantity).toFixed(2), // Calculer le total TTC basé sur le prix TTC actuel et la quantité
-        montantTVA: montantTVA.toFixed(2), // Ajouter le montant de la TVA calculé
-        remiseMajorationLabel: item.remiseMajorationLabel || '', // Inclure le label de remise/majoration
-        remiseMajorationValue: item.remiseMajorationValue || 0, // Inclure la valeur de remise/majoration
-        prixModifie: item.prixTTC, // Conserver explicitement prixModifie pour indiquer le prix modifié, même s'il est null
+        quantity,
+        prixVente: item.prixOriginal,
+        puTTC: prixTTC,
+        tva: item.tauxTVA,
+        tauxTVA: item.tauxTVA,
+        prixHT: parseFloat(prixHT.toFixed(2)), // Convertir en nombre après formatage
+        totalItem: parseFloat((prixTTC * quantity).toFixed(2)), // Convertir en nombre après formatage
+        montantTVA: parseFloat(montantTVA.toFixed(2)), // Convertir en nombre après formatage
+        remiseMajorationLabel: item.remiseMajorationLabel || '',
+        remiseMajorationValue: item.remiseMajorationValue || 0,
+        prixModifie: item.prixTTC,
       }
     })
+
+    console.log('Articles du devis après enrichissement:', cartItemsFromQuote) // Pour vérifier les
 
     setCartItems(cartItemsFromQuote)
     navigate('/')
