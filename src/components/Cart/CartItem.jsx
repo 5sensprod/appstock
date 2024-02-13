@@ -57,6 +57,20 @@ const CartItem = ({
     const isPercentageChange = priceInput.includes('%')
     const numericValue = parseFloat(priceInput.replace(/[^0-9.-]/g, ''))
 
+    // Convertissez la valeur saisie au format numérique pour une comparaison précise
+    const formattedInputValue = parseFloat(priceInput.replace(',', '.'))
+
+    // Obtenez le prix actuel pour la comparaison
+    const currentPrice = item.prixModifie
+      ? parseFloat(item.prixModifie)
+      : parseFloat(originalPrice)
+
+    // Vérifiez si l'utilisateur a effectivement modifié le prix
+    if (formattedInputValue === currentPrice) {
+      // Si la valeur n'a pas changé, simplement retourner sans mettre à jour
+      return
+    }
+
     if (isNaN(numericValue)) return // Sortie si la valeur n'est pas un nombre
 
     if (isPercentageChange) {
