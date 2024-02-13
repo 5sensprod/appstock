@@ -4,6 +4,8 @@ import { DataGrid } from '@mui/x-data-grid'
 import { QuoteContext } from '../../contexts/QuoteContext'
 import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
+import { useUI } from '../../contexts/UIContext'
+import { useNavigate } from 'react-router-dom'
 
 const style = {
   position: 'absolute',
@@ -43,6 +45,8 @@ const QuoteConfirmationModal = ({
   )
 
   const hasAdjustment = cartItems.some((item) => item.remiseMajorationValue > 0)
+  const { showToast } = useUI()
+  const navigate = useNavigate()
 
   // Préparez les données dès que cartItems ou cartTotals changent
   useEffect(() => {
@@ -186,15 +190,16 @@ const QuoteConfirmationModal = ({
 
     try {
       await addQuote(quoteDataWithCustomerInfo)
-      alert('Devis ajouté avec succès!')
+      showToast('Devis ajouté avec succès!', 'success')
       onClose()
       clearCart()
       setCustomerName('')
       setCustomerEmail('')
       setCustomerPhone('')
+      navigate('/dashboard#les-devis')
     } catch (error) {
       console.error("Erreur lors de l'ajout du devis:", error)
-      alert("Erreur lors de l'ajout du devis.")
+      showToast("Erreur lors de l'ajout du devis.", 'error')
     }
   }
 

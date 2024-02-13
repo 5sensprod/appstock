@@ -20,6 +20,7 @@ import CartTotal from './CartTotal'
 import QuoteConfirmationModal from '../quote/QuoteConfirmationModal'
 import { useQuotes } from '../../contexts/QuoteContext'
 import { useNavigate } from 'react-router-dom'
+import { useUI } from '../../contexts/UIContext'
 
 const Cart = () => {
   const {
@@ -53,6 +54,7 @@ const Cart = () => {
   })
 
   const [hasChanges, setHasChanges] = useState(false)
+  const { showToast } = useUI()
 
   const handleItemChange = () => {
     setHasChanges(true)
@@ -133,28 +135,29 @@ const Cart = () => {
       try {
         console.log(quoteData)
         await updateQuote(activeQuoteDetails.id, quoteData)
-        alert('Le devis a été sauvegardé avec succès.')
+        showToast('Le devis a été sauvegardé avec succès.', 'success')
         deactivateQuote() // Optionnel : Désactiver le mode devis après mise à jour
         clearCart()
         navigate('/dashboard#les-devis')
       } catch (error) {
         console.error('Erreur lors de la sauvegarde du devis:', error)
-        alert('Erreur lors de la sauvegarde du devis.')
+        showToast('Erreur lors de la sauvegarde du devis.', 'error')
       }
     } else {
-      alert('Aucun devis actif à sauvegarder.')
+      showToast('Aucun devis actif à sauvegarder.', 'warning')
     }
   }
+
   const handleExitQuoteMode = () => {
     deactivateQuote()
     clearCart()
     navigate('/dashboard#les-devis')
   }
 
-  const handleDeleteAndClear = async () => {
-    await handleDeleteQuote() // Supprime le devis
-    clearCart() // Vide le panier
-  }
+  // const handleDeleteAndClear = async () => {
+  //   await handleDeleteQuote() // Supprime le devis
+  //   clearCart() // Vide le panier
+  // }
 
   return (
     <>
@@ -270,14 +273,14 @@ const Cart = () => {
                     >
                       Sauvegarder le devis
                     </Button>
-                    <Button
+                    {/* <Button
                       variant="contained"
                       color="error"
                       onClick={handleDeleteAndClear}
                       sx={{ ml: 2 }}
                     >
                       Supprimer ce devis
-                    </Button>
+                    </Button> */}
                     <Button
                       variant="contained"
                       onClick={handleExitQuoteMode}
