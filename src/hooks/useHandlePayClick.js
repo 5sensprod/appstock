@@ -3,6 +3,7 @@ import { useContext } from 'react'
 import { CartContext } from '../contexts/CartContext'
 import { addInvoice } from '../api/invoiceService'
 import { useQuotes } from '../contexts/QuoteContext'
+import { useProductContextSimplified } from '../contexts/ProductContextSimplified'
 
 const useHandlePayClick = () => {
   const {
@@ -15,6 +16,7 @@ const useHandlePayClick = () => {
   } = useContext(CartContext)
 
   const { deactivateQuote } = useQuotes()
+  const { updateProductInContext } = useProductContextSimplified()
 
   const handlePayClick = async (paymentType) => {
     const invoiceItems = cartItems.map((item) => ({
@@ -48,6 +50,11 @@ const useHandlePayClick = () => {
 
     try {
       const newInvoice = await addInvoice(newInvoiceData)
+      // Après la création de la facture, mettre à jour le stock pour chaque produit
+      for (const item of cartItems) {
+        const newStock = item.stock - item.quantity // Calculez le nouveau stock ici
+        await updateProductInContext(item._id, { stock: newStock })
+      }
       setInvoiceData(newInvoice)
       setCartItems([])
       setIsModalOpen(true)

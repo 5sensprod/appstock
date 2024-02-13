@@ -199,31 +199,14 @@ export const CartProvider = ({ children }) => {
       const itemIndex = currentItems.findIndex(
         (item) => item._id === product._id,
       )
-
       if (itemIndex > -1) {
-        // Le produit est déjà dans le panier
+        // Le produit est déjà dans le panier, augmenter seulement la quantité
         const newItems = [...currentItems]
         newItems[itemIndex].quantity += 1
-
-        // Mettre à jour le stock si nécessaire
-        if (newItems[itemIndex].stock !== null) {
-          const newStock = newItems[itemIndex].stock - 1
-          newItems[itemIndex].stock = newStock
-          updateProductInContext(product._id, { stock: newStock })
-        }
-        setUpdateTrigger((prev) => !prev)
         return newItems
       } else {
-        // Ajouter un nouveau produit au panier
-        const newItem = enrichCartItem({
-          ...product,
-          quantity: 1,
-          stock: product.stock - 1,
-        })
-        if (product.stock !== null) {
-          updateProductInContext(product._id, { stock: newItem.stock })
-        }
-        return [...currentItems, newItem]
+        // Ajouter un nouveau produit au panier avec une quantité initiale de 1
+        return [...currentItems, { ...enrichCartItem(product), quantity: 1 }]
       }
     })
   }
@@ -231,26 +214,9 @@ export const CartProvider = ({ children }) => {
   // Mettre à jour la quantité d'un produit dans le panier
   const updateQuantity = (productId, newQuantity) => {
     setCartItems((currentItems) => {
-      return currentItems.map((item) => {
-        if (item._id === productId) {
-          // Calculer le changement de quantité
-          const quantityChange = newQuantity - item.quantity
-
-          // Mettre à jour le stock
-          if (item.stock !== null) {
-            const newStock = item.stock - quantityChange
-            updateProductInContext(productId, { stock: newStock })
-            return enrichCartItem({
-              ...item,
-              quantity: newQuantity,
-              stock: newStock,
-            })
-          }
-
-          return enrichCartItem({ ...item, quantity: newQuantity })
-        }
-        return item
-      })
+      return currentItems.map((item) =>
+        item._id === productId ? { ...item, quantity: newQuantity } : item,
+      )
     })
   }
 
@@ -267,21 +233,9 @@ export const CartProvider = ({ children }) => {
 
   // Retirer un produit du panier
   const removeItem = (productId) => {
-    setCartItems((currentItems) => {
-      const itemIndex = currentItems.findIndex((item) => item._id === productId)
-
-      if (itemIndex > -1) {
-        const item = currentItems[itemIndex]
-        // Rétablir le stock si nécessaire
-        if (item.stock !== null) {
-          updateProductInContext(productId, {
-            stock: item.stock + item.quantity,
-          })
-        }
-      }
-
-      return currentItems.filter((item) => item._id !== productId)
-    })
+    setCartItems((currentItems) =>
+      currentItems.filter((item) => item._id !== productId),
+    )
   }
 
   // Vider panier
