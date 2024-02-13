@@ -10,6 +10,7 @@ module.exports = (db) => {
       prixTTC: parseFloat(item.prixTTC),
       tauxTVA: parseFloat(item.tauxTVA),
       prixOriginal: parseFloat(item.prixOriginal),
+      remiseMajorationValue: parseFloat(item.remiseMajorationValue),
       totalTTCParProduit: parseFloat(
         parseFloat(item.totalTTCParProduit).toFixed(2),
       ), // Convertir en nombre après toFixed
