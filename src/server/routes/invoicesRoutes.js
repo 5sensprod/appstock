@@ -13,19 +13,6 @@ module.exports = (db) => {
     })
   })
 
-  // Fonction pour obtenir la date et l'heure actuelle sous forme de chaîne
-  const getDateTimeString = () => {
-    const now = new Date()
-    return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(
-      2,
-      '0',
-    )}${String(now.getDate()).padStart(2, '0')}-${String(
-      now.getHours(),
-    ).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(
-      now.getSeconds(),
-    ).padStart(2, '0')}`
-  }
-
   // Ajouter une nouvelle facture
   router.post('/', async (req, res) => {
     // Récupérer le dernier numéro de facture et incrémenter
