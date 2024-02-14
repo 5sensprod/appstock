@@ -54,7 +54,7 @@ const QuoteGrid = () => {
   const handleViewQuote = (quote) => {
     // Activer le mode devis avec les détails du devis sélectionné
     activateQuote({
-      _id: quote._id,
+      id: quote._id,
       quoteNumber: quote.quoteNumber,
       contact: quote.customerInfo
         ? `${quote.customerInfo.name || ''} ${quote.customerInfo.email || ''} ${quote.customerInfo.phone || ''}`.trim()
