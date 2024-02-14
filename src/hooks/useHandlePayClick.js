@@ -16,9 +16,15 @@ const useHandlePayClick = () => {
   } = useContext(CartContext)
 
   const { deactivateQuote } = useQuotes()
-  const { updateProductInContext } = useProductContextSimplified()
+  const { updateProductInContext, updateProductStock } =
+    useProductContextSimplified()
 
   const handlePayClick = async (paymentType) => {
+    console.log('Début du processus de paiement')
+
+    // Log des articles du panier pour vérifier les données
+    console.log('Articles du panier au moment du paiement:', cartItems)
+
     const invoiceItems = cartItems.map((item) => ({
       reference: item.reference,
       quantite: item.quantity,
@@ -34,10 +40,12 @@ const useHandlePayClick = () => {
       }),
     }))
 
+    // Log des articles formatés pour la facture
+    console.log('Articles formatés pour la facture:', invoiceItems)
+
     const totalToUse =
       adjustmentAmount !== 0 ? cartTotals.modifiedTotal : cartTotals.totalTTC
 
-    // Créez un nouvel objet de données de facture pour l'envoyer
     const newInvoiceData = {
       items: invoiceItems,
       totalHT: cartTotals.totalHT.toFixed(2),
@@ -50,17 +58,22 @@ const useHandlePayClick = () => {
 
     try {
       const newInvoice = await addInvoice(newInvoiceData)
-      // Après la création de la facture, mettre à jour le stock pour chaque produit
+      console.log('Facture créée avec succès:', newInvoice)
+
+      // Log spécifique pour la mise à jour du stock
       for (const item of cartItems) {
-        const newStock = item.stock - item.quantity // Calculez le nouveau stock ici
-        await updateProductInContext(item._id, { stock: newStock })
+        await updateProductStock(item._id, item.quantity)
       }
+
       setInvoiceData(newInvoice)
       setCartItems([])
       setIsModalOpen(true)
       deactivateQuote()
     } catch (error) {
-      console.error('An error occurred while adding the invoice:', error)
+      console.error(
+        "Une erreur s'est produite lors de l'ajout de la facture:",
+        error,
+      )
     }
   }
 

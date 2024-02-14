@@ -93,6 +93,36 @@ export const ProductProviderSimplified = ({ children }) => {
     }
   }, [baseUrl, loadProducts])
 
+  // Fonction pour mettre à jour le stock d'un produit spécifique
+  const updateProductStock = async (productId, quantityToSubtract) => {
+    try {
+      // Récupérer le produit actuel par son ID pour obtenir le stock actuel
+      const currentProduct = products.find(
+        (product) => product._id === productId,
+      )
+      if (!currentProduct) {
+        throw new Error('Produit non trouvé')
+      }
+
+      // Calculer le nouveau stock
+      const newStock = Math.max(0, currentProduct.stock - quantityToSubtract) // Assurez-vous que le stock ne devient pas négatif
+
+      // Mettre à jour le produit avec le nouveau stock
+      await updateProduct(productId, { ...currentProduct, stock: newStock })
+
+      // Mettre à jour l'état local des produits
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product._id === productId ? { ...product, stock: newStock } : product,
+        ),
+      )
+
+      // Optionnel : Dispatcher un événement ou exécuter une action supplémentaire ici
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du stock du produit:', error)
+    }
+  }
+
   const contextValue = {
     products,
     setProducts,
@@ -105,6 +135,7 @@ export const ProductProviderSimplified = ({ children }) => {
     selectedProducts,
     setSelectedProducts,
     handleProductSelect,
+    updateProductStock,
   }
 
   return (

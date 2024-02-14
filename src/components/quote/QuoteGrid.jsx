@@ -34,14 +34,13 @@ const QuoteGrid = () => {
   const navigate = useNavigate()
 
   const handleDeleteQuoteFromGrid = (id) => {
-    // Utiliser showConfirmDialog pour demander confirmation avant la suppression
     showConfirmDialog(
       'Suppression de devis',
       'Êtes-vous sûr de vouloir supprimer ce devis ?',
       async () => {
         try {
           // Tente de supprimer le devis
-          await deleteQuote(id) // Supposons que deleteQuote est une fonction asynchrone dans QuoteContext
+          await deleteQuote(id)
           showToast('Devis supprimé avec succès', 'success')
           // Optionnel : rafraîchir la liste des devis ici si nécessaire
         } catch (error) {
@@ -53,10 +52,9 @@ const QuoteGrid = () => {
   }
 
   const handleViewQuote = (quote) => {
-    // console.log('Détails du devis sélectionné:', quote) Pour vérifier les informations initiales du devis
     // Activer le mode devis avec les détails du devis sélectionné
     activateQuote({
-      id: quote._id, // Transmettre explicitement l'_id du devis
+      _id: quote._id,
       quoteNumber: quote.quoteNumber,
       contact: quote.customerInfo
         ? `${quote.customerInfo.name || ''} ${quote.customerInfo.email || ''} ${quote.customerInfo.phone || ''}`.trim()
@@ -76,7 +74,7 @@ const QuoteGrid = () => {
         item.prixTTC !== null
           ? parseFloat(item.prixTTC)
           : parseFloat(item.prixOriginal)
-      const quantity = parseInt(item.quantity, 10) // Assurez-vous que la quantité est un entier
+      const quantity = parseInt(item.quantity, 10)
 
       // Calcul du montant de la TVA pour chaque article
       const montantTVA = (prixTTC - prixHT) * quantity
@@ -90,16 +88,14 @@ const QuoteGrid = () => {
         puTTC: prixTTC,
         tva: item.tauxTVA,
         tauxTVA: item.tauxTVA,
-        prixHT: parseFloat(prixHT.toFixed(2)), // Convertir en nombre après formatage
-        totalItem: parseFloat((prixTTC * quantity).toFixed(2)), // Convertir en nombre après formatage
-        montantTVA: parseFloat(montantTVA.toFixed(2)), // Convertir en nombre après formatage
+        prixHT: parseFloat(prixHT.toFixed(2)),
+        totalItem: parseFloat((prixTTC * quantity).toFixed(2)),
+        montantTVA: parseFloat(montantTVA.toFixed(2)),
         remiseMajorationLabel: item.remiseMajorationLabel || '',
         remiseMajorationValue: item.remiseMajorationValue || 0,
         prixModifie: item.prixTTC,
       }
     })
-
-    // console.log('Articles du devis après enrichissement:', cartItemsFromQuote) Pour vérifier les
 
     setCartItems(cartItemsFromQuote)
     navigate('/')

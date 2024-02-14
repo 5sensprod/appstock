@@ -31,7 +31,7 @@ export const CartProvider = ({ children }) => {
     const taxRateForItem = item.tva / 100
     const prixHT = priceToUse / (1 + taxRateForItem)
     const montantTVA = calculateTax(prixHT, taxRateForItem)
-    const tauxTVA = item.tva // Utilisez directement le taux de TVA du produit
+    const tauxTVA = item.tva
     const totalItem = calculateTotalItem(item)
 
     return {
@@ -70,9 +70,6 @@ export const CartProvider = ({ children }) => {
       cartTotals.totalTTC,
       adjustment,
     )
-
-    // Supposons que vous disposez d'une méthode pour obtenir un taux de TVA moyen si nécessaire
-    // Cela pourrait être nécessaire si vous gérez plusieurs taux de TVA différents
     const averageTaxRate =
       cartItems.length > 0
         ? cartItems.reduce((acc, item) => acc + item.tva / cartItems.length, 0)
@@ -104,7 +101,7 @@ export const CartProvider = ({ children }) => {
     }
   }
 
-  // Mettez à jour les totaux chaque fois que le panier est modifié
+  // Mettre à jour les totaux chaque fois que le panier est modifié
   useEffect(() => {
     const newCartTotals = calculateCartTotals(cartItems)
     setCartTotals((prevTotals) => ({
@@ -113,7 +110,6 @@ export const CartProvider = ({ children }) => {
       totalTTC: newCartTotals.totalTTC,
       totalTaxes: newCartTotals.totalTaxes,
       originalTotal: newCartTotals.totalTTC,
-      // Ne pas mettre à jour modifiedTotal ici pour éviter de perdre l'ajustement lors des mises à jour du panier
     }))
 
     // Réappliquer la remise ou la majoration déjà définie si adjustmentAmount n'est pas 0
@@ -166,7 +162,7 @@ export const CartProvider = ({ children }) => {
     }))
 
     setCartItems(invoiceItems)
-    setAdjustmentAmount(invoice.adjustmentAmount) // Réinitialiser adjustmentAmount à la valeur de la facture en attente
+    setAdjustmentAmount(invoice.adjustmentAmount)
 
     // Optionnellement, vous pouvez décider de conserver ou non la facture dans onHoldInvoices
     setOnHoldInvoices((prevInvoices) =>
@@ -240,16 +236,6 @@ export const CartProvider = ({ children }) => {
 
   // Vider panier
   const clearCart = () => {
-    // Parcourir les articles du panier actuel pour rétablir le stock
-    cartItems.forEach((item) => {
-      if (item.stock !== null) {
-        // Calculer le nouveau stock
-        const newStock = item.stock + item.quantity
-        // Mettre à jour le stock du produit dans le contexte
-        updateProductInContext(item._id, { stock: newStock })
-      }
-    })
-
     // Vider le panier après la mise à jour du stock
     setCartItems([])
 
