@@ -43,11 +43,11 @@ const InvoiceGrid = () => {
     fetchInvoices()
   }, [])
   const formatDate = (dateString) => {
-    console.log('Date to format:', dateString) // Vérifiez la date avant formatage
+    // console.log('Date to format:', dateString) Vérifiez la date avant formatage
     if (dateString) {
       const date = parseISO(dateString)
       const formattedDate = format(date, 'dd/MM/yyyy', { locale: frLocale })
-      console.log('Formatted date:', formattedDate) // Vérifiez la date après formatage
+      // console.log('Formatted date:', formattedDate) Vérifiez la date après formatage
       return formattedDate
     }
     return ''
