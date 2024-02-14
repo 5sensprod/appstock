@@ -1,7 +1,6 @@
-// useHandlePayClick.js
 import { useContext } from 'react'
 import { CartContext } from '../contexts/CartContext'
-import { addInvoice } from '../api/invoiceService'
+import { useInvoices } from '../contexts/InvoicesContext'
 import { useQuotes } from '../contexts/QuoteContext'
 import { useProductContextSimplified } from '../contexts/ProductContextSimplified'
 
@@ -18,6 +17,8 @@ const useHandlePayClick = () => {
   const { deactivateQuote } = useQuotes()
   const { updateProductInContext, updateProductStock } =
     useProductContextSimplified()
+
+  const { createInvoice } = useInvoices()
 
   const handlePayClick = async (paymentType) => {
     console.log('Début du processus de paiement')
@@ -57,7 +58,7 @@ const useHandlePayClick = () => {
     }
 
     try {
-      const newInvoice = await addInvoice(newInvoiceData)
+      const newInvoice = await createInvoice(newInvoiceData)
       console.log('Facture créée avec succès:', newInvoice)
 
       // Log spécifique pour la mise à jour du stock
