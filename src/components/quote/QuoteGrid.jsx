@@ -104,7 +104,7 @@ const QuoteGrid = () => {
   const columns = [
     {
       field: 'actions',
-      headerName: 'Actions',
+      headerName: '',
       sortable: false,
       width: 150,
       renderCell: (params) => (
@@ -158,7 +158,7 @@ const QuoteGrid = () => {
     },
     {
       field: 'itemCount',
-      headerName: "Nombre d'articles",
+      headerName: "Nbre d'articles",
       type: 'number',
       width: 100,
       // flex: 1,
@@ -182,17 +182,18 @@ const QuoteGrid = () => {
     date: new Date(quote.date).toLocaleDateString(),
   }))
 
-  if (isLoading) return <div>Chargement...</div>
+  // if (isLoading) return <div>Chargement...</div>
   if (error) return <div>Erreur: {error}</div>
 
   return (
-    <div style={{ width: 902 }}>
+    <div style={{ width: 852 }}>
       <DataGrid
         rows={rows}
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5]}
-        checkboxSelection
+        // checkboxSelection
+        loading={isLoading}
       />
     </div>
   )
