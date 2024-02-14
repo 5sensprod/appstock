@@ -64,43 +64,6 @@ export const CartProvider = ({ children }) => {
     return { totalHT, totalTTC, totalTaxes }
   }
 
-  const updateTotalWithAdjustment = (adjustment) => {
-    // Appliquer l'ajustement au total TTC pour obtenir le total TTC ajusté
-    const adjustedTotalTTC = applyCartDiscountOrMarkup(
-      cartTotals.totalTTC,
-      adjustment,
-    )
-    const averageTaxRate =
-      cartItems.length > 0
-        ? cartItems.reduce((acc, item) => acc + item.tva / cartItems.length, 0)
-        : 0
-
-    // Calculer le nouveau total HT à partir du total TTC ajusté
-    const newTotalHT = adjustedTotalTTC / (1 + averageTaxRate / 100)
-
-    // Recalculer le total des taxes à partir du nouveau total HT et du total TTC ajusté
-    const newTotalTaxes = adjustedTotalTTC - newTotalHT
-
-    // Mettre à jour les totaux dans l'état du contexte
-    setCartTotals((prevTotals) => ({
-      ...prevTotals,
-      totalHT: newTotalHT,
-      totalTaxes: newTotalTaxes,
-      modifiedTotal: adjustedTotalTTC,
-    }))
-
-    setAdjustmentAmount(adjustment)
-
-    // Mettre à jour les données de la facture si nécessaire
-    if (invoiceData) {
-      setInvoiceData({
-        ...invoiceData,
-        totalModified: adjustedTotalTTC,
-        adjustment: adjustment,
-      })
-    }
-  }
-
   // Mettre à jour les totaux chaque fois que le panier est modifié
   useEffect(() => {
     const newCartTotals = calculateCartTotals(cartItems)
@@ -267,7 +230,6 @@ export const CartProvider = ({ children }) => {
         cartTotals,
         adjustmentAmount,
         setAdjustmentAmount,
-        updateTotalWithAdjustment,
         // taxRate,
         isModalOpen,
         setIsModalOpen,
