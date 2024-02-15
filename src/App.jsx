@@ -26,6 +26,7 @@ import { CategoryTreeSelectProvider } from './contexts/CategoryTreeSelectContext
 import { GridPreferenceProvider } from './contexts/GridPreferenceContext'
 import { QuoteProvider } from './contexts/QuoteContext'
 import { InvoicesProvider } from './contexts/InvoicesContext'
+import { HoldInvoiceProvider } from './contexts/HoldInvoiceContext'
 
 const licenseKey =
   'CompanyName=Equinix Asia Pacific pte ltd,LicensedGroup=equinixMendixPrivateLib,LicenseType=MultipleApplications,LicensedConcurrentDeveloperCount=2,LicensedProductionInstancesCount=0,AssetReference=AG-027567,SupportServicesEnd=18_June_2023_[v2]_MTY4NzA0MjgwMDAwMA==4be2c388f9a8a7443c72842dff53d5b2'
@@ -45,6 +46,7 @@ const App = () => {
           <CategoryTreeSelectProvider>
             <CompanyInfoProvider>
               <InvoicesProvider>
+                {/* <HoldInvoiceProvider> */}
                 <QuoteProvider>
                   <GridPreferenceProvider>
                     <ProductProvider>
@@ -114,6 +116,7 @@ const App = () => {
                     </ProductProvider>
                   </GridPreferenceProvider>
                 </QuoteProvider>
+                {/* </HoldInvoiceProvider> */}
               </InvoicesProvider>
             </CompanyInfoProvider>
           </CategoryTreeSelectProvider>

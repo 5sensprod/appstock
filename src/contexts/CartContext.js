@@ -1,4 +1,3 @@
-import { useProductContextSimplified } from './ProductContextSimplified'
 import React, { createContext, useState, useEffect } from 'react'
 import {
   calculateTotal,
@@ -11,7 +10,6 @@ import {
 export const CartContext = createContext()
 
 export const CartProvider = ({ children }) => {
-  const { updateProductInContext } = useProductContextSimplified()
   const [cartItems, setCartItems] = useState([])
   const [onHoldInvoices, setOnHoldInvoices] = useState([])
   const [cartTotals, setCartTotals] = useState({
@@ -135,19 +133,7 @@ export const CartProvider = ({ children }) => {
 
   const deleteInvoice = (index) => {
     setOnHoldInvoices((prevInvoices) => {
-      const invoiceToDelete = prevInvoices[index]
-
-      if (invoiceToDelete && invoiceToDelete.items) {
-        invoiceToDelete.items.forEach((item) => {
-          if (item.stock !== null) {
-            // Rétablir le stock dans la base de données
-            const newStock = item.stock + item.quantity
-            updateProductInContext(item._id, { stock: newStock })
-          }
-        })
-      }
-
-      // Supprimer la facture
+      // Supprimer la facture sans modifier le stock des produits
       return prevInvoices.filter((_, i) => i !== index)
     })
   }
