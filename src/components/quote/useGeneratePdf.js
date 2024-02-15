@@ -9,7 +9,6 @@ export const useGeneratePdf = () => {
   const { companyInfo } = useContext(CompanyInfoContext)
 
   // Calculer la date de validité (30 jours après la date du devis)
-
   const generatePdf = async (quoteId, onSuccess) => {
     try {
       const quoteDetails = await getQuoteDetailsById(quoteId)
@@ -22,7 +21,6 @@ export const useGeneratePdf = () => {
 
       let currentYPosition = 10
 
-      // Vérifier si companyInfo est disponible
       if (companyInfo) {
         doc.setFontSize(12)
         doc.text(companyInfo.name.toUpperCase(), 10, currentYPosition)
@@ -41,19 +39,16 @@ export const useGeneratePdf = () => {
         currentYPosition += 10
       }
 
-      // Calculer la position X pour "DEVIS"
       const devisText = 'DEVIS'
-      doc.setFontSize(18) // Taille de police plus grande pour "DEVIS"
+      doc.setFontSize(18)
       const pageWidth = doc.internal.pageSize.getWidth()
       const devisTextWidth = doc.getTextWidth(devisText)
-      const devisXPosition = pageWidth - devisTextWidth - 75 // 10 est la marge à droite
+      const devisXPosition = pageWidth - devisTextWidth - 75
 
-      // Position Y ajustée pour centrer "DEVIS" verticalement par rapport aux infos de l'entreprise
-      const devisYPosition = currentYPosition - (5 * 5) / 2 // Exemple de calcul, ajustez selon votre mise en page
+      const devisYPosition = currentYPosition - (5 * 5) / 2
 
       doc.text(devisText, devisXPosition, devisYPosition)
 
-      // En-tête du PDF ajusté pour éviter le chevauchement
       doc.setFontSize(10)
       doc.text(`N° : ${quoteDetails.quoteNumber}`, 10, currentYPosition)
       currentYPosition += 5
@@ -85,19 +80,16 @@ export const useGeneratePdf = () => {
       doc.setFontSize(12)
 
       const { name, email, phone } = quoteDetails.customerInfo
-      // Vérifie et affiche le nom s'il est disponible
       if (name) {
         doc.text(`Client : ${name}`, 10, currentYPosition)
         currentYPosition += 5
       }
 
-      // Vérifie et affiche l'email s'il est disponible
       if (email) {
         doc.text(`Email : ${email}`, 10, currentYPosition)
         currentYPosition += 5
       }
 
-      // Vérifie et affiche le téléphone s'il est disponible
       if (phone) {
         doc.text(`Téléphone : ${phone}`, 10, currentYPosition)
         currentYPosition += 5
@@ -117,12 +109,12 @@ export const useGeneratePdf = () => {
 
       const items = quoteDetails.items.map((item) => ({
         reference: item.reference,
-        prixOriginal: formatPrice(item.prixOriginal), // Formaté
+        prixOriginal: formatPrice(item.prixOriginal),
         quantity: item.quantity,
-        prixHT: formatPrice(item.prixHT), // Formaté
-        prixTTC: formatPrice(item.prixTTC), // Formaté
+        prixHT: formatPrice(item.prixHT),
+        prixTTC: formatPrice(item.prixTTC),
         tauxTVA: `${item.tauxTVA}%`,
-        totalTTCParProduit: formatPrice(item.totalTTCParProduit), // Formaté
+        totalTTCParProduit: formatPrice(item.totalTTCParProduit),
         remiseMajorationValue:
           item.remiseMajorationLabel && item.remiseMajorationValue
             ? item.remiseMajorationLabel === 'Majoration'
@@ -149,18 +141,15 @@ export const useGeneratePdf = () => {
         theme: 'striped',
       })
 
-      // Récapitulatif des totaux
       const finalY = doc.lastAutoTable.finalY + 10
 
       const rightMargin = 15
 
-      // Total HT
       const totalHTText = `Total HT : ${formatPrice(quoteDetails.totalHT)}`
       doc.setFontSize(10)
       const totalHTTextWidth = doc.getTextWidth(totalHTText)
       doc.text(totalHTText, pageWidth - totalHTTextWidth - rightMargin, finalY)
 
-      // Net à payer
       const netAPayerText = `Net à payer : ${formatPrice(quoteDetails.totalTTC)}`
       doc.setFontSize(12)
       const netAPayerTextWidth = doc.getTextWidth(netAPayerText)
@@ -169,7 +158,6 @@ export const useGeneratePdf = () => {
         pageWidth - netAPayerTextWidth - rightMargin,
         finalY + 7,
       )
-      // Si vous avez des remises ou majorations, vous pouvez les ajouter ici
 
       // Enregistrement du PDF
       doc.save(`Devis-${quoteDetails.quoteNumber}.pdf`)
