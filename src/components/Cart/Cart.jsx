@@ -189,6 +189,7 @@ const Cart = () => {
                 <CartTotal />
               </Box>
 
+              {/* Type de paiement */}
               <Box mb={2}>
                 <FormControl fullWidth>
                   <InputLabel id="payment-type-label">

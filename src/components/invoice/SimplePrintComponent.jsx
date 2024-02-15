@@ -1,3 +1,4 @@
+// Template ticket de caisse
 import React, { useContext } from 'react'
 import { Button } from '@mui/material'
 import { CartContext } from '../../contexts/CartContext'
