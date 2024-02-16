@@ -4,11 +4,13 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { useHoldInvoiceContext } from '../../contexts/HoldInvoiceContext'
 import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
+import { useUI } from '../../contexts/UIContext' // Importez useUI
 
 const OnHoldInvoices = () => {
   const { onHoldInvoices, resumeInvoice, deleteInvoice } =
     useHoldInvoiceContext()
   const { setCartItems, clearCart } = useContext(CartContext)
+  const { showToast } = useUI()
 
   const handleResumeInvoice = (index) => {
     const invoice = resumeInvoice(index)
@@ -19,8 +21,8 @@ const OnHoldInvoices = () => {
   }
 
   const handleDeleteInvoice = (index) => {
-    deleteInvoice(index)
-    // Afficher un message de confirmation si nécessaire
+    deleteInvoice(index) // Supprime la facture de la liste
+    showToast('Facture en attente supprimée avec succès.', 'success') // Affiche un toast de succès
   }
 
   return (

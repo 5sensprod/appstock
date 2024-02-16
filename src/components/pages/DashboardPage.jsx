@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-// Import Box from Material-UI
-import Box from '@mui/material/Box' // ou '@material-ui/core/Box' pour les versions plus anciennes
+import Box from '@mui/material/Box'
 import SalesLineChart from '../charts/SalesBarChart'
 import UserDetails from '../users/UserDetails'
 import DateRangePicker from '../ui/DateRangePicker'

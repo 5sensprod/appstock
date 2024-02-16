@@ -170,8 +170,9 @@ const Cart = () => {
   }
 
   const handleHoldAndClearCart = () => {
-    holdInvoice(cartItems, cartTotals, adjustmentAmount)
+    holdInvoice(cartItems, cartTotals, adjustmentAmount) // Sauvegarde l'état actuel du panier
     clearCart()
+    showToast('Facture mise en attente avec succès.', 'success')
   }
 
   return (

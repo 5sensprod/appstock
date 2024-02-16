@@ -39,10 +39,8 @@ const QuoteGrid = () => {
       'Êtes-vous sûr de vouloir supprimer ce devis ?',
       async () => {
         try {
-          // Tente de supprimer le devis
           await deleteQuote(id)
           showToast('Devis supprimé avec succès', 'success')
-          // Optionnel : rafraîchir la liste des devis ici si nécessaire
         } catch (error) {
           console.error('Erreur lors de la suppression du devis:', error)
           showToast('Erreur lors de la suppression du devis', 'error')
@@ -182,7 +180,6 @@ const QuoteGrid = () => {
     date: new Date(quote.date).toLocaleDateString(),
   }))
 
-  // if (isLoading) return <div>Chargement...</div>
   if (error) return <div>Erreur: {error}</div>
 
   return (
@@ -192,7 +189,6 @@ const QuoteGrid = () => {
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5]}
-        // checkboxSelection
         loading={isLoading}
       />
     </div>
