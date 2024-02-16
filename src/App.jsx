@@ -46,77 +46,77 @@ const App = () => {
           <CategoryTreeSelectProvider>
             <CompanyInfoProvider>
               <InvoicesProvider>
-                {/* <HoldInvoiceProvider> */}
-                <QuoteProvider>
-                  <GridPreferenceProvider>
-                    <ProductProvider>
-                      <ProductProviderSimplified>
-                        <CartProvider>
-                          <CategoryProvider>
-                            <Router>
-                              {isAndroidWebView ? (
-                                // Affichage pour WebView Android
-                                <Routes>
-                                  <Route
-                                    path="/mobil"
-                                    element={<MobilPage />}
-                                  />
-                                  {/* Ajoutez ici d'autres routes si nécessaire pour WebView */}
-                                </Routes>
-                              ) : (
-                                // Affichage normal avec MainLayout
-                                <MainLayout>
+                <HoldInvoiceProvider>
+                  <QuoteProvider>
+                    <GridPreferenceProvider>
+                      <ProductProvider>
+                        <ProductProviderSimplified>
+                          <CartProvider>
+                            <CategoryProvider>
+                              <Router>
+                                {isAndroidWebView ? (
+                                  // Affichage pour WebView Android
                                   <Routes>
-                                    <Route path="/" element={<POSPage />} />
                                     <Route
-                                      path="/dashboard"
-                                      element={<DashboardPage />}
+                                      path="/mobil"
+                                      element={<MobilPage />}
                                     />
-                                    <Route
-                                      path="/catalog"
-                                      element={<CatalogPageSimple />}
-                                    />
-                                    {/* <Route
+                                    {/* Ajoutez ici d'autres routes si nécessaire pour WebView */}
+                                  </Routes>
+                                ) : (
+                                  // Affichage normal avec MainLayout
+                                  <MainLayout>
+                                    <Routes>
+                                      <Route path="/" element={<POSPage />} />
+                                      <Route
+                                        path="/dashboard"
+                                        element={<DashboardPage />}
+                                      />
+                                      <Route
+                                        path="/catalog"
+                                        element={<CatalogPageSimple />}
+                                      />
+                                      {/* <Route
                             path="/products/:productIds?/:categoryId?"
                             element={<ProductPage />}
                           /> */}
-                                    <Route
-                                      path="/products"
-                                      element={<ProductPage />}
-                                    />
-                                    <Route
-                                      path="/category"
-                                      element={<CategoryPage />}
-                                    />
-                                    <Route
-                                      path="/client"
-                                      element={<ClientPage />}
-                                    />
-                                    <Route
-                                      path="/invoice"
-                                      element={<InvoicePage />}
-                                    />
-                                    <Route
-                                      path="/create-product"
-                                      element={<CreateProductPage />}
-                                    />
-                                    <Route
-                                      path="/edit-product/:id"
-                                      element={<EditProductPage />}
-                                    />
-                                    {/* Autres routes ici */}
-                                    {/* La route /mobil est accessible uniquement dans WebView */}
-                                  </Routes>
-                                </MainLayout>
-                              )}
-                            </Router>
-                          </CategoryProvider>
-                        </CartProvider>
-                      </ProductProviderSimplified>
-                    </ProductProvider>
-                  </GridPreferenceProvider>
-                </QuoteProvider>
-                {/* </HoldInvoiceProvider> */}
+                                      <Route
+                                        path="/products"
+                                        element={<ProductPage />}
+                                      />
+                                      <Route
+                                        path="/category"
+                                        element={<CategoryPage />}
+                                      />
+                                      <Route
+                                        path="/client"
+                                        element={<ClientPage />}
+                                      />
+                                      <Route
+                                        path="/invoice"
+                                        element={<InvoicePage />}
+                                      />
+                                      <Route
+                                        path="/create-product"
+                                        element={<CreateProductPage />}
+                                      />
+                                      <Route
+                                        path="/edit-product/:id"
+                                        element={<EditProductPage />}
+                                      />
+                                      {/* Autres routes ici */}
+                                      {/* La route /mobil est accessible uniquement dans WebView */}
+                                    </Routes>
+                                  </MainLayout>
+                                )}
+                              </Router>
+                            </CategoryProvider>
+                          </CartProvider>
+                        </ProductProviderSimplified>
+                      </ProductProvider>
+                    </GridPreferenceProvider>
+                  </QuoteProvider>
+                </HoldInvoiceProvider>
               </InvoicesProvider>
             </CompanyInfoProvider>
           </CategoryTreeSelectProvider>

@@ -11,7 +11,6 @@ export const CartContext = createContext()
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([])
-  const [onHoldInvoices, setOnHoldInvoices] = useState([])
   const [cartTotals, setCartTotals] = useState({
     totalHT: 0,
     totalTTC: 0,
@@ -22,7 +21,6 @@ export const CartProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [invoiceData, setInvoiceData] = useState(null)
   const [adjustmentAmount, setAdjustmentAmount] = useState(0)
-  const [updateTrigger, setUpdateTrigger] = useState(false)
 
   const enrichCartItem = (item) => {
     const priceToUse = item.prixModifie ?? item.prixVente
@@ -93,51 +91,6 @@ export const CartProvider = ({ children }) => {
     }
   }, [cartItems, adjustmentAmount])
 
-  // Mettre la facture en attente
-  const holdInvoice = () => {
-    const newInvoice = {
-      id: Date.now(),
-      items: cartItems.map((item) => ({
-        ...item,
-        prixModifie: item.prixModifie,
-      })),
-      totalHT: cartTotals.totalHT,
-      totalTVA: cartTotals.totalTaxes,
-      totalTTC:
-        adjustmentAmount !== 0 ? cartTotals.modifiedTotal : cartTotals.totalTTC,
-      adjustmentAmount: adjustmentAmount,
-    }
-    setOnHoldInvoices((prevInvoices) => [...prevInvoices, newInvoice])
-    setCartItems([])
-    setAdjustmentAmount(0) // Réinitialiser adjustmentAmount
-  }
-
-  // Reprendre une facture en attente
-  const resumeInvoice = (index) => {
-    const invoice = onHoldInvoices[index]
-    const invoiceItems = invoice.items.map((item) => ({
-      ...item,
-      // Restaurez le prixModifie et le prixVente
-      prixVente: item.prixVente,
-      prixModifie: item.prixModifie,
-    }))
-
-    setCartItems(invoiceItems)
-    setAdjustmentAmount(invoice.adjustmentAmount)
-
-    // Optionnellement, vous pouvez décider de conserver ou non la facture dans onHoldInvoices
-    setOnHoldInvoices((prevInvoices) =>
-      prevInvoices.filter((_, i) => i !== index),
-    )
-  }
-
-  const deleteInvoice = (index) => {
-    setOnHoldInvoices((prevInvoices) => {
-      // Supprimer la facture sans modifier le stock des produits
-      return prevInvoices.filter((_, i) => i !== index)
-    })
-  }
-
   // Ajouter un produit au panier
   const addToCart = (product) => {
     setCartItems((currentItems) => {
@@ -205,13 +158,9 @@ export const CartProvider = ({ children }) => {
       value={{
         cartItems,
         setCartItems,
-        onHoldInvoices,
         addToCart,
         updateQuantity,
         removeItem,
-        holdInvoice,
-        resumeInvoice,
-        deleteInvoice,
         updatePrice,
         cartTotals,
         adjustmentAmount,

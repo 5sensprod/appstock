@@ -21,15 +21,14 @@ import QuoteConfirmationModal from '../quote/QuoteConfirmationModal'
 import { useQuotes } from '../../contexts/QuoteContext'
 import { useNavigate } from 'react-router-dom'
 import { useUI } from '../../contexts/UIContext'
+import { useHoldInvoiceContext } from '../../contexts/HoldInvoiceContext'
 
 const Cart = () => {
   const {
     cartItems,
-    onHoldInvoices,
     updateQuantity,
     updatePrice,
     removeItem,
-    holdInvoice,
     taxRate,
     setInvoiceData,
     adjustmentAmount,
@@ -44,6 +43,9 @@ const Cart = () => {
     setActiveQuoteDetails,
     activeQuoteDetails,
   } = useQuotes()
+
+  const { onHoldInvoices, holdInvoice, resumeInvoice, deleteInvoice } =
+    useHoldInvoiceContext()
 
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [quoteData, setQuoteData] = useState({
@@ -167,6 +169,11 @@ const Cart = () => {
     navigate('/dashboard#les-devis')
   }
 
+  const handleHoldAndClearCart = () => {
+    holdInvoice(cartItems, cartTotals, adjustmentAmount)
+    clearCart()
+  }
+
   return (
     <>
       <Grid container spacing={2}>
@@ -247,7 +254,7 @@ const Cart = () => {
                   <>
                     {!isCurrentCartOnHold && cartItems.length > 0 && (
                       <Button
-                        onClick={holdInvoice}
+                        onClick={handleHoldAndClearCart}
                         variant="contained"
                         sx={{ ml: 2 }}
                       >
