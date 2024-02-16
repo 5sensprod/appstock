@@ -99,6 +99,32 @@ export const QuoteProvider = ({ children }) => {
     }
   }
 
+  const prepareQuoteData = (cartItems, cartTotals, adjustmentAmount) => {
+    const items = cartItems.map((item) => ({
+      id: item._id, // Ou tout autre identifiant unique nécessaire
+      reference: item.reference,
+      quantity: item.quantity,
+      prixHT: parseFloat(item.prixHT).toFixed(2),
+      prixTTC: item.prixModifie
+        ? parseFloat(item.prixModifie).toFixed(2)
+        : parseFloat(item.prixVente).toFixed(2),
+      prixOriginal: parseFloat(item.prixVente).toFixed(2),
+      tauxTVA: item.tva,
+      totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
+      remiseMajorationLabel: item.remiseMajorationLabel || '',
+      remiseMajorationValue: item.remiseMajorationValue || 0,
+    }))
+
+    const quoteData = {
+      items,
+      totalHT: parseFloat(cartTotals.totalHT).toFixed(2),
+      totalTTC: parseFloat(cartTotals.totalTTC).toFixed(2),
+      adjustmentAmount,
+    }
+
+    return quoteData
+  }
+
   // Désactiver le devis actif
   const deactivateQuote = () => {
     setIsActiveQuote(false)
@@ -138,6 +164,7 @@ export const QuoteProvider = ({ children }) => {
         deactivateQuote,
         setIsActiveQuote,
         handleDeleteQuote,
+        prepareQuoteData,
       }}
     >
       {children}

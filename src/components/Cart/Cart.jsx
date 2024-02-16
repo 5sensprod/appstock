@@ -42,17 +42,12 @@ const Cart = () => {
     updateQuote,
     setActiveQuoteDetails,
     activeQuoteDetails,
+    prepareQuoteData,
   } = useQuotes()
 
-  const { onHoldInvoices, holdInvoice, resumeInvoice, deleteInvoice } =
-    useHoldInvoiceContext()
+  const { onHoldInvoices, holdInvoice } = useHoldInvoiceContext()
 
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
-  const [quoteData, setQuoteData] = useState({
-    items: [],
-    totalHT: 0,
-    totalTTC: 0,
-  })
 
   const [hasChanges, setHasChanges] = useState(false)
   const { showToast } = useUI()
@@ -62,51 +57,6 @@ const Cart = () => {
   }
 
   const navigate = useNavigate()
-
-  const prepareQuoteData = () => {
-    const data = {
-      items: cartItems.map((item) => ({
-        id: item._id,
-        reference: item.reference,
-        quantity: item.quantity,
-        prixHT: parseFloat(item.prixHT).toFixed(2),
-        prixTTC: item.prixModifie
-          ? parseFloat(item.prixModifie).toFixed(2)
-          : parseFloat(item.prixVente).toFixed(2),
-        prixOriginal: parseFloat(item.prixVente).toFixed(2),
-        tauxTVA: item.tva,
-        totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
-        remiseMajorationLabel: item.remiseMajorationLabel || '',
-        remiseMajorationValue: item.remiseMajorationValue || 0,
-      })),
-      totalHT: parseFloat(cartTotals.totalHT).toFixed(2),
-      totalTTC: parseFloat(cartTotals.totalTTC).toFixed(2),
-    }
-    setQuoteData(data)
-    setIsQuoteModalOpen(true)
-  }
-
-  useEffect(() => {
-    setQuoteData({
-      items: cartItems.map((item) => ({
-        id: item._id,
-        reference: item.reference,
-        quantity: item.quantity,
-        prixHT: parseFloat(item.prixHT).toFixed(2),
-        prixTTC: item.prixModifie
-          ? parseFloat(item.prixModifie).toFixed(2)
-          : parseFloat(item.prixVente).toFixed(2),
-        prixOriginal: parseFloat(item.prixVente).toFixed(2),
-        tauxTVA: item.tva,
-        totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
-        remiseMajorationLabel: item.remiseMajorationLabel || '',
-        remiseMajorationValue: item.remiseMajorationValue || 0,
-      })),
-      totalHT: parseFloat(cartTotals.totalHT).toFixed(2),
-      totalTTC: parseFloat(cartTotals.totalTTC).toFixed(2),
-      // Assurez-vous d'inclure toutes les données nécessaires
-    })
-  }, [cartItems, cartTotals])
 
   const [paymentType, setPaymentType] = useState('CB')
   const [amountPaid, setAmountPaid] = useState('')
@@ -134,26 +84,18 @@ const Cart = () => {
   const handleSaveQuote = async () => {
     if (activeQuoteDetails && activeQuoteDetails.id) {
       try {
-        // Exemple de vérification et ajustement des valeurs numériques dans quoteData
-        const adjustedQuoteData = {
-          ...quoteData,
-          items: quoteData.items.map((item) => ({
-            ...item,
-            prixHT: parseFloat(item.prixHT),
-            prixTTC: parseFloat(item.prixTTC),
-            prixOriginal: parseFloat(item.prixOriginal),
-            quantity: parseInt(item.quantity, 10),
-            remiseMajorationValue: parseFloat(item.remiseMajorationValue),
-            totalTTCParProduit: parseFloat(item.totalTTCParProduit),
-          })),
-        }
-
-        console.log(adjustedQuoteData)
-        await updateQuote(activeQuoteDetails.id, adjustedQuoteData)
+        // Prépare les données du devis avec les données actuelles du panier et les informations du client
+        const quoteData = prepareQuoteData(
+          cartItems,
+          cartTotals,
+          adjustmentAmount,
+        )
+        // Mise à jour du devis avec les données préparées
+        await updateQuote(activeQuoteDetails.id, quoteData)
         showToast('Le devis a été sauvegardé avec succès.', 'success')
-        clearCart()
-        deactivateQuote()
-        navigate('/dashboard#les-devis')
+        clearCart() // Optionnel: Effacer le panier après la mise à jour du devis
+        deactivateQuote() // Désactiver le mode devis actif
+        navigate('/dashboard#les-devis') // Redirection vers la page des devis
       } catch (error) {
         console.error('Erreur lors de la sauvegarde du devis:', error)
         showToast('Erreur lors de la sauvegarde du devis.', 'error')
@@ -173,6 +115,17 @@ const Cart = () => {
     holdInvoice(cartItems, cartTotals, adjustmentAmount) // Sauvegarde l'état actuel du panier
     clearCart()
     showToast('Facture mise en attente avec succès.', 'success')
+  }
+
+  // Fonction pour ouvrir le modal de confirmation de devis
+  const handleOpenQuoteModal = () => {
+    setIsQuoteModalOpen(true)
+  }
+
+  // La fonction pour fermer le modal et potentiellement gérer d'autres actions après fermeture
+  const handleCloseQuoteModal = () => {
+    setIsQuoteModalOpen(false)
+    // Actions supplémentaires si nécessaire...
   }
 
   return (
@@ -265,7 +218,7 @@ const Cart = () => {
                     <Button
                       variant="outlined"
                       color="secondary"
-                      onClick={prepareQuoteData}
+                      onClick={handleOpenQuoteModal}
                       sx={{ ml: 2 }}
                     >
                       Générer Devis
@@ -317,10 +270,7 @@ const Cart = () => {
       <InvoiceModal />
       <QuoteConfirmationModal
         open={isQuoteModalOpen}
-        onClose={() => setIsQuoteModalOpen(false)}
-        cartItems={cartItems}
-        cartTotals={cartTotals}
-        adjustmentAmount={adjustmentAmount}
+        onClose={handleCloseQuoteModal}
       />
     </>
   )

@@ -19,13 +19,7 @@ const style = {
   p: 4,
 }
 
-const QuoteConfirmationModal = ({
-  open,
-  onClose,
-  cartItems,
-  cartTotals,
-  adjustmentAmount,
-}) => {
+const QuoteConfirmationModal = ({ open, onClose }) => {
   const {
     addQuote,
     customerName,
@@ -34,8 +28,11 @@ const QuoteConfirmationModal = ({
     setCustomerEmail,
     customerPhone,
     setCustomerPhone,
+    prepareQuoteData,
   } = useContext(QuoteContext)
-  const { clearCart } = useContext(CartContext)
+
+  const { cartItems, cartTotals, adjustmentAmount, clearCart } =
+    useContext(CartContext)
   const [preparedQuoteData, setPreparedQuoteData] = useState([])
 
   const hasMajoration = cartItems.some(
@@ -48,29 +45,12 @@ const QuoteConfirmationModal = ({
   const { showToast } = useUI()
   const navigate = useNavigate()
 
-  // Préparez les données dès que cartItems ou cartTotals changent
+  //Préparez les données dès que cartItems ou cartTotals changent
   useEffect(() => {
-    const items = cartItems.map((item, index) => ({
-      id: item._id || index,
-      reference: item.reference,
-      quantity: item.quantity,
-      prixHT: parseFloat(item.prixHT).toFixed(2),
-      prixTTC: item.prixModifie
-        ? parseFloat(item.prixModifie).toFixed(2)
-        : parseFloat(item.prixVente).toFixed(2),
-      prixOriginal: parseFloat(item.prixVente).toFixed(2),
-      tauxTVA: item.tauxTVA,
-      totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
-      remiseMajorationLabel: item.remiseMajorationLabel || '',
-      remiseMajorationValue: item.remiseMajorationValue || 0,
-    }))
-    const quoteData = {
-      items,
-      totalHT: parseFloat(cartTotals.totalHT).toFixed(2),
-      totalTTC: parseFloat(cartTotals.totalTTC).toFixed(2),
-    }
+    // Utilisez prepareQuoteData pour préparer les données du devis directement
+    const quoteData = prepareQuoteData(cartItems, cartTotals, adjustmentAmount)
     setPreparedQuoteData(quoteData)
-  }, [cartItems, cartTotals])
+  }, [cartItems, cartTotals, adjustmentAmount, prepareQuoteData])
 
   const columns = [
     {
@@ -178,31 +158,6 @@ const QuoteConfirmationModal = ({
     })
   }
 
-  const handleConfirm = async () => {
-    const quoteDataWithCustomerInfo = {
-      ...preparedQuoteData,
-      customerInfo: {
-        name: customerName,
-        email: customerEmail,
-        phone: customerPhone,
-      },
-    }
-
-    try {
-      await addQuote(quoteDataWithCustomerInfo)
-      showToast('Devis ajouté avec succès!', 'success')
-      onClose()
-      clearCart()
-      setCustomerName('')
-      setCustomerEmail('')
-      setCustomerPhone('')
-      navigate('/dashboard#les-devis')
-    } catch (error) {
-      console.error("Erreur lors de l'ajout du devis:", error)
-      showToast("Erreur lors de l'ajout du devis.", 'error')
-    }
-  }
-
   const resetFormAndCloseModal = () => {
     // Réinitialiser les informations du client
     setCustomerName('')
@@ -214,6 +169,34 @@ const QuoteConfirmationModal = ({
     onClose() // Utilisez la fonction de fermeture existante pour fermer la modal
   }
 
+  const handleSubmitQuote = async () => {
+    if (!customerName && !customerEmail && !customerPhone) {
+      showToast(
+        'Veuillez fournir au moins une information de contact pour le client.',
+        'error',
+      )
+      return
+    }
+
+    const quoteData = prepareQuoteData(cartItems, cartTotals, adjustmentAmount)
+    // Ajoutez les informations sur le client à quoteData ici
+    quoteData.customerInfo = {
+      name: customerName,
+      email: customerEmail,
+      phone: customerPhone,
+    }
+
+    try {
+      await addQuote(quoteData) // Ajoute le devis avec les informations du client
+      showToast('Devis ajouté avec succès.', 'success')
+      onClose() // Ferme le modal
+      clearCart() // Nettoie le panier
+      // Réinitialisez les états des informations du client ici si nécessaire
+      navigate('/dashboard#les-devis') // Naviguez vers la page des devis
+    } catch (error) {
+      showToast(`Erreur lors de l'ajout du devis: ${error.message}`, 'error')
+    }
+  }
   return (
     <Modal
       open={open}
@@ -290,7 +273,7 @@ const QuoteConfirmationModal = ({
         <Box mt={2} display="flex" justifyContent="space-between">
           <Button
             variant="contained"
-            onClick={handleConfirm}
+            onClick={handleSubmitQuote}
             disabled={!customerName && !customerEmail && !customerPhone}
           >
             Valider
