@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { updateProductsBulk } from '../../api/productService'
 import { CategoryTreeSelectContext } from '../../contexts/CategoryTreeSelectContext'
+import { useUI } from '../../contexts/UIContext'
 
 const CategoryTreeGrid = () => {
   const {
@@ -19,6 +20,8 @@ const CategoryTreeGrid = () => {
   } = useCategoryContext()
 
   const { products } = useProductContextSimplified()
+
+  const { showToast, showConfirmDialog } = useUI()
 
   const navigate = useNavigate()
   const { handleCategorySelect } = useContext(CategoryTreeSelectContext)
@@ -102,21 +105,34 @@ const CategoryTreeGrid = () => {
   )
 
   const handleDeleteCategory = async (categoryId) => {
-    // Préparer la liste des produits à mettre à jour
-    const productsToUpdate = products
-      .filter((product) => product.categorie === categoryId)
-      .map((product) => ({
-        id: product._id,
-        changes: { categorie: null },
-      }))
+    showConfirmDialog(
+      'Confirmation',
+      'Êtes-vous sûr de vouloir supprimer cette catégorie ? Les produits associés seront non catégorisés.',
+      async () => {
+        try {
+          // Préparer la liste des produits à mettre à jour
+          const productsToUpdate = products
+            .filter((product) => product.categorie === categoryId)
+            .map((product) => ({
+              id: product._id,
+              changes: { categorie: null },
+            }))
 
-    // Mettre à jour les produits en masse
-    if (productsToUpdate.length > 0) {
-      await updateProductsBulk(productsToUpdate)
-    }
+          // Mettre à jour les produits en masse
+          if (productsToUpdate.length > 0) {
+            await updateProductsBulk(productsToUpdate)
+          }
 
-    // Supprimer la catégorie
-    await deleteCategoryFromContext(categoryId)
+          // Supprimer la catégorie
+          await deleteCategoryFromContext(categoryId)
+
+          showToast('Catégorie supprimée avec succès.', 'success')
+        } catch (error) {
+          console.error('Erreur lors de la suppression de la catégorie:', error)
+          showToast('Erreur lors de la suppression de la catégorie.', 'error')
+        }
+      },
+    )
   }
 
   const updateSearch = (searchValue) => {

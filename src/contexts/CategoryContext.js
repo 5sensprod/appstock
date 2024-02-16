@@ -21,78 +21,35 @@ export const CategoryProvider = ({ children }) => {
   const [productCountByCategory, setProductCountByCategory] = useState({})
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
 
+  const loadCategoriesAndCounts = async () => {
+    try {
+      const fetchedCategories = await getCategories(baseUrl)
+      setCategories(fetchedCategories)
+
+      const subCounts = await fetchSubCategoryCounts(baseUrl)
+      setSubCategoryCounts(subCounts)
+
+      // Chargement du comptage des produits par catégorie
+      const productCounts = await fetchProductCountByCategory(baseUrl)
+      setProductCountByCategory(productCounts)
+    } catch (error) {
+      console.error('Erreur lors du chargement des données:', error)
+    }
+  }
+
   useEffect(() => {
-    const loadCategoriesAndCounts = async () => {
-      try {
-        const fetchedCategories = await getCategories(baseUrl)
-        setCategories(fetchedCategories)
+    loadCategoriesAndCounts() // Charge initialement les catégories et les comptages
 
-        const subCounts = await fetchSubCategoryCounts(baseUrl)
-        setSubCategoryCounts(subCounts)
-
-        // Chargement du comptage des produits par catégorie
-        const productCounts = await fetchProductCountByCategory(baseUrl)
-        setProductCountByCategory(productCounts)
-      } catch (error) {
-        console.error('Erreur lors du chargement des données:', error)
-      }
-    }
-
-    // Nouvelle souscription à l'événement via EventEmitter
     const onProductCrudOperation = () => {
-      loadCategoriesAndCounts()
+      loadCategoriesAndCounts() // Recharge les catégories et les comptages en réponse à l'événement
     }
+
     EventEmitter.subscribe('PRODUCT_CRUD_OPERATION', onProductCrudOperation)
 
-    // Établir une connexion SSE
-    const eventSource = new EventSource(`http://192.168.1.10:5000/api/events`)
-
-    eventSource.onmessage = (event) => {
-      const {
-        type,
-        category,
-        id,
-        subCategoryCounts: updatedSubCounts,
-        productCountByCategory: updatedProductCounts,
-      } = JSON.parse(event.data)
-
-      switch (type) {
-        case 'category-added':
-          setCategories((prevCategories) => [...prevCategories, category])
-          loadCategoriesAndCounts()
-          break
-        case 'category-updated':
-          setCategories((prevCategories) =>
-            prevCategories.map((cat) =>
-              cat._id === category._id ? { ...cat, ...category } : cat,
-            ),
-          )
-          break
-        case 'category-deleted':
-          setCategories((prevCategories) =>
-            prevCategories.filter((cat) => cat._id !== id),
-          )
-          break
-        case 'subCategoryCounts-updated':
-          setSubCategoryCounts(updatedSubCounts)
-          break
-        case 'productCountByCategory-updated':
-          setProductCountByCategory(updatedProductCounts)
-          break
-        // Ajouter des cas pour d'autres types d'événements si nécessaire
-        default:
-          break
-      }
-    }
-
-    loadCategoriesAndCounts()
-
-    // Nettoyage des écouteurs d'événements et de la connexion SSE
     return () => {
       EventEmitter.unsubscribe('PRODUCT_CRUD_OPERATION', onProductCrudOperation)
-      eventSource.close()
     }
-  }, [baseUrl])
+  }, [])
 
   const updateCategoryInContext = async (id, categoryData) => {
     try {
