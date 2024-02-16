@@ -7,6 +7,7 @@ import {
 } from '../api/productService'
 import { useConfig } from './ConfigContext'
 import { EventEmitter } from '../utils/eventEmitter'
+import { updateProductsBulk } from '../api/productService'
 
 const ProductContextSimplified = createContext()
 
@@ -123,6 +124,20 @@ export const ProductProviderSimplified = ({ children }) => {
     }
   }
 
+  const bulkUpdateProductsInContext = async (updates) => {
+    try {
+      await updateProductsBulk(updates)
+      loadProducts() // Recharge les produits après la mise à jour
+      EventEmitter.dispatch('PRODUCT_CRUD_OPERATION') // Notifie les autres contextes d'une opération CRUD
+    } catch (error) {
+      console.error(
+        'Erreur lors de la mise à jour en masse des produits:',
+        error,
+      )
+      throw error
+    }
+  }
+
   const contextValue = {
     products,
     setProducts,
@@ -136,6 +151,7 @@ export const ProductProviderSimplified = ({ children }) => {
     setSelectedProducts,
     handleProductSelect,
     updateProductStock,
+    bulkUpdateProductsInContext,
   }
 
   return (

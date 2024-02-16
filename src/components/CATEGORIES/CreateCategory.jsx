@@ -13,6 +13,7 @@ import CategoryTreeSelect from './CategoryTreeSelect'
 import { transformCategoriesToTree } from '../../utils/transformCategoriesToTree'
 import CloseIcon from '@mui/icons-material/Close'
 import AddIcon from '@mui/icons-material/Add'
+import { useUI } from '../../contexts/UIContext'
 
 function CreateCategory() {
   const {
@@ -27,6 +28,7 @@ function CreateCategory() {
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedParentName, setSelectedParentName] = useState('')
   const [categoryName, setCategoryName] = useState('')
+  const { showToast } = useUI()
 
   // Gestionnaire pour la mise à jour du nom de la catégorie
   const handleCategoryNameChange = (event) => {
@@ -50,6 +52,7 @@ function CreateCategory() {
         parentId: selectedParentId === '' ? null : selectedParentId,
       }
       await addCategoryToContext(categoryData)
+      showToast('Catégorie ajoutée.', 'success')
       reset()
       setSelectedParentId('')
       setSelectedParentName('')

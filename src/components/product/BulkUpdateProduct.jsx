@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import {
   Button,
   TextField,
@@ -9,10 +9,11 @@ import {
   Box,
 } from '@mui/material'
 import { useForm, Controller } from 'react-hook-form'
-import { updateProductsBulk } from '../../api/productService'
 import CustomSelect from '../ui/CustomSelect'
 import { TVA_RATES } from '../../utils/constants'
 import CategorySelect from '../CATEGORIES/CategorySelect'
+import { useUI } from '../../contexts/UIContext'
+import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 
 const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
   const { register, handleSubmit, reset, control } = useForm({
@@ -21,6 +22,9 @@ const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
     },
   })
   const [loading, setLoading] = useState(false)
+
+  const { bulkUpdateProductsInContext } = useProductContextSimplified()
+  const { showToast } = useUI()
 
   const onSubmit = async (data) => {
     setLoading(true)
@@ -37,7 +41,6 @@ const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
 
     const filteredData = Object.entries(formattedData).reduce(
       (acc, [key, value]) => {
-        // Filtre comme avant, pas besoin de changer cette logique
         if (value !== '' && value != null) {
           acc[key] = value
         }
@@ -52,14 +55,12 @@ const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
         changes: filteredData, // Utilise les données formatées
       }))
 
-      await updateProductsBulk(updates)
+      await bulkUpdateProductsInContext(updates)
+      showToast('Mise à jour en masse réussie.', 'success')
       reset()
       onClose()
     } catch (error) {
-      console.error('Erreur lors de la mise à jour en masse:', error)
-      if (error.response) {
-        console.error('Détails de la réponse:', error.response)
-      }
+      showToast('Erreur lors de la mise à jour en masse.', 'error')
     } finally {
       setLoading(false)
     }
@@ -99,7 +100,7 @@ const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
                 label="TVA"
                 options={TVA_RATES}
                 {...field}
-                value={field.value || ''} // Assurez-vous que la valeur n'est jamais `null`
+                value={field.value || ''}
               />
             )}
           />
@@ -109,7 +110,7 @@ const BulkUpdateProduct = ({ selectedProductIds, onClose }) => {
             render={({ field }) => (
               <Box mt={2} mb={1}>
                 <CategorySelect
-                  value={field.value || ''} // Fournit une chaîne vide comme valeur par défaut
+                  value={field.value || ''}
                   onChange={(categoryId) => field.onChange(categoryId)}
                   size="medium"
                   label="Catégorie"
