@@ -84,7 +84,7 @@ function CreateCategory() {
       <FormControl fullWidth margin="normal">
         <TextField
           {...register('name', { required: true })}
-          label="Nom de la catégorie"
+          label="Ajouter une catégorie"
           error={!!errors.name}
           helperText={errors.name ? 'Ce champ est requis' : null}
           size="small"
