@@ -29,12 +29,29 @@ module.exports = (db) => {
         }
 
         let lastNumber = 0
+        let resetNumber = false
+
+        // Vérifier si le dernier ticket a été émis aujourd'hui
         if (lastTicket && lastTicket.length > 0) {
-          const lastTicketNumber = lastTicket[0].ticketNumber.split('-')[2] // Correction ici pour extraire correctement le numéro séquentiel
-          lastNumber = parseInt(lastTicketNumber, 10)
+          const lastDate = lastTicket[0].date.split('T')[0] // Extraire la date du dernier ticket
+          const currentDate = new Date().toISOString().split('T')[0] // Date actuelle au format YYYY-MM-DD
+
+          // Comparer les dates
+          if (lastDate === currentDate) {
+            // Même jour, incrémenter le numéro
+            const lastTicketNumber = lastTicket[0].ticketNumber.split('-')[2]
+            lastNumber = parseInt(lastTicketNumber, 10)
+          } else {
+            // Nouveau jour, réinitialiser le numéro
+            resetNumber = true
+          }
+        } else {
+          // Aucun ticket trouvé, considérer comme un nouveau jour
+          resetNumber = true
         }
 
-        const newTicketNumber = `TKT-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${String(lastNumber + 1).padStart(6, '0')}`
+        // Générer le nouveau numéro de ticket, réinitialiser si nécessaire
+        const newTicketNumber = `TKT-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${String(resetNumber ? 1 : lastNumber + 1).padStart(6, '0')}`
 
         let itemsFormatted = req.body.items.map((item) => ({
           ...item,

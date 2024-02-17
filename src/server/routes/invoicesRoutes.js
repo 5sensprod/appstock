@@ -15,66 +15,70 @@ module.exports = (db) => {
 
   // Ajouter une nouvelle facture
   router.post('/', async (req, res) => {
-    // Récupérer le dernier numéro de facture et incrémenter
     db.invoices
       .find({})
       .sort({ invoiceNumber: -1 })
       .limit(1)
       .exec((err, lastInvoice) => {
         if (err) {
-          res
+          return res
             .status(500)
             .send(
               'Erreur lors de la récupération du dernier numéro de facture.',
             )
-          return
         }
 
         let lastNumber = 0
-        if (lastInvoice.length > 0) {
-          // Extrait le numéro après le tiret et le convertit en nombre
-          const lastInvoiceNumber = lastInvoice[0].invoiceNumber.split('-')[2]
-          lastNumber = parseInt(lastInvoiceNumber, 10)
+        let resetNumber = false
+
+        // Vérifier si la dernière facture a été émise aujourd'hui
+        if (lastInvoice && lastInvoice.length > 0) {
+          const lastDate = lastInvoice[0].date.split('T')[0] // Extraire la date de la dernière facture
+          const currentDate = new Date().toISOString().split('T')[0] // Date actuelle au format YYYY-MM-DD
+
+          // Comparer les dates
+          if (lastDate === currentDate) {
+            // Même jour, incrémenter le numéro
+            const lastInvoiceNumber = lastInvoice[0].invoiceNumber.split('-')[2]
+            lastNumber = parseInt(lastInvoiceNumber, 10)
+          } else {
+            // Nouveau jour, réinitialiser le numéro
+            resetNumber = true
+          }
+        } else {
+          // Aucune facture trouvée, considérer comme un nouveau jour
+          resetNumber = true
         }
 
-        // Générer le nouveau numéro de facture
-        const newInvoiceNumber = `FACT-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${String(lastNumber + 1).padStart(6, '0')}`
+        // Générer le nouveau numéro de facture, réinitialiser si nécessaire
+        const newInvoiceNumber = `FACT-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${String(resetNumber ? 1 : lastNumber + 1).padStart(6, '0')}`
 
-        // Création de la nouvelle facture avec le nouveau numéro
         let newInvoice = {
           ...req.body,
           invoiceNumber: newInvoiceNumber,
           date: new Date().toISOString(),
+          items: req.body.items.map((item) => ({
+            ...item,
+            quantite: parseInt(item.quantite, 10),
+            puHT: parseFloat(item.puHT).toFixed(2),
+            puTTC: parseFloat(item.puTTC).toFixed(2),
+            tauxTVA: parseFloat(item.tauxTVA),
+            totalItem: parseFloat(item.totalItem).toFixed(2),
+            montantTVA: parseFloat(item.montantTVA).toFixed(2),
+            remiseMajorationValue: item.remiseMajorationValue
+              ? parseFloat(item.remiseMajorationValue)
+              : 0,
+          })),
+          totalHT: parseFloat(req.body.totalHT).toFixed(2),
+          totalTVA: parseFloat(req.body.totalTVA).toFixed(2),
+          totalTTC: parseFloat(req.body.totalTTC).toFixed(2),
         }
 
-        // Traitement des éléments (gardé tel quel de votre exemple)
-        let itemsFormatted = req.body.items.map((item) => ({
-          ...item,
-          quantite: parseInt(item.quantite, 10),
-          puHT: parseFloat(parseFloat(item.puHT).toFixed(2)),
-          puTTC: parseFloat(parseFloat(item.puTTC).toFixed(2)),
-          tauxTVA: parseFloat(item.tauxTVA),
-          totalItem: parseFloat(parseFloat(item.totalItem).toFixed(2)),
-          montantTVA: parseFloat(parseFloat(item.montantTVA).toFixed(2)),
-          remiseMajorationValue: parseFloat(item.remiseMajorationValue),
-        }))
-
-        newInvoice.items = itemsFormatted
-        newInvoice.totalHT = parseFloat(parseFloat(req.body.totalHT).toFixed(2))
-        newInvoice.totalTVA = parseFloat(
-          parseFloat(req.body.totalTVA).toFixed(2),
-        )
-        newInvoice.totalTTC = parseFloat(
-          parseFloat(req.body.totalTTC).toFixed(2),
-        )
-
-        // Insérer la nouvelle facture dans la base de données
         db.invoices.insert(newInvoice, (err, invoice) => {
           if (err) {
-            res.status(500).send("Erreur lors de l'ajout de la facture.")
-          } else {
-            res.status(201).json(invoice)
+            return res.status(500).send("Erreur lors de l'ajout de la facture.")
           }
+          res.status(201).json(invoice)
         })
       })
   })
