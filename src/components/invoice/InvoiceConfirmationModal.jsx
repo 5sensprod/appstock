@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Modal, Box, Typography, Button } from '@mui/material'
+import { Modal, Box, Button, Typography, TextField } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
 import { useInvoices } from '../../contexts/InvoicesContext'
-
+import { useUI } from '../../contexts/UIContext'
 const style = {
   position: 'absolute',
   top: '50%',
@@ -20,11 +20,25 @@ const style = {
 const InvoiceConfirmationModal = ({ open, onClose }) => {
   const { cartItems, cartTotals, adjustmentAmount, clearCart } =
     useContext(CartContext)
+
+  const { showToast } = useUI()
+
   const [preparedInvoiceData, setPreparedInvoiceData] = useState({
     items: [],
     totals: {},
   })
-  const { prepareInvoiceData } = useInvoices()
+
+  //   const { addTicket } = useTicketsContext() // Hypothétique
+  const {
+    prepareInvoiceData,
+    createInvoice,
+    customerName,
+    setCustomerName,
+    customerEmail,
+    setCustomerEmail,
+    customerPhone,
+    setCustomerPhone,
+  } = useInvoices()
 
   const hasMajoration = cartItems.some(
     (item) =>
@@ -33,6 +47,8 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
   )
 
   const hasAdjustment = cartItems.some((item) => item.remiseMajorationValue > 0)
+
+  const [showCustomerFields, setShowCustomerFields] = useState(false)
 
   useEffect(() => {
     // Supposons que prepareInvoiceData soit importé de InvoicesContext
@@ -155,6 +171,52 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     })
   }
 
+  const handleValidate = async () => {
+    // Logique pour valider et enregistrer comme ticket
+    try {
+      await addTicket(preparedInvoiceData)
+      clearCart()
+      onClose()
+      // Affichez un message de succès ou effectuez d'autres actions nécessaires
+    } catch (error) {
+      // Gérez l'erreur
+    }
+  }
+
+  const handleCreateInvoice = async () => {
+    if (!customerName && !customerEmail && !customerPhone) {
+      showToast(
+        'Veuillez fournir au moins une information de contact pour le client.',
+        'error',
+      )
+      return
+    }
+
+    // Ajoutez ici les informations sur le client aux données de la facture
+    const invoiceDataWithCustomerInfo = {
+      ...preparedInvoiceData,
+      customerInfo: {
+        name: customerName,
+        email: customerEmail,
+        phone: customerPhone,
+      },
+    }
+
+    try {
+      await createInvoice(invoiceDataWithCustomerInfo) // Ajoute la facture avec les informations du client
+      showToast('Facture créée avec succès.', 'success')
+      onClose() // Ferme le modal
+      clearCart() // Nettoie le panier
+      // Réinitialisez les états des informations du client ici si nécessaire
+      // Redirection après création n'est peut-être pas nécessaire pour une facture, ajustez selon le besoin
+    } catch (error) {
+      showToast(
+        `Erreur lors de la création de la facture: ${error.message}`,
+        'error',
+      )
+    }
+  }
+
   return (
     <Modal
       open={open}
@@ -182,14 +244,59 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
             hideFooter={true}
             disableColumnMenu={true}
             autoHeight={true}
-            sx={{
-              '& .MuiDataGrid-columnHeaders': {
-                display: 'none',
-              },
-            }}
+            sx={{ '& .MuiDataGrid-columnHeaders': { display: 'none' } }}
           />
         </div>
-        {/* Boutons d'action seront ajoutés ici dans une prochaine étape */}
+        {showCustomerFields && (
+          <>
+            {!customerName && !customerEmail && !customerPhone && (
+              <Typography variant="body2" mt={2}>
+                Veuillez renseigner au moins un des champs suivants.
+              </Typography>
+            )}
+            <TextField
+              label="Nom du client"
+              size="small"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Email du client"
+              size="small"
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+              type="email"
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Téléphone du client"
+              size="small"
+              value={customerPhone}
+              onChange={(e) => setCustomerPhone(e.target.value)}
+              type="tel"
+              fullWidth
+              margin="normal"
+            />
+          </>
+        )}
+        <Box mt={2} display="flex" justifyContent="space-between">
+          <Button variant="contained" onClick={handleValidate}>
+            Valider
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setShowCustomerFields(true)}
+            color="primary"
+          >
+            Faire une facture
+          </Button>
+          <Button variant="outlined" onClick={onClose}>
+            Annuler
+          </Button>
+        </Box>
       </Box>
     </Modal>
   )

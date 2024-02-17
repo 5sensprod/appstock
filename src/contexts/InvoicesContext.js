@@ -8,6 +8,9 @@ export const useInvoices = () => useContext(InvoicesContext)
 export const InvoicesProvider = ({ children }) => {
   const [invoices, setInvoices] = useState([])
   const [loading, setLoading] = useState(true)
+  const [customerName, setCustomerName] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
+  const [customerPhone, setCustomerPhone] = useState('')
 
   useEffect(() => {
     fetchInvoices()
@@ -60,7 +63,18 @@ export const InvoicesProvider = ({ children }) => {
 
   return (
     <InvoicesContext.Provider
-      value={{ invoices, loading, createInvoice, prepareInvoiceData }}
+      value={{
+        invoices,
+        loading,
+        createInvoice,
+        prepareInvoiceData,
+        customerName,
+        setCustomerName,
+        customerEmail,
+        setCustomerEmail,
+        customerPhone,
+        setCustomerPhone,
+      }}
     >
       {children}
     </InvoicesContext.Provider>
