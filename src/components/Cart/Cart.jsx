@@ -22,6 +22,7 @@ import { useQuotes } from '../../contexts/QuoteContext'
 import { useNavigate } from 'react-router-dom'
 import { useUI } from '../../contexts/UIContext'
 import { useHoldInvoiceContext } from '../../contexts/HoldInvoiceContext'
+import InvoiceConfirmationModal from '../invoice/InvoiceConfirmationModal'
 
 const Cart = () => {
   const {
@@ -46,6 +47,7 @@ const Cart = () => {
   } = useQuotes()
 
   const { onHoldInvoices, holdInvoice } = useHoldInvoiceContext()
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
 
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
 
@@ -197,7 +199,7 @@ const Cart = () => {
                 my={4}
               >
                 <Button
-                  onClick={() => handlePayment(paymentType)}
+                  onClick={() => setIsInvoiceModalOpen(true)}
                   variant="contained"
                   color="primary"
                 >
@@ -271,6 +273,14 @@ const Cart = () => {
       <QuoteConfirmationModal
         open={isQuoteModalOpen}
         onClose={handleCloseQuoteModal}
+      />
+      <InvoiceConfirmationModal
+        open={isInvoiceModalOpen}
+        onClose={() => setIsInvoiceModalOpen(false)}
+        // cartItems={cartItems}
+        // cartTotals={cartTotals}
+        paymentType={paymentType}
+        // Ajoutez d'autres props nécessaires ici
       />
     </>
   )

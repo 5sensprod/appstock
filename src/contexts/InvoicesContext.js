@@ -25,6 +25,28 @@ export const InvoicesProvider = ({ children }) => {
     }
   }
 
+  const prepareInvoiceData = (cartItems, cartTotals, adjustmentAmount) => {
+    const items = cartItems.map((item, index) => ({
+      id: item._id || index,
+      reference: item.reference,
+      quantity: item.quantity,
+      prixHT: parseFloat(item.prixHT).toFixed(2),
+      prixTTC: parseFloat(item.puTTC).toFixed(2), // Utilise puTTC pour le prix TTC
+      tauxTVA: item.tauxTVA,
+      totalTTCParProduit: parseFloat(item.puTTC * item.quantity).toFixed(2), // Calcul du total TTC par produit
+      remiseMajorationLabel: item.remiseMajorationLabel || '',
+      remiseMajorationValue: item.remiseMajorationValue || 0,
+    }))
+
+    const totals = {
+      totalHT: parseFloat(cartTotals.totalHT).toFixed(2),
+      totalTTC: parseFloat(cartTotals.totalTTC + adjustmentAmount).toFixed(2),
+      adjustmentAmount,
+    }
+
+    return { items, totals }
+  }
+
   const createInvoice = async (invoiceData) => {
     try {
       const newInvoice = await addInvoice(invoiceData)
@@ -37,7 +59,9 @@ export const InvoicesProvider = ({ children }) => {
   }
 
   return (
-    <InvoicesContext.Provider value={{ invoices, loading, createInvoice }}>
+    <InvoicesContext.Provider
+      value={{ invoices, loading, createInvoice, prepareInvoiceData }}
+    >
       {children}
     </InvoicesContext.Provider>
   )
