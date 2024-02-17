@@ -13,6 +13,7 @@ import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
 import { useInvoices } from '../../contexts/InvoicesContext'
 import { useUI } from '../../contexts/UIContext'
+import { useQuotes } from '../../contexts/QuoteContext'
 const style = {
   position: 'absolute',
   top: '50%',
@@ -38,6 +39,14 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
 
   const { showToast } = useUI()
 
+  const {
+    customerName,
+    customerEmail,
+    customerPhone,
+    isActiveQuote,
+    deactivateQuote,
+  } = useQuotes()
+
   const [preparedInvoiceData, setPreparedInvoiceData] = useState({
     items: [],
     totals: {},
@@ -49,11 +58,11 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
   const {
     prepareInvoiceData,
     createInvoice,
-    customerName,
+    // customerName,
     setCustomerName,
-    customerEmail,
+    // customerEmail,
     setCustomerEmail,
-    customerPhone,
+    // customerPhone,
     setCustomerPhone,
   } = useInvoices()
 
@@ -200,6 +209,9 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
         // Passer true pour isInvoice, indiquant que nous créons une facture
         await handlePayClick(paymentType, customerInfo, true) // true pour spécifier la création d'une facture
         showToast('La facture a été créée avec succès.', 'success')
+        if (isActiveQuote) {
+          deactivateQuote() // Désactiver le mode devis si actif
+        }
       } else {
         // Sinon, nous traitons cela comme la création d'un ticket, donc pas besoin d'infos client.
         await handlePayClick(paymentType, {}, false) // false pour spécifier la création d'un ticket
