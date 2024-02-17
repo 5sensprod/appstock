@@ -33,12 +33,12 @@ module.exports = (db) => {
         let lastNumber = 0
         if (lastInvoice.length > 0) {
           // Extrait le numéro après le tiret et le convertit en nombre
-          const lastInvoiceNumber = lastInvoice[0].invoiceNumber.split('-')[1]
+          const lastInvoiceNumber = lastInvoice[0].invoiceNumber.split('-')[2]
           lastNumber = parseInt(lastInvoiceNumber, 10)
         }
 
         // Générer le nouveau numéro de facture
-        const newInvoiceNumber = `${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${String(lastNumber + 1).padStart(6, '0')}`
+        const newInvoiceNumber = `FACT-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${String(lastNumber + 1).padStart(6, '0')}`
 
         // Création de la nouvelle facture avec le nouveau numéro
         let newInvoice = {

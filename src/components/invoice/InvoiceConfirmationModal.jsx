@@ -189,41 +189,35 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
   }
 
   const handleActionClick = async () => {
-    if (showCustomerFields) {
-      const customerInfo = {
-        name: customerName,
-        email: customerEmail,
-        phone: customerPhone,
+    try {
+      if (showCustomerFields) {
+        // Si showCustomerFields est vrai, cela signifie que l'utilisateur souhaite créer une facture.
+        const customerInfo = {
+          name: customerName,
+          email: customerEmail,
+          phone: customerPhone,
+        }
+        // Passer true pour isInvoice, indiquant que nous créons une facture
+        await handlePayClick(paymentType, customerInfo, true) // true pour spécifier la création d'une facture
+        showToast('La facture a été créée avec succès.', 'success')
+      } else {
+        // Sinon, nous traitons cela comme la création d'un ticket, donc pas besoin d'infos client.
+        await handlePayClick(paymentType, {}, false) // false pour spécifier la création d'un ticket
+        showToast('Le ticket a été validé avec succès.', 'success')
       }
 
-      try {
-        await handlePayClick(paymentType, customerInfo)
-        showToast('La facture a été créée avec succès.', 'success')
-        clearCart()
-        setCustomerName('')
-        setCustomerEmail('')
-        setCustomerPhone('')
-        setShowCustomerFields(false)
-        onClose()
-      } catch (error) {
-        showToast(
-          `Erreur lors de la création de la facture: ${error.message}`,
-          'error',
-        )
-      }
-    } else {
-      try {
-        // Supposons une fonction pour valider le ticket sans créer une facture
-        // Exemple : await validateTicket();
-        showToast('Le ticket a été validé avec succès.', 'success')
-        clearCart()
-        onClose()
-      } catch (error) {
-        showToast(
-          `Erreur lors de la validation du ticket: ${error.message}`,
-          'error',
-        )
-      }
+      // Réinitialisation des états et fermeture du modal
+      clearCart()
+      setCustomerName('')
+      setCustomerEmail('')
+      setCustomerPhone('')
+      setShowCustomerFields(false)
+      onClose()
+    } catch (error) {
+      showToast(
+        `Erreur lors de la création de la facture/ticket: ${error.message}`,
+        'error',
+      )
     }
   }
 

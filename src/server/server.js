@@ -104,6 +104,7 @@ const productsRoutes = require('./routes/productsRoutes')
 const categoriesRoutes = require('./routes/categoriesRoutes')
 const invoicesRoutes = require('./routes/invoicesRoutes')
 const quotesRoutes = require('./routes/quotesRoutes')
+const ticketsRoutes = require('./routes/ticketsRoutes')
 
 initializeDatabases().then((db) => {
   app.use('/api/users', usersRoutes(db))
@@ -111,6 +112,7 @@ initializeDatabases().then((db) => {
   app.use('/api/categories', categoriesRoutes(db, sendSseEvent))
   app.use('/api/invoices', invoicesRoutes(db))
   app.use('/api/quotes', quotesRoutes(db))
+  app.use('/api/tickets', ticketsRoutes(db))
 })
 
 app.use(errorHandler)

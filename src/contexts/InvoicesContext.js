@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { getInvoices, addInvoice } from '../api/invoiceService'
+import { getTickets, addTicket } from '../api/ticketService'
 
 const InvoicesContext = createContext()
 
@@ -34,9 +35,9 @@ export const InvoicesProvider = ({ children }) => {
       reference: item.reference,
       quantity: item.quantity,
       prixHT: parseFloat(item.prixHT).toFixed(2),
-      prixTTC: parseFloat(item.puTTC).toFixed(2), // Utilise puTTC pour le prix TTC
+      prixTTC: parseFloat(item.puTTC).toFixed(2),
       tauxTVA: item.tauxTVA,
-      totalTTCParProduit: parseFloat(item.puTTC * item.quantity).toFixed(2), // Calcul du total TTC par produit
+      totalTTCParProduit: parseFloat(item.puTTC * item.quantity).toFixed(2),
       remiseMajorationLabel: item.remiseMajorationLabel || '',
       remiseMajorationValue: item.remiseMajorationValue || 0,
     }))
@@ -53,10 +54,22 @@ export const InvoicesProvider = ({ children }) => {
   const createInvoice = async (invoiceData) => {
     try {
       const newInvoice = await addInvoice(invoiceData)
-      fetchInvoices() // Rafraîchir la liste des factures après l'ajout
+      fetchInvoices() // Refresh invoices list after adding
       return newInvoice
     } catch (error) {
       console.error("Erreur lors de l'ajout de la facture:", error)
+      throw error
+    }
+  }
+
+  const createTicket = async (ticketData) => {
+    try {
+      // Assuming `addTicket` is defined and works similarly to `addInvoice` but for tickets
+      const newTicket = await addTicket(ticketData)
+      // Optionally, you might want to fetch tickets or update some state here
+      return newTicket
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du ticket:", error)
       throw error
     }
   }
@@ -68,6 +81,7 @@ export const InvoicesProvider = ({ children }) => {
         loading,
         createInvoice,
         prepareInvoiceData,
+        createTicket,
         customerName,
         setCustomerName,
         customerEmail,
