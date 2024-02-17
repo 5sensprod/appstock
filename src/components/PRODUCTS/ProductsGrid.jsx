@@ -13,9 +13,14 @@ import CustomToolbar from './CustomToolbar'
 import { useUI } from '../../contexts/UIContext'
 import BulkUpdateProduct from '../product/BulkUpdateProduct'
 import { useGridPreferences } from '../../contexts/GridPreferenceContext'
+import Modal from '@mui/material/Modal'
+import Box from '@mui/material/Box'
+import QRCodeGenerator from './QRCodeGenerator'
 
 const ProductsGrid = ({ selectedCategoryId }) => {
   const { showToast, showConfirmDialog } = useUI()
+  const [open, setOpen] = useState(false)
+  const [selectedProductId, setSelectedProductId] = useState(null)
 
   const { gridPreferences, updatePreferences } = useGridPreferences()
 
@@ -35,6 +40,19 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       sort: 'desc',
     },
   ])
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 740, // Augmentée à 600px pour plus de largeur
+    height: 500, // Définir une hauteur spécifique si nécessaire
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4, // Padding autour du contenu de la modal
+    zIndex: 1500,
+  }
 
   const filteredProducts = useFilteredProducts(selectedCategoryId, searchTerm)
   const [isRowNew, setIsRowNew] = useState({})
@@ -163,12 +181,21 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     )
   }
 
-  const columns = useColumns(
+  // Fonction pour ouvrir la modal avec le produit sélectionné
+  const handleOpen = (productId) => {
+    setSelectedProductId(productId)
+    setOpen(true)
+  }
+
+  // Fonction pour fermer la modal
+  const handleClose = () => setOpen(false)
+
+  const { columns } = useColumns(
     handleEdit,
     handleDelete,
     handleSave,
     handleCancel,
-    (row) => isRowNew[row._id],
+    handleOpen, // Cette fonction est maintenant passée directement
     rowModesModel,
   )
 
@@ -239,6 +266,18 @@ const ProductsGrid = ({ selectedCategoryId }) => {
 
   return (
     <>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          {selectedProductId && (
+            <QRCodeGenerator productId={selectedProductId} />
+          )}
+        </Box>
+      </Modal>
       {filteredProducts.length === 0 ? (
         <Typography variant="h6">Aucun produit trouvé</Typography>
       ) : (
@@ -300,6 +339,18 @@ const ProductsGrid = ({ selectedCategoryId }) => {
           onClose={() => setIsBulkUpdateModalOpen(false)}
         />
       )}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          {selectedProductId && (
+            <QRCodeGenerator productId={selectedProductId} />
+          )}
+        </Box>
+      </Modal>
     </>
   )
 }

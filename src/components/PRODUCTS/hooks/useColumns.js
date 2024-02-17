@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useCategoryContext } from '../../../contexts/CategoryContext'
 import { formatNumberFrench } from '../../../utils/priceUtils'
 import moment from 'moment'
@@ -6,6 +6,7 @@ import CategorySelect from '../../CATEGORIES/CategorySelect'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
 import { IconButton } from '@mui/material'
+import QrCodeIcon from '@mui/icons-material/QrCode'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
@@ -20,7 +21,7 @@ const useColumns = (
   handleDelete,
   handleSave,
   handleCancel,
-  isNewRowFunction,
+  handleOpen,
   rowModesModel,
 ) => {
   const { categories } = useCategoryContext()
@@ -39,6 +40,23 @@ const useColumns = (
     return path.join(' > ')
   }
 
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  }
+
+  const isNewRowFunction = (row) => {
+    // Déterminez si la ligne est nouvelle. Par exemple, une ligne sans ID est considérée comme nouvelle.
+    return !row._id
+  }
+
   const columns = [
     {
       field: 'actions',
@@ -54,6 +72,9 @@ const useColumns = (
 
         return (
           <div>
+            <IconButton onClick={() => handleOpen(params.id)}>
+              <QrCodeIcon />
+            </IconButton>
             {isNew || isInEditMode ? (
               <>
                 <IconButton onClick={() => handleSave(params.row)}>
@@ -235,7 +256,7 @@ const useColumns = (
     },
   ]
 
-  return columns
+  return { columns }
 }
 
 export default useColumns
