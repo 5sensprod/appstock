@@ -54,15 +54,11 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
 
   const handlePayClick = useHandlePayClick()
 
-  //   const { addTicket } = useTicketsContext() // Hypothétique
   const {
     prepareInvoiceData,
     createInvoice,
-    // customerName,
     setCustomerName,
-    // customerEmail,
     setCustomerEmail,
-    // customerPhone,
     setCustomerPhone,
   } = useInvoices()
 
@@ -77,7 +73,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
   const [showCustomerFields, setShowCustomerFields] = useState(false)
 
   useEffect(() => {
-    // Supposons que prepareInvoiceData soit importé de InvoicesContext
+    // prepareInvoiceData est importé de InvoicesContext
     const invoiceData = prepareInvoiceData(
       cartItems,
       cartTotals,
@@ -200,21 +196,19 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
   const handleActionClick = async () => {
     try {
       if (showCustomerFields) {
-        // Si showCustomerFields est vrai, cela signifie que l'utilisateur souhaite créer une facture.
         const customerInfo = {
           name: customerName,
           email: customerEmail,
           phone: customerPhone,
         }
-        // Passer true pour isInvoice, indiquant que nous créons une facture
-        await handlePayClick(paymentType, customerInfo, true) // true pour spécifier la création d'une facture
+        await handlePayClick(paymentType, customerInfo, true)
         showToast('La facture a été créée avec succès.', 'success')
         if (isActiveQuote) {
-          deactivateQuote() // Désactiver le mode devis si actif
+          deactivateQuote()
         }
       } else {
         // Sinon, nous traitons cela comme la création d'un ticket, donc pas besoin d'infos client.
-        await handlePayClick(paymentType, {}, false) // false pour spécifier la création d'un ticket
+        await handlePayClick(paymentType, {}, false)
         showToast('Le ticket a été validé avec succès.', 'success')
       }
 
