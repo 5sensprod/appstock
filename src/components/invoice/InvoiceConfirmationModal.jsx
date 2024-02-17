@@ -1,5 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Modal, Box, Button, Typography, TextField } from '@mui/material'
+import {
+  Modal,
+  Box,
+  Button,
+  Typography,
+  TextField,
+  Checkbox,
+  FormControlLabel,
+} from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
@@ -16,10 +24,17 @@ const style = {
   boxShadow: 24,
   p: 4,
 }
+import useHandlePayClick from '../../hooks/useHandlePayClick'
 
 const InvoiceConfirmationModal = ({ open, onClose }) => {
-  const { cartItems, cartTotals, adjustmentAmount, clearCart } =
-    useContext(CartContext)
+  const {
+    cartItems,
+    cartTotals,
+    adjustmentAmount,
+    clearCart,
+    paymentType,
+    amountPaid,
+  } = useContext(CartContext)
 
   const { showToast } = useUI()
 
@@ -27,6 +42,8 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     items: [],
     totals: {},
   })
+
+  const handlePayClick = useHandlePayClick()
 
   //   const { addTicket } = useTicketsContext() // Hypothétique
   const {
@@ -171,50 +188,47 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     })
   }
 
-  const handleValidate = async () => {
-    // Logique pour valider et enregistrer comme ticket
-    try {
-      await addTicket(preparedInvoiceData)
-      clearCart()
-      onClose()
-      // Affichez un message de succès ou effectuez d'autres actions nécessaires
-    } catch (error) {
-      // Gérez l'erreur
-    }
-  }
-
-  const handleCreateInvoice = async () => {
-    if (!customerName && !customerEmail && !customerPhone) {
-      showToast(
-        'Veuillez fournir au moins une information de contact pour le client.',
-        'error',
-      )
-      return
-    }
-
-    // Ajoutez ici les informations sur le client aux données de la facture
-    const invoiceDataWithCustomerInfo = {
-      ...preparedInvoiceData,
-      customerInfo: {
+  const handleActionClick = async () => {
+    if (showCustomerFields) {
+      const customerInfo = {
         name: customerName,
         email: customerEmail,
         phone: customerPhone,
-      },
-    }
+      }
 
-    try {
-      await createInvoice(invoiceDataWithCustomerInfo) // Ajoute la facture avec les informations du client
-      showToast('Facture créée avec succès.', 'success')
-      onClose() // Ferme le modal
-      clearCart() // Nettoie le panier
-      // Réinitialisez les états des informations du client ici si nécessaire
-      // Redirection après création n'est peut-être pas nécessaire pour une facture, ajustez selon le besoin
-    } catch (error) {
-      showToast(
-        `Erreur lors de la création de la facture: ${error.message}`,
-        'error',
-      )
+      try {
+        await handlePayClick(paymentType, customerInfo)
+        showToast('La facture a été créée avec succès.', 'success')
+        clearCart()
+        setCustomerName('')
+        setCustomerEmail('')
+        setCustomerPhone('')
+        setShowCustomerFields(false)
+        onClose()
+      } catch (error) {
+        showToast(
+          `Erreur lors de la création de la facture: ${error.message}`,
+          'error',
+        )
+      }
+    } else {
+      try {
+        // Supposons une fonction pour valider le ticket sans créer une facture
+        // Exemple : await validateTicket();
+        showToast('Le ticket a été validé avec succès.', 'success')
+        clearCart()
+        onClose()
+      } catch (error) {
+        showToast(
+          `Erreur lors de la validation du ticket: ${error.message}`,
+          'error',
+        )
+      }
     }
+  }
+
+  const handleCheckboxChange = (event) => {
+    setShowCustomerFields(event.target.checked)
   }
 
   return (
@@ -247,6 +261,15 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
             sx={{ '& .MuiDataGrid-columnHeaders': { display: 'none' } }}
           />
         </div>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={showCustomerFields}
+              onChange={handleCheckboxChange}
+            />
+          }
+          label="Avec facture"
+        />
         {showCustomerFields && (
           <>
             {!customerName && !customerEmail && !customerPhone && (
@@ -283,15 +306,8 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
           </>
         )}
         <Box mt={2} display="flex" justifyContent="space-between">
-          <Button variant="contained" onClick={handleValidate}>
+          <Button variant="contained" onClick={handleActionClick}>
             Valider
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setShowCustomerFields(true)}
-            color="primary"
-          >
-            Faire une facture
           </Button>
           <Button variant="outlined" onClick={onClose}>
             Annuler

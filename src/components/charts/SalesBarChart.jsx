@@ -9,12 +9,13 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
-import { getInvoices } from '../../api/invoiceService'
+import { useInvoices } from '../../contexts/InvoicesContext'
 import moment from 'moment'
 import { formatPrice } from '../../utils/priceUtils'
 
 const SalesLineChart = ({ selectedRange, dateRange }) => {
   const [salesData, setSalesData] = useState([])
+  const { invoices } = useInvoices()
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -72,15 +73,17 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
   }
 
   useEffect(() => {
-    const fetchAndProcessInvoices = async () => {
+    const processInvoicesData = () => {
+      // Convertit la plage sélectionnée en dates de début et de fin
       const { startDate, endDate } = convertRangeToDate(selectedRange)
-      const invoices = await getInvoices(startDate, endDate)
 
+      // Filtre les factures basées sur la plage de dates sélectionnée
       const filteredInvoices = invoices.filter((invoice) => {
         const invoiceDate = moment(invoice.date)
         return invoiceDate.isBetween(startDate, endDate, null, '[]')
       })
 
+      // Agrège les données de vente par date
       const salesByDate = filteredInvoices.reduce((acc, invoice) => {
         const date = moment(invoice.date).format('YYYY-MM-DD')
         if (!acc[date]) {
@@ -90,6 +93,9 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
         return acc
       }, {})
 
+      console.log('Totaux de vente par date:', salesByDate)
+
+      // Convertit l'objet agrégé en un tableau pour le graphique
       const formattedData = Object.entries(salesByDate)
         .map(([date, totalSales]) => ({
           date,
@@ -97,11 +103,13 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
         }))
         .sort((a, b) => new Date(a.date) - new Date(b.date))
 
-      setSalesData(formattedData)
+      return formattedData
     }
 
-    fetchAndProcessInvoices()
-  }, [selectedRange, dateRange])
+    // Appelle la fonction de traitement et met à jour l'état du composant avec les données formatées
+    const salesDataFormatted = processInvoicesData()
+    setSalesData(salesDataFormatted)
+  }, [invoices, selectedRange, dateRange])
 
   return (
     <ResponsiveContainer width="100%" height={300}>

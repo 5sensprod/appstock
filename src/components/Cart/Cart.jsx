@@ -35,6 +35,9 @@ const Cart = () => {
     adjustmentAmount,
     cartTotals,
     clearCart,
+    setPaymentType,
+    setAmountPaid,
+    paymentType,
   } = useContext(CartContext)
 
   const {
@@ -60,10 +63,10 @@ const Cart = () => {
 
   const navigate = useNavigate()
 
-  const [paymentType, setPaymentType] = useState('CB')
-  const [amountPaid, setAmountPaid] = useState('')
+  // const [paymentType, setPaymentType] = useState('CB')
+  // const [amountPaid, setAmountPaid] = useState('')
 
-  const handlePayment = useHandlePayClick(paymentType, setInvoiceData)
+  // const handlePayment = useHandlePayClick(paymentType, setInvoiceData)
 
   const isCurrentCartOnHold = onHoldInvoices.some(
     (invoice) => JSON.stringify(invoice.items) === JSON.stringify(cartItems),
@@ -71,6 +74,10 @@ const Cart = () => {
 
   const handlePaymentTypeChange = (event) => {
     setPaymentType(event.target.value)
+  }
+
+  const handleAmountPaidChange = (event) => {
+    setAmountPaid(event.target.value)
   }
 
   const calculateChange = () => {

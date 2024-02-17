@@ -22,18 +22,32 @@ export const CartProvider = ({ children }) => {
   const [invoiceData, setInvoiceData] = useState(null)
   const [adjustmentAmount, setAdjustmentAmount] = useState(0)
 
+  const [paymentType, setPaymentType] = useState('CB')
+  const [amountPaid, setAmountPaid] = useState('')
+
+  const calculateTotalItem = (item) => {
+    // Assurez-vous que `puTTC` et `quantity` sont des nombres avant le calcul
+    const total = parseFloat(item.puTTC) * parseInt(item.quantity, 10)
+    return isNaN(total) ? 0 : total.toFixed(2) // Retourne 0 si le calcul est NaN
+  }
+
   const enrichCartItem = (item) => {
-    const priceToUse = item.prixModifie ?? item.prixVente
-    const taxRateForItem = item.tva / 100
+    const priceToUse = parseFloat(item.prixModifie ?? item.prixVente)
+    const taxRateForItem = parseFloat(item.tva) / 100
     const prixHT = priceToUse / (1 + taxRateForItem)
     const montantTVA = calculateTax(prixHT, taxRateForItem)
     const tauxTVA = item.tva
-    const totalItem = calculateTotalItem(item)
+
+    // Utilisez `priceToUse` comme `puTTC` pour le calcul de `totalItem`
+    const totalItem = calculateTotalItem({ ...item, puTTC: priceToUse })
+
+    console.log(`Total Item for ${item.reference}:`, totalItem)
+    console.log(`prixTTC: ${priceToUse}, quantity: ${item.quantity}`)
 
     return {
       ...item,
       prixHT: prixHT.toFixed(2),
-      puTTC: priceToUse.toFixed(2),
+      puTTC: priceToUse.toFixed(2), // Assurez-vous que cette valeur est correctement attribuée
       montantTVA: montantTVA.toFixed(2),
       tauxTVA,
       remiseMajorationLabel: calculateDiscountMarkup(
@@ -44,10 +58,9 @@ export const CartProvider = ({ children }) => {
         item.prixVente,
         item.prixModifie,
       ).value,
-      totalItem,
+      totalItem, // Cette valeur devrait maintenant être correcte
     }
   }
-
   // Calculer les totaux HT, TTC et les taxes pour les articles du panier
   const calculateCartTotals = (items) => {
     const totalHT = calculateTotal(items, (item) => item.prixHT)
@@ -91,20 +104,22 @@ export const CartProvider = ({ children }) => {
     }
   }, [cartItems, adjustmentAmount])
 
-  // Ajouter un produit au panier
   const addToCart = (product) => {
     setCartItems((currentItems) => {
-      const itemIndex = currentItems.findIndex(
+      const existingItemIndex = currentItems.findIndex(
         (item) => item._id === product._id,
       )
-      if (itemIndex > -1) {
-        // Le produit est déjà dans le panier, augmenter seulement la quantité
+      if (existingItemIndex > -1) {
+        // Le produit existe déjà, mettre à jour la quantité
         const newItems = [...currentItems]
-        newItems[itemIndex].quantity += 1
-        return newItems
+        newItems[existingItemIndex] = {
+          ...newItems[existingItemIndex],
+          quantity: newItems[existingItemIndex].quantity + 1, // Assurez-vous que la quantité est mise à jour
+        }
+        return newItems.map((item) => enrichCartItem(item)) // Re-enrichissement des articles
       } else {
-        // Ajouter un nouveau produit au panier avec une quantité initiale de 1
-        return [...currentItems, { ...enrichCartItem(product), quantity: 1 }]
+        // Nouvel article, définir la quantité à 1
+        return [...currentItems, enrichCartItem({ ...product, quantity: 1 })] // Ajouter l'article avec la quantité initialisée à 1
       }
     })
   }
@@ -113,11 +128,12 @@ export const CartProvider = ({ children }) => {
   const updateQuantity = (productId, newQuantity) => {
     setCartItems((currentItems) => {
       return currentItems.map((item) =>
-        item._id === productId ? { ...item, quantity: newQuantity } : item,
+        item._id === productId
+          ? enrichCartItem({ ...item, quantity: newQuantity })
+          : item,
       )
     })
   }
-
   // Mettre à jour le prix d'un article dans le panier
   const updatePrice = (productId, newPrice) => {
     setCartItems((currentItems) =>
@@ -171,6 +187,10 @@ export const CartProvider = ({ children }) => {
         invoiceData,
         setInvoiceData,
         clearCart,
+        paymentType,
+        setPaymentType,
+        amountPaid,
+        setAmountPaid,
       }}
     >
       {children}
