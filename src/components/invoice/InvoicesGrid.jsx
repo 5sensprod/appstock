@@ -11,14 +11,13 @@ const InvoicesGrid = () => {
       .map((invoice) => ({
         id: invoice._id,
         number: invoice.invoiceNumber,
-        date: new Date(invoice.date), // Gardez la date en tant qu'objet Date pour le tri
-        dateString: new Date(invoice.date).toLocaleDateString('fr-FR'), // Utilisez un champ séparé pour la chaîne de date formatée
+        date: new Date(invoice.date),
+        dateString: new Date(invoice.date).toLocaleDateString('fr-FR'),
         totalTTC: invoice.totalTTC,
         customerName: invoice.customerInfo?.name || '',
       }))
-      .sort((a, b) => b.date - a.date) // Triez par date décroissante
+      .sort((a, b) => b.date - a.date)
 
-    // Mise à jour pour utiliser `dateString` pour l'affichage
     setRows(formattedRows.map((row) => ({ ...row, date: row.dateString })))
   }, [invoices])
 
