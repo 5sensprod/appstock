@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 import { useInvoices } from '../../contexts/InvoicesContext'
-import { formatPrice } from '../../utils/priceUtils' // Assurez-vous que le chemin d'importation est correct
+import { formatPrice } from '../../utils/priceUtils'
 
 const InvoicesGrid = () => {
   const { invoices, loading } = useInvoices()
@@ -14,10 +14,10 @@ const InvoicesGrid = () => {
 
   // Création des lignes pour le DataGrid après tri
   const rows = sortedInvoices.map((invoice) => ({
-    id: invoice._id, // Assurez-vous que '_id' est le bon identifiant
+    id: invoice._id,
     ...invoice,
-    date: new Date(invoice.date).toLocaleDateString('fr-FR'), // Formate la date pour l'affichage
-    totalTTC: parseFloat(invoice.totalTTC), // Convertit totalTTC en nombre, si nécessaire
+    date: new Date(invoice.date).toLocaleDateString('fr-FR'),
+    totalTTC: parseFloat(invoice.totalTTC),
   }))
 
   const columns = [
@@ -27,19 +27,13 @@ const InvoicesGrid = () => {
       field: 'totalTTC',
       headerName: 'Total TTC',
       width: 130,
-      valueFormatter: ({ value }) => formatPrice(value), // Utilise formatPrice pour formater le montant
+      valueFormatter: ({ value }) => formatPrice(value),
     },
   ]
 
   return (
     <div style={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        loading={loading}
-        // checkboxSelection
-      />
+      <DataGrid rows={rows} columns={columns} pageSize={5} loading={loading} />
     </div>
   )
 }

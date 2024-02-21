@@ -8,10 +8,12 @@ export const useInvoices = () => useContext(InvoicesContext)
 
 export const InvoicesProvider = ({ children }) => {
   const [invoices, setInvoices] = useState([])
+  const [tickets, setTickets] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchInvoices()
+    fetchTickets() // Appelez fetchTickets également
   }, [])
 
   const fetchInvoices = async () => {
@@ -21,6 +23,18 @@ export const InvoicesProvider = ({ children }) => {
       setInvoices(data)
     } catch (error) {
       console.error('Erreur lors de la récupération des factures:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchTickets = async () => {
+    setLoading(true)
+    try {
+      const data = await getTickets() // Utilisez getTickets ici
+      setTickets(data)
+    } catch (error) {
+      console.error('Erreur lors de la récupération des tickets:', error)
     } finally {
       setLoading(false)
     }
@@ -62,7 +76,7 @@ export const InvoicesProvider = ({ children }) => {
   const createTicket = async (ticketData) => {
     try {
       const newTicket = await addTicket(ticketData)
-      // Optionally, you might want to fetch tickets or update some state here
+      fetchTickets()
       return newTicket
     } catch (error) {
       console.error("Erreur lors de l'ajout du ticket:", error)
@@ -74,6 +88,7 @@ export const InvoicesProvider = ({ children }) => {
     <InvoicesContext.Provider
       value={{
         invoices,
+        tickets,
         loading,
         createInvoice,
         prepareInvoiceData,
