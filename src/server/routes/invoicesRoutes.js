@@ -63,15 +63,15 @@ module.exports = (db) => {
             puHT: parseFloat(item.puHT).toFixed(2),
             puTTC: parseFloat(item.puTTC).toFixed(2),
             tauxTVA: parseFloat(item.tauxTVA),
-            totalItem: parseFloat(item.totalItem).toFixed(2),
-            montantTVA: parseFloat(item.montantTVA).toFixed(2),
+            totalItem: parseFloat(item.totalItem),
+            montantTVA: parseFloat(item.montantTVA),
             remiseMajorationValue: item.remiseMajorationValue
               ? parseFloat(item.remiseMajorationValue)
               : 0,
           })),
-          totalHT: parseFloat(req.body.totalHT).toFixed(2),
-          totalTVA: parseFloat(req.body.totalTVA).toFixed(2),
-          totalTTC: parseFloat(req.body.totalTTC).toFixed(2),
+          totalHT: parseFloat(req.body.totalHT),
+          totalTVA: parseFloat(req.body.totalTVA),
+          totalTTC: parseFloat(req.body.totalTTC),
         }
 
         db.invoices.insert(newInvoice, (err, invoice) => {

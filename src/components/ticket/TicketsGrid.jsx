@@ -1,39 +1,24 @@
-// src/components/ticket/TicketsGrid.jsx
-import React, { useMemo } from 'react'
-import { DataGrid } from '@mui/x-data-grid'
-import { useInvoices } from '../../contexts/InvoicesContext' // Utilisez useInvoices pour accéder aux tickets
-import { formatPrice } from '../../utils/priceUtils'
+import React, { useEffect, useState } from 'react'
+import CustomDataGrid from '../ui/CustomDataGrid'
+import { useInvoices } from '../../contexts/InvoicesContext' // Note: This should ideally be `useTickets` if you have a separate context for tickets
 
 const TicketsGrid = () => {
-  const { tickets, loading } = useInvoices() // Utilisez tickets ici
+  const { tickets, loading } = useInvoices() // Note: Adjust this to use tickets data
+  const [rows, setRows] = useState([])
 
-  const sortedTickets = useMemo(() => {
-    return [...tickets].sort((a, b) => new Date(b.date) - new Date(a.date))
+  useEffect(() => {
+    const formattedRows = tickets.map((ticket) => ({
+      id: ticket._id,
+      number: ticket.ticketNumber,
+      date: new Date(ticket.date).toLocaleDateString('fr-FR'),
+      totalTTC: ticket.totalTTC,
+      // No customerName field for tickets
+    }))
+    setRows(formattedRows)
   }, [tickets])
 
-  const rows = sortedTickets.map((ticket) => ({
-    id: ticket._id,
-    ...ticket,
-    date: new Date(ticket.date).toLocaleDateString('fr-FR'),
-    totalTTC: parseFloat(ticket.totalTTC), // Assurez-vous que vos tickets ont une propriété totalTTC ou adaptez selon votre modèle de données
-  }))
-
-  const columns = [
-    { field: 'ticketNumber', headerName: 'Numéro de ticket', width: 200 },
-    { field: 'date', headerName: 'Date', width: 150 },
-    {
-      field: 'totalTTC',
-      headerName: 'Total TTC',
-      width: 160,
-      valueFormatter: ({ value }) => formatPrice(value),
-    },
-    // Ajoutez d'autres colonnes selon votre modèle de données
-  ]
-
   return (
-    <div style={{ height: 400, width: '100%' }}>
-      <DataGrid rows={rows} columns={columns} pageSize={5} loading={loading} />
-    </div>
+    <CustomDataGrid rows={rows} loading={loading} includeCustomerName={false} />
   )
 }
 
