@@ -40,12 +40,17 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
   const { showToast } = useUI()
 
   const {
-    customerName,
-    customerEmail,
-    customerPhone,
+    customerName: quoteCustomerName,
+    customerEmail: quoteCustomerEmail,
+    customerPhone: quoteCustomerPhone,
     isActiveQuote,
     deactivateQuote,
   } = useQuotes()
+
+  // Utilisez des états locaux initialisés avec les valeurs de QuoteContext si disponibles
+  const [customerName, setCustomerName] = useState(quoteCustomerName || '')
+  const [customerEmail, setCustomerEmail] = useState(quoteCustomerEmail || '')
+  const [customerPhone, setCustomerPhone] = useState(quoteCustomerPhone || '')
 
   const [preparedInvoiceData, setPreparedInvoiceData] = useState({
     items: [],
@@ -54,13 +59,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
 
   const handlePayClick = useHandlePayClick()
 
-  const {
-    prepareInvoiceData,
-    createInvoice,
-    setCustomerName,
-    setCustomerEmail,
-    setCustomerPhone,
-  } = useInvoices()
+  const { prepareInvoiceData } = useInvoices()
 
   const hasMajoration = cartItems.some(
     (item) =>
@@ -81,6 +80,15 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     )
     setPreparedInvoiceData(invoiceData)
   }, [cartItems, cartTotals, adjustmentAmount, prepareInvoiceData])
+
+  useEffect(() => {
+    // Mettre à jour les états locaux si les informations du client dans QuoteContext changent
+    if (isActiveQuote) {
+      setCustomerName(quoteCustomerName)
+      setCustomerEmail(quoteCustomerEmail)
+      setCustomerPhone(quoteCustomerPhone)
+    }
+  }, [quoteCustomerName, quoteCustomerEmail, quoteCustomerPhone, isActiveQuote])
 
   const columns = [
     {

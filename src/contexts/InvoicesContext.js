@@ -9,9 +9,6 @@ export const useInvoices = () => useContext(InvoicesContext)
 export const InvoicesProvider = ({ children }) => {
   const [invoices, setInvoices] = useState([])
   const [loading, setLoading] = useState(true)
-  const [customerName, setCustomerName] = useState('')
-  const [customerEmail, setCustomerEmail] = useState('')
-  const [customerPhone, setCustomerPhone] = useState('')
 
   useEffect(() => {
     fetchInvoices()
@@ -54,7 +51,7 @@ export const InvoicesProvider = ({ children }) => {
   const createInvoice = async (invoiceData) => {
     try {
       const newInvoice = await addInvoice(invoiceData)
-      fetchInvoices() // Refresh invoices list after adding
+      fetchInvoices()
       return newInvoice
     } catch (error) {
       console.error("Erreur lors de l'ajout de la facture:", error)
@@ -64,7 +61,6 @@ export const InvoicesProvider = ({ children }) => {
 
   const createTicket = async (ticketData) => {
     try {
-      // Assuming `addTicket` is defined and works similarly to `addInvoice` but for tickets
       const newTicket = await addTicket(ticketData)
       // Optionally, you might want to fetch tickets or update some state here
       return newTicket
@@ -82,12 +78,6 @@ export const InvoicesProvider = ({ children }) => {
         createInvoice,
         prepareInvoiceData,
         createTicket,
-        customerName,
-        setCustomerName,
-        customerEmail,
-        setCustomerEmail,
-        customerPhone,
-        setCustomerPhone,
       }}
     >
       {children}
