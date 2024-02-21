@@ -42,4 +42,3 @@ const CustomDataGrid = ({ rows, loading, includeCustomerName }) => {
 }
 
 export default CustomDataGrid
-;``

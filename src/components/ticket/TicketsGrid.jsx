@@ -7,14 +7,18 @@ const TicketsGrid = () => {
   const [rows, setRows] = useState([])
 
   useEffect(() => {
-    const formattedRows = tickets.map((ticket) => ({
-      id: ticket._id,
-      number: ticket.ticketNumber,
-      date: new Date(ticket.date).toLocaleDateString('fr-FR'),
-      totalTTC: ticket.totalTTC,
-      // No customerName field for tickets
-    }))
-    setRows(formattedRows)
+    const formattedRows = tickets
+      .map((ticket) => ({
+        id: ticket._id,
+        number: ticket.ticketNumber,
+        date: new Date(ticket.date), // Gardez la date en tant qu'objet Date pour le tri
+        dateString: new Date(ticket.date).toLocaleDateString('fr-FR'), // Utilisez un champ séparé pour la chaîne de date formatée
+        totalTTC: ticket.totalTTC,
+      }))
+      .sort((a, b) => b.date - a.date) // Triez par date décroissante
+
+    // Mise à jour pour utiliser `dateString` pour l'affichage
+    setRows(formattedRows.map((row) => ({ ...row, date: row.dateString })))
   }, [tickets])
 
   return (
