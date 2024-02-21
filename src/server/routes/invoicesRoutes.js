@@ -60,8 +60,8 @@ module.exports = (db) => {
           items: req.body.items.map((item) => ({
             ...item,
             quantite: parseInt(item.quantite, 10),
-            puHT: parseFloat(item.puHT).toFixed(2),
-            puTTC: parseFloat(item.puTTC).toFixed(2),
+            puHT: parseFloat(item.puHT),
+            puTTC: parseFloat(item.puTTC),
             tauxTVA: parseFloat(item.tauxTVA),
             totalItem: parseFloat(item.totalItem),
             montantTVA: parseFloat(item.montantTVA),

@@ -15,7 +15,7 @@ import { formatPrice } from '../../utils/priceUtils'
 
 const SalesLineChart = ({ selectedRange, dateRange }) => {
   const [salesData, setSalesData] = useState([])
-  const { invoices } = useInvoices()
+  const { invoices, tickets } = useInvoices()
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -71,31 +71,27 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
         }
     }
   }
-
   useEffect(() => {
-    const processInvoicesData = () => {
-      // Convertit la plage sélectionnée en dates de début et de fin
+    const processSalesData = () => {
       const { startDate, endDate } = convertRangeToDate(selectedRange)
 
-      // Filtre les factures basées sur la plage de dates sélectionnée
-      const filteredInvoices = invoices.filter((invoice) => {
-        const invoiceDate = moment(invoice.date)
-        return invoiceDate.isBetween(startDate, endDate, null, '[]')
+      // Fusionner et filtrer les factures et les tickets
+      const allDocuments = [...invoices, ...tickets].filter((doc) => {
+        const docDate = moment(doc.date)
+        return docDate.isBetween(startDate, endDate, null, '[]')
       })
 
-      // Agrège les données de vente par date
-      const salesByDate = filteredInvoices.reduce((acc, invoice) => {
-        const date = moment(invoice.date).format('YYYY-MM-DD')
+      // Agréger les données de vente par date
+      const salesByDate = allDocuments.reduce((acc, doc) => {
+        const date = moment(doc.date).format('YYYY-MM-DD')
         if (!acc[date]) {
           acc[date] = 0
         }
-        acc[date] += parseFloat(invoice.totalTTC)
+        acc[date] += parseFloat(doc.totalTTC)
         return acc
       }, {})
 
-      console.log('Totaux de vente par date:', salesByDate)
-
-      // Convertit l'objet agrégé en un tableau pour le graphique
+      // Convertir en tableau pour le graphique
       const formattedData = Object.entries(salesByDate)
         .map(([date, totalSales]) => ({
           date,
@@ -103,13 +99,11 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
         }))
         .sort((a, b) => new Date(a.date) - new Date(b.date))
 
-      return formattedData
+      setSalesData(formattedData)
     }
 
-    // Appelle la fonction de traitement et met à jour l'état du composant avec les données formatées
-    const salesDataFormatted = processInvoicesData()
-    setSalesData(salesDataFormatted)
-  }, [invoices, selectedRange, dateRange])
+    processSalesData()
+  }, [invoices, tickets, selectedRange, dateRange])
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -128,8 +122,8 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
           tickFormatter={(value) =>
             moment(value, 'YYYY-MM-DD').format('DD/MM/YYYY')
           }
-          height={60} // Augmente la hauteur de l'axe X pour créer plus d'espace
-          tick={{ dy: 10 }} // Décale les étiquettes vers le bas
+          height={60}
+          tick={{ dy: 10 }}
         />
         <YAxis />
         <Tooltip content={<CustomTooltip />} />
