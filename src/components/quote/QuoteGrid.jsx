@@ -8,7 +8,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useNavigate } from 'react-router-dom'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
-import { useGeneratePdf } from './useGeneratePdf'
+import { useGenerateQuotePdf } from './useGenerateQuotePdf'
 import { useUI } from '../../contexts/UIContext'
 
 const QuoteGrid = () => {
@@ -23,7 +23,7 @@ const QuoteGrid = () => {
     deleteQuote,
   } = useContext(QuoteContext)
 
-  const generatePdf = useGeneratePdf()
+  const generatePdf = useGenerateQuotePdf()
   const { showToast, showConfirmDialog } = useUI()
 
   const onPdfIconClick = (quoteId) => {

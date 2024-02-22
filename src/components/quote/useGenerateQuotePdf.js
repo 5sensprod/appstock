@@ -5,7 +5,7 @@ import { getQuoteDetailsById } from '../../api/quoteService'
 import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
 import { formatPrice } from '../../utils/priceUtils'
 
-export const useGeneratePdf = () => {
+export const useGenerateQuotePdf = () => {
   const { companyInfo } = useContext(CompanyInfoContext)
 
   // Calculer la date de validité (30 jours après la date du devis)
