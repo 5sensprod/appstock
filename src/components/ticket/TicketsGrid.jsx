@@ -6,6 +6,11 @@ const TicketsGrid = () => {
   const { tickets, loading } = useInvoices()
   const [rows, setRows] = useState([])
 
+  const handleViewDetails = (ticket) => {
+    console.log('Affichage des détails pour', ticket)
+    // Ici, vous pouvez par exemple ouvrir une boîte de dialogue ou rediriger vers une page de détails
+  }
+
   useEffect(() => {
     const formattedRows = tickets
       .map((ticket) => ({
@@ -21,7 +26,12 @@ const TicketsGrid = () => {
   }, [tickets])
 
   return (
-    <CustomDataGrid rows={rows} loading={loading} includeCustomerName={false} />
+    <CustomDataGrid
+      rows={rows}
+      loading={loading}
+      includeCustomerName={false}
+      onViewDetails={handleViewDetails}
+    />
   )
 }
 

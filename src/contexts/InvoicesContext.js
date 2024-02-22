@@ -21,6 +21,7 @@ export const InvoicesProvider = ({ children }) => {
     try {
       const data = await getInvoices()
       setInvoices(data)
+      console.log('Factures chargées :', data) // Log pour voir les données chargées
     } catch (error) {
       console.error('Erreur lors de la récupération des factures:', error)
     } finally {

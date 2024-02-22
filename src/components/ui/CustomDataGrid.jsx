@@ -1,8 +1,16 @@
 import React from 'react'
 import { DataGrid, frFR } from '@mui/x-data-grid'
 import { formatPrice } from '../../utils/priceUtils'
+import { Button } from '@mui/material'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import { IconButton } from '@mui/material'
 
-const CustomDataGrid = ({ rows, loading, includeCustomerName }) => {
+const CustomDataGrid = ({
+  rows,
+  loading,
+  includeCustomerName,
+  onViewDetails,
+}) => {
   const columns = [
     {
       field: 'number',
@@ -25,6 +33,20 @@ const CustomDataGrid = ({ rows, loading, includeCustomerName }) => {
       field: 'customerName',
       headerName: 'Nom du client',
       width: 200,
+    })
+  }
+
+  // Ajoutez cette colonne d'actions si une fonction onViewDetails est fournie
+  if (onViewDetails) {
+    columns.push({
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      renderCell: (params) => (
+        <IconButton onClick={() => params.row.onViewDetails()}>
+          <VisibilityIcon />
+        </IconButton>
+      ),
     })
   }
 
