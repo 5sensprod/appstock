@@ -99,7 +99,7 @@ module.exports = (db, sendSseEvent) => {
         console.error("Erreur lors de l'insertion de la catégorie:", err)
         return res.status(500).send(err)
       }
-      sendSseEvent({ type: 'category-added', category: doc }) // Envoyer un événement SSE
+      sendSseEvent({ type: 'category-added', category: doc })
       res.status(201).json(doc)
     })
   })

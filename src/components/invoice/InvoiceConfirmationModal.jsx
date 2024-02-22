@@ -47,7 +47,6 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     deactivateQuote,
   } = useQuotes()
 
-  // Utilisez des états locaux initialisés avec les valeurs de QuoteContext si disponibles
   const [customerName, setCustomerName] = useState(quoteCustomerName || '')
   const [customerEmail, setCustomerEmail] = useState(quoteCustomerEmail || '')
   const [customerPhone, setCustomerPhone] = useState(quoteCustomerPhone || '')
@@ -72,7 +71,6 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
   const [showCustomerFields, setShowCustomerFields] = useState(false)
 
   useEffect(() => {
-    // prepareInvoiceData est importé de InvoicesContext
     const invoiceData = prepareInvoiceData(
       cartItems,
       cartTotals,
@@ -82,7 +80,6 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
   }, [cartItems, cartTotals, adjustmentAmount, prepareInvoiceData])
 
   useEffect(() => {
-    // Mettre à jour les états locaux si les informations du client dans QuoteContext changent
     if (isActiveQuote) {
       setCustomerName(quoteCustomerName)
       setCustomerEmail(quoteCustomerEmail)
@@ -152,7 +149,6 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     },
   ]
 
-  // Colonnes pour la grille des totaux
   const totalColumns = [
     {
       field: 'type',
@@ -169,7 +165,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
       renderCell: (params) => formatPrice(Number(params.value)),
     },
   ]
-  // Préparer les données pour la grille des totaux
+
   const totalRows = [
     {
       id: 1,
@@ -215,12 +211,10 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
           deactivateQuote()
         }
       } else {
-        // Sinon, nous traitons cela comme la création d'un ticket, donc pas besoin d'infos client.
         await handlePayClick(paymentType, {}, false)
         showToast('Le ticket a été validé avec succès.', 'success')
       }
 
-      // Réinitialisation des états et fermeture du modal
       clearCart()
       setCustomerName('')
       setCustomerEmail('')
@@ -247,8 +241,8 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
       aria-describedby="modal-description"
     >
       <Box sx={style}>
-        <Typography id="modal-title" variant="h6" component="h2">
-          Confirmez la facture
+        <Typography id="modal-title" variant="h6" component="h2" mb={2}>
+          Confirmer la vente
         </Typography>
         <div style={{ width: '100%', marginBottom: 5 }}>
           <DataGrid

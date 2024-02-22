@@ -1,4 +1,3 @@
-// src/components/ui/GenericModal.jsx
 import React from 'react'
 import { Modal, Box, Tabs, Tab } from '@mui/material'
 

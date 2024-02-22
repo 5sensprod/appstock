@@ -5,7 +5,6 @@ const ComparisonSelector = ({ selectedRange, onComparisonChange }) => {
   const [comparisonOptions, setComparisonOptions] = useState([])
 
   useEffect(() => {
-    // Déterminer les options basées sur selectedRange
     const options = {
       this_week: ['s-1', 'm-1', 't-1', 'n-1'],
       this_month: ['m-1', 't-1', 'n-1'],

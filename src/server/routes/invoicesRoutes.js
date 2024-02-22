@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 
 module.exports = (db) => {
-  // Obtenir toutes les factures
   router.get('/', (req, res) => {
     db.invoices.find({}, (err, invoices) => {
       if (err) {
@@ -13,7 +12,6 @@ module.exports = (db) => {
     })
   })
 
-  // Ajouter une nouvelle facture
   router.post('/', async (req, res) => {
     db.invoices
       .find({})
@@ -31,26 +29,21 @@ module.exports = (db) => {
         let lastNumber = 0
         let resetNumber = false
 
-        // Vérifier si la dernière facture a été émise aujourd'hui
         if (lastInvoice && lastInvoice.length > 0) {
-          const lastDate = lastInvoice[0].date.split('T')[0] // Extraire la date de la dernière facture
-          const currentDate = new Date().toISOString().split('T')[0] // Date actuelle au format YYYY-MM-DD
+          const lastDate = lastInvoice[0].date.split('T')[0]
+          const currentDate = new Date().toISOString().split('T')[0]
 
           // Comparer les dates
           if (lastDate === currentDate) {
-            // Même jour, incrémenter le numéro
             const lastInvoiceNumber = lastInvoice[0].invoiceNumber.split('-')[2]
             lastNumber = parseInt(lastInvoiceNumber, 10)
           } else {
-            // Nouveau jour, réinitialiser le numéro
             resetNumber = true
           }
         } else {
-          // Aucune facture trouvée, considérer comme un nouveau jour
           resetNumber = true
         }
 
-        // Générer le nouveau numéro de facture, réinitialiser si nécessaire
         const newInvoiceNumber = `FACT-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${String(resetNumber ? 1 : lastNumber + 1).padStart(6, '0')}`
 
         let newInvoice = {
@@ -83,7 +76,6 @@ module.exports = (db) => {
       })
   })
 
-  // Mettre à jour une facture
   router.put('/:id', (req, res) => {
     const { id } = req.params
     db.invoices.update(
@@ -100,7 +92,6 @@ module.exports = (db) => {
     )
   })
 
-  // Supprimer une facture
   router.delete('/:id', (req, res) => {
     const { id } = req.params
     db.invoices.remove({ _id: id }, {}, (err, numRemoved) => {

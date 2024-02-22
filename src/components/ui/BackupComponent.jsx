@@ -3,7 +3,6 @@ import { triggerDirectExport, getPaths } from '../../ipcHelper'
 
 const BackupComponent = () => {
   useEffect(() => {
-    // Vous pouvez placer ici d'autres logiques d'initialisation si nécessaire
     getPaths().then((paths) => {
       if (!paths) {
         console.log('Les chemins ne sont pas disponibles.')

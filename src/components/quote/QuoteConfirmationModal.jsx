@@ -45,9 +45,7 @@ const QuoteConfirmationModal = ({ open, onClose }) => {
   const { showToast } = useUI()
   const navigate = useNavigate()
 
-  //Préparez les données dès que cartItems ou cartTotals changent
   useEffect(() => {
-    // Utilisez prepareQuoteData pour préparer les données du devis directement
     const quoteData = prepareQuoteData(cartItems, cartTotals, adjustmentAmount)
     setPreparedQuoteData(quoteData)
   }, [cartItems, cartTotals, adjustmentAmount, prepareQuoteData])
@@ -114,7 +112,6 @@ const QuoteConfirmationModal = ({ open, onClose }) => {
     },
   ]
 
-  // Colonnes pour la grille des totaux
   const totalColumns = [
     {
       field: 'type',
@@ -131,42 +128,36 @@ const QuoteConfirmationModal = ({ open, onClose }) => {
       renderCell: (params) => formatPrice(Number(params.value)),
     },
   ]
-  // Préparer les données pour la grille des totaux
+
   const totalRows = [
     { id: 1, type: 'Total HT', amount: preparedQuoteData.totalHT },
     { id: 2, type: 'Total TTC', amount: preparedQuoteData.totalTTC },
   ]
 
-  // Vérifier si une remise/majoration globale est appliquée et l'ajouter aux lignes
   if (adjustmentAmount !== 0) {
     const adjustmentType = adjustmentAmount > 0 ? 'Majoration ' : 'Remise '
     const totalTTCAjusté =
-      parseFloat(preparedQuoteData.totalTTC) + adjustmentAmount // Assurez-vous que cela correspond à votre logique d'ajustement
+      parseFloat(preparedQuoteData.totalTTC) + adjustmentAmount
 
-    // Ajouter une ligne pour le montant de la remise/majoration
     totalRows.push({
-      id: totalRows.length + 1, // Assurer l'unicité de l'ID
+      id: totalRows.length + 1,
       type: adjustmentType,
       amount: Math.abs(adjustmentAmount),
     })
 
-    // Ajouter une ligne pour le Net à payer
     totalRows.push({
-      id: totalRows.length + 1, // Assurer l'unicité de l'ID après l'ajout précédent
+      id: totalRows.length + 1,
       type: 'Net à payer',
       amount: totalTTCAjusté,
     })
   }
 
   const resetFormAndCloseModal = () => {
-    // Réinitialiser les informations du client
     setCustomerName('')
     setCustomerEmail('')
     setCustomerPhone('')
 
-    // Optionnel: clearCart(); Si vous souhaitez également vider le panier lors de l'annulation
-
-    onClose() // Utilisez la fonction de fermeture existante pour fermer la modal
+    onClose()
   }
 
   const handleSubmitQuote = async () => {
@@ -179,7 +170,6 @@ const QuoteConfirmationModal = ({ open, onClose }) => {
     }
 
     const quoteData = prepareQuoteData(cartItems, cartTotals, adjustmentAmount)
-    // Ajoutez les informations sur le client à quoteData ici
     quoteData.customerInfo = {
       name: customerName,
       email: customerEmail,
@@ -187,12 +177,11 @@ const QuoteConfirmationModal = ({ open, onClose }) => {
     }
 
     try {
-      await addQuote(quoteData) // Ajoute le devis avec les informations du client
+      await addQuote(quoteData)
       showToast('Devis ajouté avec succès.', 'success')
-      onClose() // Ferme le modal
-      clearCart() // Nettoie le panier
-      // Réinitialisez les états des informations du client ici si nécessaire
-      navigate('/dashboard#les-devis') // Naviguez vers la page des devis
+      onClose()
+      clearCart()
+      navigate('/dashboard#les-devis')
     } catch (error) {
       showToast(`Erreur lors de l'ajout du devis: ${error.message}`, 'error')
     }
