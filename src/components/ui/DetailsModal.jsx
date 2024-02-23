@@ -15,7 +15,6 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
     item = tickets.find((ticket) => ticket._id === itemId)
   }
 
-  // Adaptez la structure des rows en fonction de l'item trouvé
   const rows =
     item?.items.map((itemDetail, index) => ({
       id: index,
