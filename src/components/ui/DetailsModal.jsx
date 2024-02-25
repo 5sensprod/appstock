@@ -15,6 +15,21 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
   } else if (itemType === 'ticket') {
     item = tickets.find((ticket) => ticket._id === itemId)
   }
+  const { items } = item
+
+  let remiseCount = 0
+  let majorationCount = 0
+
+  items.forEach((itemDetail) => {
+    if (itemDetail.remiseMajorationValue > 0) {
+      itemDetail.remiseMajorationLabel === 'Majoration'
+        ? majorationCount++
+        : remiseCount++
+    }
+  })
+
+  const remiseMajorationHeaderName =
+    majorationCount > remiseCount ? 'Maj.' : 'Rem.'
 
   // Formatage de la date pour l'affichage
   const formattedDate = item
@@ -32,14 +47,20 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
     item?.items.map((itemDetail, index) => ({
       id: index,
       reference: itemDetail.reference,
-      quantity: itemDetail.quantite, // Notez l'utilisation de "quantite" correspondant à votre DB
+      prixOriginal: itemDetail.prixOriginal,
+      quantity: itemDetail.quantite,
       prixHT: itemDetail.puHT,
       prixTTC: itemDetail.puTTC,
       tauxTVA: itemDetail.tauxTVA,
-      remiseMajoration: itemDetail.remiseMajorationLabel, // Utilisez "remiseMajorationLabel" pour déterminer si c'est une remise ou une majoration
+      remiseMajoration: itemDetail.remiseMajorationLabel,
       remiseMajorationValue: itemDetail.remiseMajorationValue,
-      totalTTCParProduit: itemDetail.totalItem, // "totalItem" représente le total TTC par produit
+      totalTTCParProduit: itemDetail.totalItem,
     })) || []
+
+  const hasPrixOriginal = rows.some((row) => row.prixOriginal !== undefined)
+  const hasRemiseOrMajoration = items.some(
+    (item) => item.remiseMajorationValue > 0,
+  )
 
   const columns = [
     {
@@ -59,7 +80,7 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
     },
     {
       field: 'prixHT',
-      headerName: 'Prix HT',
+      headerName: 'P.V HT',
       type: 'number',
       width: 130,
       flex: 0.6,
@@ -67,7 +88,7 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
     },
     {
       field: 'prixTTC',
-      headerName: 'Prix TTC',
+      headerName: 'P.V TTC',
       type: 'number',
       width: 130,
       flex: 0.65,
@@ -81,19 +102,7 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
       sortable: false,
       flex: 0.5,
     },
-    {
-      field: 'remiseMajorationValue', // Utilisez le champ qui contient la valeur de la remise ou de la majoration
-      headerName: item?.remiseMajorationLabel
-        ? item.remiseMajorationLabel
-        : 'Rem./Maj.', // Choix dynamique du titre de la colonne
-      width: 100,
-      sortable: false,
-      flex: 0.69,
-      renderCell: (params) => {
-        // Affichage conditionnel de la valeur de remise/majoration
-        return params.value > 0 ? `${params.value}%` : '0'
-      },
-    },
+
     {
       field: 'totalTTCParProduit',
       headerName: 'Total TTC',
@@ -104,6 +113,29 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
       renderCell: (params) => formatPrice(Number(params.value)),
     },
   ]
+  if (hasPrixOriginal) {
+    columns.splice(1, 0, {
+      field: 'prixOriginal',
+      headerName: 'P.U TTC',
+      width: 80,
+      sortable: false,
+      flex: 0.69,
+      renderCell: (params) => formatPrice(Number(params.value)),
+    })
+  }
+
+  if (hasRemiseOrMajoration) {
+    columns.splice(2, 0, {
+      field: 'remiseMajorationValue',
+      headerName: remiseMajorationHeaderName,
+      width: 120,
+      sortable: false,
+      flex: 0.5,
+      renderCell: (params) => {
+        return params.value > 0 ? `${params.value}%` : '0'
+      },
+    })
+  }
 
   const totalsRows = item
     ? [
