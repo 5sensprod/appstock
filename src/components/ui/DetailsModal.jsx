@@ -31,31 +31,77 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
   const rows =
     item?.items.map((itemDetail, index) => ({
       id: index,
-      reference: itemDetail.reference || itemDetail.ticketNumber,
-      date: item.date,
-      totalTTC: itemDetail.totalItem || itemDetail.totalTTC,
+      reference: itemDetail.reference,
+      quantity: itemDetail.quantite, // Notez l'utilisation de "quantite" correspondant à votre DB
+      prixHT: itemDetail.puHT,
+      prixTTC: itemDetail.puTTC,
+      tauxTVA: itemDetail.tauxTVA,
+      remiseMajoration: itemDetail.remiseMajorationLabel, // Utilisez "remiseMajorationLabel" pour déterminer si c'est une remise ou une majoration
+      remiseMajorationValue: itemDetail.remiseMajorationValue,
+      totalTTCParProduit: itemDetail.totalItem, // "totalItem" représente le total TTC par produit
     })) || []
 
   const columns = [
     {
       field: 'reference',
       headerName: 'Référence',
-      width: 150,
+      width: 200,
+      sortable: false,
+      flex: 2,
+    },
+    {
+      field: 'quantity',
+      headerName: 'Qté',
+      type: 'number',
+      width: 80,
+      sortable: false,
+      flex: 0.4,
+    },
+    {
+      field: 'prixHT',
+      headerName: 'Prix HT',
+      type: 'number',
+      width: 130,
+      flex: 0.6,
+      renderCell: (params) => formatPrice(Number(params.value)),
+    },
+    {
+      field: 'prixTTC',
+      headerName: 'Prix TTC',
+      type: 'number',
+      width: 130,
+      flex: 0.65,
+      renderCell: (params) => formatPrice(Number(params.value)),
+    },
+    {
+      field: 'tauxTVA',
+      headerName: 'TVA',
+      type: 'number',
+      width: 130,
+      sortable: false,
+      flex: 0.5,
+    },
+    {
+      field: 'remiseMajorationValue', // Utilisez le champ qui contient la valeur de la remise ou de la majoration
+      headerName: item?.remiseMajorationLabel
+        ? item.remiseMajorationLabel
+        : 'Rem./Maj.', // Choix dynamique du titre de la colonne
+      width: 100,
+      sortable: false,
+      flex: 0.69,
+      renderCell: (params) => {
+        // Affichage conditionnel de la valeur de remise/majoration
+        return params.value > 0 ? `${params.value}%` : '0'
+      },
+    },
+    {
+      field: 'totalTTCParProduit',
+      headerName: 'Total TTC',
+      type: 'number',
+      width: 180,
       sortable: false,
       flex: 1,
-    },
-    {
-      field: 'date',
-      headerName: 'Date',
-      width: 150,
-      valueFormatter: (params) =>
-        new Date(params.value).toLocaleDateString('fr-FR'),
-    },
-    {
-      field: 'totalTTC',
-      headerName: 'Total TTC',
-      width: 160,
-      valueFormatter: ({ value }) => formatPrice(value),
+      renderCell: (params) => formatPrice(Number(params.value)),
     },
   ]
 
