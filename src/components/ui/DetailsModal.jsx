@@ -37,7 +37,13 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
     })) || []
 
   const columns = [
-    { field: 'reference', headerName: 'Référence', width: 200 },
+    {
+      field: 'reference',
+      headerName: 'Référence',
+      width: 150,
+      sortable: false,
+      flex: 1,
+    },
     {
       field: 'date',
       headerName: 'Date',
@@ -50,6 +56,42 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
       headerName: 'Total TTC',
       width: 160,
       valueFormatter: ({ value }) => formatPrice(value),
+    },
+  ]
+
+  const totalsRows = item
+    ? [
+        {
+          id: 'totalHT',
+          label: 'Total HT',
+          value: item.totalHT,
+          width: 150,
+          flex: 1,
+        },
+        {
+          id: 'totalTVA',
+          label: 'Total TVA',
+          value: item.totalTVA,
+          width: 150,
+          flex: 1,
+        },
+        {
+          id: 'totalTTC',
+          label: 'Total TTC',
+          value: item.totalTTC,
+          width: 150,
+          flex: 1,
+        },
+      ]
+    : []
+  const totalsColumns = [
+    { field: 'label', headerName: 'Label', width: 150, flex: 1 },
+    {
+      field: 'value',
+      headerName: 'Valeur',
+      width: 150,
+      flex: 1,
+      valueFormatter: ({ value }) => formatPrice(value), // Utilisez formatPrice pour formater les valeurs monétaires
     },
   ]
 
@@ -75,13 +117,31 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
       >
         <Typography
           id="modal-modal-title"
-          variant="h6"
+          variant="h5"
           component="h2"
           sx={{ mb: 2 }}
         >
           {modalTitle}
         </Typography>
-        <DataGrid rows={rows} columns={columns} pageSize={5} />
+        <div style={{ width: '100%', marginBottom: 5 }}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pageSize={5}
+            hideFooter={true}
+            disableColumnMenu={true}
+          />
+        </div>
+        <div style={{ width: '35%', marginLeft: 'auto', marginRight: 0 }}>
+          <DataGrid
+            rows={totalsRows}
+            columns={totalsColumns}
+            hideFooter={true}
+            disableColumnMenu={true}
+            autoHeight={true}
+            sx={{ '& .MuiDataGrid-columnHeaders': { display: 'none' } }}
+          />
+        </div>
       </Box>
     </Modal>
   )
