@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import { DataGrid } from '@mui/x-data-grid'
 import { useInvoices } from '../../contexts/InvoicesContext'
 import { formatPrice } from '../../utils/priceUtils'
+import Typography from '@mui/material/Typography'
 
 const DetailsModal = ({ open, onClose, itemId, itemType }) => {
   const { invoices, tickets } = useInvoices()
@@ -14,6 +15,18 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
   } else if (itemType === 'ticket') {
     item = tickets.find((ticket) => ticket._id === itemId)
   }
+
+  // Formatage de la date pour l'affichage
+  const formattedDate = item
+    ? new Date(item.date).toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+    : ''
+
+  // Construire le titre avec le numéro et la date
+  const modalTitle = `${itemType === 'invoice' ? 'Facture' : 'Ticket'} n°${itemType === 'invoice' ? item?.invoiceNumber : item?.ticketNumber} - ${formattedDate}`
 
   const rows =
     item?.items.map((itemDetail, index) => ({
@@ -60,6 +73,14 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
           p: 4,
         }}
       >
+        <Typography
+          id="modal-modal-title"
+          variant="h6"
+          component="h2"
+          sx={{ mb: 2 }}
+        >
+          {modalTitle}
+        </Typography>
         <DataGrid rows={rows} columns={columns} pageSize={5} />
       </Box>
     </Modal>
