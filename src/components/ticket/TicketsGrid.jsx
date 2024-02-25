@@ -18,13 +18,20 @@ const TicketsGrid = () => {
   useEffect(() => {
     const formattedRows = tickets
       .map((ticket) => ({
+        ...ticket,
         id: ticket._id,
         number: ticket.ticketNumber,
-        date: new Date(ticket.date).toLocaleDateString('fr-FR'),
+        date: new Date(ticket.date),
         totalTTC: ticket.totalTTC,
         onViewDetails: () => handleViewDetails(ticket._id),
       }))
+      // Tri par date en utilisant les objets Date
       .sort((a, b) => b.date - a.date)
+      // Formatage de la date pour l'affichage après le tri
+      .map((ticket) => ({
+        ...ticket,
+        date: ticket.date.toLocaleDateString('fr-FR'),
+      }))
 
     setRows(formattedRows)
   }, [tickets])
