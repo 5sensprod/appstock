@@ -14,6 +14,17 @@ const InvoicesGrid = () => {
     setIsModalOpen(true)
   }
 
+  const handlePdfIconClick = (ticket) => {
+    const doc = new jsPDF()
+
+    // Ajoutez ici le code pour générer le template PDF basé sur `ticket`
+    doc.text('Détails du ticket', 10, 10)
+    // Utilisez `doc.autoTable` si nécessaire pour ajouter des tableaux...
+
+    // Enfin, ouvrez le PDF dans un nouvel onglet
+    doc.output('dataurlnewwindow')
+  }
+
   useEffect(() => {
     const formattedRows = invoices
       .map((invoice) => ({
@@ -44,6 +55,7 @@ const InvoicesGrid = () => {
         loading={loading}
         includeCustomerName={true}
         onViewDetails={handleViewDetails}
+        onPdfIconClick={handlePdfIconClick}
       />
       {selectedInvoiceId && (
         <DetailsModal

@@ -10,6 +10,7 @@ const CustomDataGrid = ({
   loading,
   includeCustomerName,
   onViewDetails,
+  onPdfIconClick,
 }) => {
   const columns = [
     {
@@ -21,8 +22,8 @@ const CustomDataGrid = ({
           <IconButton onClick={() => onViewDetails(params.row.id)}>
             <VisibilityIcon />
           </IconButton>
-          <IconButton onClick={() => console.log('Hello')}>
-            <PictureAsPdfIcon />{' '}
+          <IconButton onClick={() => onPdfIconClick(params.row)}>
+            <PictureAsPdfIcon />
           </IconButton>
         </div>
       ),
