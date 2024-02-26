@@ -1,4 +1,3 @@
-// src/components/ticket/useGenerateTicketsPdf.js
 import { useContext } from 'react'
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'

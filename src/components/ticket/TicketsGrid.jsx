@@ -13,8 +13,8 @@ const TicketsGrid = () => {
   const generateTicketsPdf = useGenerateTicketsPdf()
 
   const handleViewDetails = (ticketId) => {
-    setSelectedTicketId(ticketId) // Stockez l'ID de la facture sélectionnée
-    setIsModalOpen(true) // Ouvrez la modal
+    setSelectedTicketId(ticketId)
+    setIsModalOpen(true)
   }
 
   const handlePdfIconClick = (ticket) => {
