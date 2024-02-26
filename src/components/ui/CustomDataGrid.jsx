@@ -1,9 +1,9 @@
 import React from 'react'
 import { DataGrid, frFR } from '@mui/x-data-grid'
 import { formatPrice } from '../../utils/priceUtils'
-import { Button } from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { IconButton } from '@mui/material'
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
 
 const CustomDataGrid = ({
   rows,
@@ -12,6 +12,21 @@ const CustomDataGrid = ({
   onViewDetails,
 }) => {
   const columns = [
+    {
+      field: 'actions',
+      headerName: '',
+      width: 150,
+      renderCell: (params) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <IconButton onClick={() => onViewDetails(params.row.id)}>
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton onClick={() => console.log('Hello')}>
+            <PictureAsPdfIcon />{' '}
+          </IconButton>
+        </div>
+      ),
+    },
     {
       field: 'number',
       headerName: includeCustomerName
@@ -33,20 +48,6 @@ const CustomDataGrid = ({
       field: 'customerName',
       headerName: 'Nom du client',
       width: 200,
-    })
-  }
-
-  // Ajoutez cette colonne d'actions si une fonction onViewDetails est fournie
-  if (onViewDetails) {
-    columns.push({
-      field: 'actions',
-      headerName: 'Actions',
-      width: 150,
-      renderCell: (params) => (
-        <IconButton onClick={() => params.row.onViewDetails()}>
-          <VisibilityIcon />
-        </IconButton>
-      ),
     })
   }
 
