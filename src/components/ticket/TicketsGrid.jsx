@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import CustomDataGrid from '../ui/CustomDataGrid'
 import { useInvoices } from '../../contexts/InvoicesContext'
 import DetailsModal from '../ui/DetailsModal'
 import useGenerateTicketsPdf from './useGenerateTicketsPdf'
+import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
 
 const TicketsGrid = () => {
   const { tickets, loading } = useInvoices()
   const [rows, setRows] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalRows, setModalRows] = useState([])
   const [selectedTicketId, setSelectedTicketId] = useState(null)
-  const generateTicketsPdf = useGenerateTicketsPdf()
+  const { companyInfo } = useContext(CompanyInfoContext)
+  const generateTicketsPdf = useGenerateTicketsPdf(companyInfo)
 
   const handleViewDetails = (ticketId) => {
     setSelectedTicketId(ticketId)
@@ -20,9 +21,6 @@ const TicketsGrid = () => {
   const handlePdfIconClick = (ticket) => {
     generateTicketsPdf(ticket)
   }
-  useEffect(() => {
-    console.log({ tickets, loading })
-  }, [tickets, loading])
 
   useEffect(() => {
     const formattedRows = tickets

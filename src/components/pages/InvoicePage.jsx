@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography'
 import InvoiceGrid from '../invoice/InvoiceGrid'
 import InvoicesGrid from '../invoice/InvoicesGrid'
 import TicketsGrid from '../ticket/TicketsGrid'
-import { useInvoices } from '../../contexts/InvoicesContext' // Assurez-vous que le chemin d'importation est correct
+import { useInvoices } from '../../contexts/InvoicesContext'
 
 const InvoicePage = () => {
   const { invoices, tickets } = useInvoices()
