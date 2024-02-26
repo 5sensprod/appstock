@@ -46,9 +46,6 @@ const useGenerateTicketsPdf = () => {
       )
       currentYPosition += 5
 
-      // Continuez avec plus de détails sur le ticket si nécessaire...
-
-      //   doc.output('dataurlnewwindow')
       doc.save(`${ticket.number}.pdf`)
     } catch (error) {
       console.error('Failed to generate ticket PDF', error)
