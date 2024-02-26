@@ -1,36 +1,47 @@
 // src/components/ticket/TicketContent.jsx
 import React from 'react'
-import { Paper, Typography, Box } from '@mui/material'
+import { Paper, Typography, Box, Divider } from '@mui/material'
 
 const TicketContent = ({ ticket, companyInfo }) => {
+  const rootId = `ticketContent-${ticket.number}`
   return (
     <Paper
       elevation={3}
-      sx={{ maxWidth: 300, p: 2, bgcolor: 'background.paper', margin: 'auto' }}
+      id={rootId}
+      sx={{
+        maxWidth: 200,
+        p: 2,
+        bgcolor: 'background.paper',
+        margin: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        fontSize: '10pt',
+      }}
     >
-      <Box sx={{ my: 2, textAlign: 'center' }}>
-        <Typography variant="h6" component="h1" gutterBottom>
+      <Box
+        sx={{
+          width: '100%',
+          textAlign: 'center',
+          '& > *': { marginBottom: '1px' },
+          border: '1px solid #ddd',
+          borderRadius: '4px',
+          padding: '20px',
+        }}
+      >
+        <Typography variant="body1">
           {companyInfo?.name.toUpperCase()}
         </Typography>
-        <Typography variant="body2" gutterBottom>
-          {companyInfo?.address}
-        </Typography>
-        <Typography variant="body2" gutterBottom>
-          {companyInfo?.city}
-        </Typography>
-        <Typography variant="body2" gutterBottom>
-          {companyInfo?.phone}
-        </Typography>
-        <Typography variant="body2" gutterBottom>
-          {companyInfo?.email}
-        </Typography>
-        <Typography
-          variant="body2"
-          gutterBottom
-        >{`Tax ID: ${companyInfo?.taxId}`}</Typography>
+        <Typography variant="body2">{companyInfo?.address}</Typography>
+        <Typography variant="body2">{companyInfo?.city}</Typography>
+        <Typography variant="body2">{companyInfo?.phone}</Typography>
+        <Typography variant="body2">{companyInfo?.email}</Typography>
+        <Typography variant="body2">{`Tax ID: ${companyInfo?.taxId}`}</Typography>
+        <Divider sx={{ my: 1 }} /> {/* Ajoute un petit trait sous l'en-tête */}
       </Box>
 
-      <Box sx={{ my: 2 }}>
+      {/* Détails du ticket, après le trait */}
+      <Box sx={{ width: '100%' }}>
         <Typography variant="subtitle1" gutterBottom>
           <strong>Numéro de Ticket:</strong> {ticket.number}
         </Typography>
@@ -40,7 +51,7 @@ const TicketContent = ({ ticket, companyInfo }) => {
         <Typography variant="subtitle1" gutterBottom>
           <strong>Total TTC:</strong> {ticket.totalTTC} €
         </Typography>
-        {/* Ajoutez plus de détails du ticket ici si nécessaire */}
+        {/* Vous pouvez ajouter plus de détails ici si nécessaire */}
       </Box>
     </Paper>
   )
