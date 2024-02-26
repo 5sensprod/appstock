@@ -1,59 +1,80 @@
-// src/components/ticket/TicketContent.jsx
 import React from 'react'
-import { Paper, Typography, Box, Divider } from '@mui/material'
+import { Typography, Divider } from '@mui/material'
 
 const TicketContent = ({ ticket, companyInfo }) => {
   const rootId = `ticketContent-${ticket.number}`
   return (
-    <Paper
-      elevation={3}
+    <div
       id={rootId}
-      sx={{
-        maxWidth: 200,
-        p: 2,
-        bgcolor: 'background.paper',
+      style={{
+        maxWidth: '200px',
+        backgroundColor: '#fff',
         margin: 'auto',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        fontSize: '10pt',
+        fontSize: '8px',
+        boxShadow:
+          '0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)', // Simule elevation={3}
       }}
     >
-      <Box
-        sx={{
+      <div
+        style={{
           width: '100%',
           textAlign: 'center',
-          '& > *': { marginBottom: '1px' },
+          marginTop: '5px',
+          marginBottom: '1px',
           border: '1px solid #ddd',
-          borderRadius: '4px',
-          padding: '20px',
+          //   borderRadius: '4px',
+          padding: '5px',
         }}
       >
-        <Typography variant="body1">
+        <Typography
+          component="p"
+          style={{ marginBottom: '1px', fontWeight: 'bold', fontSize: '12px' }}
+        >
           {companyInfo?.name.toUpperCase()}
         </Typography>
-        <Typography variant="body2">{companyInfo?.address}</Typography>
-        <Typography variant="body2">{companyInfo?.city}</Typography>
-        <Typography variant="body2">{companyInfo?.phone}</Typography>
-        <Typography variant="body2">{companyInfo?.email}</Typography>
-        <Typography variant="body2">{`Tax ID: ${companyInfo?.taxId}`}</Typography>
-        <Divider sx={{ my: 1 }} /> {/* Ajoute un petit trait sous l'en-tête */}
-      </Box>
-
-      {/* Détails du ticket, après le trait */}
-      <Box sx={{ width: '100%' }}>
-        <Typography variant="subtitle1" gutterBottom>
-          <strong>Numéro de Ticket:</strong> {ticket.number}
+        <Typography component="p" style={{ fontSize: '10px' }}>
+          {companyInfo?.address}
         </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          <strong>Date:</strong> {ticket.date}
+        <Typography component="p" style={{ fontSize: '10px' }}>
+          {companyInfo?.city}
         </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          <strong>Total TTC:</strong> {ticket.totalTTC} €
+        <Typography component="p" style={{ fontSize: '10px' }}>
+          {companyInfo?.phone}
         </Typography>
-        {/* Vous pouvez ajouter plus de détails ici si nécessaire */}
-      </Box>
-    </Paper>
+        <Typography component="p" style={{ fontSize: '10px' }}>
+          {companyInfo?.email}
+        </Typography>
+        <Typography
+          component="p"
+          style={{ fontSize: '10px' }}
+        >{`Tax ID: ${companyInfo?.taxId}`}</Typography>
+        <Divider style={{ margin: '8px 0' }} />
+        <div style={{ width: '100%' }}>
+          <Typography
+            component="p"
+            style={{ fontWeight: 'bold', marginBottom: '8px' }}
+          >
+            <strong>Numéro de Ticket:</strong> {ticket.number}
+          </Typography>
+          <Typography
+            component="p"
+            style={{ fontWeight: 'bold', marginBottom: '8px' }}
+          >
+            <strong>Date:</strong> {ticket.date}
+          </Typography>
+          <Typography
+            component="p"
+            style={{ fontWeight: 'bold', marginBottom: '8px' }}
+          >
+            <strong>Total TTC:</strong> {ticket.totalTTC} €
+          </Typography>
+          {/* Vous pouvez ajouter plus de détails ici si nécessaire */}
+        </div>
+      </div>
+    </div>
   )
 }
 

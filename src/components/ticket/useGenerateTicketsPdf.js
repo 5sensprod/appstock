@@ -7,7 +7,7 @@ import TicketContent from './TicketContent'
 const useGenerateTicketsPdf = (companyInfo) => {
   const generatePdf = async (ticket) => {
     const contentElement = document.createElement('div')
-    contentElement.style.width = '160px' // Largeur fixe pour correspondre à la largeur du ticket
+    contentElement.style.width = '200px' // Largeur fixe pour correspondre à la largeur du ticket
     document.body.appendChild(contentElement)
 
     contentElement.innerHTML = ReactDOMServer.renderToString(
@@ -24,10 +24,10 @@ const useGenerateTicketsPdf = (companyInfo) => {
         })
 
         const pdfWidth = pdf.internal.pageSize.getWidth()
-        const marginLeft = (pdfWidth - 160 / (72 / 25.4)) / 2 // Convertit 300px en mm et calcule la marge gauche pour centrer
+        const marginLeft = (pdfWidth - 200 / (72 / 25.4)) / 2 // Convertit 300px en mm et calcule la marge gauche pour centrer
 
         // Utilisez la largeur fixe en mm (largeur originale du contenu en px convertie en mm)
-        const imgWidthInMm = 160 / (72 / 25.4) // Convertit 300px en mm
+        const imgWidthInMm = 200 / (72 / 25.4) // Convertit 300px en mm
         const imgHeightInMm =
           (canvas.height / (72 / 25.4)) *
           (imgWidthInMm / (canvas.width / (72 / 25.4))) // Convertit en mm et conserve le rapport hauteur/largeur
