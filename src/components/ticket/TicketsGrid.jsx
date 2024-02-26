@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from 'react'
 import CustomDataGrid from '../ui/CustomDataGrid'
 import { useInvoices } from '../../contexts/InvoicesContext'
 import DetailsModal from '../ui/DetailsModal'
-import useGenerateTicketsPdf from './useGenerateTicketsPdf'
 import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
 import Modal from '@mui/material/Modal'
 import TicketCodeGenerator from './TicketCodeGenerator'
@@ -11,23 +10,21 @@ import { Box } from '@mui/material'
 const TicketsGrid = () => {
   const { tickets, loading } = useInvoices()
   const [rows, setRows] = useState([])
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedTicketId, setSelectedTicketId] = useState(null)
   const { companyInfo } = useContext(CompanyInfoContext)
-  const generateTicketsPdf = useGenerateTicketsPdf(companyInfo)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false)
 
   const handleViewDetails = (ticketId) => {
     setSelectedTicketId(ticketId)
     setIsDetailsModalOpen(true)
-    setIsPdfModalOpen(false) // Assurez-vous que l'autre modale reste fermée
+    setIsPdfModalOpen(false)
   }
 
   const handlePdfIconClick = (ticket) => {
     setSelectedTicketId(ticket.id)
     setIsPdfModalOpen(true)
-    setIsDetailsModalOpen(false) // Assurez-vous que l'autre modale reste fermée
+    setIsDetailsModalOpen(false)
   }
 
   useEffect(() => {
@@ -38,7 +35,7 @@ const TicketsGrid = () => {
         number: ticket.ticketNumber,
         date: new Date(ticket.date),
         totalTTC: ticket.totalTTC,
-        onViewDetails: () => handleViewDetails(ticket._id),
+        // onViewDetails: () => handleViewDetails(ticket._id),
       }))
       // Tri par date en utilisant les objets Date
       .sort((a, b) => b.date - a.date)
