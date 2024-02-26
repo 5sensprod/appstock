@@ -4,6 +4,9 @@ import { useInvoices } from '../../contexts/InvoicesContext'
 import DetailsModal from '../ui/DetailsModal'
 import useGenerateTicketsPdf from './useGenerateTicketsPdf'
 import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
+import Modal from '@mui/material/Modal'
+import TicketCodeGenerator from './TicketCodeGenerator'
+import { Box } from '@mui/material'
 
 const TicketsGrid = () => {
   const { tickets, loading } = useInvoices()
@@ -12,14 +15,19 @@ const TicketsGrid = () => {
   const [selectedTicketId, setSelectedTicketId] = useState(null)
   const { companyInfo } = useContext(CompanyInfoContext)
   const generateTicketsPdf = useGenerateTicketsPdf(companyInfo)
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false)
 
   const handleViewDetails = (ticketId) => {
     setSelectedTicketId(ticketId)
-    setIsModalOpen(true)
+    setIsDetailsModalOpen(true)
+    setIsPdfModalOpen(false) // Assurez-vous que l'autre modale reste fermée
   }
 
   const handlePdfIconClick = (ticket) => {
-    generateTicketsPdf(ticket)
+    setSelectedTicketId(ticket.id)
+    setIsPdfModalOpen(true)
+    setIsDetailsModalOpen(false) // Assurez-vous que l'autre modale reste fermée
   }
 
   useEffect(() => {
@@ -43,6 +51,18 @@ const TicketsGrid = () => {
     setRows(formattedRows)
   }, [tickets])
 
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  }
+
   return (
     <>
       <CustomDataGrid
@@ -53,12 +73,26 @@ const TicketsGrid = () => {
         onPdfIconClick={handlePdfIconClick}
       />
       {selectedTicketId && (
-        <DetailsModal
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          itemId={selectedTicketId}
-          itemType="ticket"
-        />
+        <>
+          {/* Modale pour les détails du ticket */}
+          <DetailsModal
+            open={isDetailsModalOpen} // Utilisez isDetailsModalOpen pour cette modale
+            onClose={() => setIsDetailsModalOpen(false)}
+            itemId={selectedTicketId}
+            itemType="ticket"
+          />
+          {/* Modale pour la génération du PDF */}
+          <Modal
+            open={isPdfModalOpen} // Utilisez isPdfModalOpen pour cette modale
+            onClose={() => setIsPdfModalOpen(false)}
+            aria-labelledby="pdf-modal-title"
+            aria-describedby="pdf-modal-description"
+          >
+            <Box sx={modalStyle}>
+              <TicketCodeGenerator ticketId={selectedTicketId} />
+            </Box>
+          </Modal>
+        </>
       )}
     </>
   )
