@@ -1,14 +1,92 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Box,
+  Button,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
+  Select,
   TextField,
   Typography,
 } from '@mui/material'
 import usePaymentHandlers from './usePaymentHandlers'
+
+const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
+  const [selectedPaymentType, setSelectedPaymentType] = useState('')
+  const [paymentAmount, setPaymentAmount] = useState('')
+
+  const handleAddPayment = () => {
+    if (!selectedPaymentType || paymentAmount <= 0) {
+      alert(
+        'Veuillez sélectionner un type de paiement et entrer un montant valide.',
+      )
+      return
+    }
+    onAddPayment({
+      type: selectedPaymentType,
+      amount: parseFloat(paymentAmount),
+    })
+    setSelectedPaymentType('')
+    setPaymentAmount('')
+  }
+
+  return (
+    <Box>
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Type de paiement</InputLabel>
+        <Select
+          value={selectedPaymentType}
+          onChange={(e) => setSelectedPaymentType(e.target.value)}
+          label="Type de paiement"
+        >
+          <MenuItem value="CB">Carte Bancaire</MenuItem>
+          <MenuItem value="Cash">Espèces</MenuItem>
+          <MenuItem value="Cheque">Chèque</MenuItem>
+          <MenuItem value="ChequeCadeau">Chèque Cadeau</MenuItem>
+          <MenuItem value="Virement">Virement</MenuItem>
+          <MenuItem value="Avoir">Avoir</MenuItem>
+        </Select>
+      </FormControl>
+      <TextField
+        label="Montant"
+        type="number"
+        value={paymentAmount}
+        onChange={(e) => setPaymentAmount(e.target.value)}
+        fullWidth
+        margin="normal"
+      />
+      <Button onClick={handleAddPayment} variant="contained" sx={{ mt: 2 }}>
+        Ajouter
+      </Button>
+      <Typography variant="body1" sx={{ mt: 2 }}>
+        Restant à payer: {parseFloat(remainingAmount).toFixed(2)} €
+      </Typography>
+    </Box>
+  )
+}
+
+const PaymentList = ({ payments, onRemove, onUpdate }) => (
+  <Box>
+    {payments.map((payment, index) => (
+      <Box
+        key={index}
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Typography>{`${payment.type}: ${payment.amount.toFixed(2)} €`}</Typography>
+        <Button onClick={() => onRemove(index)}>Supprimer</Button>
+        <Button
+          onClick={() => {
+            /* Logique pour ouvrir un formulaire de modification avec les valeurs par défaut de `payment` */
+          }}
+        >
+          Modifier
+        </Button>
+      </Box>
+    ))}
+  </Box>
+)
 
 const PaymentTypeSelector = ({ isActiveQuote }) => {
   const {
@@ -17,7 +95,36 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
     handlePaymentTypeChange,
     handleAmountPaidChange,
     calculateChange,
+    addMultiplePayments,
+    calculateRemainingAmount,
+    multiplePayments,
+    removePayment,
   } = usePaymentHandlers()
+
+  const PaymentList = ({ payments, onRemove, onUpdate }) => (
+    <Box>
+      {payments.map((payment, index) => (
+        <Box
+          key={index}
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Typography>{`${payment.type}: ${payment.amount.toFixed(2)} €`}</Typography>
+          <Button onClick={() => onRemove(index)}>Supprimer</Button>
+          <Button
+            onClick={() => {
+              /* Logique pour ouvrir un formulaire de modification avec les valeurs par défaut de `payment` */
+            }}
+          >
+            Modifier
+          </Button>
+        </Box>
+      ))}
+    </Box>
+  )
+
+  const remainingAmount = calculateRemainingAmount()
 
   return (
     <Box mb={2}>
@@ -35,26 +142,38 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
           <MenuItem value="ChequeCadeau">Chèque Cadeau</MenuItem>
           <MenuItem value="Virement">Virement</MenuItem>
           <MenuItem value="Avoir">Avoir</MenuItem>
+          <MenuItem value="Multiple">Paiement Multiple</MenuItem>
         </Select>
-        {paymentType === 'Cash' && (
-          <>
-            <Box my={2}>
-              <TextField
-                label="Montant Payé"
-                value={amountPaid}
-                onChange={handleAmountPaidChange}
-                type="number"
-                disabled={isActiveQuote}
-              />
-            </Box>
-            <Box my={2}>
-              <Typography variant="h6">
-                Monnaie à rendre : {calculateChange().toFixed(2)} €
-              </Typography>
-            </Box>
-          </>
-        )}
       </FormControl>
+      {paymentType === 'Cash' && (
+        <Box>
+          <TextField
+            label="Montant Payé"
+            value={amountPaid}
+            onChange={handleAmountPaidChange}
+            type="number"
+            disabled={isActiveQuote}
+            fullWidth
+            margin="normal"
+          />
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Monnaie à rendre : {calculateChange().toFixed(2)} €
+          </Typography>
+        </Box>
+      )}
+      {paymentType === 'Multiple' && (
+        <>
+          <MultiplePaymentInput
+            onAddPayment={addMultiplePayments}
+            remainingAmount={remainingAmount}
+          />
+          <PaymentList
+            payments={multiplePayments}
+            onRemove={removePayment}
+            onUpdate={(index, newPayment) => updatePayment(index, newPayment)}
+          />
+        </>
+      )}
     </Box>
   )
 }

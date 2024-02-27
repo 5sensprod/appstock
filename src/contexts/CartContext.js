@@ -166,9 +166,12 @@ export const CartProvider = ({ children }) => {
       modifiedTotal: 0,
     })
 
-    // Réinitialiser d'autres états liés au panier ici si nécessaire
-  }
+    // Réinitialiser le type de paiement à 'CB'
+    setPaymentType('CB')
 
+    // setAmountPaid('')
+    // setMultiplePayments([])
+  }
   return (
     <CartContext.Provider
       value={{

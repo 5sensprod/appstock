@@ -39,9 +39,7 @@ const Cart = () => {
 
   const { onHoldInvoices, holdInvoice } = useHoldInvoiceContext()
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
-
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
-
   const [hasChanges, setHasChanges] = useState(false)
   const { showToast } = useUI()
 
