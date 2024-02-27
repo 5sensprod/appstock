@@ -2,18 +2,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import { CartContext } from '../../contexts/CartContext'
 import CartItem from './CartItem'
 import OrderSummary from '../OrderSummary/OrderSummary'
-import {
-  Box,
-  Typography,
-  Button,
-  Grid,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  TextField,
-} from '@mui/material'
-import useHandlePayClick from '../../hooks/useHandlePayClick'
+import { Box, Typography, Button, Grid } from '@mui/material'
 import InvoiceModal from '../invoice/InvoiceModal'
 import OnHoldInvoices from '../invoice/OnHoldInvoices'
 import CartTotal from './CartTotal'
@@ -23,6 +12,7 @@ import { useNavigate } from 'react-router-dom'
 import { useUI } from '../../contexts/UIContext'
 import { useHoldInvoiceContext } from '../../contexts/HoldInvoiceContext'
 import InvoiceConfirmationModal from '../invoice/InvoiceConfirmationModal'
+import PaymentTypeSelector from './PaymentTypeSelector'
 
 const Cart = () => {
   const {
@@ -154,47 +144,16 @@ const Cart = () => {
               <Box my={2}>
                 <CartTotal />
               </Box>
-
-              {/* Type de paiement */}
               <Box mb={2}>
-                <FormControl fullWidth>
-                  <InputLabel id="payment-type-label">
-                    Type de paiement
-                  </InputLabel>
-                  <Select
-                    labelId="payment-type-label"
-                    value={paymentType}
-                    onChange={handlePaymentTypeChange}
-                    label="Type de paiement"
-                  >
-                    <MenuItem value="CB">Carte Bancaire</MenuItem>
-                    <MenuItem value="Cash">Espèces</MenuItem>
-                    <MenuItem value="Cheque">Chèque</MenuItem>
-                    <MenuItem value="ChequeCadeau">Chèque Cadeau</MenuItem>
-                    <MenuItem value="Virement">Virement</MenuItem>
-                    <MenuItem value="Avoir">Avoir</MenuItem>
-                  </Select>
-                  {paymentType === 'Cash' && (
-                    <>
-                      <Box my={2}>
-                        <TextField
-                          label="Montant Payé"
-                          value={amountPaid}
-                          onChange={(e) => setAmountPaid(e.target.value)}
-                          type="number"
-                          disabled={isActiveQuote}
-                        />
-                      </Box>
-                      <Box my={2}>
-                        <Typography variant="h6">
-                          Monnaie à rendre : {calculateChange().toFixed(2)} €
-                        </Typography>
-                      </Box>
-                    </>
-                  )}
-                </FormControl>
+                <PaymentTypeSelector
+                  paymentType={paymentType}
+                  handlePaymentTypeChange={handlePaymentTypeChange}
+                  amountPaid={amountPaid}
+                  handleAmountPaidChange={handleAmountPaidChange}
+                  calculateChange={calculateChange}
+                  isActiveQuote={isActiveQuote}
+                />
               </Box>
-
               <Box
                 sx={{
                   display: 'flex',
