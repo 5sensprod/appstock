@@ -6,7 +6,7 @@ import { useProductContextSimplified } from '../contexts/ProductContextSimplifie
 const useHandlePayClick = () => {
   const { cartItems, cartTotals, adjustmentAmount, clearCart } =
     useContext(CartContext)
-  const { createInvoice, createTicket } = useInvoices() // Utilisation de createTicket ici
+  const { createInvoice, createTicket } = useInvoices()
   const { updateProductStock } = useProductContextSimplified()
 
   const handlePayClick = async (paymentType, customerInfo, isInvoice) => {
@@ -68,7 +68,7 @@ const useHandlePayClick = () => {
       await updateProductStock(item._id, item.quantity)
     }
 
-    clearCart() // Nettoyage du panier après la création du document
+    clearCart()
   }
 
   return handlePayClick
