@@ -65,28 +65,60 @@ const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
   )
 }
 
-const PaymentList = ({ payments, onRemove, onUpdate }) => (
-  <Box>
-    {payments.map((payment, index) => (
-      <Box
-        key={index}
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Typography>{`${payment.type}: ${payment.amount.toFixed(2)} €`}</Typography>
-        <Button onClick={() => onRemove(index)}>Supprimer</Button>
-        <Button
-          onClick={() => {
-            /* Logique pour ouvrir un formulaire de modification avec les valeurs par défaut de `payment` */
-          }}
+const PaymentList = ({ payments, onRemove, onUpdate }) => {
+  const [editingIndex, setEditingIndex] = useState(null)
+
+  return (
+    <Box>
+      {payments.map((payment, index) => (
+        <Box
+          key={index}
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ mb: 1 }}
         >
-          Modifier
-        </Button>
-      </Box>
-    ))}
-  </Box>
-)
+          {editingIndex === index ? (
+            <TextField
+              size="small"
+              variant="outlined"
+              defaultValue={payment.amount.toString()} // Convertir en chaîne pour éviter un avertissement React
+              onBlur={(e) => setEditingIndex(null)} // Optionnel : sortir du mode d'édition au flou
+              autoFocus // Focus automatique pour l'édition
+              onChange={(e) => {}}
+              style={{ marginRight: '10px' }}
+            />
+          ) : (
+            <Typography>{`${payment.type}: ${payment.amount}€`}</Typography>
+          )}
+
+          {editingIndex === index ? (
+            <Button
+              onClick={() => {
+                const newValue = document.getElementById(
+                  `payment-input-${index}`,
+                ).value
+                onUpdate(index, {
+                  ...payment,
+                  amount: newValue ? parseFloat(newValue) : 0,
+                })
+                setEditingIndex(null)
+              }}
+            >
+              Valider
+            </Button>
+          ) : (
+            <Button onClick={() => setEditingIndex(index)}>Modifier</Button>
+          )}
+
+          <Button onClick={() => onRemove(index)} sx={{ ml: 1 }}>
+            Supprimer
+          </Button>
+        </Box>
+      ))}
+    </Box>
+  )
+}
 
 const PaymentTypeSelector = ({ isActiveQuote }) => {
   const {
@@ -99,30 +131,8 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
     calculateRemainingAmount,
     multiplePayments,
     removePayment,
+    updatePayment,
   } = usePaymentHandlers()
-
-  const PaymentList = ({ payments, onRemove, onUpdate }) => (
-    <Box>
-      {payments.map((payment, index) => (
-        <Box
-          key={index}
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Typography>{`${payment.type}: ${payment.amount.toFixed(2)} €`}</Typography>
-          <Button onClick={() => onRemove(index)}>Supprimer</Button>
-          <Button
-            onClick={() => {
-              /* Logique pour ouvrir un formulaire de modification avec les valeurs par défaut de `payment` */
-            }}
-          >
-            Modifier
-          </Button>
-        </Box>
-      ))}
-    </Box>
-  )
 
   const remainingAmount = calculateRemainingAmount()
 

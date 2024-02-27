@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { CartContext } from '../../contexts/CartContext'
 
 const usePaymentHandlers = () => {
@@ -9,10 +9,9 @@ const usePaymentHandlers = () => {
     setAmountPaid,
     cartTotals,
     adjustmentAmount,
+    multiplePayments,
+    setMultiplePayments,
   } = useContext(CartContext)
-
-  // Ajout de l'état pour gérer les paiements multiples
-  const [multiplePayments, setMultiplePayments] = useState([])
 
   const handlePaymentTypeChange = (event) => {
     setPaymentType(event.target.value)

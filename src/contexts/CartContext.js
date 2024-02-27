@@ -25,6 +25,8 @@ export const CartProvider = ({ children }) => {
   const [paymentType, setPaymentType] = useState('CB')
   const [amountPaid, setAmountPaid] = useState('')
 
+  const [multiplePayments, setMultiplePayments] = useState([])
+
   const calculateTotalItem = (item) => {
     // Assurez-vous que `puTTC` et `quantity` sont des nombres avant le calcul
     const total = parseFloat(item.puTTC) * parseInt(item.quantity, 10)
@@ -194,6 +196,8 @@ export const CartProvider = ({ children }) => {
         setPaymentType,
         amountPaid,
         setAmountPaid,
+        multiplePayments,
+        setMultiplePayments,
       }}
     >
       {children}
