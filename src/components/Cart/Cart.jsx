@@ -25,9 +25,6 @@ const Cart = () => {
     adjustmentAmount,
     cartTotals,
     clearCart,
-    setPaymentType,
-    setAmountPaid,
-    amountPaid,
     paymentType,
   } = useContext(CartContext)
 
@@ -57,23 +54,6 @@ const Cart = () => {
   const isCurrentCartOnHold = onHoldInvoices.some(
     (invoice) => JSON.stringify(invoice.items) === JSON.stringify(cartItems),
   )
-
-  const handlePaymentTypeChange = (event) => {
-    setPaymentType(event.target.value)
-  }
-
-  const handleAmountPaidChange = (event) => {
-    setAmountPaid(event.target.value)
-  }
-
-  const calculateChange = () => {
-    const total =
-      adjustmentAmount !== 0
-        ? cartTotals.modifiedTotal
-        : cartTotals.originalTotal
-    const paid = parseFloat(amountPaid)
-    return paid > total ? paid - total : 0
-  }
 
   // Définir handleSaveQuote pour mettre à jour le devis actif
   const handleSaveQuote = async () => {
@@ -144,16 +124,7 @@ const Cart = () => {
               <Box my={2}>
                 <CartTotal />
               </Box>
-              <Box mb={2}>
-                <PaymentTypeSelector
-                  paymentType={paymentType}
-                  handlePaymentTypeChange={handlePaymentTypeChange}
-                  amountPaid={amountPaid}
-                  handleAmountPaidChange={handleAmountPaidChange}
-                  calculateChange={calculateChange}
-                  isActiveQuote={isActiveQuote}
-                />
-              </Box>
+              <PaymentTypeSelector isActiveQuote={isActiveQuote} />
               <Box
                 sx={{
                   display: 'flex',

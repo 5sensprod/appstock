@@ -8,15 +8,17 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import usePaymentHandlers from './usePaymentHandlers'
 
-const PaymentTypeSelector = ({
-  paymentType,
-  handlePaymentTypeChange,
-  amountPaid,
-  handleAmountPaidChange,
-  calculateChange,
-  isActiveQuote,
-}) => {
+const PaymentTypeSelector = ({ isActiveQuote }) => {
+  const {
+    paymentType,
+    amountPaid,
+    handlePaymentTypeChange,
+    handleAmountPaidChange,
+    calculateChange,
+  } = usePaymentHandlers()
+
   return (
     <Box mb={2}>
       <FormControl fullWidth>
