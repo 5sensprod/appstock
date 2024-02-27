@@ -13,7 +13,7 @@ export const InvoicesProvider = ({ children }) => {
 
   useEffect(() => {
     fetchInvoices()
-    fetchTickets() // Appelez fetchTickets également
+    fetchTickets()
   }, [])
 
   const fetchInvoices = async () => {
@@ -21,7 +21,6 @@ export const InvoicesProvider = ({ children }) => {
     try {
       const data = await getInvoices()
       setInvoices(data)
-      console.log('Factures chargées :', data) // Log pour voir les données chargées
     } catch (error) {
       console.error('Erreur lors de la récupération des factures:', error)
     } finally {
@@ -32,7 +31,7 @@ export const InvoicesProvider = ({ children }) => {
   const fetchTickets = async () => {
     setLoading(true)
     try {
-      const data = await getTickets() // Utilisez getTickets ici
+      const data = await getTickets()
       setTickets(data)
     } catch (error) {
       console.error('Erreur lors de la récupération des tickets:', error)
