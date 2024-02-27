@@ -37,6 +37,7 @@ const Cart = () => {
     clearCart,
     setPaymentType,
     setAmountPaid,
+    amountPaid,
     paymentType,
   } = useContext(CartContext)
 
@@ -62,11 +63,6 @@ const Cart = () => {
   }
 
   const navigate = useNavigate()
-
-  // const [paymentType, setPaymentType] = useState('CB')
-  // const [amountPaid, setAmountPaid] = useState('')
-
-  // const handlePayment = useHandlePayClick(paymentType, setInvoiceData)
 
   const isCurrentCartOnHold = onHoldInvoices.some(
     (invoice) => JSON.stringify(invoice.items) === JSON.stringify(cartItems),
@@ -170,12 +166,13 @@ const Cart = () => {
                     value={paymentType}
                     onChange={handlePaymentTypeChange}
                     label="Type de paiement"
-                    // disabled={isActiveQuote} Désactiver la sélection en mode devis
                   >
                     <MenuItem value="CB">Carte Bancaire</MenuItem>
                     <MenuItem value="Cash">Espèces</MenuItem>
                     <MenuItem value="Cheque">Chèque</MenuItem>
                     <MenuItem value="ChequeCadeau">Chèque Cadeau</MenuItem>
+                    <MenuItem value="Virement">Virement</MenuItem>
+                    <MenuItem value="Avoir">Avoir</MenuItem>
                   </Select>
                   {paymentType === 'Cash' && (
                     <>
@@ -284,10 +281,7 @@ const Cart = () => {
       <InvoiceConfirmationModal
         open={isInvoiceModalOpen}
         onClose={() => setIsInvoiceModalOpen(false)}
-        // cartItems={cartItems}
-        // cartTotals={cartTotals}
         paymentType={paymentType}
-        // Ajoutez d'autres props nécessaires ici
       />
     </>
   )

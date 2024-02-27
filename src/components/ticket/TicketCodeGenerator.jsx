@@ -1,19 +1,8 @@
 import React, { useContext } from 'react'
 import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
-// import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import {
-  Box,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Grid,
-} from '@mui/material'
+import { Box, Typography, Grid } from '@mui/material'
 import { useInvoices } from '../../contexts/InvoicesContext'
 import { QRCodeCanvas } from 'qrcode.react'
 import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
@@ -172,6 +161,7 @@ const TicketCodeGenerator = ({ ticketId }) => {
     const totauxParTVA = ticket.items.reduce((acc, item) => {
       const { tauxTVA, montantTVA, puHT, quantite } = item
       const totalHT = puHT * quantite
+      const totalTVA = montantTVA * quantite
       const tauxKey = `Tx TVA ${tauxTVA}%`
 
       if (!acc[tauxKey]) {
@@ -179,10 +169,11 @@ const TicketCodeGenerator = ({ ticketId }) => {
       }
 
       acc[tauxKey].totalHT += totalHT
-      acc[tauxKey].montantTVA += montantTVA
-      acc[tauxKey].totalTTC += item.totalItem
+      acc[tauxKey].montantTVA += totalTVA // Utiliser totalTVA qui a été ajusté par la quantité
+      acc[tauxKey].totalTTC += totalHT + totalTVA // Calculer le total TTC à partir du total HT et total TVA
       return acc
     }, {})
+
     // Calculer les totaux HT, TVA, et TTC avant le return
     let totalHT = 0
     let totalTVA = 0
@@ -196,6 +187,19 @@ const TicketCodeGenerator = ({ ticketId }) => {
 
     return (
       <Box>
+        {/* En-têtes de colonne */}
+        <Box
+          display="grid"
+          gridTemplateColumns="repeat(4, 1fr)"
+          sx={{ mb: 1, fontSize: '10px', textAlign: 'center' }}
+        >
+          <Typography>Tx TVA</Typography>
+          <Typography>HT</Typography>
+          <Typography>TVA</Typography>
+          <Typography>TTC</Typography>
+        </Box>
+
+        {/* Valeurs pour chaque taux de TVA */}
         {Object.entries(totauxParTVA).map(([taux, totals]) => (
           <Box
             key={taux}
@@ -204,20 +208,23 @@ const TicketCodeGenerator = ({ ticketId }) => {
             gap={1}
             sx={{ mt: 2 }}
           >
-            <Typography sx={{ fontSize: '10px', textAlign: 'left' }}>
-              {taux}
+            {/* Afficher le taux de TVA */}
+            <Typography sx={{ fontSize: '10px', textAlign: 'center' }}>
+              {taux.replace('Tx TVA ', '')}
+            </Typography>
+            {/* Afficher les totaux pour HT, TVA, et TTC */}
+            <Typography sx={{ fontSize: '10px', textAlign: 'right' }}>
+              {totals.totalHT.toFixed(2)}€
             </Typography>
             <Typography sx={{ fontSize: '10px', textAlign: 'right' }}>
-              HT: {totals.totalHT.toFixed(2)}€
+              {totals.montantTVA.toFixed(2)}€
             </Typography>
             <Typography sx={{ fontSize: '10px', textAlign: 'right' }}>
-              TVA: {totals.montantTVA.toFixed(2)}€
-            </Typography>
-            <Typography sx={{ fontSize: '10px', textAlign: 'right' }}>
-              TTC: {totals.totalTTC.toFixed(2)}€
+              {totals.totalTTC.toFixed(2)}€
             </Typography>
           </Box>
         ))}
+        {/* Totals généraux */}
         <Box
           display="grid"
           gridTemplateColumns="repeat(4, 1fr)"
@@ -225,24 +232,24 @@ const TicketCodeGenerator = ({ ticketId }) => {
           sx={{ mt: 2, borderTop: '1px solid black', pt: 1 }}
         >
           <Typography
-            sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'left' }}
+            sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'center' }}
           >
             TOTAUX
           </Typography>
           <Typography
             sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'right' }}
           >
-            HT: {totalHT.toFixed(2)}€
+            {totalHT.toFixed(2)}€
           </Typography>
           <Typography
             sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'right' }}
           >
-            TVA: {totalTVA.toFixed(2)}€
+            {totalTVA.toFixed(2)}€
           </Typography>
           <Typography
             sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'right' }}
           >
-            TTC: {totalTTC.toFixed(2)}€
+            {totalTTC.toFixed(2)}€
           </Typography>
         </Box>
       </Box>
@@ -269,14 +276,29 @@ const TicketCodeGenerator = ({ ticketId }) => {
   }
 
   const PaymentType = ({ paymentType }) => {
-    // Ici, vous pouvez ajouter une logique pour traduire ou formater le type de paiement si nécessaire
-    const paymentTypeDisplay =
-      paymentType === 'CB' ? 'Carte Bancaire' : paymentType
+    const paymentTypeDisplay = () => {
+      switch (paymentType) {
+        case 'CB':
+          return 'Carte Bancaire'
+        case 'Cash':
+          return 'Espèces'
+        case 'Cheque':
+          return 'Chèque'
+        case 'ChequeCadeau':
+          return 'Chèque Cadeau'
+        case 'Virement':
+          return 'Virement'
+        case 'Avoir':
+          return 'Avoir'
+        default:
+          return paymentType
+      }
+    }
 
     return (
       <Box sx={{ mt: 2 }}>
         <Typography variant="body2" component="p">
-          Type de paiement : {paymentTypeDisplay}
+          Type de paiement : {paymentTypeDisplay()}
         </Typography>
       </Box>
     )
