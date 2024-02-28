@@ -6,24 +6,12 @@ import { Box, Typography, Grid } from '@mui/material'
 import { useInvoices } from '../../contexts/InvoicesContext'
 import { QRCodeCanvas } from 'qrcode.react'
 import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
+import DashedLine from '../ui/DashedLine'
 
 const TicketCodeGenerator = ({ ticketId }) => {
   const { tickets } = useInvoices()
 
   const ticket = tickets.find((ticket) => ticket._id === ticketId)
-
-  const DashedLine = () => {
-    return (
-      <Box
-        sx={{
-          border: 0,
-          borderBottom: '1px dashed #000',
-          width: '100%',
-          margin: '8px 0',
-        }}
-      />
-    )
-  }
 
   const HeaderCompany = () => {
     const { companyInfo } = useContext(CompanyInfoContext)
