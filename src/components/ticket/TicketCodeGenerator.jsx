@@ -188,7 +188,7 @@ const TicketCodeGenerator = ({ ticketId }) => {
     return (
       <Box>
         {/* En-têtes de colonne */}
-        <Box display="grid" gridTemplateColumns="repeat(4, 1fr)" gap={1}>
+        <Box display="grid" gridTemplateColumns="repeat(4, 1fr)" gap={2}>
           <Typography
             sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'left' }}
           >
@@ -217,7 +217,7 @@ const TicketCodeGenerator = ({ ticketId }) => {
             key={taux}
             display="grid"
             gridTemplateColumns="repeat(4, 1fr)"
-            gap={1}
+            gap={2}
           >
             {/* Afficher le taux de TVA */}
             <Typography sx={{ fontSize: '10px', textAlign: 'left' }}>
@@ -239,8 +239,8 @@ const TicketCodeGenerator = ({ ticketId }) => {
         <Box
           display="grid"
           gridTemplateColumns="repeat(4, 1fr)"
-          gap={1}
-          sx={{ mt: 2, borderTop: '1px solid black', pt: 1 }}
+          gap={2}
+          sx={{ mt: 2, borderTop: '1px dashed black', pt: 1 }}
         >
           <Typography
             sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'left' }}
@@ -370,7 +370,7 @@ const TicketCodeGenerator = ({ ticketId }) => {
           )
         default:
           return (
-            <Grid container spacing={1}>
+            <Grid container>
               <Grid item xs={6} textAlign={'right'}>
                 <Typography variant="body2" fontSize="12px">
                   {`${getReadablePaymentType(paymentType)} :`}
