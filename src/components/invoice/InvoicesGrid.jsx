@@ -30,7 +30,7 @@ const InvoicesGrid = () => {
       .map((invoice) => ({
         ...invoice,
         id: invoice._id,
-        number: invoice.invoiceNumber,
+        number: invoice.number,
         date: new Date(invoice.date),
         dateString: new Date(invoice.date).toLocaleDateString('fr-FR'),
         totalTTC: invoice.totalTTC,

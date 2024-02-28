@@ -30,7 +30,7 @@ const TicketsGrid = () => {
       .map((ticket) => ({
         ...ticket,
         id: ticket._id,
-        number: ticket.ticketNumber,
+        number: ticket.number,
         date: new Date(ticket.date),
         totalTTC: ticket.totalTTC,
       }))

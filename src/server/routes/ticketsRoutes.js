@@ -19,7 +19,7 @@ module.exports = (db) => {
   router.post('/', (req, res) => {
     db.tickets
       .find({})
-      .sort({ ticketNumber: -1 })
+      .sort({ number: -1 }) // Modifié pour trier par la nouvelle clé 'number'
       .limit(1)
       .exec((err, lastTicket) => {
         if (err) {
@@ -39,7 +39,7 @@ module.exports = (db) => {
           // Comparer les dates
           if (lastDate === currentDate) {
             // Même jour, incrémenter le numéro
-            const lastTicketNumber = lastTicket[0].ticketNumber.split('-')[2]
+            const lastTicketNumber = lastTicket[0].number.split('-')[2] // Modifié pour utiliser la clé 'number'
             lastNumber = parseInt(lastTicketNumber, 10)
           } else {
             // Nouveau jour, réinitialiser le numéro
@@ -72,7 +72,7 @@ module.exports = (db) => {
           totalHT: parseFloat(req.body.totalHT),
           totalTVA: parseFloat(req.body.totalTVA),
           totalTTC: parseFloat(req.body.totalTTC),
-          ticketNumber: newTicketNumber,
+          number: newTicketNumber, // Utilisez 'number' au lieu de 'ticketNumber'
           date: new Date().toISOString(),
         }
 

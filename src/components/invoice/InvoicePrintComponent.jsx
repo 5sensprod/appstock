@@ -103,7 +103,7 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
       {/* Informations de Facturation - Sous la Card Entreprise */}
       <Box m={2}>
         <Typography variant="body2">
-          Facture n°{invoiceData.invoiceNumber}
+          Facture n°{invoiceData.number}
         </Typography>
         <Typography variant="body2">Date: {formattedDate}</Typography>
         <Typography variant="body2">

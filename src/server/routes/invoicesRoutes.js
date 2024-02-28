@@ -15,7 +15,7 @@ module.exports = (db) => {
   router.post('/', async (req, res) => {
     db.invoices
       .find({})
-      .sort({ invoiceNumber: -1 })
+      .sort({ number: -1 }) // Modifié pour trier par 'number'
       .limit(1)
       .exec((err, lastInvoice) => {
         if (err) {
@@ -33,9 +33,9 @@ module.exports = (db) => {
           const lastDate = lastInvoice[0].date.split('T')[0]
           const currentDate = new Date().toISOString().split('T')[0]
 
-          // Comparer les dates
           if (lastDate === currentDate) {
-            const lastInvoiceNumber = lastInvoice[0].invoiceNumber.split('-')[2]
+            // Utilisez la nouvelle clé 'number' pour extraire le dernier numéro
+            const lastInvoiceNumber = lastInvoice[0].number.split('-')[2]
             lastNumber = parseInt(lastInvoiceNumber, 10)
           } else {
             resetNumber = true
@@ -46,25 +46,27 @@ module.exports = (db) => {
 
         const newInvoiceNumber = `FACT-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${String(resetNumber ? 1 : lastNumber + 1).padStart(6, '0')}`
 
+        let itemsFormatted = req.body.items.map((item) => ({
+          ...item,
+          quantite: parseInt(item.quantite, 10),
+          puHT: parseFloat(item.puHT),
+          puTTC: parseFloat(item.puTTC),
+          tauxTVA: parseFloat(item.tauxTVA),
+          totalItem: parseFloat(item.totalItem),
+          montantTVA: parseFloat(item.montantTVA),
+          remiseMajorationValue: item.remiseMajorationValue
+            ? parseFloat(item.remiseMajorationValue)
+            : 0,
+        }))
+
         let newInvoice = {
           ...req.body,
-          invoiceNumber: newInvoiceNumber,
-          date: new Date().toISOString(),
-          items: req.body.items.map((item) => ({
-            ...item,
-            quantite: parseInt(item.quantite, 10),
-            puHT: parseFloat(item.puHT),
-            puTTC: parseFloat(item.puTTC),
-            tauxTVA: parseFloat(item.tauxTVA),
-            totalItem: parseFloat(item.totalItem),
-            montantTVA: parseFloat(item.montantTVA),
-            remiseMajorationValue: item.remiseMajorationValue
-              ? parseFloat(item.remiseMajorationValue)
-              : 0,
-          })),
+          items: itemsFormatted,
           totalHT: parseFloat(req.body.totalHT),
           totalTVA: parseFloat(req.body.totalTVA),
           totalTTC: parseFloat(req.body.totalTTC),
+          number: newInvoiceNumber, // Utilisez 'number' au lieu de 'invoiceNumber'
+          date: new Date().toISOString(),
         }
 
         db.invoices.insert(newInvoice, (err, invoice) => {

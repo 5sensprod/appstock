@@ -27,7 +27,7 @@ const InvoiceGrid = () => {
         invoice.items.forEach((item) => {
           acc.push({
             ...item,
-            invoiceNumber: invoice.invoiceNumber,
+            invoiceNumber: invoice.number,
             date: invoice.date,
             totalHT: parseFloat(invoice.totalHT), // Convertir en nombre si nécessaire
             totalTVA: parseFloat(invoice.totalTVA),
@@ -79,7 +79,7 @@ const InvoiceGrid = () => {
       valueFormatter: (params) => formatDate(params.value),
     },
     { headerName: 'Type de Paiement', field: 'paymentType' },
-    { headerName: 'Numéro de Facture', field: 'invoiceNumber' },
+    { headerName: 'Numéro de Facture', field: 'number' },
     // { headerName: 'ID Facture', field: '_id' },
     // Autres colonnes si nécessaire
   ]

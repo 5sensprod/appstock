@@ -41,7 +41,7 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
     : ''
 
   // Construire le titre avec le numéro et la date
-  const modalTitle = `${itemType === 'invoice' ? 'Facture' : 'Ticket'} n°${itemType === 'invoice' ? item?.invoiceNumber : item?.ticketNumber} - ${formattedDate}`
+  const modalTitle = `${itemType === 'invoice' ? 'Facture' : 'Ticket'} n°${itemType === 'invoice' ? item?.number : item?.number} - ${formattedDate}`
 
   const rows =
     item?.items.map((itemDetail, index) => ({

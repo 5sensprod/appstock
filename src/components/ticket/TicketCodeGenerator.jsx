@@ -15,40 +15,6 @@ const TicketCodeGenerator = ({ ticketId }) => {
 
   const ticket = tickets.find((ticket) => ticket._id === ticketId)
 
-  const HeaderTicket = ({ ticket }) => {
-    // Formattez la date et l'heure de manière lisible
-    const formatDate = (dateString) => {
-      const options = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-      }
-      return new Intl.DateTimeFormat('fr-FR', options).format(
-        new Date(dateString),
-      )
-    }
-
-    return (
-      <>
-        <Box sx={{ textAlign: 'center', mt: 1 }}>
-          <Typography variant="body1" fontSize={14} sx={{ fontWeight: 'bold' }}>
-            TICKET
-          </Typography>
-          <Typography variant="body1" fontSize={10}>
-            Numéro : {ticket.ticketNumber}
-          </Typography>
-          <Typography variant="body1" fontSize={10}>
-            Le {formatDate(ticket.date)}
-          </Typography>
-        </Box>
-      </>
-    )
-  }
-
   const BodyTicket = ({ ticket }) => {
     return (
       <Box textAlign={'left'}>
@@ -369,7 +335,7 @@ const TicketCodeGenerator = ({ ticketId }) => {
 
     // Assurez-vous que la largeur et la hauteur de l'image ajoutée correspondent au format du PDF
     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
-    pdf.save(`${ticket.ticketNumber}-ticket.pdf`)
+    pdf.save(`${ticket.number}-ticket.pdf`)
   }
 
   return (
@@ -390,7 +356,7 @@ const TicketCodeGenerator = ({ ticketId }) => {
       >
         <HeaderCompany />
         <DashedLine />
-        <HeaderPdf data={ticket} title="TICKET" numberPropName="ticketNumber" />
+        <HeaderPdf data={ticket} title="TICKET" />
         <DashedLine />
         <BodyTicket ticket={ticket} />
         <DashedLine />
@@ -406,7 +372,7 @@ const TicketCodeGenerator = ({ ticketId }) => {
         />
         <DashedLine />
         <Remerciement />
-        <QRCodeCanvas value={ticket.ticketNumber} size={50} />
+        <QRCodeCanvas value={ticket.number} size={50} />
       </Box>
       <Button variant="contained" onClick={generatePDF}>
         Télécharger Ticket PDF
