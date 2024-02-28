@@ -80,11 +80,12 @@ const PaymentList = ({ payments, onRemove, onUpdate }) => {
         >
           {editingIndex === index ? (
             <TextField
+              id={`payment-input-${index}`}
               size="small"
               variant="outlined"
-              defaultValue={payment.amount.toString()} // Convertir en chaîne pour éviter un avertissement React
-              onBlur={(e) => setEditingIndex(null)} // Optionnel : sortir du mode d'édition au flou
-              autoFocus // Focus automatique pour l'édition
+              defaultValue={payment.amount.toString()}
+              onBlur={(e) => setEditingIndex(null)}
+              autoFocus
               onChange={(e) => {}}
               style={{ marginRight: '10px' }}
             />

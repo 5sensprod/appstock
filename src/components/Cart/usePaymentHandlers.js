@@ -24,6 +24,7 @@ const usePaymentHandlers = () => {
   }
 
   const addPaymentDetails = (payment) => {
+    setMultiplePayments((prevDetails) => [...prevDetails, payment])
     setPaymentDetails((prevDetails) => {
       const newDetails = [...prevDetails, payment]
       console.log('Payment Details Updated: ', newDetails) // Vérification
