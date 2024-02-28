@@ -4,8 +4,14 @@ import { useInvoices } from '../contexts/InvoicesContext'
 import { useProductContextSimplified } from '../contexts/ProductContextSimplified'
 
 const useHandlePayClick = () => {
-  const { cartItems, cartTotals, adjustmentAmount, clearCart, paymentDetails } =
-    useContext(CartContext)
+  const {
+    cartItems,
+    cartTotals,
+    adjustmentAmount,
+    clearCart,
+    paymentDetails,
+    cashDetails,
+  } = useContext(CartContext)
   const { createInvoice, createTicket } = useInvoices()
   const { updateProductStock } = useProductContextSimplified()
 
@@ -34,12 +40,13 @@ const useHandlePayClick = () => {
       totalTTC: totalToUse.toFixed(2),
       adjustment: adjustmentAmount !== 0 ? adjustmentAmount.toFixed(2) : null,
       date,
-      paymentDetails, // Ajout de paymentDetails ici
+      paymentDetails,
+      cashDetails,
     }
 
     if (isInvoice) {
       const newInvoiceData = {
-        ...baseData, // Utilisation de l'objet de base
+        ...baseData,
         paymentType,
         customerInfo,
       }
@@ -52,8 +59,8 @@ const useHandlePayClick = () => {
       }
     } else {
       const newTicketData = {
-        ...baseData, // Utilisation de l'objet de base
-        paymentType, // Le type de paiement peut aussi être pertinent pour un ticket, selon le cas d'usage
+        ...baseData,
+        paymentType,
       }
 
       try {
@@ -68,7 +75,7 @@ const useHandlePayClick = () => {
       await updateProductStock(item._id, item.quantity)
     }
 
-    clearCart() // Nettoyage du panier après la création du document
+    clearCart()
   }
 
   return handlePayClick
