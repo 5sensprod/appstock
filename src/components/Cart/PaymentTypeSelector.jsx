@@ -66,22 +66,21 @@ const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
 }
 
 const PaymentList = ({ payments, onRemove, onUpdate }) => {
-  const [editingIndex, setEditingIndex] = useState(null)
-  const [editingValue, setEditingValue] = useState('')
+  const [editing, setEditing] = useState({ index: null, value: '' })
 
   const handleEditClick = (index, amount) => {
-    setEditingIndex(index)
-    setEditingValue(amount.toString())
+    setEditing({ index, value: amount.toString() })
   }
 
   const handleUpdate = (index) => {
-    const updatedPayment = {
-      ...payments[index],
-      amount: editingValue ? parseFloat(editingValue) : 0,
+    if (editing.value) {
+      const updatedPayment = {
+        ...payments[index],
+        amount: parseFloat(editing.value),
+      }
+      onUpdate(index, updatedPayment)
     }
-    onUpdate(index, updatedPayment)
-    setEditingIndex(null)
-    setEditingValue('')
+    setEditing({ index: null, value: '' })
   }
 
   return (
@@ -94,21 +93,22 @@ const PaymentList = ({ payments, onRemove, onUpdate }) => {
           justifyContent="space-between"
           sx={{ mb: 1 }}
         >
-          {editingIndex === index ? (
+          {editing.index === index ? (
             <TextField
-              id={`payment-input-${index}`}
+              key={`edit-${index}`}
               size="small"
               variant="outlined"
-              value={editingValue}
+              value={editing.value}
               autoFocus
-              onChange={(e) => setEditingValue(e.target.value)}
+              onInput={(e) => setEditing({ ...editing, value: e.target.value })}
               style={{ marginRight: '10px' }}
+              type="number"
             />
           ) : (
             <Typography>{`${payment.type}: ${payment.amount}€`}</Typography>
           )}
 
-          {editingIndex === index ? (
+          {editing.index === index ? (
             <Button onClick={() => handleUpdate(index)}>Valider</Button>
           ) : (
             <Button onClick={() => handleEditClick(index, payment.amount)}>
