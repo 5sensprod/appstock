@@ -18,14 +18,7 @@ const TicketCodeGenerator = ({ ticketId }) => {
 
     return (
       <Box>
-        {' '}
-        {/* Applique un style commun à tous les éléments p */}
-        <Typography
-          variant="body2" // Utilise une variante prédéfinie pour contrôler la taille de police et le style
-          //   component="p"
-          //   sx={{ marginBottom: '1px', fontWeight: 'bold', fontSize: '12px' }}
-          fontWeight={'bold'}
-        >
+        <Typography variant="body2" fontWeight={'bold'}>
           {companyInfo?.name.toUpperCase()}
         </Typography>
         {[
