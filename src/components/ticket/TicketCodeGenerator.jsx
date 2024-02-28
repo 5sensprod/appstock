@@ -1,41 +1,19 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
 import Button from '@mui/material/Button'
 import { Box, Typography, Grid } from '@mui/material'
 import { useInvoices } from '../../contexts/InvoicesContext'
 import { QRCodeCanvas } from 'qrcode.react'
-import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
 import DashedLine from '../ui/DashedLine'
+import HeaderCompany from '../users/HeaderCompany'
+import Remerciement from '../ui/Remerciement'
+import HeaderPdf from '../pdf/HeaderPdf'
 
 const TicketCodeGenerator = ({ ticketId }) => {
   const { tickets } = useInvoices()
 
   const ticket = tickets.find((ticket) => ticket._id === ticketId)
-
-  const HeaderCompany = () => {
-    const { companyInfo } = useContext(CompanyInfoContext)
-
-    return (
-      <Box>
-        <Typography variant="body2" fontWeight={'bold'}>
-          {companyInfo?.name.toUpperCase()}
-        </Typography>
-        {[
-          'address',
-          'city',
-          'phone',
-          'email',
-          `Tax ID: ${companyInfo?.taxId}`,
-        ].map((info, index) => (
-          <Typography key={index} variant="body2" fontSize={10}>
-            {' '}
-            {companyInfo?.[info] || info}
-          </Typography>
-        ))}
-      </Box>
-    )
-  }
 
   const HeaderTicket = ({ ticket }) => {
     // Formattez la date et l'heure de manière lisible
@@ -370,14 +348,6 @@ const TicketCodeGenerator = ({ ticketId }) => {
     return <Box sx={{ mt: 2 }}>{paymentTypeDisplay()}</Box>
   }
 
-  const Remerciement = () => {
-    return (
-      <Box sx={{ mt: 4, mb: 2, textAlign: 'center' }}>
-        <Typography variant="subtitle2">Merci de votre visite</Typography>
-      </Box>
-    )
-  }
-
   if (!ticket) {
     return <Typography>Ticket non trouvé</Typography>
   }
@@ -420,7 +390,7 @@ const TicketCodeGenerator = ({ ticketId }) => {
       >
         <HeaderCompany />
         <DashedLine />
-        <HeaderTicket ticket={ticket} />
+        <HeaderPdf data={ticket} title="TICKET" numberPropName="ticketNumber" />
         <DashedLine />
         <BodyTicket ticket={ticket} />
         <DashedLine />
