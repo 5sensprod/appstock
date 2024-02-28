@@ -13,6 +13,7 @@ const usePaymentHandlers = () => {
     setMultiplePayments,
     paymentDetails,
     setPaymentDetails,
+    setCashDetails,
   } = useContext(CartContext)
 
   const handlePaymentTypeChange = (event) => {
@@ -20,9 +21,14 @@ const usePaymentHandlers = () => {
   }
 
   const handleAmountPaidChange = (event) => {
-    setAmountPaid(event.target.value)
-  }
+    const givenAmount = parseFloat(event.target.value)
+    setAmountPaid(givenAmount)
 
+    if (paymentType === 'Cash') {
+      const changeAmount = calculateChange(givenAmount) // Passer givenAmount directement
+      setCashDetails({ givenAmount, changeAmount })
+    }
+  }
   const addPaymentDetails = (payment) => {
     setMultiplePayments((prevDetails) => [...prevDetails, payment])
     setPaymentDetails((prevDetails) => {
@@ -32,12 +38,12 @@ const usePaymentHandlers = () => {
     })
   }
 
-  const calculateChange = () => {
+  const calculateChange = (givenAmount = amountPaid) => {
     const total =
       adjustmentAmount !== 0
         ? cartTotals.modifiedTotal
         : cartTotals.originalTotal
-    const paid = parseFloat(amountPaid)
+    const paid = parseFloat(givenAmount)
     const change = paid > total ? paid - total : 0
     return change
   }

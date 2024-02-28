@@ -28,7 +28,13 @@ export const CartProvider = ({ children }) => {
   const [multiplePayments, setMultiplePayments] = useState([])
   const [paymentDetails, setPaymentDetails] = useState([])
 
+  const [cashDetails, setCashDetails] = useState({
+    givenAmount: 0,
+    changeAmount: 0,
+  })
+
   console.log('Current paymentDetails in CartContext:', paymentDetails)
+  console.log('Current cashDetails in CartContext:', cashDetails)
 
   const calculateTotalItem = (item) => {
     const total = parseFloat(item.puTTC) * parseInt(item.quantity, 10)
@@ -202,6 +208,8 @@ export const CartProvider = ({ children }) => {
         setMultiplePayments,
         paymentDetails,
         setPaymentDetails,
+        cashDetails,
+        setCashDetails,
       }}
     >
       {children}
