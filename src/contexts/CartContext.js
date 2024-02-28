@@ -28,6 +28,8 @@ export const CartProvider = ({ children }) => {
   const [multiplePayments, setMultiplePayments] = useState([])
   const [paymentDetails, setPaymentDetails] = useState([])
 
+  console.log('Current paymentDetails in CartContext:', paymentDetails)
+
   const calculateTotalItem = (item) => {
     // Assurez-vous que `puTTC` et `quantity` sont des nombres avant le calcul
     const total = parseFloat(item.puTTC) * parseInt(item.quantity, 10)

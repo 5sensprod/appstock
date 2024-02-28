@@ -4,7 +4,7 @@ import { useInvoices } from '../contexts/InvoicesContext'
 import { useProductContextSimplified } from '../contexts/ProductContextSimplified'
 
 const useHandlePayClick = () => {
-  const { cartItems, cartTotals, adjustmentAmount, clearCart } =
+  const { cartItems, cartTotals, adjustmentAmount, clearCart, paymentDetails } =
     useContext(CartContext)
   const { createInvoice, createTicket } = useInvoices()
   const { updateProductStock } = useProductContextSimplified()
@@ -27,14 +27,19 @@ const useHandlePayClick = () => {
       adjustmentAmount !== 0 ? cartTotals.modifiedTotal : cartTotals.totalTTC
     const date = new Date().toISOString()
 
+    const baseData = {
+      items: documentItems,
+      totalHT: cartTotals.totalHT.toFixed(2),
+      totalTVA: cartTotals.totalTaxes.toFixed(2),
+      totalTTC: totalToUse.toFixed(2),
+      adjustment: adjustmentAmount !== 0 ? adjustmentAmount.toFixed(2) : null,
+      date,
+      paymentDetails, // Ajout de paymentDetails ici
+    }
+
     if (isInvoice) {
       const newInvoiceData = {
-        items: documentItems,
-        totalHT: cartTotals.totalHT.toFixed(2),
-        totalTVA: cartTotals.totalTaxes.toFixed(2),
-        totalTTC: totalToUse.toFixed(2),
-        adjustment: adjustmentAmount !== 0 ? adjustmentAmount.toFixed(2) : null,
-        date,
+        ...baseData, // Utilisation de l'objet de base
         paymentType,
         customerInfo,
       }
@@ -47,13 +52,8 @@ const useHandlePayClick = () => {
       }
     } else {
       const newTicketData = {
-        items: documentItems,
-        totalHT: cartTotals.totalHT.toFixed(2),
-        totalTVA: cartTotals.totalTaxes.toFixed(2),
-        totalTTC: totalToUse.toFixed(2),
-        adjustment: adjustmentAmount !== 0 ? adjustmentAmount.toFixed(2) : null,
-        date,
-        paymentType,
+        ...baseData, // Utilisation de l'objet de base
+        paymentType, // Le type de paiement peut aussi être pertinent pour un ticket, selon le cas d'usage
       }
 
       try {
@@ -68,7 +68,7 @@ const useHandlePayClick = () => {
       await updateProductStock(item._id, item.quantity)
     }
 
-    clearCart()
+    clearCart() // Nettoyage du panier après la création du document
   }
 
   return handlePayClick
