@@ -127,13 +127,12 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
     handlePaymentTypeChange,
     handleAmountPaidChange,
     calculateChange,
-    addMultiplePayments,
+    addPaymentDetails, // Modification ici
     calculateRemainingAmount,
     multiplePayments,
     removePayment,
     updatePayment,
   } = usePaymentHandlers()
-
   const remainingAmount = calculateRemainingAmount()
 
   return (
@@ -174,7 +173,7 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
       {paymentType === 'Multiple' && (
         <>
           <MultiplePaymentInput
-            onAddPayment={addMultiplePayments}
+            onAddPayment={addPaymentDetails}
             remainingAmount={remainingAmount}
           />
           <PaymentList

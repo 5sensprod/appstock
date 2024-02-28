@@ -11,6 +11,8 @@ const usePaymentHandlers = () => {
     adjustmentAmount,
     multiplePayments,
     setMultiplePayments,
+    paymentDetails,
+    setPaymentDetails,
   } = useContext(CartContext)
 
   const handlePaymentTypeChange = (event) => {
@@ -21,8 +23,12 @@ const usePaymentHandlers = () => {
     setAmountPaid(event.target.value)
   }
 
-  const addMultiplePayments = (payment) => {
-    setMultiplePayments((prevPayments) => [...prevPayments, payment])
+  const addPaymentDetails = (payment) => {
+    setPaymentDetails((prevDetails) => {
+      const newDetails = [...prevDetails, payment]
+      console.log('Payment Details Updated: ', newDetails) // Vérification
+      return newDetails
+    })
   }
 
   const calculateChange = () => {
@@ -64,7 +70,7 @@ const usePaymentHandlers = () => {
     handlePaymentTypeChange,
     handleAmountPaidChange,
     calculateChange,
-    addMultiplePayments,
+    addPaymentDetails,
     calculateRemainingAmount,
     paymentType,
     amountPaid,
