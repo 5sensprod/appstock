@@ -275,13 +275,20 @@ const TicketCodeGenerator = ({ ticketId }) => {
     )
   }
 
-  const PaymentType = ({ paymentType }) => {
+  const PaymentType = ({
+    paymentType,
+    cashDetails = {},
+    paymentDetails = [],
+  }) => {
     const paymentTypeDisplay = () => {
       switch (paymentType) {
         case 'CB':
           return 'Carte Bancaire'
         case 'Cash':
-          return 'Espèces'
+          // Utilise cashDetails seulement s'il contient les clés attendues
+          return cashDetails && cashDetails.givenAmount !== undefined
+            ? `Espèces - Donné: ${cashDetails.givenAmount}€, Monnaie: ${cashDetails.changeAmount}€`
+            : 'Espèces'
         case 'Cheque':
           return 'Chèque'
         case 'ChequeCadeau':
@@ -290,16 +297,31 @@ const TicketCodeGenerator = ({ ticketId }) => {
           return 'Virement'
         case 'Avoir':
           return 'Avoir'
+        case 'Multiple':
+          // Affiche les détails des paiements multiples seulement s'ils sont disponibles
+          return paymentDetails && paymentDetails.length > 0
+            ? paymentDetails.map((detail, index) => (
+                <div key={index}>{`${detail.type}: ${detail.amount}€`}</div>
+              ))
+            : 'Paiements multiples'
         default:
           return paymentType
       }
     }
-
     return (
       <Box sx={{ mt: 2 }}>
-        <Typography variant="body2" component="p">
-          Type de paiement : {paymentTypeDisplay()}
-        </Typography>
+        {paymentType !== 'Multiple' ? (
+          <Typography variant="body2" component="p">
+            Type de paiement : {paymentTypeDisplay()}
+          </Typography>
+        ) : (
+          <Box>
+            <Typography variant="body2" component="p">
+              Types de paiement :
+            </Typography>
+            {paymentTypeDisplay()}
+          </Box>
+        )}
       </Box>
     )
   }
@@ -362,7 +384,11 @@ const TicketCodeGenerator = ({ ticketId }) => {
         <DashedLine />
         <TotauxTVA ticket={ticket} />
         <DashedLine />
-        <PaymentType paymentType={ticket.paymentType} />
+        <PaymentType
+          paymentType={ticket.paymentType}
+          cashDetails={ticket.cashDetails}
+          paymentDetails={ticket.paymentDetails}
+        />
         <DashedLine />
         <Remerciement />
         <QRCodeCanvas value={ticket.ticketNumber} size={50} />

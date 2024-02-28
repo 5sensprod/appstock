@@ -25,7 +25,7 @@ const usePaymentHandlers = () => {
     setAmountPaid(givenAmount)
 
     if (paymentType === 'Cash') {
-      const changeAmount = calculateChange(givenAmount) // Passer givenAmount directement
+      const changeAmount = calculateChange(givenAmount)
       setCashDetails({ givenAmount, changeAmount })
     }
   }
@@ -33,7 +33,7 @@ const usePaymentHandlers = () => {
     setMultiplePayments((prevDetails) => [...prevDetails, payment])
     setPaymentDetails((prevDetails) => {
       const newDetails = [...prevDetails, payment]
-      console.log('Payment Details Updated: ', newDetails) // Vérification
+      console.log('Payment Details Updated: ', newDetails)
       return newDetails
     })
   }
@@ -44,7 +44,9 @@ const usePaymentHandlers = () => {
         ? cartTotals.modifiedTotal
         : cartTotals.originalTotal
     const paid = parseFloat(givenAmount)
-    const change = paid > total ? paid - total : 0
+    let change = paid > total ? paid - total : 0
+    change = parseFloat(change.toFixed(2))
+
     return change
   }
 
