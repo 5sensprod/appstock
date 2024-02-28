@@ -31,8 +31,8 @@ const InvoicesGrid = () => {
         ...invoice,
         id: invoice._id,
         number: invoice.invoiceNumber,
-        date: new Date(invoice.date), // Gardez la date en tant qu'objet Date pour le tri
-        dateString: new Date(invoice.date).toLocaleDateString('fr-FR'), // Ajoutez une nouvelle propriété pour l'affichage
+        date: new Date(invoice.date),
+        dateString: new Date(invoice.date).toLocaleDateString('fr-FR'),
         totalTTC: invoice.totalTTC,
         customerName: invoice.customerInfo?.name || '',
         onViewDetails: () => handleViewDetails(invoice._id),
@@ -42,7 +42,7 @@ const InvoicesGrid = () => {
       // Après le tri, vous pouvez convertir la date en chaîne si nécessaire pour l'affichage
       .map((invoice) => ({
         ...invoice,
-        date: invoice.dateString, // Utilisez la chaîne formatée pour l'affichage
+        date: invoice.dateString,
       }))
 
     setRows(formattedRows)

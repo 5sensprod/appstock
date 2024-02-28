@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from 'react'
 import CustomDataGrid from '../ui/CustomDataGrid'
 import { useInvoices } from '../../contexts/InvoicesContext'
 import DetailsModal from '../ui/DetailsModal'
-import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
 import Modal from '@mui/material/Modal'
 import TicketCodeGenerator from './TicketCodeGenerator'
 import { Box } from '@mui/material'
@@ -11,7 +10,6 @@ const TicketsGrid = () => {
   const { tickets, loading } = useInvoices()
   const [rows, setRows] = useState([])
   const [selectedTicketId, setSelectedTicketId] = useState(null)
-  const { companyInfo } = useContext(CompanyInfoContext)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false)
 
@@ -35,7 +33,6 @@ const TicketsGrid = () => {
         number: ticket.ticketNumber,
         date: new Date(ticket.date),
         totalTTC: ticket.totalTTC,
-        // onViewDetails: () => handleViewDetails(ticket._id),
       }))
       // Tri par date en utilisant les objets Date
       .sort((a, b) => b.date - a.date)
@@ -73,14 +70,14 @@ const TicketsGrid = () => {
         <>
           {/* Modale pour les détails du ticket */}
           <DetailsModal
-            open={isDetailsModalOpen} // Utilisez isDetailsModalOpen pour cette modale
+            open={isDetailsModalOpen}
             onClose={() => setIsDetailsModalOpen(false)}
             itemId={selectedTicketId}
             itemType="ticket"
           />
           {/* Modale pour la génération du PDF */}
           <Modal
-            open={isPdfModalOpen} // Utilisez isPdfModalOpen pour cette modale
+            open={isPdfModalOpen}
             onClose={() => setIsPdfModalOpen(false)}
             aria-labelledby="pdf-modal-title"
             aria-describedby="pdf-modal-description"
