@@ -286,7 +286,6 @@ const TicketCodeGenerator = ({ ticketId }) => {
     paymentDetails = [],
     totalTTC,
   }) => {
-    // Fonction pour convertir les identifiants de type de paiement en texte lisible
     const getReadablePaymentType = (type) => {
       switch (type) {
         case 'CB':
@@ -302,11 +301,10 @@ const TicketCodeGenerator = ({ ticketId }) => {
         case 'Avoir':
           return 'Avoir'
         default:
-          return type // Retourne le type tel quel si non reconnu
+          return type
       }
     }
 
-    // Fonction pour formater les montants avec deux décimales et une virgule
     const formatAmount = (amount) => {
       return parseFloat(amount).toLocaleString('fr-FR', {
         minimumFractionDigits: 2,
@@ -317,38 +315,78 @@ const TicketCodeGenerator = ({ ticketId }) => {
     const paymentTypeDisplay = () => {
       switch (paymentType) {
         case 'Cash':
-          return cashDetails && cashDetails.givenAmount !== undefined ? (
-            <>
-              <Typography variant="body2" fontSize="12px">
-                {`${getReadablePaymentType(paymentType)} : ${formatAmount(cashDetails.givenAmount)}`}
-              </Typography>
-              <Typography variant="body2" fontSize="12px">
-                Rendu : {formatAmount(cashDetails.changeAmount)}
-              </Typography>
-            </>
-          ) : (
-            `${getReadablePaymentType(paymentType)} : ${formatAmount(totalTTC)}`
+          return (
+            <Grid container>
+              <Grid item xs={6} textAlign={'right'}>
+                <Typography variant="body2" fontSize="12px">
+                  {`${getReadablePaymentType(paymentType)} :`}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} textAlign={'right'}>
+                <Typography variant="body2" fontSize="12px">
+                  {`${formatAmount(cashDetails.givenAmount)}`}
+                </Typography>
+              </Grid>
+              {cashDetails.changeAmount !== undefined && (
+                <>
+                  <Grid item xs={6} textAlign={'right'}>
+                    <Typography variant="body2" fontSize="12px">
+                      Rendu :
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6} textAlign={'right'}>
+                    <Typography variant="body2" fontSize="12px">
+                      {formatAmount(cashDetails.changeAmount)}
+                    </Typography>
+                  </Grid>
+                </>
+              )}
+            </Grid>
           )
         case 'Multiple':
-          return paymentDetails && paymentDetails.length > 0
-            ? paymentDetails.map((detail, index) => (
-                <Typography key={index} variant="body2" fontSize="12px">
-                  {`${getReadablePaymentType(detail.type)}: ${formatAmount(detail.amount)}`}
+          return (
+            <Grid container>
+              {paymentDetails && paymentDetails.length > 0 ? (
+                paymentDetails.map((detail, index) => (
+                  <React.Fragment key={index}>
+                    <Grid item xs={6} textAlign={'right'}>
+                      <Typography variant="body2" fontSize="12px">
+                        {getReadablePaymentType(detail.type)} :
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6} textAlign={'right'}>
+                      <Typography variant="body2" fontSize="12px">
+                        {formatAmount(detail.amount)}
+                      </Typography>
+                    </Grid>
+                  </React.Fragment>
+                ))
+              ) : (
+                <Typography variant="body2" fontSize="12px">
+                  Paiements multiples
                 </Typography>
-              ))
-            : 'Paiements multiples'
+              )}
+            </Grid>
+          )
         default:
-          return `${getReadablePaymentType(paymentType)} : ${formatAmount(totalTTC)}`
+          return (
+            <Grid container spacing={1}>
+              <Grid item xs={6} textAlign={'right'}>
+                <Typography variant="body2" fontSize="12px">
+                  {`${getReadablePaymentType(paymentType)} :`}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} textAlign={'right'}>
+                <Typography variant="body2" fontSize="12px">
+                  {formatAmount(totalTTC)}
+                </Typography>
+              </Grid>
+            </Grid>
+          )
       }
     }
 
-    return (
-      <Box>
-        <Typography variant="body2" fontSize="12px">
-          {paymentTypeDisplay()}
-        </Typography>
-      </Box>
-    )
+    return <Box sx={{ mt: 2 }}>{paymentTypeDisplay()}</Box>
   }
 
   const Remerciement = () => {
