@@ -67,6 +67,22 @@ const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
 
 const PaymentList = ({ payments, onRemove, onUpdate }) => {
   const [editingIndex, setEditingIndex] = useState(null)
+  const [editingValue, setEditingValue] = useState('')
+
+  const handleEditClick = (index, amount) => {
+    setEditingIndex(index)
+    setEditingValue(amount.toString())
+  }
+
+  const handleUpdate = (index) => {
+    const updatedPayment = {
+      ...payments[index],
+      amount: editingValue ? parseFloat(editingValue) : 0,
+    }
+    onUpdate(index, updatedPayment)
+    setEditingIndex(null)
+    setEditingValue('')
+  }
 
   return (
     <Box>
@@ -83,10 +99,9 @@ const PaymentList = ({ payments, onRemove, onUpdate }) => {
               id={`payment-input-${index}`}
               size="small"
               variant="outlined"
-              defaultValue={payment.amount.toString()}
-              onBlur={(e) => setEditingIndex(null)}
+              value={editingValue}
               autoFocus
-              onChange={(e) => {}}
+              onChange={(e) => setEditingValue(e.target.value)}
               style={{ marginRight: '10px' }}
             />
           ) : (
@@ -94,22 +109,11 @@ const PaymentList = ({ payments, onRemove, onUpdate }) => {
           )}
 
           {editingIndex === index ? (
-            <Button
-              onClick={() => {
-                const newValue = document.getElementById(
-                  `payment-input-${index}`,
-                ).value
-                onUpdate(index, {
-                  ...payment,
-                  amount: newValue ? parseFloat(newValue) : 0,
-                })
-                setEditingIndex(null)
-              }}
-            >
-              Valider
-            </Button>
+            <Button onClick={() => handleUpdate(index)}>Valider</Button>
           ) : (
-            <Button onClick={() => setEditingIndex(index)}>Modifier</Button>
+            <Button onClick={() => handleEditClick(index, payment.amount)}>
+              Modifier
+            </Button>
           )}
 
           <Button onClick={() => onRemove(index)} sx={{ ml: 1 }}>
@@ -128,12 +132,13 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
     handlePaymentTypeChange,
     handleAmountPaidChange,
     calculateChange,
-    addPaymentDetails, // Modification ici
+    addPaymentDetails,
     calculateRemainingAmount,
     multiplePayments,
     removePayment,
     updatePayment,
   } = usePaymentHandlers()
+
   const remainingAmount = calculateRemainingAmount()
 
   return (

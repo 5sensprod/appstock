@@ -31,9 +31,8 @@ export const CartProvider = ({ children }) => {
   console.log('Current paymentDetails in CartContext:', paymentDetails)
 
   const calculateTotalItem = (item) => {
-    // Assurez-vous que `puTTC` et `quantity` sont des nombres avant le calcul
     const total = parseFloat(item.puTTC) * parseInt(item.quantity, 10)
-    return isNaN(total) ? 0 : total.toFixed(2) // Retourne 0 si le calcul est NaN
+    return isNaN(total) ? 0 : total.toFixed(2)
   }
 
   const enrichCartItem = (item) => {
@@ -43,7 +42,7 @@ export const CartProvider = ({ children }) => {
     const montantTVA = calculateTax(prixHT, taxRateForItem)
     const tauxTVA = item.tva
 
-    // Utilisez `priceToUse` comme `puTTC` pour le calcul de `totalItem`
+    // Utilise `priceToUse` comme `puTTC` pour le calcul de `totalItem`
     const totalItem = calculateTotalItem({ ...item, puTTC: priceToUse })
 
     console.log(`Total Item for ${item.reference}:`, totalItem)
@@ -52,7 +51,7 @@ export const CartProvider = ({ children }) => {
     return {
       ...item,
       prixHT: prixHT.toFixed(2),
-      puTTC: priceToUse.toFixed(2), // Assurez-vous que cette valeur est correctement attribuée
+      puTTC: priceToUse.toFixed(2),
       montantTVA: montantTVA.toFixed(2),
       tauxTVA,
       remiseMajorationLabel: calculateDiscountMarkup(
@@ -63,7 +62,7 @@ export const CartProvider = ({ children }) => {
         item.prixVente,
         item.prixModifie,
       ).value,
-      totalItem, // Cette valeur devrait maintenant être correcte
+      totalItem,
     }
   }
   // Calculer les totaux HT, TTC et les taxes pour les articles du panier
@@ -174,8 +173,8 @@ export const CartProvider = ({ children }) => {
     // Réinitialiser le type de paiement à 'CB'
     setPaymentType('CB')
 
-    // setAmountPaid('')
-    // setMultiplePayments([])
+    setAmountPaid('')
+    setMultiplePayments([])
   }
   return (
     <CartContext.Provider
