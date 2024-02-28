@@ -188,15 +188,27 @@ const TicketCodeGenerator = ({ ticketId }) => {
     return (
       <Box>
         {/* En-têtes de colonne */}
-        <Box
-          display="grid"
-          gridTemplateColumns="repeat(4, 1fr)"
-          sx={{ mb: 1, fontSize: '10px', textAlign: 'center' }}
-        >
-          <Typography>Tx TVA</Typography>
-          <Typography>HT</Typography>
-          <Typography>TVA</Typography>
-          <Typography>TTC</Typography>
+        <Box display="grid" gridTemplateColumns="repeat(4, 1fr)" gap={1}>
+          <Typography
+            sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'left' }}
+          >
+            Tx TVA
+          </Typography>
+          <Typography
+            sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'left' }}
+          >
+            HT
+          </Typography>
+          <Typography
+            sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'left' }}
+          >
+            TVA
+          </Typography>
+          <Typography
+            sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'left' }}
+          >
+            TTC
+          </Typography>
         </Box>
 
         {/* Valeurs pour chaque taux de TVA */}
@@ -206,21 +218,20 @@ const TicketCodeGenerator = ({ ticketId }) => {
             display="grid"
             gridTemplateColumns="repeat(4, 1fr)"
             gap={1}
-            sx={{ mt: 2 }}
           >
             {/* Afficher le taux de TVA */}
-            <Typography sx={{ fontSize: '10px', textAlign: 'center' }}>
+            <Typography sx={{ fontSize: '10px', textAlign: 'left' }}>
               {taux.replace('Tx TVA ', '')}
             </Typography>
             {/* Afficher les totaux pour HT, TVA, et TTC */}
-            <Typography sx={{ fontSize: '10px', textAlign: 'right' }}>
-              {totals.totalHT.toFixed(2)}€
+            <Typography sx={{ fontSize: '10px', textAlign: 'left' }}>
+              {totals.totalHT.toFixed(2)}
             </Typography>
-            <Typography sx={{ fontSize: '10px', textAlign: 'right' }}>
-              {totals.montantTVA.toFixed(2)}€
+            <Typography sx={{ fontSize: '10px', textAlign: 'left' }}>
+              {totals.montantTVA.toFixed(2)}
             </Typography>
-            <Typography sx={{ fontSize: '10px', textAlign: 'right' }}>
-              {totals.totalTTC.toFixed(2)}€
+            <Typography sx={{ fontSize: '10px', textAlign: 'left' }}>
+              {totals.totalTTC.toFixed(2)}
             </Typography>
           </Box>
         ))}
@@ -232,24 +243,18 @@ const TicketCodeGenerator = ({ ticketId }) => {
           sx={{ mt: 2, borderTop: '1px solid black', pt: 1 }}
         >
           <Typography
-            sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'center' }}
+            sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'left' }}
           >
             TOTAUX
           </Typography>
-          <Typography
-            sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'right' }}
-          >
-            {totalHT.toFixed(2)}€
+          <Typography sx={{ fontSize: '10px', textAlign: 'left' }}>
+            {totalHT.toFixed(2)}
           </Typography>
-          <Typography
-            sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'right' }}
-          >
-            {totalTVA.toFixed(2)}€
+          <Typography sx={{ fontSize: '10px', textAlign: 'left' }}>
+            {totalTVA.toFixed(2)}
           </Typography>
-          <Typography
-            sx={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'right' }}
-          >
-            {totalTTC.toFixed(2)}€
+          <Typography sx={{ fontSize: '10px', textAlign: 'left' }}>
+            {totalTTC.toFixed(2)}
           </Typography>
         </Box>
       </Box>
@@ -279,16 +284,15 @@ const TicketCodeGenerator = ({ ticketId }) => {
     paymentType,
     cashDetails = {},
     paymentDetails = [],
+    totalTTC,
   }) => {
-    const paymentTypeDisplay = () => {
-      switch (paymentType) {
+    // Fonction pour convertir les identifiants de type de paiement en texte lisible
+    const getReadablePaymentType = (type) => {
+      switch (type) {
         case 'CB':
           return 'Carte Bancaire'
         case 'Cash':
-          // Utilise cashDetails seulement s'il contient les clés attendues
-          return cashDetails && cashDetails.givenAmount !== undefined
-            ? `Espèces - Donné: ${cashDetails.givenAmount}€, Monnaie: ${cashDetails.changeAmount}€`
-            : 'Espèces'
+          return 'Espèces'
         case 'Cheque':
           return 'Chèque'
         case 'ChequeCadeau':
@@ -297,31 +301,52 @@ const TicketCodeGenerator = ({ ticketId }) => {
           return 'Virement'
         case 'Avoir':
           return 'Avoir'
+        default:
+          return type // Retourne le type tel quel si non reconnu
+      }
+    }
+
+    // Fonction pour formater les montants avec deux décimales et une virgule
+    const formatAmount = (amount) => {
+      return parseFloat(amount).toLocaleString('fr-FR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    }
+
+    const paymentTypeDisplay = () => {
+      switch (paymentType) {
+        case 'Cash':
+          return cashDetails && cashDetails.givenAmount !== undefined ? (
+            <>
+              <Typography variant="body2" fontSize="12px">
+                {`${getReadablePaymentType(paymentType)} : ${formatAmount(cashDetails.givenAmount)}`}
+              </Typography>
+              <Typography variant="body2" fontSize="12px">
+                Rendu : {formatAmount(cashDetails.changeAmount)}
+              </Typography>
+            </>
+          ) : (
+            `${getReadablePaymentType(paymentType)} : ${formatAmount(totalTTC)}`
+          )
         case 'Multiple':
-          // Affiche les détails des paiements multiples seulement s'ils sont disponibles
           return paymentDetails && paymentDetails.length > 0
             ? paymentDetails.map((detail, index) => (
-                <div key={index}>{`${detail.type}: ${detail.amount}€`}</div>
+                <Typography key={index} variant="body2" fontSize="12px">
+                  {`${getReadablePaymentType(detail.type)}: ${formatAmount(detail.amount)}`}
+                </Typography>
               ))
             : 'Paiements multiples'
         default:
-          return paymentType
+          return `${getReadablePaymentType(paymentType)} : ${formatAmount(totalTTC)}`
       }
     }
+
     return (
-      <Box sx={{ mt: 2 }}>
-        {paymentType !== 'Multiple' ? (
-          <Typography variant="body2" component="p">
-            Type de paiement : {paymentTypeDisplay()}
-          </Typography>
-        ) : (
-          <Box>
-            <Typography variant="body2" component="p">
-              Types de paiement :
-            </Typography>
-            {paymentTypeDisplay()}
-          </Box>
-        )}
+      <Box>
+        <Typography variant="body2" fontSize="12px">
+          {paymentTypeDisplay()}
+        </Typography>
       </Box>
     )
   }
@@ -388,6 +413,7 @@ const TicketCodeGenerator = ({ ticketId }) => {
           paymentType={ticket.paymentType}
           cashDetails={ticket.cashDetails}
           paymentDetails={ticket.paymentDetails}
+          totalTTC={ticket.totalTTC}
         />
         <DashedLine />
         <Remerciement />
