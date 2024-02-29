@@ -62,7 +62,7 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
   }
 
   return (
-    <Box>
+    <Box p={'10px'}>
       <Box
         id="printArea"
         sx={{
@@ -80,7 +80,6 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
             display: 'flex',
             alignItems: 'start',
             justifyContent: 'space-between',
-            padding: '10px',
           }}
         >
           <HeaderCompany

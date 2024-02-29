@@ -21,17 +21,17 @@ const HeaderPdf = ({ data, title }) => {
 
   return (
     <>
-      <Box sx={{ textAlign: 'center', mt: 1 }}>
-        <Typography variant="body1" fontSize={14} sx={{ fontWeight: 'bold' }}>
-          {title}
-        </Typography>
-        <Typography variant="body1" fontSize={10}>
-          Numéro : {data.number}
-        </Typography>
-        <Typography variant="body1" fontSize={10}>
-          Le {formatDate(data.date)}
-        </Typography>
-      </Box>
+      {/* <Box sx={{ textAlign: 'center', mt: 1 }}> */}
+      <Typography variant="body1" fontSize={14} sx={{ fontWeight: 'bold' }}>
+        {title}
+      </Typography>
+      <Typography variant="body1" fontSize={10}>
+        Numéro : {data.number}
+      </Typography>
+      <Typography variant="body1" fontSize={10}>
+        Le {formatDate(data.date)}
+      </Typography>
+      {/* </Box> */}
     </>
   )
 }
