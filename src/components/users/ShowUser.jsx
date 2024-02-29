@@ -22,6 +22,9 @@ const ShowUser = ({ userInfo }) => {
       <Typography variant="subtitle1" component="h2">
         {userInfo.taxId}
       </Typography>
+      <Typography variant="subtitle1" component="h2">
+        {userInfo.rcs}
+      </Typography>
     </div>
   )
 }

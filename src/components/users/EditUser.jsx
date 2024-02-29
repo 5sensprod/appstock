@@ -59,6 +59,15 @@ const EditUser = ({ userInfo, onChange, onSubmit, onCancel }) => {
           fullWidth
           variant="outlined"
         />
+        <TextField
+          label="RCS"
+          type="text"
+          name="rcs"
+          value={userInfo.rcs || ''}
+          onChange={onChange}
+          fullWidth
+          variant="outlined"
+        />
       </Box>
       <Button variant="contained" type="submit" sx={{ mr: 2 }}>
         Enregistrer
