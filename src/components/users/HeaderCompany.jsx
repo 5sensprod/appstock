@@ -18,25 +18,34 @@ const HeaderCompany = ({
 }) => {
   const { companyInfo } = useContext(CompanyInfoContext)
 
-  // Fonction pour rendre chaque champ avec le style correspondant
-  const renderField = (field, content, customStyle) => {
-    if (!visibleFields[field]) return null // Ne pas afficher si non visible
-
-    return (
-      <Typography variant="body2" sx={customStyle}>
-        {content}
-      </Typography>
-    )
-  }
+  const bodyFields = ['address', 'city', 'phone', 'email']
 
   return (
     <Box>
-      {renderField('title', companyInfo?.name.toUpperCase(), styles.title)}
-      {['address', 'city', 'phone', 'email'].map((info) =>
-        renderField('body', companyInfo[info], styles.body),
+      {visibleFields.title && companyInfo?.name && (
+        <Typography variant="body2" sx={{ ...styles.title }}>
+          {companyInfo.name.toUpperCase()}
+        </Typography>
       )}
-      {renderField('taxId', `${companyInfo?.taxId}`, styles.taxId)}
-      {renderField('rcs', `${companyInfo?.rcs}`, styles.rcs)}
+      {visibleFields.body &&
+        bodyFields.map(
+          (info) =>
+            companyInfo[info] && (
+              <Typography key={info} variant="body2" sx={{ ...styles.body }}>
+                {`${info.charAt(0).toUpperCase() + info.slice(1)}: ${companyInfo[info]}`}
+              </Typography>
+            ),
+        )}
+      {visibleFields.taxId && companyInfo?.taxId && (
+        <Typography variant="body2" sx={{ ...styles.taxId }}>
+          {`Tax ID: ${companyInfo.taxId}`}
+        </Typography>
+      )}
+      {visibleFields.rcs && companyInfo?.rcs && (
+        <Typography variant="body2" sx={{ ...styles.rcs }}>
+          {`RCS: ${companyInfo.rcs}`}
+        </Typography>
+      )}
     </Box>
   )
 }
