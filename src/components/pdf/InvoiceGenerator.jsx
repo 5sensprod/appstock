@@ -68,13 +68,10 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
           width: '720px',
           height: '400px',
           overflowY: 'auto',
-          textAlign: 'center',
           backgroundColor: '#fff',
           border: '1px solid #ddd',
-          // boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           padding: '15px',
           margin: '20px auto',
-          // borderRadius: '5px',
         }}
       >
         <HeaderCompany />
