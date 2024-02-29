@@ -39,21 +39,42 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
     })
 
     const imgWidth = 210 // Largeur de la page A4
-    const imgHeight = (canvas.height * imgWidth) / canvas.width // Calculer la hauteur tout en conservant le ratio
-    let heightLeft = imgHeight
-
-    const pageHeight = 297 // Hauteur de la page A4
+    const imgHeight = (canvas.height * imgWidth) / canvas.width // Hauteur basée sur le ratio de l'image
     let position = 0
+
+    let heightLeft = imgHeight
+    const pageHeight = 297 // Hauteur de la page A4
 
     pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
     heightLeft -= pageHeight
 
+    let pageNumber = 1
+    let totalPages = Math.ceil(imgHeight / pageHeight)
+
+    // Ajout du pied de page pour chaque page
     while (heightLeft >= 0) {
-      position = heightLeft - imgHeight // Mettre à jour la position pour la prochaine partie de l'image
+      pageNumber++
       pdf.addPage()
+      position = heightLeft - imgHeight
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
       heightLeft -= pageHeight
     }
+
+    // Fonction pour ajouter un pied de page sur toutes les pages
+    const addFooter = () => {
+      for (let i = 1; i <= pageNumber; i++) {
+        pdf.setPage(i)
+        pdf.setFontSize(10)
+        pdf.text(
+          `${invoice.number} - Page ${i}/${totalPages}`,
+          imgWidth - 20,
+          pageHeight - 10,
+          'right',
+        )
+      }
+    }
+
+    addFooter()
 
     pdf.save(`${invoice.number}-invoice.pdf`)
 
@@ -71,7 +92,6 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
           height: '400px',
           overflowY: 'auto',
           backgroundColor: '#fff',
-          border: '1px solid #ddd',
           padding: '15px',
           margin: '20px auto',
         }}
