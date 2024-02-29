@@ -99,7 +99,13 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
           <Logo />
         </Box>
         <DashedLine />
-        <HeaderPdf data={invoice} title="Facture" />
+        <HeaderPdf
+          data={invoice}
+          title="Facture"
+          titleFontSize="25px"
+          numberFontSize="14px"
+          dateFontSize="14px"
+        />
         <DashedLine />
         <BodyTicket data={invoice} />
         <DashedLine />

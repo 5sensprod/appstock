@@ -1,8 +1,13 @@
 import React from 'react'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
+import { Typography } from '@mui/material'
 
-const HeaderPdf = ({ data, title }) => {
+const HeaderPdf = ({
+  data,
+  title,
+  titleFontSize = '14px',
+  numberFontSize = '10px',
+  dateFontSize = '10px',
+}) => {
   // Fonction pour formater la date
   const formatDate = (dateString) => {
     const options = {
@@ -21,17 +26,18 @@ const HeaderPdf = ({ data, title }) => {
 
   return (
     <>
-      {/* <Box sx={{ textAlign: 'center', mt: 1 }}> */}
-      <Typography variant="body1" fontSize={14} sx={{ fontWeight: 'bold' }}>
+      <Typography
+        variant="body1"
+        sx={{ fontSize: titleFontSize, fontWeight: 'bold' }}
+      >
         {title}
       </Typography>
-      <Typography variant="body1" fontSize={10}>
+      <Typography variant="body1" sx={{ fontSize: numberFontSize }}>
         Numéro : {data.number}
       </Typography>
-      <Typography variant="body1" fontSize={10}>
+      <Typography variant="body1" sx={{ fontSize: dateFontSize }}>
         Le {formatDate(data.date)}
       </Typography>
-      {/* </Box> */}
     </>
   )
 }
