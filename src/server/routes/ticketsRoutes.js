@@ -70,8 +70,9 @@ module.exports = (db) => {
           totalHT: parseFloat(req.body.totalHT),
           totalTVA: parseFloat(req.body.totalTVA),
           totalTTC: parseFloat(req.body.totalTTC),
-          number: newTicketNumber, // Utilisez 'number' au lieu de 'ticketNumber'
+          number: newTicketNumber,
           date: new Date().toISOString(),
+          pdfGenerationCount: 0,
         }
 
         db.tickets.insert(newTicket, (err, ticket) => {
