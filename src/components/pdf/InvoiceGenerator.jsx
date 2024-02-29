@@ -13,6 +13,7 @@ import PaymentType from './PaymentType'
 import BodyTicket from './BodyTicket'
 import TotauxTVA from './TotauxTVA'
 import TotalTTC from './TotalTTC'
+import Logo from '../ui/Logo'
 
 const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
   const { invoices } = useInvoices()
@@ -74,20 +75,30 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
           margin: '20px auto',
         }}
       >
-        <HeaderCompany
-          styles={{
-            title: { fontSize: '15px', fontWeight: 'bold' },
-            body: { fontSize: '12px', fontWeight: 'normal' },
-            taxId: { fontSize: '12px', fontWeight: 'bold' },
-            rcs: { fontSize: '10px', fontWeight: 'normal' },
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'start',
+            justifyContent: 'space-between',
+            padding: '10px',
           }}
-          visibleFields={{
-            title: true,
-            body: true,
-            taxId: true,
-            rcs: true,
-          }}
-        />
+        >
+          <HeaderCompany
+            styles={{
+              title: { fontSize: '15px', fontWeight: 'bold' },
+              body: { fontSize: '12px', fontWeight: 'normal' },
+              taxId: { fontSize: '12px', fontWeight: 'bold' },
+              rcs: { fontSize: '10px', fontWeight: 'normal' },
+            }}
+            visibleFields={{
+              title: true,
+              body: true,
+              taxId: true,
+              rcs: true,
+            }}
+          />
+          <Logo />
+        </Box>
         <DashedLine />
         <HeaderPdf data={invoice} title="Facture" />
         <DashedLine />
