@@ -14,7 +14,7 @@ import BodyTicket from './BodyTicket'
 import TotauxTVA from './TotauxTVA'
 import TotalTTC from './TotalTTC'
 
-const InvoiceGenerator = ({ invoiceId }) => {
+const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
   const { invoices } = useInvoices()
 
   const invoice = invoices.find((invoice) => invoice._id === invoiceId)
@@ -25,6 +25,9 @@ const InvoiceGenerator = ({ invoiceId }) => {
 
   const generatePDF = async () => {
     const input = document.getElementById('printArea')
+
+    input.style.height = 'auto'
+
     const canvas = await html2canvas(input)
     const imgData = canvas.toDataURL('image/png')
 
@@ -41,6 +44,10 @@ const InvoiceGenerator = ({ invoiceId }) => {
     // Assurez-vous que la largeur et la hauteur de l'image ajoutée correspondent au format du PDF
     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
     pdf.save(`${invoice.number}-invoice.pdf`)
+
+    if (onPdfGenerated) {
+      onPdfGenerated()
+    }
   }
 
   return (
@@ -49,14 +56,15 @@ const InvoiceGenerator = ({ invoiceId }) => {
         id="printArea"
         sx={{
           width: '260px',
-          minHeight: '400px',
+          height: '400px',
+          overflowY: 'auto',
           textAlign: 'center',
-          backgroundColor: '#f9f9f9',
+          backgroundColor: '#fff',
           border: '1px solid #ddd',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          // boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           padding: '15px',
           margin: '20px auto',
-          borderRadius: '5px',
+          // borderRadius: '5px',
         }}
       >
         <HeaderCompany />
@@ -79,9 +87,11 @@ const InvoiceGenerator = ({ invoiceId }) => {
         <Remerciement />
         <QRCodeCanvas value={invoice.number} size={50} />
       </Box>
-      <Button variant="contained" onClick={generatePDF}>
-        Télécharger Facture PDF
-      </Button>
+      <Box textAlign={'center'}>
+        <Button variant="contained" onClick={generatePDF}>
+          Télécharger Ticket PDF
+        </Button>
+      </Box>
     </Box>
   )
 }

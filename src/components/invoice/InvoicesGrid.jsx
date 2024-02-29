@@ -85,7 +85,10 @@ const InvoicesGrid = () => {
             aria-describedby="pdf-modal-description"
           >
             <Box sx={modalStyle}>
-              <InvoiceGenerator invoiceId={selectedInvoiceId} />
+              <InvoiceGenerator
+                invoiceId={selectedInvoiceId}
+                onPdfGenerated={() => setIsPdfModalOpen(false)}
+              />
             </Box>
           </Modal>
         </>

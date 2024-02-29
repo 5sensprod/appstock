@@ -83,7 +83,10 @@ const TicketsGrid = () => {
             aria-describedby="pdf-modal-description"
           >
             <Box sx={modalStyle}>
-              <TicketGenerator ticketId={selectedTicketId} />
+              <TicketGenerator
+                ticketId={selectedTicketId}
+                onPdfGenerated={() => setIsPdfModalOpen(false)}
+              />
             </Box>
           </Modal>
         </>

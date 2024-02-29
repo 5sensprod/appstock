@@ -14,7 +14,7 @@ import BodyTicket from './BodyTicket'
 import TotauxTVA from './TotauxTVA'
 import TotalTTC from './TotalTTC'
 
-const TicketGenerator = ({ ticketId }) => {
+const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
   const { tickets } = useInvoices()
 
   const ticket = tickets.find((ticket) => ticket._id === ticketId)
@@ -25,6 +25,9 @@ const TicketGenerator = ({ ticketId }) => {
 
   const generatePDF = async () => {
     const input = document.getElementById('printArea')
+
+    input.style.height = 'auto'
+
     const canvas = await html2canvas(input)
     const imgData = canvas.toDataURL('image/png')
 
@@ -41,6 +44,10 @@ const TicketGenerator = ({ ticketId }) => {
     // Assurez-vous que la largeur et la hauteur de l'image ajoutée correspondent au format du PDF
     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
     pdf.save(`${ticket.number}-ticket.pdf`)
+
+    if (onPdfGenerated) {
+      onPdfGenerated()
+    }
   }
 
   return (
@@ -49,14 +56,13 @@ const TicketGenerator = ({ ticketId }) => {
         id="printArea"
         sx={{
           width: '260px',
-          minHeight: '400px',
+          height: '400px',
+          overflowY: 'auto',
           textAlign: 'center',
-          backgroundColor: '#f9f9f9',
+          backgroundColor: '#fff',
           border: '1px solid #ddd',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           padding: '15px',
           margin: '20px auto',
-          borderRadius: '5px',
         }}
       >
         <HeaderCompany />
@@ -79,9 +85,11 @@ const TicketGenerator = ({ ticketId }) => {
         <Remerciement />
         <QRCodeCanvas value={ticket.number} size={50} />
       </Box>
-      <Button variant="contained" onClick={generatePDF}>
-        Télécharger Ticket PDF
-      </Button>
+      <Box textAlign={'center'}>
+        <Button variant="contained" onClick={generatePDF}>
+          Télécharger Ticket PDF
+        </Button>
+      </Box>
     </Box>
   )
 }
