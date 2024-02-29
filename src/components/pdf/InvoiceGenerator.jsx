@@ -134,9 +134,9 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
           </Box>
         </Box>
         <DashedLine />
-        <BodyTicket data={invoice} />
+        <BodyTicket data={invoice} fontSize="14px" />
         <DashedLine />
-        <TotalTTC totalTTC={invoice.totalTTC} />
+        <TotalTTC totalTTC={invoice.totalTTC} fontSize="16px" />
         <DashedLine />
         <TotauxTVA data={invoice} />
         <DashedLine />
