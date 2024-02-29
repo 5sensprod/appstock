@@ -87,7 +87,7 @@ const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
       </Box>
       <Box textAlign={'center'}>
         <Button variant="contained" onClick={generatePDF}>
-          Télécharger Ticket PDF
+          Télécharger Ticket
         </Button>
       </Box>
     </Box>

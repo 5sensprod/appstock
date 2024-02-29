@@ -25,24 +25,34 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
 
   const generatePDF = async () => {
     const input = document.getElementById('printArea')
-
     input.style.height = 'auto'
 
     const canvas = await html2canvas(input)
     const imgData = canvas.toDataURL('image/png')
 
-    const imgWidth = 80 // Largeur fixe en mm pour un ticket de caisse
-    // Calculer la nouvelle hauteur basée sur le ratio de l'image
-    const imgHeight = canvas.height * 0.264583 // Convertir la hauteur en mm (1px = 0.264583 mm)
-
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: [imgWidth, imgHeight],
+      format: 'a4',
     })
 
-    // Assurez-vous que la largeur et la hauteur de l'image ajoutée correspondent au format du PDF
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
+    const imgWidth = 210 // Largeur de la page A4
+    const imgHeight = (canvas.height * imgWidth) / canvas.width // Calculer la hauteur tout en conservant le ratio
+    let heightLeft = imgHeight
+
+    const pageHeight = 297 // Hauteur de la page A4
+    let position = 0
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+    heightLeft -= pageHeight
+
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight // Mettre à jour la position pour la prochaine partie de l'image
+      pdf.addPage()
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+      heightLeft -= pageHeight
+    }
+
     pdf.save(`${invoice.number}-invoice.pdf`)
 
     if (onPdfGenerated) {
@@ -55,7 +65,7 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
       <Box
         id="printArea"
         sx={{
-          width: '260px',
+          width: '720px',
           height: '400px',
           overflowY: 'auto',
           textAlign: 'center',
@@ -89,7 +99,7 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
       </Box>
       <Box textAlign={'center'}>
         <Button variant="contained" onClick={generatePDF}>
-          Télécharger Ticket PDF
+          Télécharger Facture
         </Button>
       </Box>
     </Box>
