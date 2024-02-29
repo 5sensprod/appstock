@@ -14,6 +14,7 @@ export const QuoteProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [customerName, setCustomerName] = useState('')
+  const [customerAdress, setCustomerAdress] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
 
@@ -153,6 +154,8 @@ export const QuoteProvider = ({ children }) => {
         error,
         customerName,
         setCustomerName,
+        customerAdress,
+        setCustomerAdress,
         customerEmail,
         setCustomerEmail,
         customerPhone,

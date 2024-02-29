@@ -41,6 +41,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
 
   const {
     customerName: quoteCustomerName,
+    customerAdress: quoteCustomerAdress,
     customerEmail: quoteCustomerEmail,
     customerPhone: quoteCustomerPhone,
     isActiveQuote,
@@ -48,6 +49,9 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
   } = useQuotes()
 
   const [customerName, setCustomerName] = useState(quoteCustomerName || '')
+  const [customerAdress, setCustomerAdress] = useState(
+    quoteCustomerAdress || '',
+  )
   const [customerEmail, setCustomerEmail] = useState(quoteCustomerEmail || '')
   const [customerPhone, setCustomerPhone] = useState(quoteCustomerPhone || '')
 
@@ -129,7 +133,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     },
     {
       field: 'remiseMajoration',
-      headerName: hasMajoration ? 'Majoration' : 'Remise', // Choix dynamique basé sur la présence de majorations
+      headerName: hasMajoration ? 'Majoration' : 'Remise',
       width: 180,
       sortable: false,
       flex: 1,
@@ -202,6 +206,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
       if (showCustomerFields) {
         const customerInfo = {
           name: customerName,
+          adress: customerAdress,
           email: customerEmail,
           phone: customerPhone,
         }
@@ -274,16 +279,27 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
         />
         {showCustomerFields && (
           <>
-            {!customerName && !customerEmail && !customerPhone && (
-              <Typography variant="body2" mt={2}>
-                Veuillez renseigner au moins un des champs suivants.
-              </Typography>
-            )}
+            {!customerName &&
+              !customerEmail &&
+              !customerPhone &&
+              !customerAdress && (
+                <Typography variant="body2" mt={2}>
+                  Veuillez renseigner au moins un des champs suivants.
+                </Typography>
+              )}
             <TextField
               label="Nom du client"
               size="small"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Adresse du client"
+              size="small"
+              value={customerAdress}
+              onChange={(e) => setCustomerAdress(e.target.value)}
               fullWidth
               margin="normal"
             />

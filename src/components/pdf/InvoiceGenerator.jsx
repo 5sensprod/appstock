@@ -14,6 +14,7 @@ import BodyTicket from './BodyTicket'
 import TotauxTVA from './TotauxTVA'
 import TotalTTC from './TotalTTC'
 import Logo from '../ui/Logo'
+import CustomerInfo from '../ui/CustomerInfo'
 
 const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
   const { invoices } = useInvoices()
@@ -99,6 +100,7 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
           <Logo />
         </Box>
         <DashedLine />
+        <CustomerInfo customerInfo={invoice.customerInfo} />
         <HeaderPdf
           data={invoice}
           title="Facture"
