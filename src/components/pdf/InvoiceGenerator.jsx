@@ -100,14 +100,16 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
           />
           <Logo />
         </Box>
-        {/* <DashedLine /> */}
+
         <Box
+          my={4}
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'start',
             width: '100%',
           }}
+          mb={2}
         >
           <Box
             sx={{
@@ -133,20 +135,29 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
             <CustomerInfo customerInfo={invoice.customerInfo} />
           </Box>
         </Box>
-        <DashedLine />
-        <BodyTicket data={invoice} fontSize="14px" />
-        <DashedLine />
-        <TotalTTC totalTTC={invoice.totalTTC} fontSize="16px" />
-        <DashedLine />
-        <TotauxTVA data={invoice} />
-        <DashedLine />
-        <PaymentType
-          paymentType={invoice.paymentType}
-          cashDetails={invoice.cashDetails}
-          paymentDetails={invoice.paymentDetails}
-          totalTTC={invoice.totalTTC}
-        />
-        <DashedLine />
+        <Box p={2}>
+          <DashedLine />
+          <BodyTicket data={invoice} fontSize="14px" />
+          <DashedLine />
+          <Box>
+            <TotalTTC totalTTC={invoice.totalTTC} fontSize="16px" />
+          </Box>
+          <DashedLine />
+          <Box mt={4}>
+            <TotauxTVA data={invoice} fontSize="14px" />
+          </Box>
+          <DashedLine />{' '}
+          <Box my={4}>
+            <PaymentType
+              paymentType={invoice.paymentType}
+              cashDetails={invoice.cashDetails}
+              paymentDetails={invoice.paymentDetails}
+              totalTTC={invoice.totalTTC}
+              fontSize="14px"
+            />
+          </Box>
+        </Box>
+
         <Remerciement />
         <QRCodeCanvas value={invoice.number} size={50} />
       </Box>

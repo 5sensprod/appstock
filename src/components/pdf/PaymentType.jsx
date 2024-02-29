@@ -8,6 +8,7 @@ const PaymentType = ({
   cashDetails = {},
   paymentDetails = [],
   totalTTC,
+  fontSize = '12px', // Ajout de fontSize comme prop avec une valeur par défaut
 }) => {
   const getReadablePaymentType = (type) => {
     switch (type) {
@@ -41,24 +42,30 @@ const PaymentType = ({
         return (
           <Grid container>
             <Grid item xs={6} textAlign={'right'}>
-              <Typography variant="body2" fontSize="12px">
+              <Typography variant="body2" sx={{ fontSize, fontWeight: 'bold' }}>
                 {`${getReadablePaymentType(paymentType)} :`}
               </Typography>
             </Grid>
             <Grid item xs={6} textAlign={'right'}>
-              <Typography variant="body2" fontSize="12px">
+              <Typography variant="body2" sx={{ fontSize, fontWeight: 'bold' }}>
                 {`${formatAmount(cashDetails.givenAmount)}`}
               </Typography>
             </Grid>
             {cashDetails.changeAmount !== undefined && (
               <>
                 <Grid item xs={6} textAlign={'right'}>
-                  <Typography variant="body2" fontSize="12px">
+                  <Typography
+                    variant="body2"
+                    sx={{ fontSize, fontWeight: 'bold' }}
+                  >
                     Rendu :
                   </Typography>
                 </Grid>
                 <Grid item xs={6} textAlign={'right'}>
-                  <Typography variant="body2" fontSize="12px">
+                  <Typography
+                    variant="body2"
+                    sx={{ fontSize, fontWeight: 'bold' }}
+                  >
                     {formatAmount(cashDetails.changeAmount)}
                   </Typography>
                 </Grid>
@@ -73,19 +80,25 @@ const PaymentType = ({
               paymentDetails.map((detail, index) => (
                 <React.Fragment key={index}>
                   <Grid item xs={6} textAlign={'right'}>
-                    <Typography variant="body2" fontSize="12px">
+                    <Typography
+                      variant="body2"
+                      sx={{ fontSize, fontWeight: 'bold' }}
+                    >
                       {getReadablePaymentType(detail.type)} :
                     </Typography>
                   </Grid>
                   <Grid item xs={6} textAlign={'right'}>
-                    <Typography variant="body2" fontSize="12px">
+                    <Typography
+                      variant="body2"
+                      sx={{ fontSize, fontWeight: 'bold' }}
+                    >
                       {formatAmount(detail.amount)}
                     </Typography>
                   </Grid>
                 </React.Fragment>
               ))
             ) : (
-              <Typography variant="body2" fontSize="12px">
+              <Typography variant="body2" sx={{ fontSize, fontWeight: 'bold' }}>
                 Paiements multiples
               </Typography>
             )}
@@ -94,13 +107,13 @@ const PaymentType = ({
       default:
         return (
           <Grid container>
-            <Grid item xs={6} textAlign={'right'}>
-              <Typography variant="body2" fontSize="12px">
+            <Grid item xs={6} textAlign={'left'}>
+              <Typography variant="body2" sx={{ fontSize, fontWeight: 'bold' }}>
                 {`${getReadablePaymentType(paymentType)} :`}
               </Typography>
             </Grid>
             <Grid item xs={6} textAlign={'right'}>
-              <Typography variant="body2" fontSize="12px">
+              <Typography variant="body2" sx={{ fontSize, fontWeight: 'bold' }}>
                 {formatAmount(totalTTC)}
               </Typography>
             </Grid>
