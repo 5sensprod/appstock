@@ -10,7 +10,6 @@ const InvoicesGrid = () => {
   const { invoices, loading } = useInvoices()
   const [rows, setRows] = useState([])
   const [selectedInvoiceId, setSelectedInvoiceId] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false)
 
