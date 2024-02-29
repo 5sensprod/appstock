@@ -32,13 +32,13 @@ const HeaderCompany = ({
           (info) =>
             companyInfo[info] && (
               <Typography key={info} variant="body2" sx={{ ...styles.body }}>
-                {`${info.charAt(0).toUpperCase() + info.slice(1)}: ${companyInfo[info]}`}
+                {`${companyInfo[info]}`}
               </Typography>
             ),
         )}
       {visibleFields.taxId && companyInfo?.taxId && (
         <Typography variant="body2" sx={{ ...styles.taxId }}>
-          {`Tax ID: ${companyInfo.taxId}`}
+          {`${companyInfo.taxId}`}
         </Typography>
       )}
       {visibleFields.rcs && companyInfo?.rcs && (
