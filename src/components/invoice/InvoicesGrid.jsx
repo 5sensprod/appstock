@@ -1,28 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import CustomDataGrid from '../ui/CustomDataGrid'
-import DetailsModal from '../ui/DetailsModal'
 import { useInvoices } from '../../contexts/InvoicesContext'
+import DetailsModal from '../ui/DetailsModal'
+import Modal from '@mui/material/Modal'
+import InvoiceGenerator from '../pdf/InvoiceGenerator'
+import { Box } from '@mui/material'
 
 const InvoicesGrid = () => {
   const { invoices, loading } = useInvoices()
   const [rows, setRows] = useState([])
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedInvoiceId, setSelectedInvoiceId] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false)
 
   const handleViewDetails = (invoiceId) => {
     setSelectedInvoiceId(invoiceId)
-    setIsModalOpen(true)
+    setIsDetailsModalOpen(true)
+    setIsPdfModalOpen(false)
   }
 
-  const handlePdfIconClick = (ticket) => {
-    const doc = new jsPDF()
-
-    // Ajoutez ici le code pour générer le template PDF basé sur `ticket`
-    doc.text('Détails du ticket', 10, 10)
-    // Utilisez `doc.autoTable` si nécessaire pour ajouter des tableaux...
-
-    // Enfin, ouvrez le PDF dans un nouvel onglet
-    doc.output('dataurlnewwindow')
+  const handlePdfIconClick = (invoice) => {
+    setSelectedInvoiceId(invoice.id)
+    setIsPdfModalOpen(true)
+    setIsDetailsModalOpen(false)
   }
 
   useEffect(() => {
@@ -48,6 +49,18 @@ const InvoicesGrid = () => {
     setRows(formattedRows)
   }, [invoices])
 
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  }
+
   return (
     <>
       <CustomDataGrid
@@ -58,12 +71,25 @@ const InvoicesGrid = () => {
         onPdfIconClick={handlePdfIconClick}
       />
       {selectedInvoiceId && (
-        <DetailsModal
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          itemId={selectedInvoiceId}
-          itemType="invoice"
-        />
+        <>
+          <DetailsModal
+            open={isDetailsModalOpen}
+            onClose={() => setIsDetailsModalOpen(false)}
+            itemId={selectedInvoiceId}
+            itemType="invoice"
+          />
+          {/* Modale pour la génération du PDF */}
+          <Modal
+            open={isPdfModalOpen}
+            onClose={() => setIsPdfModalOpen(false)}
+            aria-labelledby="pdf-modal-title"
+            aria-describedby="pdf-modal-description"
+          >
+            <Box sx={modalStyle}>
+              <InvoiceGenerator invoiceId={selectedInvoiceId} />
+            </Box>
+          </Modal>
+        </>
       )}
     </>
   )
