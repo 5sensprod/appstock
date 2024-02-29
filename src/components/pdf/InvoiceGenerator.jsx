@@ -77,6 +77,7 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
         }}
       >
         <Box
+          mb={2}
           sx={{
             display: 'flex',
             alignItems: 'start',
@@ -99,15 +100,39 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
           />
           <Logo />
         </Box>
-        <DashedLine />
-        <CustomerInfo customerInfo={invoice.customerInfo} />
-        <HeaderPdf
-          data={invoice}
-          title="Facture"
-          titleFontSize="25px"
-          numberFontSize="14px"
-          dateFontSize="14px"
-        />
+        {/* <DashedLine /> */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'start',
+            width: '100%',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              width: '50%',
+            }}
+          >
+            <HeaderPdf
+              data={invoice}
+              title="Facture"
+              titleFontSize="25px"
+              numberFontSize="14px"
+              dateFontSize="14px"
+            />
+          </Box>
+          <Box
+            sx={{
+              width: '50%',
+            }}
+          >
+            <CustomerInfo customerInfo={invoice.customerInfo} />
+          </Box>
+        </Box>
         <DashedLine />
         <BodyTicket data={invoice} />
         <DashedLine />
