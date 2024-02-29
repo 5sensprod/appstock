@@ -3,7 +3,7 @@ import CustomDataGrid from '../ui/CustomDataGrid'
 import { useInvoices } from '../../contexts/InvoicesContext'
 import DetailsModal from '../ui/DetailsModal'
 import Modal from '@mui/material/Modal'
-import TicketCodeGenerator from './TicketCodeGenerator'
+import TicketGenerator from '../pdf/TicketGenerator'
 import { Box } from '@mui/material'
 
 const TicketsGrid = () => {
@@ -83,7 +83,7 @@ const TicketsGrid = () => {
             aria-describedby="pdf-modal-description"
           >
             <Box sx={modalStyle}>
-              <TicketCodeGenerator ticketId={selectedTicketId} />
+              <TicketGenerator ticketId={selectedTicketId} />
             </Box>
           </Modal>
         </>

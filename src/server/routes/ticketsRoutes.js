@@ -2,8 +2,6 @@ const express = require('express')
 const router = express.Router()
 
 module.exports = (db) => {
-  // Assurez-vous d'avoir une collection `tickets` dans votre objet `db`
-
   // Obtenir tous les tickets
   router.get('/', (req, res) => {
     db.tickets.find({}, (err, tickets) => {
@@ -19,7 +17,7 @@ module.exports = (db) => {
   router.post('/', (req, res) => {
     db.tickets
       .find({})
-      .sort({ number: -1 }) // Modifié pour trier par la nouvelle clé 'number'
+      .sort({ number: -1 })
       .limit(1)
       .exec((err, lastTicket) => {
         if (err) {
@@ -33,8 +31,8 @@ module.exports = (db) => {
 
         // Vérifier si le dernier ticket a été émis aujourd'hui
         if (lastTicket && lastTicket.length > 0) {
-          const lastDate = lastTicket[0].date.split('T')[0] // Extraire la date du dernier ticket
-          const currentDate = new Date().toISOString().split('T')[0] // Date actuelle au format YYYY-MM-DD
+          const lastDate = lastTicket[0].date.split('T')[0]
+          const currentDate = new Date().toISOString().split('T')[0]
 
           // Comparer les dates
           if (lastDate === currentDate) {
