@@ -3,7 +3,7 @@ import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import { Box, IconButton } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
-import logoImage from '../../assets/logo.png' // Assurez-vous que le chemin est correct
+import logoImage from '../../assets/logo.png'
 
 const LogoAppBar = ({ toggleDrawer }) => {
   return (

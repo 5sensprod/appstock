@@ -33,7 +33,7 @@ const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
 
     const imgWidth = 80 // Largeur fixe en mm pour un ticket de caisse
     // Calculer la nouvelle hauteur basée sur le ratio de l'image
-    const imgHeight = canvas.height * 0.264583 // Convertir la hauteur en mm (1px = 0.264583 mm)
+    const imgHeight = canvas.height * 0.264583
 
     const pdf = new jsPDF({
       orientation: 'portrait',
@@ -41,7 +41,6 @@ const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
       format: [imgWidth, imgHeight],
     })
 
-    // Assurez-vous que la largeur et la hauteur de l'image ajoutée correspondent au format du PDF
     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
     pdf.save(`${ticket.number}-ticket.pdf`)
 
@@ -65,7 +64,20 @@ const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
           margin: '20px auto',
         }}
       >
-        <HeaderCompany />
+        <HeaderCompany
+          styles={{
+            title: { fontSize: '12px', fontWeight: 'bold' },
+            body: { fontSize: '10px', fontWeight: 'normal' },
+            taxId: { fontSize: '10px', fontWeight: 'normal' },
+            rcs: { fontSize: '10px', fontWeight: 'normal' },
+          }}
+          visibleFields={{
+            title: true,
+            body: true,
+            taxId: true,
+            rcs: false,
+          }}
+        />
         <DashedLine />
         <HeaderPdf data={ticket} title="TICKET" />
         <DashedLine />

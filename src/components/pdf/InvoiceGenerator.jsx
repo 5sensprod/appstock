@@ -74,7 +74,20 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
           margin: '20px auto',
         }}
       >
-        <HeaderCompany />
+        <HeaderCompany
+          styles={{
+            title: { fontSize: '15px', fontWeight: 'bold' },
+            body: { fontSize: '12px', fontWeight: 'normal' },
+            taxId: { fontSize: '12px', fontWeight: 'bold' },
+            rcs: { fontSize: '10px', fontWeight: 'normal' },
+          }}
+          visibleFields={{
+            title: true,
+            body: true,
+            taxId: true,
+            rcs: true,
+          }}
+        />
         <DashedLine />
         <HeaderPdf data={invoice} title="Facture" />
         <DashedLine />
