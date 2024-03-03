@@ -61,7 +61,7 @@ const useColumns = (
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 100,
+      width: 150,
       renderCell: (params) => {
         if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
           return null
@@ -72,9 +72,6 @@ const useColumns = (
 
         return (
           <div>
-            <IconButton onClick={() => handleOpen(params.id)}>
-              <QrCodeIcon />
-            </IconButton>
             {isNew || isInEditMode ? (
               <>
                 <IconButton onClick={() => handleSave(params.row)}>
@@ -94,6 +91,9 @@ const useColumns = (
                 </IconButton>
               </>
             )}
+            <IconButton onClick={() => handleOpen(params.id)}>
+              <QrCodeIcon />
+            </IconButton>
           </div>
         )
       },
