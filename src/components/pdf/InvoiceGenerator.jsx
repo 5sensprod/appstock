@@ -40,23 +40,50 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
 
     const imgWidth = 210 // Largeur de la page A4
     const imgHeight = (canvas.height * imgWidth) / canvas.width // Hauteur basée sur le ratio de l'image
-    let position = 0
-
-    let heightLeft = imgHeight
     const pageHeight = 297 // Hauteur de la page A4
 
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
-    heightLeft -= pageHeight
+    // Initialisation du PDF avec la première page
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
 
+    // Gestion de la transparence pour "DUPLICATA"
+    if (invoice.pdfGenerationCount > 0) {
+      const gState = new pdf.GState({ opacity: 0.2 })
+      pdf.setGState(gState)
+      pdf.setTextColor(255, 0, 0) // Couleur rouge
+      pdf.setFontSize(60) // Taille de la police pour "DUPLICATA"
+      pdf.text('DUPLICATA', imgWidth / 2, pageHeight / 2 - 50, {
+        angle: -45,
+        align: 'center',
+      })
+      pdf.setTextColor(0, 0, 0) // Réinitialiser la couleur du texte
+    }
+
+    let heightLeft = imgHeight - pageHeight
     let pageNumber = 1
-    let totalPages = Math.ceil(imgHeight / pageHeight)
 
-    // Ajout du pied de page pour chaque page
-    while (heightLeft >= 0) {
+    // Générer les pages suivantes si nécessaire
+    while (heightLeft > 0) {
       pageNumber++
       pdf.addPage()
-      position = heightLeft - imgHeight
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+      pdf.addImage(
+        imgData,
+        'PNG',
+        0,
+        -(pageHeight * (pageNumber - 1)),
+        imgWidth,
+        imgHeight,
+      )
+
+      if (invoice.pdfGenerationCount > 0) {
+        pdf.setGState(new pdf.GState({ opacity: 0.2 }))
+        pdf.setTextColor(255, 0, 0)
+        pdf.text('DUPLICATA', imgWidth / 2, pageHeight / 2 - 50, {
+          angle: -45,
+          align: 'center',
+        })
+        pdf.setTextColor(0, 0, 0)
+      }
+
       heightLeft -= pageHeight
     }
 
@@ -64,9 +91,12 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
     const addFooter = () => {
       for (let i = 1; i <= pageNumber; i++) {
         pdf.setPage(i)
+        // Réinitialiser l'état graphique pour le pied de page
+        pdf.setGState(new pdf.GState({ opacity: 1 }))
         pdf.setFontSize(10)
+        pdf.setTextColor(0, 0, 0)
         pdf.text(
-          `${invoice.number} - Page ${i}/${totalPages}`,
+          `${invoice.number} - Page ${i}/${pageNumber}`,
           imgWidth - 20,
           pageHeight - 10,
           'right',
@@ -76,7 +106,12 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
 
     addFooter()
 
-    pdf.save(`${invoice.number}-invoice.pdf`)
+    let fileName = `${invoice.number}.pdf`
+    if (invoice.pdfGenerationCount > 0) {
+      fileName = `${invoice.number}-duplicata${invoice.pdfGenerationCount}.pdf`
+    }
+
+    pdf.save(fileName)
 
     if (onPdfGenerated) {
       onPdfGenerated()
