@@ -9,6 +9,7 @@ const CustomDataGrid = ({
   rows,
   loading,
   includeCustomerName,
+  includeCustomerAddress,
   onViewDetails,
   onPdfIconClick,
 }) => {
@@ -50,6 +51,21 @@ const CustomDataGrid = ({
       headerName: 'Nom du client',
       width: 200,
     })
+  }
+
+  if (includeCustomerAddress) {
+    // Vérifiez si la colonne "Adresse du client" doit être incluse
+    const customerAddressColumn = {
+      field: 'customerAddress',
+      headerName: 'Adresse du client',
+      width: 200,
+    }
+
+    // Déterminez l'index où la colonne "Adresse du client" doit être insérée
+    const insertionIndex = includeCustomerName ? 2 : 1
+
+    // Insérez la colonne "Adresse du client" dans la liste des colonnes
+    columns.splice(insertionIndex, 0, customerAddressColumn)
   }
 
   return (

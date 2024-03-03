@@ -35,6 +35,7 @@ const InvoicesGrid = () => {
         dateString: new Date(invoice.date).toLocaleDateString('fr-FR'),
         totalTTC: invoice.totalTTC,
         customerName: invoice.customerInfo?.name || '',
+        customerAddress: invoice.customerInfo?.adress || '',
         onViewDetails: () => handleViewDetails(invoice._id),
       }))
       // Utilisez l'objet Date original pour le tri
@@ -66,6 +67,7 @@ const InvoicesGrid = () => {
         rows={rows}
         loading={loading}
         includeCustomerName={true}
+        includeCustomerAddress={true}
         onViewDetails={handleViewDetails}
         onPdfIconClick={handlePdfIconClick}
       />

@@ -63,6 +63,7 @@ const TicketsGrid = () => {
         rows={rows}
         loading={loading}
         includeCustomerName={false}
+        includeCustomerAddress={false}
         onViewDetails={handleViewDetails}
         onPdfIconClick={handlePdfIconClick}
       />
