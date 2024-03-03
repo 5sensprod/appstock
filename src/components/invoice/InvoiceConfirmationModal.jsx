@@ -204,6 +204,12 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
   const handleActionClick = async () => {
     try {
       if (showCustomerFields) {
+        // Vérification des champs obligatoires
+        if (!customerName || !customerAdress) {
+          showToast('Veuillez remplir tous les champs obligatoires.', 'error')
+          return // Empêche la soumission si les champs obligatoires ne sont pas remplis
+        }
+
         const customerInfo = {
           name: customerName,
           adress: customerAdress,
@@ -224,6 +230,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
       setCustomerName('')
       setCustomerEmail('')
       setCustomerPhone('')
+      setCustomerAdress('')
       setShowCustomerFields(false)
       onClose()
     } catch (error) {
@@ -279,24 +286,26 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
         />
         {showCustomerFields && (
           <>
-            {!customerName &&
-              !customerEmail &&
-              !customerPhone &&
-              !customerAdress && (
-                <Typography variant="body2" mt={2}>
-                  Veuillez renseigner au moins un des champs suivants.
-                </Typography>
-              )}
+            {/* Message d'erreur */}
+            {!customerName && !customerAdress && (
+              <Typography variant="body2" mt={2}>
+                Les champs marqués d'un astérisque (*) sont obligatoires.
+              </Typography>
+            )}
+
+            {/* Champ "Nom du client" */}
             <TextField
-              label="Nom du client"
+              label="Nom du client *"
               size="small"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               fullWidth
               margin="normal"
             />
+
+            {/* Champ "Adresse du client" */}
             <TextField
-              label="Adresse du client"
+              label="Adresse du client *"
               size="small"
               value={customerAdress}
               onChange={(e) => setCustomerAdress(e.target.value)}
