@@ -7,12 +7,14 @@ import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import IconButton from '@mui/material/IconButton'
 import { Box, Typography } from '@mui/material'
+import { useUI } from '../../contexts/UIContext'
 
 const UserDetails = () => {
   const { companyInfo, updateCompanyInfo } = useContext(CompanyInfoContext)
   const [userInfo, setUserInfo] = useState({})
   const [initialUserInfo, setInitialUserInfo] = useState({})
   const [editMode, setEditMode] = useState(false)
+  const { showToast } = useUI()
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -36,6 +38,7 @@ const UserDetails = () => {
       updateCompanyInfo(updatedUser)
       setUserInfo(updatedUser)
       setEditMode(false)
+      showToast('Mise à jour réussie', 'success')
     } catch (error) {
       console.error("Erreur lors de la mise à jour de l'utilisateur:", error)
     }
