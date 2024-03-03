@@ -1,9 +1,14 @@
 import React from 'react'
-import { DataGrid, frFR } from '@mui/x-data-grid'
+import {
+  DataGrid,
+  frFR,
+  useGridApiRef,
+  GridToolbarQuickFilter,
+} from '@mui/x-data-grid'
 import { formatPrice } from '../../utils/priceUtils'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import { IconButton } from '@mui/material'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
+import { IconButton, Box, TextField } from '@mui/material'
 
 const CustomDataGrid = ({
   rows,
@@ -13,6 +18,8 @@ const CustomDataGrid = ({
   onViewDetails,
   onPdfIconClick,
 }) => {
+  const apiRef = useGridApiRef()
+
   const columns = [
     {
       field: 'actions',
@@ -68,16 +75,31 @@ const CustomDataGrid = ({
     columns.splice(insertionIndex, 0, customerAddressColumn)
   }
 
+  // Gestionnaire pour la mise à jour du filtre de recherche
+  const handleSearchChange = (event) => {
+    apiRef.current.setQuickFilter(event.target.value)
+  }
+
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <Box sx={{ height: 400, width: '100%' }}>
+      {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <TextField
+          variant="outlined"
+          placeholder="Rechercher..."
+          onChange={handleSearchChange}
+          size="small"
+        />
+      </Box> */}
       <DataGrid
+        apiRef={apiRef}
         rows={rows}
         columns={columns}
         pageSize={5}
         loading={loading}
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+        components={{ Toolbar: GridToolbarQuickFilter }} // Vous pouvez omettre cette ligne si vous souhaitez utiliser votre propre champ de recherche au lieu de GridToolbarQuickFilter
       />
-    </div>
+    </Box>
   )
 }
 
