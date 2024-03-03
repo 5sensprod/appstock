@@ -42,11 +42,13 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
       })
     : ''
 
-  let modalTitle = `${itemType === 'invoice' ? 'Facture' : 'Ticket'} n°${item?.number} - ${formattedDate}`
+  const modalTitleParts = [
+    `${itemType === 'invoice' ? 'Facture' : 'Ticket'} n°${item?.number}`,
+    `${formattedDate}`,
+  ]
 
-  // Ajoutez le nom du client pour les factures si disponible
-  if (itemType === 'invoice' && customerInfo?.name) {
-    modalTitle += ` - ${customerInfo.name}`
+  if (itemType === 'invoice' && item?.customerInfo?.name) {
+    modalTitleParts.push(item.customerInfo.name) // Ajoute le nom du client si présent
   }
 
   const rows =
@@ -205,7 +207,16 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
           component="h2"
           sx={{ mb: 2 }}
         >
-          {modalTitle}
+          <Typography
+            id="modal-modal-title"
+            variant="body1"
+            component="div"
+            sx={{ mb: 2 }}
+          >
+            {modalTitleParts.map((part, index) => (
+              <div key={index}>{part}</div>
+            ))}
+          </Typography>
         </Typography>
         <div style={{ width: '100%', marginBottom: 5 }}>
           <DataGrid
