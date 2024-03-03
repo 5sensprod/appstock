@@ -84,5 +84,60 @@ module.exports = (db) => {
       })
   })
 
+  router.put('/:id', (req, res) => {
+    const { id } = req.params
+
+    db.tickets.update(
+      { _id: id },
+      { $set: req.body },
+      {},
+      (err, numAffected) => {
+        if (err) {
+          console.error('Erreur lors de la mise à jour du ticket:', err)
+          res.status(500).send('Erreur lors de la mise à jour du ticket.')
+        } else {
+          console.log(`Ticket mis à jour; Documents affectés: `, numAffected)
+          res.status(200).send({ numAffected })
+        }
+      },
+    )
+  })
+
+  router.put('/incrementPdfGeneration/:id', (req, res) => {
+    const { id } = req.params
+
+    db.tickets.find({ _id: id }, (err, ticketArray) => {
+      if (err) {
+        console.error('Erreur lors de la recherche du ticket:', err)
+        return res
+          .status(500)
+          .json({ error: 'Erreur lors de la recherche du ticket.' })
+      }
+      if (ticketArray.length === 0) {
+        return res.status(404).json({ error: 'Ticket non trouvé.' })
+      }
+
+      const ticket = ticketArray[0]
+      const updatedPdfGenerationCount = (ticket.pdfGenerationCount || 0) + 1
+
+      db.tickets.update(
+        { _id: id },
+        { $set: { pdfGenerationCount: updatedPdfGenerationCount } },
+        {},
+        (updateErr) => {
+          if (updateErr) {
+            console.error('Erreur lors de la mise à jour du ticket:', updateErr)
+            return res
+              .status(500)
+              .json({ error: 'Erreur lors de la mise à jour du ticket.' })
+          }
+          res.json({
+            message: 'Compteur de génération PDF mis à jour avec succès.',
+          })
+        },
+      )
+    })
+  })
+
   return router
 }
