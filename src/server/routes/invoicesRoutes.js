@@ -81,18 +81,60 @@ module.exports = (db) => {
 
   router.put('/:id', (req, res) => {
     const { id } = req.params
+
     db.invoices.update(
       { _id: id },
       { $set: req.body },
       {},
       (err, numAffected) => {
         if (err) {
+          console.error('Erreur lors de la mise à jour de la facture:', err)
           res.status(500).send('Erreur lors de la mise à jour de la facture.')
         } else {
+          console.log(`Facture mise à jour; Documents affectés: `, numAffected)
           res.status(200).send({ numAffected })
         }
       },
     )
+  })
+
+  router.put('/incrementPdfGeneration/:id', (req, res) => {
+    const { id } = req.params
+
+    db.invoices.find({ _id: id }, (err, invoiceArray) => {
+      if (err) {
+        console.error('Erreur lors de la recherche de la facture:', err)
+        return res
+          .status(500)
+          .json({ error: 'Erreur lors de la recherche de la facture.' })
+      }
+      if (invoiceArray.length === 0) {
+        return res.status(404).json({ error: 'Facture non trouvée.' })
+      }
+
+      const invoice = invoiceArray[0]
+      const updatedPdfGenerationCount = (invoice.pdfGenerationCount || 0) + 1
+
+      db.invoices.update(
+        { _id: id },
+        { $set: { pdfGenerationCount: updatedPdfGenerationCount } },
+        {},
+        (updateErr) => {
+          if (updateErr) {
+            console.error(
+              'Erreur lors de la mise à jour de la facture:',
+              updateErr,
+            )
+            return res
+              .status(500)
+              .json({ error: 'Erreur lors de la mise à jour de la facture.' })
+          }
+          res.json({
+            message: 'Compteur de génération PDF mis à jour avec succès.',
+          })
+        },
+      )
+    })
   })
 
   router.delete('/:id', (req, res) => {

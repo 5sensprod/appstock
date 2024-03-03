@@ -7,7 +7,7 @@ import InvoiceGenerator from '../pdf/InvoiceGenerator'
 import { Box } from '@mui/material'
 
 const InvoicesGrid = () => {
-  const { invoices, loading } = useInvoices()
+  const { invoices, loading, handleIncrementPdfGenerationCount } = useInvoices()
   const [rows, setRows] = useState([])
   const [selectedInvoiceId, setSelectedInvoiceId] = useState(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
@@ -87,7 +87,10 @@ const InvoicesGrid = () => {
             <Box sx={modalStyle}>
               <InvoiceGenerator
                 invoiceId={selectedInvoiceId}
-                onPdfGenerated={() => setIsPdfModalOpen(false)}
+                onPdfGenerated={async () => {
+                  await handleIncrementPdfGenerationCount(selectedInvoiceId)
+                  setIsPdfModalOpen(false)
+                }}
               />
             </Box>
           </Modal>

@@ -22,27 +22,23 @@ export const fetchApi = async (endpoint, method = 'GET', data = null) => {
   const baseUrl = await getApiBaseUrl()
   const url = `${baseUrl}/${endpoint}`
 
-  const config = {}
+  const config = {
+    headers: {},
+  }
 
-  // Si les données ne sont pas une instance de FormData, définissez le Content-Type sur application/json
-  if (!(data instanceof FormData)) {
-    config.headers = {
-      'Content-Type': 'application/json',
-    }
+  if (data) {
+    config.headers['Content-Type'] = 'application/json'
+    data = JSON.stringify(data)
   }
 
   try {
-    switch (method) {
-      case 'POST':
-        return (await axiosInstance.post(url, data, config)).data
-      case 'PUT':
-        return (await axiosInstance.put(url, data, config)).data
-      case 'DELETE':
-        return (await axiosInstance.delete(url, config)).data
-      case 'GET':
-      default:
-        return (await axiosInstance.get(url, config)).data
-    }
+    const response = await axiosInstance({
+      method: method,
+      url: url,
+      data: data,
+      ...config,
+    })
+    return response.data
   } catch (error) {
     console.error("Erreur lors de l'appel à l'API:", error)
     throw error

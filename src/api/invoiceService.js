@@ -1,9 +1,7 @@
-// src/api/invoiceService.js
 import { fetchApi } from './axiosConfig'
 
 export const getInvoices = async (startDate, endDate) => {
   try {
-    // Exemple de construction de l'URL avec des paramètres de query pour les dates
     const url = `invoices?startDate=${startDate}&endDate=${endDate}`
     return await fetchApi(url)
   } catch (error) {
@@ -35,6 +33,25 @@ export const deleteInvoice = async (id) => {
     return await fetchApi(`invoices/${id}`, 'DELETE')
   } catch (error) {
     console.error('Erreur lors de la suppression de la facture:', error)
+    throw error
+  }
+}
+
+export const incrementPdfGenerationCount = async (id) => {
+  try {
+    const response = await fetchApi(
+      `invoices/incrementPdfGeneration/${id}`,
+      'PUT',
+    )
+    if (response.status === 200) {
+      console.log('Compteur de génération PDF mis à jour avec succès.')
+    } else {
+      console.error(
+        "Erreur lors de l'incrément du compteur de génération de PDF.",
+      )
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'appel à l'API:", error)
     throw error
   }
 }

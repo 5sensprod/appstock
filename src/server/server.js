@@ -19,7 +19,7 @@ app.use(express.json())
 app.use(express.static(staticFilesPath))
 app.use(
   cors({
-    origin: '*', // ou '*' pour autoriser toutes les origines
+    origin: '*',
   }),
 )
 
@@ -28,7 +28,7 @@ const multer = require('multer')
 // Configuration de multer pour stocker les fichiers dans des dossiers spécifiques à chaque produit
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const productId = req.params.productId // Récupération de l'ID du produit depuis l'URL
+    const productId = req.params.productId
     const productFolderPath = path.join(cataloguePath, productId)
     if (!fs.existsSync(productFolderPath)) {
       fs.mkdirSync(productFolderPath, { recursive: true })
@@ -135,6 +135,6 @@ app.get('/api/serverStatus', (req, res) => {
   }
 })
 
-server.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`)
+server.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on http://${getLocalIPv4Address()}:${port}`)
 })

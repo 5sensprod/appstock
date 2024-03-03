@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { getInvoices, addInvoice } from '../api/invoiceService'
+import {
+  getInvoices,
+  addInvoice,
+  incrementPdfGenerationCount,
+} from '../api/invoiceService'
 import { getTickets, addTicket } from '../api/ticketService'
 
 const InvoicesContext = createContext()
@@ -84,6 +88,25 @@ export const InvoicesProvider = ({ children }) => {
     }
   }
 
+  const handleIncrementPdfGenerationCount = async (invoiceId) => {
+    try {
+      console.log(
+        `Incrément du compteur de génération de PDF pour la facture ID: ${invoiceId}`,
+      )
+      await incrementPdfGenerationCount(invoiceId)
+      console.log(
+        `Compteur de génération de PDF incrémenté pour la facture ID: ${invoiceId}`,
+      )
+      // Optionnel: Rafraîchir les données des factures après l'incrémentation
+      await fetchInvoices()
+    } catch (error) {
+      console.error(
+        "Erreur lors de l'incrémentation du compteur de génération PDF:",
+        error,
+      )
+    }
+  }
+
   return (
     <InvoicesContext.Provider
       value={{
@@ -93,6 +116,7 @@ export const InvoicesProvider = ({ children }) => {
         createInvoice,
         prepareInvoiceData,
         createTicket,
+        handleIncrementPdfGenerationCount,
       }}
     >
       {children}
