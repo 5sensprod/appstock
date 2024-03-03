@@ -10,12 +10,15 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
   const { invoices, tickets } = useInvoices()
 
   let item
+  let customerInfo // Déclaration sans assignation ici
   if (itemType === 'invoice') {
     item = invoices.find((inv) => inv._id === itemId)
+    customerInfo = item?.customerInfo // Extraction de customerInfo après avoir trouvé l'item
   } else if (itemType === 'ticket') {
     item = tickets.find((ticket) => ticket._id === itemId)
   }
-  const { items } = item
+
+  const items = item?.items || []
 
   let remiseCount = 0
   let majorationCount = 0
@@ -31,7 +34,6 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
   const remiseMajorationHeaderName =
     majorationCount > remiseCount ? 'Maj.' : 'Rem.'
 
-  // Formatage de la date pour l'affichage
   const formattedDate = item
     ? new Date(item.date).toLocaleDateString('fr-FR', {
         day: '2-digit',
@@ -40,8 +42,12 @@ const DetailsModal = ({ open, onClose, itemId, itemType }) => {
       })
     : ''
 
-  // Construire le titre avec le numéro et la date
-  const modalTitle = `${itemType === 'invoice' ? 'Facture' : 'Ticket'} n°${itemType === 'invoice' ? item?.number : item?.number} - ${formattedDate}`
+  let modalTitle = `${itemType === 'invoice' ? 'Facture' : 'Ticket'} n°${item?.number} - ${formattedDate}`
+
+  // Ajoutez le nom du client pour les factures si disponible
+  if (itemType === 'invoice' && customerInfo?.name) {
+    modalTitle += ` - ${customerInfo.name}`
+  }
 
   const rows =
     item?.items.map((itemDetail, index) => ({
