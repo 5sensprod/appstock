@@ -1,5 +1,10 @@
 import React, { useContext } from 'react'
-import { DataGrid } from '@mui/x-data-grid'
+import {
+  DataGrid,
+  frFR,
+  useGridApiRef,
+  GridToolbarQuickFilter,
+} from '@mui/x-data-grid'
 import { QuoteContext } from '../../contexts/QuoteContext'
 import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
@@ -22,6 +27,8 @@ const QuoteGrid = () => {
     activateQuote,
     deleteQuote,
   } = useContext(QuoteContext)
+
+  const apiRef = useGridApiRef()
 
   const generatePdf = useGenerateQuotePdf()
   const { showToast, showConfirmDialog } = useUI()
@@ -185,11 +192,21 @@ const QuoteGrid = () => {
   return (
     <div style={{ width: 852 }}>
       <DataGrid
+        apiRef={apiRef}
         rows={rows}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        pageSizeOptions={[5, 10, 25]}
+        pagination
         loading={isLoading}
+        components={{ Toolbar: GridToolbarQuickFilter }}
+        localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
       />
     </div>
   )

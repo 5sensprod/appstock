@@ -27,10 +27,16 @@ const CustomDataGrid = ({
       width: 150,
       renderCell: (params) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <IconButton onClick={() => onViewDetails(params.row.id)}>
+          <IconButton
+            onClick={() => onViewDetails(params.row.id)}
+            color="primary"
+          >
             <VisibilityIcon />
           </IconButton>
-          <IconButton onClick={() => onPdfIconClick(params.row)}>
+          <IconButton
+            onClick={() => onPdfIconClick(params.row)}
+            color="primary"
+          >
             <PictureAsPdfIcon />
           </IconButton>
         </div>
@@ -75,29 +81,24 @@ const CustomDataGrid = ({
     columns.splice(insertionIndex, 0, customerAddressColumn)
   }
 
-  // Gestionnaire pour la mise à jour du filtre de recherche
-  const handleSearchChange = (event) => {
-    apiRef.current.setQuickFilter(event.target.value)
-  }
-
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
-      {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <TextField
-          variant="outlined"
-          placeholder="Rechercher..."
-          onChange={handleSearchChange}
-          size="small"
-        />
-      </Box> */}
+    <Box sx={{ width: 'fit-content' }}>
       <DataGrid
         apiRef={apiRef}
         rows={rows}
         columns={columns}
-        pageSize={5}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        pageSizeOptions={[5, 10, 25]}
+        pagination
         loading={loading}
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-        components={{ Toolbar: GridToolbarQuickFilter }} // Vous pouvez omettre cette ligne si vous souhaitez utiliser votre propre champ de recherche au lieu de GridToolbarQuickFilter
+        components={{ Toolbar: GridToolbarQuickFilter }}
       />
     </Box>
   )
