@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import {
   Box,
   Button,
@@ -10,10 +10,15 @@ import {
   Typography,
 } from '@mui/material'
 import usePaymentHandlers from './usePaymentHandlers'
+import { CartContext } from '../../contexts/CartContext'
 
 const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
-  const [selectedPaymentType, setSelectedPaymentType] = useState('')
-  const [paymentAmount, setPaymentAmount] = useState('')
+  const {
+    selectedPaymentType,
+    setSelectedPaymentType,
+    paymentAmount,
+    setPaymentAmount,
+  } = useContext(CartContext)
 
   const handleAddPayment = () => {
     if (!selectedPaymentType || paymentAmount <= 0) {

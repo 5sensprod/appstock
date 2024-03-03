@@ -35,6 +35,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     clearCart,
     paymentType,
     amountPaid,
+    resetPaymentInfo,
   } = useContext(CartContext)
 
   const { showToast } = useUI()
@@ -232,6 +233,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
       setCustomerPhone('')
       setCustomerAdress('')
       setShowCustomerFields(false)
+      resetPaymentInfo()
       onClose()
     } catch (error) {
       showToast(
