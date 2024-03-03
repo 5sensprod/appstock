@@ -37,3 +37,22 @@ export const deleteTicket = async (id) => {
     throw error
   }
 }
+
+export const incrementPdfGenerationCount = async (id) => {
+  try {
+    const response = await fetchApi(
+      `tickets/incrementPdfGeneration/${id}`,
+      'PUT',
+    )
+    if (response.status === 200) {
+      console.log('Compteur de génération PDF mis à jour avec succès.')
+    } else {
+      console.error(
+        "Erreur lors de l'incrément du compteur de génération de PDF.",
+      )
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'appel à l'API:", error)
+    throw error
+  }
+}
