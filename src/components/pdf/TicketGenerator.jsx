@@ -33,7 +33,7 @@ const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
 
     const imgWidth = 80 // Largeur fixe en mm pour un ticket de caisse
     // Calculer la nouvelle hauteur basée sur le ratio de l'image
-    const imgHeight = canvas.height * 0.264583
+    const imgHeight = canvas.height * 0.264583 // Transforme les pixels en mm
 
     const pdf = new jsPDF({
       orientation: 'portrait',
@@ -42,7 +42,23 @@ const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
     })
 
     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
-    pdf.save(`${ticket.number}-ticket.pdf`)
+
+    // Gestion de la mention "DUPLICATA" si nécessaire
+    if (ticket.pdfGenerationCount > 0) {
+      // Assurez-vous de régler l'opacité et la couleur comme souhaité
+      pdf.setGState(new pdf.GState({ opacity: 0.2 }))
+      pdf.setTextColor(255, 0, 0) // Rouge
+      pdf.setFontSize(20) // Ajustez la taille selon le besoin
+      pdf.text('DUPLICATA', imgWidth / 2, imgHeight / 2, 'center')
+    }
+
+    // Construire le nom du fichier en incluant "duplicata" si nécessaire
+    let fileName = `${ticket.number}.pdf`
+    if (ticket.pdfGenerationCount > 0) {
+      fileName = `${ticket.number}-duplicata${ticket.pdfGenerationCount}.pdf`
+    }
+
+    pdf.save(fileName)
 
     if (onPdfGenerated) {
       onPdfGenerated()
