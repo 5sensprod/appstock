@@ -105,16 +105,14 @@ module.exports = (db) => {
 
   router.put('/incrementPdfGeneration/:id', (req, res) => {
     const { id } = req.params
-
     db.tickets.find({ _id: id }, (err, ticketArray) => {
       if (err) {
         console.error('Erreur lors de la recherche du ticket:', err)
-        return res
-          .status(500)
-          .json({ error: 'Erreur lors de la recherche du ticket.' })
+        return res.status(500).send('Erreur lors de la recherche du ticket.')
       }
       if (ticketArray.length === 0) {
-        return res.status(404).json({ error: 'Ticket non trouvé.' })
+        console.error('Ticket non trouvé.')
+        return res.status(404).send('Ticket non trouvé.')
       }
 
       const ticket = ticketArray[0]
@@ -129,10 +127,12 @@ module.exports = (db) => {
             console.error('Erreur lors de la mise à jour du ticket:', updateErr)
             return res
               .status(500)
-              .json({ error: 'Erreur lors de la mise à jour du ticket.' })
+              .send('Erreur lors de la mise à jour du ticket.')
           }
           res.json({
-            message: 'Compteur de génération PDF mis à jour avec succès.',
+            message:
+              'Compteur de génération PDF mis à jour avec succès pour le ticket.',
+            pdfGenerationCount: updatedPdfGenerationCount,
           })
         },
       )

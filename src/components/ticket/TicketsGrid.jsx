@@ -7,7 +7,7 @@ import TicketGenerator from '../pdf/TicketGenerator'
 import { Box } from '@mui/material'
 
 const TicketsGrid = () => {
-  const { tickets, loading } = useInvoices()
+  const { tickets, loading, handleIncrementPdfGenerationCount } = useInvoices()
   const [rows, setRows] = useState([])
   const [selectedTicketId, setSelectedTicketId] = useState(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
@@ -86,7 +86,14 @@ const TicketsGrid = () => {
             <Box sx={modalStyle}>
               <TicketGenerator
                 ticketId={selectedTicketId}
-                onPdfGenerated={() => setIsPdfModalOpen(false)}
+                onPdfGenerated={async () => {
+                  // Assurez-vous de passer 'ticket' comme deuxième argument pour spécifier le type
+                  await handleIncrementPdfGenerationCount(
+                    selectedTicketId,
+                    'ticket',
+                  )
+                  setIsPdfModalOpen(false)
+                }}
               />
             </Box>
           </Modal>

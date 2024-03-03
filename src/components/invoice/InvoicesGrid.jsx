@@ -90,7 +90,11 @@ const InvoicesGrid = () => {
               <InvoiceGenerator
                 invoiceId={selectedInvoiceId}
                 onPdfGenerated={async () => {
-                  await handleIncrementPdfGenerationCount(selectedInvoiceId)
+                  // Passez 'invoice' comme deuxième argument pour spécifier le type
+                  await handleIncrementPdfGenerationCount(
+                    selectedInvoiceId,
+                    'invoice',
+                  )
                   setIsPdfModalOpen(false)
                 }}
               />

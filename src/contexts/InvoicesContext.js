@@ -5,6 +5,7 @@ import {
   incrementPdfGenerationCount,
 } from '../api/invoiceService'
 import { getTickets, addTicket } from '../api/ticketService'
+import { incrementPdfGenerationCount as incrementTicketPdfGenerationCount } from '../api/ticketService'
 
 const InvoicesContext = createContext()
 
@@ -88,20 +89,29 @@ export const InvoicesProvider = ({ children }) => {
     }
   }
 
-  const handleIncrementPdfGenerationCount = async (invoiceId) => {
+  const handleIncrementPdfGenerationCount = async (id, type) => {
     try {
       console.log(
-        `Incrément du compteur de génération de PDF pour la facture ID: ${invoiceId}`,
+        `Incrément du compteur de génération de PDF pour l'ID: ${id} et le type: ${type}`,
       )
-      await incrementPdfGenerationCount(invoiceId)
-      console.log(
-        `Compteur de génération de PDF incrémenté pour la facture ID: ${invoiceId}`,
-      )
-      // Optionnel: Rafraîchir les données des factures après l'incrémentation
-      await fetchInvoices()
+
+      // Décider quel service appeler en fonction du type
+      if (type === 'invoice') {
+        await incrementPdfGenerationCount(id)
+        console.log(
+          `Compteur de génération de PDF incrémenté pour la facture ID: ${id}`,
+        )
+        await fetchInvoices() // Rafraîchir les données des factures après l'incrémentation
+      } else if (type === 'ticket') {
+        await incrementTicketPdfGenerationCount(id)
+        console.log(
+          `Compteur de génération de PDF incrémenté pour le ticket ID: ${id}`,
+        )
+        await fetchTickets() // Rafraîchir les données des tickets après l'incrémentation
+      }
     } catch (error) {
       console.error(
-        "Erreur lors de l'incrémentation du compteur de génération PDF:",
+        `Erreur lors de l'incrémentation du compteur de génération PDF pour le type: ${type}`,
         error,
       )
     }
