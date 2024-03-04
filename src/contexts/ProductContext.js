@@ -205,7 +205,6 @@ export const ProductProvider = ({ children }) => {
     try {
       // Supprimer la catégorie (et ses sous-catégories côté serveur)
       await deleteCategory(categoryId)
-      console.log(`Catégorie supprimée avec succès, ID : ${categoryId}`)
 
       // Récupérer les listes mises à jour des produits et des catégories
       const updatedProducts = await getProducts(baseUrl)

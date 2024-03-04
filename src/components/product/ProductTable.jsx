@@ -53,10 +53,6 @@ const ProductTable = ({ products }) => {
     setGridPreferences((prevPreferences) => {
       const updatedPreferences = { ...prevPreferences, ...newPreferences }
       localStorage.setItem(PREF_KEY, JSON.stringify(updatedPreferences))
-      console.log(
-        'Préférences sauvegardées dans localStorage:',
-        updatedPreferences,
-      )
       return updatedPreferences
     })
   }
@@ -71,7 +67,6 @@ const ProductTable = ({ products }) => {
   }
 
   const handleDensityChange = (newDensity) => {
-    console.log('Densité modifiée :', newDensity) // Pour vérifier la nouvelle densité
     savePreferences({ ...gridPreferences, density: newDensity })
   }
 

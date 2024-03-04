@@ -53,7 +53,6 @@ const useHandlePayClick = () => {
 
       try {
         const newInvoice = await createInvoice(newInvoiceData)
-        console.log('Facture créée avec succès:', newInvoice)
       } catch (error) {
         console.error('Erreur lors de la création de la facture:', error)
       }

@@ -122,7 +122,6 @@ export const useGenerateQuotePdf = () => {
               : `-${item.remiseMajorationValue}%`
             : '',
       }))
-      console.log('Données pour le tableau des articles :', items)
 
       doc.autoTable({
         startY: (currentYPosition += 10),

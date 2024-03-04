@@ -14,7 +14,6 @@ async function getCompanyInfo() {
 async function updateUser(userInfo) {
   try {
     const updatedUser = await fetchApi(`users/${userInfo._id}`, 'PUT', userInfo)
-    console.log('Utilisateur mis à jour avec succès:', updatedUser)
     return updatedUser // Retourner l'utilisateur mis à jour pour une utilisation ultérieure
   } catch (error) {
     console.error("Erreur lors de la mise à jour de l'utilisateur:", error)

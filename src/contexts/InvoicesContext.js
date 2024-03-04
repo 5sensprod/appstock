@@ -91,22 +91,12 @@ export const InvoicesProvider = ({ children }) => {
 
   const handleIncrementPdfGenerationCount = async (id, type) => {
     try {
-      console.log(
-        `Incrément du compteur de génération de PDF pour l'ID: ${id} et le type: ${type}`,
-      )
-
       // Décider quel service appeler en fonction du type
       if (type === 'invoice') {
         await incrementPdfGenerationCount(id)
-        console.log(
-          `Compteur de génération de PDF incrémenté pour la facture ID: ${id}`,
-        )
         await fetchInvoices() // Rafraîchir les données des factures après l'incrémentation
       } else if (type === 'ticket') {
         await incrementTicketPdfGenerationCount(id)
-        console.log(
-          `Compteur de génération de PDF incrémenté pour le ticket ID: ${id}`,
-        )
         await fetchTickets() // Rafraîchir les données des tickets après l'incrémentation
       }
     } catch (error) {

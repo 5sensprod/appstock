@@ -12,16 +12,11 @@ export const transformCategoriesToTree = (categories) => {
     if (category.parentId) {
       if (categoriesMap[category.parentId]) {
         categoriesMap[category.parentId].children.push(category)
-      } else {
-        console.log('Parent ID not found for:', category)
       }
     } else {
       tree.push(category)
     }
   })
-
-  // Log pour vérifier la structure finale de l'arbre
-  console.log('Final tree structure:', tree)
 
   return tree
 }

@@ -72,8 +72,6 @@ module.exports = (db, sendSseEvent) => {
       path: file.path,
     }))
 
-    console.log(uploadedFilesInfo) // Pour déboguer et voir les infos des fichiers uploadés
-
     // Envoyer un événement SSE pour chaque fichier uploadé
     uploadedFilesInfo.forEach((fileInfo) => {
       sendSseEvent({
@@ -92,8 +90,6 @@ module.exports = (db, sendSseEvent) => {
   router.post('/:productId/upload-url', async (req, res) => {
     const { imageUrl } = req.body
     const productId = req.params.productId
-    console.log(`Téléchargement de l'image depuis : ${imageUrl}`)
-    console.log(`ProductId : ${productId}`)
 
     if (!imageUrl) {
       return res.status(400).json({ message: "URL de l'image manquante." })
@@ -150,11 +146,6 @@ module.exports = (db, sendSseEvent) => {
             productId: productId,
             featuredImage: featuredImage,
           })
-          console.log('SSE event sent:', {
-            type: 'featured-image-updated',
-            productId,
-            featuredImage,
-          }) // Log pour confirmer l'envoi de l'événement SSE
           res
             .status(200)
             .json({ message: 'Image mise en avant mise à jour avec succès' })

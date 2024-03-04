@@ -91,7 +91,6 @@ module.exports = (db) => {
           console.error('Erreur lors de la mise à jour de la facture:', err)
           res.status(500).send('Erreur lors de la mise à jour de la facture.')
         } else {
-          console.log(`Facture mise à jour; Documents affectés: `, numAffected)
           res.status(200).send({ numAffected })
         }
       },

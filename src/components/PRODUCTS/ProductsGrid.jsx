@@ -63,7 +63,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const [isBulkUpdateModalOpen, setIsBulkUpdateModalOpen] = useState(false)
 
   const handleSelectionModelChange = (newSelectionModel) => {
-    console.log('Produits sélectionnés:', newSelectionModel)
     setSelectedProductIds(new Set(newSelectionModel))
   }
 
@@ -237,15 +236,11 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     console.error('Erreur lors de la mise à jour de la ligne :', error)
   }
   const handleDensityChange = (newDensity) => {
-    // Affichez le changement de densité dans la console
-    console.log('Densité modifiée :', newDensity)
-
     // Mettez à jour les préférences de la grille
     updatePreferences({ density: newDensity })
   }
 
   const handleColumnVisibilityChange = (newModel) => {
-    console.log('Modèle de visibilité des colonnes modifié:', newModel)
     updatePreferences({ columnsVisibility: newModel })
   }
 

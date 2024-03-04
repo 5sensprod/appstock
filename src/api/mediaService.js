@@ -24,9 +24,6 @@ async function updateFeaturedImage(productId, featuredImageName) {
       { featuredImage: featuredImageName },
     )
 
-    // Logique pour gérer la réponse
-    console.log('Réponse du serveur:', response)
-
     return response
   } catch (error) {
     console.error(

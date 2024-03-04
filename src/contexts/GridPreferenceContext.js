@@ -23,7 +23,6 @@ export const GridPreferenceProvider = ({ children }) => {
   const updatePreferences = (newPreferences) => {
     setGridPreferences((prevPreferences) => {
       const updatedPreferences = { ...prevPreferences, ...newPreferences }
-      console.log('Mise à jour des préférences :', updatedPreferences)
       return updatedPreferences
     })
   }
