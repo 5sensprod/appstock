@@ -182,15 +182,12 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
   const remainingAmount = calculateRemainingAmount()
 
   const change = calculateChange()
-  let paymentStatusText
-
-  if (change > 0) {
-    paymentStatusText = `À rendre : ${formatPrice(change)}`
-  } else if (change < 0) {
-    paymentStatusText = `À payer : ${formatPrice(Math.abs(change))}`
-  } else {
-    paymentStatusText = 'Payé'
-  }
+  const paymentStatusText =
+    change > 0
+      ? `À rendre : ${formatPrice(change)}`
+      : change < 0
+        ? `À payer : ${formatPrice(Math.abs(change))}`
+        : 'Payé'
 
   return (
     <Box mb={1}>
