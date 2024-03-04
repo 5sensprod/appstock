@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react'
 import {
   Box,
+  Grid,
   Button,
   FormControl,
   InputLabel,
@@ -8,7 +9,12 @@ import {
   Select,
   TextField,
   Typography,
+  Fab,
+  IconButton,
 } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
 import usePaymentHandlers from './usePaymentHandlers'
 import { CartContext } from '../../contexts/CartContext'
 
@@ -37,36 +43,50 @@ const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
 
   return (
     <Box>
-      <FormControl variant="outlined" size="small" fullWidth margin="normal">
-        <InputLabel>Type de paiement</InputLabel>
-        <Select
-          value={selectedPaymentType}
-          onChange={(e) => setSelectedPaymentType(e.target.value)}
-          label="Type de paiement"
-        >
-          <MenuItem value="CB">Carte Bancaire</MenuItem>
-          <MenuItem value="Cash">Espèces</MenuItem>
-          <MenuItem value="Cheque">Chèque</MenuItem>
-          <MenuItem value="ChequeCadeau">Chèque Cadeau</MenuItem>
-          <MenuItem value="Virement">Virement</MenuItem>
-          <MenuItem value="Avoir">Avoir</MenuItem>
-        </Select>
-      </FormControl>
-      <TextField
-        label="Montant"
-        type="number"
-        value={paymentAmount}
-        onChange={(e) => setPaymentAmount(e.target.value)}
-        fullWidth
-        margin="normal"
-        size="small"
-      />
-      <Button onClick={handleAddPayment} variant="contained" sx={{ mt: 2 }}>
-        Ajouter
-      </Button>
-      <Typography variant="body1" sx={{ mt: 2 }}>
+      <Typography variant="body1" color={'green'}>
         Restant à payer: {parseFloat(remainingAmount).toFixed(2)} €
       </Typography>
+      <Box>
+        <Grid container spacing={1} alignItems="center" mt={1}>
+          <Grid item xs={12} sm={4}>
+            <FormControl variant="outlined" size="small" fullWidth>
+              <InputLabel>Type de paiement</InputLabel>
+              <Select
+                value={selectedPaymentType}
+                onChange={(e) => setSelectedPaymentType(e.target.value)}
+                label="Type de paiement"
+              >
+                <MenuItem value="CB">Carte Bancaire</MenuItem>
+                <MenuItem value="Cash">Espèces</MenuItem>
+                <MenuItem value="Cheque">Chèque</MenuItem>
+                <MenuItem value="ChequeCadeau">Chèque Cadeau</MenuItem>
+                <MenuItem value="Virement">Virement</MenuItem>
+                <MenuItem value="Avoir">Avoir</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Montant"
+              type="number"
+              value={paymentAmount}
+              onChange={(e) => setPaymentAmount(e.target.value)}
+              fullWidth
+              size="small"
+            />
+          </Grid>
+          <Grid item xs={12} sm={4} display="flex">
+            <Fab
+              color="primary"
+              onClick={handleAddPayment}
+              disabled={!selectedPaymentType || paymentAmount <= 0}
+              size="small"
+            >
+              <AddIcon />
+            </Fab>
+          </Grid>
+        </Grid>
+      </Box>
     </Box>
   )
 }
@@ -96,35 +116,52 @@ const PaymentList = ({ payments, onRemove, onUpdate }) => {
           key={index}
           display="flex"
           alignItems="center"
-          justifyContent="space-between"
-          sx={{ mb: 1 }}
+          gap={2}
+          width={'60%'}
         >
-          {editing.index === index ? (
-            <TextField
-              key={`edit-${index}`}
-              size="small"
-              variant="outlined"
-              value={editing.value}
-              autoFocus
-              onInput={(e) => setEditing({ ...editing, value: e.target.value })}
-              style={{ marginRight: '10px' }}
-              type="number"
-            />
-          ) : (
-            <Typography>{`${payment.type}: ${payment.amount}€`}</Typography>
-          )}
+          {/* Affichage du type et du montant du paiement */}
+          <Box flex={1} display="flex" alignItems="center" gap={1}>
+            {editing.index === index ? (
+              <TextField
+                size="small"
+                variant="outlined"
+                value={editing.value}
+                autoFocus
+                onInput={(e) =>
+                  setEditing({ ...editing, value: e.target.value })
+                }
+                type="number"
+                fullWidth
+              />
+            ) : (
+              <Typography
+                sx={{ flexGrow: 1 }}
+              >{`${payment.type}: ${payment.amount} €`}</Typography>
+            )}
+          </Box>
 
-          {editing.index === index ? (
-            <Button onClick={() => handleUpdate(index)}>Valider</Button>
-          ) : (
-            <Button onClick={() => handleEditClick(index, payment.amount)}>
-              Modifier
-            </Button>
-          )}
-
-          <Button onClick={() => onRemove(index)} sx={{ ml: 1 }}>
-            Supprimer
-          </Button>
+          {/* Boutons Modifier et Supprimer */}
+          <Box flex={1} display="flex" gap={1} justifyContent="flex-end">
+            {editing.index === index ? (
+              <Button
+                variant="contained"
+                onClick={() => handleUpdate(index)}
+                size="small"
+              >
+                Valider
+              </Button>
+            ) : (
+              <IconButton
+                onClick={() => handleEditClick(index, payment.amount)}
+                size="small"
+              >
+                <EditIcon />
+              </IconButton>
+            )}
+            <IconButton onClick={() => onRemove(index)} size="small">
+              <DeleteIcon />
+            </IconButton>
+          </Box>
         </Box>
       ))}
     </Box>
@@ -148,51 +185,58 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
   const remainingAmount = calculateRemainingAmount()
 
   return (
-    <Box mb={2}>
-      <FormControl fullWidth size="small">
-        <InputLabel id="payment-type-label">Type de paiement</InputLabel>
-        <Select
-          labelId="payment-type-label"
-          value={paymentType}
-          onChange={handlePaymentTypeChange}
-          label="Type de paiement"
-        >
-          <MenuItem value="CB">Carte Bancaire</MenuItem>
-          <MenuItem value="Cash">Espèces</MenuItem>
-          <MenuItem value="Cheque">Chèque</MenuItem>
-          <MenuItem value="ChequeCadeau">Chèque Cadeau</MenuItem>
-          <MenuItem value="Virement">Virement</MenuItem>
-          <MenuItem value="Avoir">Avoir</MenuItem>
-          <MenuItem value="Multiple">Paiement Multiple</MenuItem>
-        </Select>
-      </FormControl>
+    <Box mb={1}>
+      <Box mb={2}>
+        <FormControl fullWidth size="small">
+          <InputLabel id="payment-type-label">Type de paiement</InputLabel>
+          <Select
+            labelId="payment-type-label"
+            value={paymentType}
+            onChange={handlePaymentTypeChange}
+            label="Type de paiement"
+          >
+            <MenuItem value="CB">Carte Bancaire</MenuItem>
+            <MenuItem value="Cash">Espèces</MenuItem>
+            <MenuItem value="Cheque">Chèque</MenuItem>
+            <MenuItem value="ChequeCadeau">Chèque Cadeau</MenuItem>
+            <MenuItem value="Virement">Virement</MenuItem>
+            <MenuItem value="Avoir">Avoir</MenuItem>
+            <MenuItem value="Multiple">Paiement Multiple</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
       {paymentType === 'Cash' && (
-        <Box>
-          <TextField
-            label="Montant Payé"
-            value={amountPaid.toString()}
-            onChange={handleAmountPaidChange}
-            type="number"
-            disabled={isActiveQuote}
-            fullWidth
-            margin="normal"
-            size="small"
-          />
-          <Typography variant="h6" sx={{ mt: 2 }}>
-            Monnaie à rendre : {calculateChange().toFixed(2)} €
-          </Typography>
+        <Box mt={2}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={6}>
+              <TextField
+                label="Montant Payé"
+                value={amountPaid.toString()}
+                onChange={handleAmountPaidChange}
+                type="number"
+                disabled={isActiveQuote}
+                fullWidth
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h6">
+                A rendre : {calculateChange().toFixed(2)} €
+              </Typography>
+            </Grid>
+          </Grid>
         </Box>
       )}
       {paymentType === 'Multiple' && (
         <>
-          <MultiplePaymentInput
-            onAddPayment={addPaymentDetails}
-            remainingAmount={remainingAmount}
-          />
           <PaymentList
             payments={multiplePayments}
             onRemove={removePayment}
             onUpdate={(index, newPayment) => updatePayment(index, newPayment)}
+          />
+          <MultiplePaymentInput
+            onAddPayment={addPaymentDetails}
+            remainingAmount={remainingAmount}
           />
         </>
       )}

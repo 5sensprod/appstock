@@ -349,7 +349,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
         <Box mt={2}>
           <PaymentTypeSelector isActiveQuote={isActiveQuote} />
         </Box>
-        <Box mt={2} display="flex" justifyContent="space-between">
+        <Box mt={4} display="flex" justifyContent="space-between">
           <Button variant="contained" onClick={handleActionClick}>
             Valider
           </Button>
