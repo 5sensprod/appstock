@@ -36,13 +36,14 @@ export const CartProvider = ({ children }) => {
     changeAmount: 0,
   })
 
-  // Ajoutez une fonction pour réinitialiser les paiements
+  // Ajoute une fonction pour réinitialiser les paiements
   const resetPaymentInfo = () => {
     setSelectedPaymentType('')
     setPaymentAmount('')
     setMultiplePayments([])
     setPaymentDetails([])
     setPaymentType('CB')
+    setAmountPaid('')
   }
 
   const calculateTotalItem = (item) => {
