@@ -17,6 +17,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import usePaymentHandlers from './usePaymentHandlers'
 import { CartContext } from '../../contexts/CartContext'
+import { formatPrice } from '../../utils/priceUtils'
 
 const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
   const {
@@ -44,7 +45,7 @@ const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
   return (
     <Box>
       <Typography variant="body1" color={'green'}>
-        Restant à payer: {parseFloat(remainingAmount).toFixed(2)} €
+        Restant à payer: {formatPrice(remainingAmount)}
       </Typography>
       <Box>
         <Grid container spacing={1} alignItems="center" mt={1}>
@@ -134,9 +135,9 @@ const PaymentList = ({ payments, onRemove, onUpdate }) => {
                 fullWidth
               />
             ) : (
-              <Typography
-                sx={{ flexGrow: 1 }}
-              >{`${payment.type}: ${payment.amount} €`}</Typography>
+              <Typography sx={{ flexGrow: 1 }}>
+                {`${payment.type}: ${formatPrice(payment.amount)}`}
+              </Typography>
             )}
           </Box>
 
@@ -220,8 +221,8 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
               />
             </Grid>
             <Grid item xs={6}>
-              <Typography variant="h6">
-                A rendre : {calculateChange().toFixed(2)} €
+              <Typography variant="body1" color={'green'}>
+                A rendre : {formatPrice(calculateChange())}
               </Typography>
             </Grid>
           </Grid>
