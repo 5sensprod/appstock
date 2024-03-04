@@ -3,7 +3,6 @@ import {
   calculateTotal,
   calculateDiscountMarkup,
   calculateTax,
-  calculateTotalItem,
   applyCartDiscountOrMarkup,
 } from '../utils/priceUtils'
 
@@ -18,6 +17,7 @@ export const CartProvider = ({ children }) => {
     originalTotal: 0,
     modifiedTotal: 0,
   })
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [invoiceData, setInvoiceData] = useState(null)
   const [adjustmentAmount, setAdjustmentAmount] = useState(0)
@@ -30,6 +30,33 @@ export const CartProvider = ({ children }) => {
 
   const [selectedPaymentType, setSelectedPaymentType] = useState('')
   const [paymentAmount, setPaymentAmount] = useState('')
+  const [editingPayment, setEditingPayment] = useState({
+    index: null,
+    value: '',
+  })
+
+  const calculateRemainingAmount = () => {
+    const total =
+      adjustmentAmount !== 0
+        ? cartTotals.modifiedTotal
+        : cartTotals.originalTotal
+    const totalPaid = multiplePayments.reduce(
+      (acc, payment) => acc + payment.amount,
+      0,
+    )
+    return total - totalPaid
+  }
+
+  const calculateChange = (givenAmount = amountPaid) => {
+    const paid = givenAmount ? parseFloat(givenAmount) : 0
+
+    const total =
+      adjustmentAmount !== 0
+        ? cartTotals.modifiedTotal
+        : cartTotals.originalTotal
+    let change = paid - total
+    return isNaN(change) ? 0 : parseFloat(change.toFixed(2))
+  }
 
   const [cashDetails, setCashDetails] = useState({
     givenAmount: 0,
@@ -44,6 +71,15 @@ export const CartProvider = ({ children }) => {
     setPaymentDetails([])
     setPaymentType('CB')
     setAmountPaid('')
+  }
+
+  // Fonction pour mettre à jour l'état d'édition du paiement multiple
+  const startEditingPayment = (index, value) => {
+    setEditingPayment({ index, value })
+  }
+
+  const stopEditingPayment = () => {
+    setEditingPayment({ index: null, value: '' })
   }
 
   const calculateTotalItem = (item) => {
@@ -222,6 +258,11 @@ export const CartProvider = ({ children }) => {
         paymentAmount,
         setPaymentAmount,
         resetPaymentInfo,
+        editingPayment,
+        startEditingPayment,
+        stopEditingPayment,
+        calculateRemainingAmount,
+        calculateChange,
       }}
     >
       {children}

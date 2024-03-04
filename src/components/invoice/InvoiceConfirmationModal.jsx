@@ -39,9 +39,26 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     paymentType,
     amountPaid,
     resetPaymentInfo,
+    editingPayment,
+    calculateRemainingAmount,
+    multiplePayment,
+    calculateChange,
   } = useContext(CartContext)
 
   const { showToast } = useUI()
+
+  const remainingAmount = calculateRemainingAmount()
+
+  const isMultiplePaymentIncomplete =
+    paymentType === 'Multiple' && remainingAmount > 0
+
+  const isCashPaymentInsufficient =
+    paymentType === 'Cash' && (!amountPaid || calculateChange() < 0)
+
+  const disableValidationButton =
+    editingPayment.index !== null ||
+    isMultiplePaymentIncomplete ||
+    isCashPaymentInsufficient
 
   const {
     customerName: quoteCustomerName,
@@ -73,8 +90,6 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
       item.remiseMajorationValue > 0 &&
       item.remiseMajorationLabel === 'Majoration',
   )
-
-  const hasAdjustment = cartItems.some((item) => item.remiseMajorationValue > 0)
 
   const [showCustomerFields, setShowCustomerFields] = useState(false)
 
@@ -208,10 +223,9 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
   const handleActionClick = async () => {
     try {
       if (showCustomerFields) {
-        // Vérification des champs obligatoires
         if (!customerName || !customerAdress) {
           showToast('Veuillez remplir tous les champs obligatoires.', 'error')
-          return // Empêche la soumission si les champs obligatoires ne sont pas remplis
+          return
         }
 
         const customerInfo = {
@@ -350,7 +364,11 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
           <PaymentTypeSelector isActiveQuote={isActiveQuote} />
         </Box>
         <Box mt={4} display="flex" justifyContent="space-between">
-          <Button variant="contained" onClick={handleActionClick}>
+          <Button
+            variant="contained"
+            onClick={handleActionClick}
+            disabled={disableValidationButton}
+          >
             Valider
           </Button>
           <Button variant="outlined" onClick={onClose}>

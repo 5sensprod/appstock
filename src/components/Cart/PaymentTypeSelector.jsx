@@ -93,21 +93,22 @@ const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
 }
 
 const PaymentList = ({ payments, onRemove, onUpdate }) => {
-  const [editing, setEditing] = useState({ index: null, value: '' })
+  const { editingPayment, startEditingPayment, stopEditingPayment } =
+    useContext(CartContext)
 
   const handleEditClick = (index, amount) => {
-    setEditing({ index, value: amount.toString() })
+    startEditingPayment(index, amount.toString())
   }
 
   const handleUpdate = (index) => {
-    if (editing.value) {
+    if (editingPayment.value) {
       const updatedPayment = {
         ...payments[index],
-        amount: parseFloat(editing.value),
+        amount: parseFloat(editingPayment.value),
       }
       onUpdate(index, updatedPayment)
+      stopEditingPayment()
     }
-    setEditing({ index: null, value: '' })
   }
 
   return (
@@ -120,17 +121,14 @@ const PaymentList = ({ payments, onRemove, onUpdate }) => {
           gap={2}
           width={'60%'}
         >
-          {/* Affichage du type et du montant du paiement */}
           <Box flex={1} display="flex" alignItems="center" gap={1}>
-            {editing.index === index ? (
+            {editingPayment.index === index ? (
               <TextField
                 size="small"
                 variant="outlined"
-                value={editing.value}
+                value={editingPayment.value}
                 autoFocus
-                onInput={(e) =>
-                  setEditing({ ...editing, value: e.target.value })
-                }
+                onChange={(e) => startEditingPayment(index, e.target.value)}
                 type="number"
                 fullWidth
               />
@@ -140,10 +138,8 @@ const PaymentList = ({ payments, onRemove, onUpdate }) => {
               </Typography>
             )}
           </Box>
-
-          {/* Boutons Modifier et Supprimer */}
           <Box flex={1} display="flex" gap={1} justifyContent="flex-end">
-            {editing.index === index ? (
+            {editingPayment.index === index ? (
               <Button
                 variant="contained"
                 onClick={() => handleUpdate(index)}
@@ -175,15 +171,26 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
     amountPaid,
     handlePaymentTypeChange,
     handleAmountPaidChange,
-    calculateChange,
     addPaymentDetails,
-    calculateRemainingAmount,
     multiplePayments,
     removePayment,
     updatePayment,
   } = usePaymentHandlers()
 
+  const { calculateRemainingAmount, calculateChange } = useContext(CartContext)
+
   const remainingAmount = calculateRemainingAmount()
+
+  const change = calculateChange()
+  let paymentStatusText
+
+  if (change > 0) {
+    paymentStatusText = `À rendre : ${formatPrice(change)}`
+  } else if (change < 0) {
+    paymentStatusText = `À payer : ${formatPrice(Math.abs(change))}`
+  } else {
+    paymentStatusText = 'Payé'
+  }
 
   return (
     <Box mb={1}>
@@ -221,8 +228,8 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
               />
             </Grid>
             <Grid item xs={6}>
-              <Typography variant="body1" color={'green'}>
-                A rendre : {formatPrice(calculateChange())}
+              <Typography variant="body1" color={change < 0 ? 'red' : 'green'}>
+                {paymentStatusText}
               </Typography>
             </Grid>
           </Grid>

@@ -53,19 +53,6 @@ const usePaymentHandlers = () => {
     return change
   }
 
-  // Calcul du montant restant à payer
-  const calculateRemainingAmount = () => {
-    const total =
-      adjustmentAmount !== 0
-        ? cartTotals.modifiedTotal
-        : cartTotals.originalTotal
-    const totalPaid = multiplePayments.reduce(
-      (acc, payment) => acc + payment.amount,
-      0,
-    )
-    return total - totalPaid
-  }
-
   const removePayment = (index) => {
     setMultiplePayments((prevPayments) =>
       prevPayments.filter((_, i) => i !== index),
@@ -88,7 +75,6 @@ const usePaymentHandlers = () => {
     handleAmountPaidChange,
     calculateChange,
     addPaymentDetails,
-    calculateRemainingAmount,
     paymentType,
     amountPaid,
     multiplePayments,
