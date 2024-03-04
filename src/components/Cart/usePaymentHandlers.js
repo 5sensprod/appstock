@@ -14,6 +14,7 @@ const usePaymentHandlers = () => {
     paymentDetails,
     setPaymentDetails,
     setCashDetails,
+    calculateChange,
   } = useContext(CartContext)
 
   const handlePaymentTypeChange = (event) => {
@@ -41,18 +42,6 @@ const usePaymentHandlers = () => {
     })
   }
 
-  const calculateChange = (givenAmount = amountPaid) => {
-    const total =
-      adjustmentAmount !== 0
-        ? cartTotals.modifiedTotal
-        : cartTotals.originalTotal
-    const paid = parseFloat(givenAmount)
-    let change = paid > total ? paid - total : 0
-    change = parseFloat(change.toFixed(2))
-
-    return change
-  }
-
   const removePayment = (index) => {
     setMultiplePayments((prevPayments) =>
       prevPayments.filter((_, i) => i !== index),
@@ -73,7 +62,6 @@ const usePaymentHandlers = () => {
   return {
     handlePaymentTypeChange,
     handleAmountPaidChange,
-    calculateChange,
     addPaymentDetails,
     paymentType,
     amountPaid,
