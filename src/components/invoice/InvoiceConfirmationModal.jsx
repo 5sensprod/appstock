@@ -14,6 +14,8 @@ import { formatPrice } from '../../utils/priceUtils'
 import { useInvoices } from '../../contexts/InvoicesContext'
 import { useUI } from '../../contexts/UIContext'
 import { useQuotes } from '../../contexts/QuoteContext'
+import PaymentTypeSelector from '../Cart/PaymentTypeSelector'
+
 const style = {
   position: 'absolute',
   top: '50%',
@@ -334,6 +336,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
             />
           </>
         )}
+        <PaymentTypeSelector isActiveQuote={isActiveQuote} />
         <Box mt={2} display="flex" justifyContent="space-between">
           <Button variant="contained" onClick={handleActionClick}>
             Valider

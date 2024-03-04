@@ -33,7 +33,6 @@ const usePaymentHandlers = () => {
     setMultiplePayments((prevDetails) => [...prevDetails, payment])
     setPaymentDetails((prevDetails) => {
       const newDetails = [...prevDetails, payment]
-      console.log('Payment Details Updated: ', newDetails)
       return newDetails
     })
   }
@@ -66,6 +65,11 @@ const usePaymentHandlers = () => {
   const removePayment = (index) => {
     setMultiplePayments((prevPayments) =>
       prevPayments.filter((_, i) => i !== index),
+    )
+
+    // Mettre à jour paymentDetails en conséquence
+    setPaymentDetails((prevDetails) =>
+      prevDetails.filter((_, i) => i !== index),
     )
   }
 

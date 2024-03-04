@@ -36,13 +36,13 @@ export const CartProvider = ({ children }) => {
     changeAmount: 0,
   })
 
-  console.log('Current paymentDetails in CartContext:', paymentDetails)
-  console.log('Current cashDetails in CartContext:', cashDetails)
-
   // Ajoutez une fonction pour réinitialiser les paiements
   const resetPaymentInfo = () => {
     setSelectedPaymentType('')
     setPaymentAmount('')
+    setMultiplePayments([])
+    setPaymentDetails([])
+    setPaymentType('CB')
   }
 
   const calculateTotalItem = (item) => {
@@ -59,9 +59,6 @@ export const CartProvider = ({ children }) => {
 
     // Utilise `priceToUse` comme `puTTC` pour le calcul de `totalItem`
     const totalItem = calculateTotalItem({ ...item, puTTC: priceToUse })
-
-    console.log(`Total Item for ${item.reference}:`, totalItem)
-    console.log(`prixTTC: ${priceToUse}, quantity: ${item.quantity}`)
 
     return {
       ...item,

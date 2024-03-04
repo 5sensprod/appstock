@@ -26,6 +26,7 @@ const Cart = () => {
     cartTotals,
     clearCart,
     paymentType,
+    resetPaymentInfo,
   } = useContext(CartContext)
 
   const {
@@ -122,7 +123,7 @@ const Cart = () => {
               <Box my={2}>
                 <CartTotal />
               </Box>
-              <PaymentTypeSelector isActiveQuote={isActiveQuote} />
+              {/* <PaymentTypeSelector isActiveQuote={isActiveQuote} /> */}
               <Box
                 sx={{
                   display: 'flex',
@@ -208,7 +209,10 @@ const Cart = () => {
       />
       <InvoiceConfirmationModal
         open={isInvoiceModalOpen}
-        onClose={() => setIsInvoiceModalOpen(false)}
+        onClose={() => {
+          resetPaymentInfo()
+          setIsInvoiceModalOpen(false)
+        }}
         paymentType={paymentType}
       />
     </>
