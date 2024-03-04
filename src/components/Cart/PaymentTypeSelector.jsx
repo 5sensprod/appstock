@@ -37,7 +37,7 @@ const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
 
   return (
     <Box>
-      <FormControl fullWidth margin="normal">
+      <FormControl variant="outlined" size="small" fullWidth margin="normal">
         <InputLabel>Type de paiement</InputLabel>
         <Select
           value={selectedPaymentType}
@@ -59,6 +59,7 @@ const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
         onChange={(e) => setPaymentAmount(e.target.value)}
         fullWidth
         margin="normal"
+        size="small"
       />
       <Button onClick={handleAddPayment} variant="contained" sx={{ mt: 2 }}>
         Ajouter
@@ -148,7 +149,7 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
 
   return (
     <Box mb={2}>
-      <FormControl fullWidth>
+      <FormControl fullWidth size="small">
         <InputLabel id="payment-type-label">Type de paiement</InputLabel>
         <Select
           labelId="payment-type-label"
@@ -169,12 +170,13 @@ const PaymentTypeSelector = ({ isActiveQuote }) => {
         <Box>
           <TextField
             label="Montant Payé"
-            value={amountPaid}
+            value={amountPaid.toString()}
             onChange={handleAmountPaidChange}
             type="number"
             disabled={isActiveQuote}
             fullWidth
             margin="normal"
+            size="small"
           />
           <Typography variant="h6" sx={{ mt: 2 }}>
             Monnaie à rendre : {calculateChange().toFixed(2)} €

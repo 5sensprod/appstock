@@ -21,14 +21,18 @@ const usePaymentHandlers = () => {
   }
 
   const handleAmountPaidChange = (event) => {
-    const givenAmount = parseFloat(event.target.value)
+    const value = event.target.value
+    // Utiliser une chaîne vide si la valeur est falsy (y compris une chaîne vide), sinon convertir en nombre
+    const givenAmount = value ? parseFloat(value) : ''
     setAmountPaid(givenAmount)
 
     if (paymentType === 'Cash') {
-      const changeAmount = calculateChange(givenAmount)
+      // Gérer uniquement les montants valides
+      const changeAmount = givenAmount ? calculateChange(givenAmount) : 0
       setCashDetails({ givenAmount, changeAmount })
     }
   }
+
   const addPaymentDetails = (payment) => {
     setMultiplePayments((prevDetails) => [...prevDetails, payment])
     setPaymentDetails((prevDetails) => {

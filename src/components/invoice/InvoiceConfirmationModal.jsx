@@ -7,6 +7,7 @@ import {
   TextField,
   Checkbox,
   FormControlLabel,
+  Grid,
 } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { CartContext } from '../../contexts/CartContext'
@@ -279,64 +280,75 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
             sx={{ '& .MuiDataGrid-columnHeaders': { display: 'none' } }}
           />
         </div>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={showCustomerFields}
-              onChange={handleCheckboxChange}
-            />
-          }
-          label="Avec facture"
-        />
+        <Box mb={1}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={showCustomerFields}
+                onChange={handleCheckboxChange}
+                size="small"
+              />
+            }
+            label="Avec facture"
+          />
+        </Box>
         {showCustomerFields && (
-          <>
+          <Box mb={3}>
             {/* Message d'erreur */}
             {!customerName && !customerAdress && (
-              <Typography variant="body2" mt={2}>
+              <Typography variant="body2" mb={2}>
                 Les champs marqués d'un astérisque (*) sont obligatoires.
               </Typography>
             )}
 
             {/* Champ "Nom du client" */}
-            <TextField
-              label="Nom du client *"
-              size="small"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-
-            {/* Champ "Adresse du client" */}
-            <TextField
-              label="Adresse du client *"
-              size="small"
-              value={customerAdress}
-              onChange={(e) => setCustomerAdress(e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Email du client"
-              size="small"
-              value={customerEmail}
-              onChange={(e) => setCustomerEmail(e.target.value)}
-              type="email"
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Téléphone du client"
-              size="small"
-              value={customerPhone}
-              onChange={(e) => setCustomerPhone(e.target.value)}
-              type="tel"
-              fullWidth
-              margin="normal"
-            />
-          </>
+            <Grid container spacing={2} margin="normal">
+              <Grid item xs={4}>
+                <TextField
+                  label="Nom du client *"
+                  size="small"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={8}>
+                <TextField
+                  label="Adresse du client *"
+                  size="small"
+                  value={customerAdress}
+                  onChange={(e) => setCustomerAdress(e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+            <Grid container spacing={1} margin="normal" mt={1} mb={1}>
+              <Grid item xs={6}>
+                <TextField
+                  label="Email du client"
+                  size="small"
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  type="email"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Téléphone du client"
+                  size="small"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  type="tel"
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+          </Box>
         )}
-        <PaymentTypeSelector isActiveQuote={isActiveQuote} />
+        <Box mt={2}>
+          <PaymentTypeSelector isActiveQuote={isActiveQuote} />
+        </Box>
         <Box mt={2} display="flex" justifyContent="space-between">
           <Button variant="contained" onClick={handleActionClick}>
             Valider
