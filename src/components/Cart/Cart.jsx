@@ -109,7 +109,7 @@ const Cart = () => {
           {cartItems.length > 0 ? (
             <>
               {cartItems.map((item) => (
-                <Box key={item._id} mb={2}>
+                <Box key={item._id} mb={1}>
                   <CartItem
                     item={item}
                     updateQuantity={updateQuantity}

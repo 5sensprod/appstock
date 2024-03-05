@@ -113,13 +113,13 @@ const CartItem = ({
   return (
     <Card variant="outlined">
       <CardContent>
-        <Box mb={2} display="flex" alignItems="center" gap="20px">
-          <Typography variant="h6">{item.reference}</Typography>
+        <Box mb={1} display="flex" alignItems="center" gap="10px">
+          <Typography variant="body1">{item.reference}</Typography>
           <IconButton onClick={handleModalOpen} size="small" color="success">
             <VisibilityIcon fontSize="small" />
           </IconButton>
         </Box>
-        <Box mb={0}>
+        <Box display="flex" alignItems="center" gap="10px">
           <TextField
             type="text"
             label="Prix en €"
@@ -134,18 +134,6 @@ const CartItem = ({
             }}
             size="small"
           />
-        </Box>
-        {isPriceEdited && (
-          <Box mb={2}>
-            <Typography variant="body2" color="textSecondary">
-              Prix catalogue : {formatPrice(originalPrice)}
-              <IconButton onClick={resetPrice} size="small">
-                <ReplayIcon />
-              </IconButton>
-            </Typography>
-          </Box>
-        )}
-        <Box mt={2}>
           <TextField
             type="number"
             label="Quantité"
@@ -153,12 +141,22 @@ const CartItem = ({
             onChange={handleQuantityChange}
             inputProps={{ min: 0 }}
             size="small"
+            sx={{ width: 90 }}
           />
-
-          <IconButton onClick={handleRemoveClick}>
+          <IconButton onClick={handleRemoveClick} size="small">
             <DeleteIcon />
           </IconButton>
         </Box>
+        {isPriceEdited && (
+          <Box mb={0} display="flex" alignItems="center">
+            <Typography variant="body2" color="textSecondary">
+              Prix catalogue : {formatPrice(originalPrice)}
+            </Typography>
+            <IconButton onClick={resetPrice} size="small">
+              <ReplayIcon />
+            </IconButton>
+          </Box>
+        )}
       </CardContent>
       <ProductModal
         product={item}
