@@ -56,31 +56,32 @@ const QRCodeGenerator = ({ productId }) => {
 
   const printAreaStyle = {
     position: 'relative',
-    width: '48%',
-    height: '25%',
+    width: '105mm',
+    height: '74.25mm',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#f9f9f9',
     border: '1px solid #ddd',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
     padding: '20px',
     margin: '20px auto',
+    borderRadius: '5px',
+    boxSizing: 'border-box',
   }
 
   const logoStyle = {
     position: 'absolute',
-    top: '1px', // Ajustez en fonction de l'endroit où vous voulez que le logo apparaisse
-    left: '1px', // Idem pour la position horizontale
-    // Autres styles spécifiques au logo...
+    top: '1px',
+    left: '1px',
   }
 
   return (
     <Box>
       <Box id="printArea" sx={printAreaStyle}>
         <Box sx={logoStyle}>
-          <Logo />{' '}
-          {/* Assurez-vous que le composant Logo accepte des styles via props ou a ses propres styles */}
+          <Logo />
         </Box>
         <Typography variant="h6">{product.reference}</Typography>
         <Typography variant="h6" sx={{ mt: 2 }}>
