@@ -29,7 +29,7 @@ const QRCodeGenerator = ({ productId }) => {
 
     const imgProps = pdf.getImageProperties(imgData)
     const pdfWidth = pdf.internal.pageSize.getWidth()
-    const scaleFactor = 0.4 // Pour ajuster la taille de l'image dans le PDF
+    const scaleFactor = 0.4
     const pdfHeight =
       ((imgProps.height * pdfWidth) / imgProps.width) * scaleFactor
 
@@ -38,8 +38,8 @@ const QRCodeGenerator = ({ productId }) => {
   }
 
   const printAreaStyle = {
-    width: '640px', // 16:9 aspect ratio width
-    height: '360px', // 16:9 aspect ratio height
+    width: '640px',
+    height: '360px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',

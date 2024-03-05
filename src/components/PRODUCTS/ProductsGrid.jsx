@@ -45,12 +45,12 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 740, // Augmentée à 600px pour plus de largeur
-    height: 500, // Définir une hauteur spécifique si nécessaire
+    width: 740,
+    height: 500,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
-    p: 4, // Padding autour du contenu de la modal
+    p: 4,
     zIndex: 1500,
   }
 
@@ -194,7 +194,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     handleDelete,
     handleSave,
     handleCancel,
-    handleOpen, // Cette fonction est maintenant passée directement
+    handleOpen,
     rowModesModel,
   )
 
@@ -256,7 +256,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         onBulkEditClick={openBulkUpdateModal}
       />
     ),
-    [handleAddClick, openBulkUpdateModal], // Les dépendances
+    [handleAddClick, openBulkUpdateModal],
   )
 
   return (
@@ -297,7 +297,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
           }}
           initialState={{
             pagination: {
-              paginationModel: gridPreferences.paginationModel, // Utilisez l'état du contexte
+              paginationModel: gridPreferences.paginationModel,
             },
           }}
           pageSize={gridPreferences.paginationModel.pageSize}
