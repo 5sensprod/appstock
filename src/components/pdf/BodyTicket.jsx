@@ -76,7 +76,7 @@ const BodyTicket = ({ data, fontSize = '9px' }) => {
               <Grid item xs={2}>
                 <Typography sx={{ ...commonStyle, fontWeight: 'normal' }}>
                   {item.remiseMajorationValue !== 0
-                    ? `${item.remiseMajorationValue}`
+                    ? `${item.remiseMajorationValue.toString().replace('.', ',')}`
                     : '0'}
                 </Typography>
               </Grid>
