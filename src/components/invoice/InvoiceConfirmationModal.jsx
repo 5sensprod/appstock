@@ -122,7 +122,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     },
     {
       field: 'quantity',
-      headerName: 'Quantité',
+      headerName: 'Qté',
       type: 'number',
       width: 110,
       sortable: false,

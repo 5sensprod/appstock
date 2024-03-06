@@ -1,5 +1,3 @@
-// Tableau produits page POS
-
 import React, { useContext, useEffect, useState } from 'react'
 import { CartContext } from '../../contexts/CartContext'
 import { DataGridPro, frFR, GridToolbar } from '@mui/x-data-grid-pro'
@@ -17,7 +15,7 @@ const prepareProductDataForDisplay = (products, baseUrl) => {
       photoUrl: isDefaultImage
         ? defaultImageUrl
         : `${baseUrl}/catalogue/${product._id}/${product.featuredImage}`,
-      isDefaultImage, // Ajout de cette propriété pour chaque produit
+      isDefaultImage,
     }
   })
 }
@@ -115,7 +113,7 @@ const ProductTable = ({ products }) => {
       type: 'number',
       flex: 1,
       valueFormatter: (params) => {
-        return `${params.value}%` // Ajouter un symbole de pourcentage à la valeur
+        return `${params.value}%`
       },
       headerAlign: 'left',
       align: 'left',
@@ -147,7 +145,7 @@ const ProductTable = ({ products }) => {
         columns={columns}
         initialState={{
           pagination: {
-            paginationModel: gridPreferences.paginationModel, // Utilisez l'état du contexte
+            paginationModel: gridPreferences.paginationModel,
           },
         }}
         pageSize={gridPreferences.paginationModel.pageSize}
