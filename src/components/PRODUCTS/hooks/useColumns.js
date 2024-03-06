@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useCategoryContext } from '../../../contexts/CategoryContext'
 import { formatNumberFrench } from '../../../utils/priceUtils'
 import moment from 'moment'
@@ -15,6 +15,7 @@ import {
 } from '@mui/x-data-grid-premium'
 import CustomSelect from '../../ui/CustomSelect'
 import { TVA_RATES } from '../../../utils/constants'
+import { formatNumberWithComma } from '../../../utils/formatUtils'
 
 const useColumns = (
   handleEdit,
@@ -221,7 +222,7 @@ const useColumns = (
         if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
           return '' // Ne rien afficher pour les lignes d'agrégation
         }
-        return `${params.value}%` // Ajouter un symbole de pourcentage à la valeur
+        return `${formatNumberWithComma(params.value)}` // Ajouter un symbole de pourcentage à la valeur
       },
       renderEditCell: (params) => (
         <CustomSelect

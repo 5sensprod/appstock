@@ -4,6 +4,7 @@ import { DataGridPro, frFR, GridToolbar } from '@mui/x-data-grid-pro'
 import { Box } from '@mui/material'
 import { formatNumberFrench } from '../../utils/priceUtils'
 import { useConfig } from '../../contexts/ConfigContext'
+import { formatNumberWithComma } from '../../utils/formatUtils'
 
 const prepareProductDataForDisplay = (products, baseUrl) => {
   const defaultImageUrl = `${baseUrl}/catalogue/default/default.png`
@@ -113,7 +114,7 @@ const ProductTable = ({ products }) => {
       type: 'number',
       flex: 1,
       valueFormatter: (params) => {
-        return `${params.value}%`
+        return `${formatNumberWithComma(params.value)}`
       },
       headerAlign: 'left',
       align: 'left',

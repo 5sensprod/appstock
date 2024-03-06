@@ -10,16 +10,13 @@ import {
   ListItemText,
 } from '@mui/material'
 import { formatPrice } from '../../utils/priceUtils'
-
-const formatNumberWithComma = (number) => {
-  return number.toFixed(2).replace('.', ',')
-}
+import { formatNumberWithComma } from '../../utils/formatUtils'
 
 const OrderSummary = () => {
   const { cartItems, cartTotals, adjustmentAmount } = useContext(CartContext)
 
   const tvaTotals = cartItems.reduce((acc, item) => {
-    const taxRate = item.tauxTVA
+    const taxRate = formatNumberWithComma(item.tauxTVA)
     const taxAmount = parseFloat(item.montantTVA) * item.quantity
 
     acc[taxRate] = (acc[taxRate] || 0) + taxAmount
@@ -43,7 +40,7 @@ const OrderSummary = () => {
                   <>
                     Quantité: {item.quantity}
                     <br />
-                    TVA: {item.tva} %
+                    TVA: {formatNumberWithComma(item.tva)} %
                     <br />
                     Prix unitaire HT: {formatPrice(parseFloat(item.prixHT))}
                     <br />
