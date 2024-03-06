@@ -27,22 +27,18 @@ const useColumns = (
 ) => {
   const { categories } = useCategoryContext()
 
-  const getCategoryPathAndId = (categoryId) => {
+  const getCategoryPath = (categoryId) => {
     let path = []
     let currentCategory = categories.find((cat) => cat._id === categoryId)
 
     while (currentCategory) {
       path.unshift(currentCategory.name)
-      if (!currentCategory.parentId) {
-        // Si on est au niveau le plus haut, on garde cet ID comme référence
-        return { path: path.join(' > '), categoryId: currentCategory._id }
-      }
       currentCategory = categories.find(
         (cat) => cat._id === currentCategory.parentId,
       )
     }
 
-    return { path: 'Non catégorisé', categoryId: null } // ou une valeur par défaut appropriée
+    return path.join(' > ')
   }
 
   const isNewRowFunction = (row) => {
@@ -159,17 +155,24 @@ const useColumns = (
       field: 'categorie',
       headerName: 'Catégorie',
       width: 150,
+      // flex: 0.75,
       editable: true,
       aggregable: false,
       valueGetter: (params) => {
-        const categoryInfo = getCategoryPathAndId(params.row.categorie)
-        return categoryInfo ? categoryInfo.path : ''
+        if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
+          return '' // Ne rien afficher pour les lignes d'agrégation
+        }
+        return getCategoryPath(params.value) || 'Non catégorisé'
       },
       renderEditCell: (params) => {
-        const currentCategoryId = params.row.categorie
+        const currentCategoryName = params.api.getCellValue(
+          params.id,
+          'categorie',
+        )
+
         return (
           <CategorySelect
-            value={currentCategoryId}
+            value={currentCategoryName}
             onChange={(newValue) => {
               params.api.setEditCellValue({
                 id: params.id,
@@ -251,7 +254,7 @@ const useColumns = (
     },
   ]
 
-  return { columns, getCategoryPathAndId }
+  return { columns }
 }
 
 export default useColumns

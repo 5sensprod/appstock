@@ -209,22 +209,27 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     if (!isUpdating) {
       return oldRow
     }
+
     try {
       if (newRow && newRow._id && newRow._id.startsWith('temp-')) {
-        const { categoryId } = getCategoryPathAndId(newRow.categorie)
+        // Logique pour l'ajout d'un nouveau produit
         const addedProduct = await addProductToContext({
           ...newRow,
           _id: undefined,
-          categorie: categoryId,
         })
-        // ...
+        setProducts((currentProducts) =>
+          currentProducts.map((row) =>
+            row._id === newRow._id ? { ...addedProduct, isNew: false } : row,
+          ),
+        )
+        showToast('Produit ajouté avec succès', 'success')
       } else {
-        const { categoryId } = getCategoryPathAndId(newRow.categorie)
-        await updateProductInContext(newRow._id, {
-          ...newRow,
-          categorie: categoryId,
-        })
-        // ...
+        // Logique pour la mise à jour d'un produit existant
+        await updateProductInContext(newRow._id, newRow)
+        setProducts((currentProducts) =>
+          currentProducts.map((row) => (row._id === newRow._id ? newRow : row)),
+        )
+        showToast('Produit modifié avec succès', 'success')
       }
       return newRow
     } catch (error) {
