@@ -106,16 +106,18 @@ const useColumns = (
     {
       field: 'reference',
       headerName: 'Référence',
-      flex: 1,
+      width: 300,
+      // flex: 1,
       editable: true,
       aggregable: false,
       groupable: false,
     },
     {
       field: 'prixVente',
-      headerName: 'Px Vente',
+      headerName: 'P.V',
       type: 'number',
-      flex: 0.5,
+      width: 80,
+      // flex: 0.5,
       editable: true,
       groupable: false,
       align: 'right',
@@ -132,9 +134,10 @@ const useColumns = (
     },
     {
       field: 'prixAchat',
-      headerName: 'Px Achat',
+      headerName: 'P.A',
       type: 'number',
-      flex: 0.5,
+      width: 80,
+      // flex: 0.5,
       editable: true,
       groupable: false,
       headerAlign: 'left',
@@ -152,7 +155,8 @@ const useColumns = (
       field: 'stock',
       headerName: 'Stock',
       type: 'number',
-      flex: 0.5,
+      width: 70,
+      // flex: 0.5,
       editable: true,
       groupable: false,
       headerAlign: 'left',
@@ -162,7 +166,8 @@ const useColumns = (
     {
       field: 'categorie',
       headerName: 'Catégorie',
-      flex: 0.75,
+      width: 150,
+      // flex: 0.75,
       editable: true,
       aggregable: false,
       valueGetter: (params) => {
@@ -194,14 +199,16 @@ const useColumns = (
     {
       field: 'marque',
       headerName: 'Marque',
-      flex: 0.75,
+      width: 150,
+      // flex: 0.75,
       editable: true,
       aggregable: false,
     },
     {
       field: 'gencode',
       headerName: 'GenCode',
-      flex: 0.75,
+      width: 150,
+      // flex: 0.75,
       editable: true,
       disableColumnMenu: true,
       sortable: true,
@@ -211,7 +218,8 @@ const useColumns = (
       field: 'tva',
       headerName: 'TVA',
       type: 'number',
-      flex: 0.5,
+      width: 50,
+      // flex: 0.5,
       editable: true,
       aggregable: false,
       disableColumnMenu: true,
@@ -222,7 +230,7 @@ const useColumns = (
         if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
           return '' // Ne rien afficher pour les lignes d'agrégation
         }
-        return `${formatNumberWithComma(params.value)}` // Ajouter un symbole de pourcentage à la valeur
+        return `${formatNumberWithComma(params.value)}`
       },
       renderEditCell: (params) => (
         <CustomSelect
@@ -243,7 +251,8 @@ const useColumns = (
       field: 'dateSoumission',
       headerName: 'Date Ajout',
       type: 'date',
-      flex: 0.75,
+      width: 120,
+      // flex: 0.75,
       aggregable: false,
       hideable: true,
       valueGetter: (params) => {

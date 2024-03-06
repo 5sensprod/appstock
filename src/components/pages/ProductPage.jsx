@@ -13,19 +13,16 @@ const ProductPage = () => {
 
   return (
     <Grid container direction="column" spacing={1} mt={2}>
-      <Box ml={1} mb={1}>
-        <CategoryFilter />
-      </Box>
-
-      {/* Intégration du composant ProductSearch */}
-      {/* <ProductSearch /> */}
-
-      {/* ProductsGrid peut maintenant utiliser searchTerm pour filtrer les produits */}
-      <Box ml={1}>
-        <ProductsGrid
-          selectedCategoryId={selectedCategory.categoryId}
-          searchTerm={searchTerm}
-        />
+      <Box ml={1} mb={1} sx={{ width: 'fit-content' }}>
+        <Box>
+          <CategoryFilter />
+        </Box>
+        <Box>
+          <ProductsGrid
+            selectedCategoryId={selectedCategory.categoryId}
+            searchTerm={searchTerm}
+          />
+        </Box>
       </Box>
     </Grid>
   )

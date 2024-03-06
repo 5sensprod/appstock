@@ -180,13 +180,11 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     )
   }
 
-  // Fonction pour ouvrir la modal avec le produit sélectionné
   const handleOpen = (productId) => {
     setSelectedProductId(productId)
     setOpen(true)
   }
 
-  // Fonction pour fermer la modal
   const handleClose = () => setOpen(false)
 
   const { columns } = useColumns(
@@ -236,7 +234,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     console.error('Erreur lors de la mise à jour de la ligne :', error)
   }
   const handleDensityChange = (newDensity) => {
-    // Mettez à jour les préférences de la grille
     updatePreferences({ density: newDensity })
   }
 
@@ -325,7 +322,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
               showQuickFilter: true,
             },
           }}
-          style={{ width: '100vw' }}
+          style={{ width: 'fit-content' }}
         />
       )}
       {isBulkUpdateModalOpen && (
