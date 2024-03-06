@@ -8,7 +8,7 @@ import {
 import { formatPrice } from '../../utils/priceUtils'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
-import { IconButton, Box, TextField } from '@mui/material'
+import { IconButton, Box } from '@mui/material'
 
 const CustomDataGrid = ({
   rows,
@@ -67,17 +67,17 @@ const CustomDataGrid = ({
   }
 
   if (includeCustomerAddress) {
-    // Vérifiez si la colonne "Adresse du client" doit être incluse
+    // Vérifie si la colonne "Adresse du client" doit être incluse
     const customerAddressColumn = {
       field: 'customerAddress',
       headerName: 'Adresse du client',
       width: 200,
     }
 
-    // Déterminez l'index où la colonne "Adresse du client" doit être insérée
+    // Détermine l'index où la colonne "Adresse du client" doit être insérée
     const insertionIndex = includeCustomerName ? 2 : 1
 
-    // Insérez la colonne "Adresse du client" dans la liste des colonnes
+    // Insére la colonne "Adresse du client"
     columns.splice(insertionIndex, 0, customerAddressColumn)
   }
 
