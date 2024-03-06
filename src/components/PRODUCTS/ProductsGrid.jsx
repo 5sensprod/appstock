@@ -181,8 +181,17 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   }
 
   const handleOpen = (productId) => {
-    setSelectedProductId(productId)
-    setOpen(true)
+    const selectedProduct = products.find(
+      (product) => product._id === productId,
+    )
+
+    // Vérifie si le produit sélectionné a un gencode
+    if (selectedProduct && selectedProduct.gencode) {
+      setSelectedProductId(productId)
+      setOpen(true) // Ouvre la modale si le gencode est valide
+    } else {
+      showToast('Un gencode est nécessaire pour générer le QR code.', 'error')
+    }
   }
 
   const handleClose = () => setOpen(false)
