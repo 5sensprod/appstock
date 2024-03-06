@@ -50,13 +50,14 @@ const OrderSummary = () => {
                         Total TTC: {formatPrice(parseFloat(item.totalItem))}
                       </>
                     )}
-                    {item.remiseMajorationLabel && (
-                      <>
-                        <br />
-                        {item.remiseMajorationLabel}:{' '}
-                        {item.remiseMajorationValue} %
-                      </>
-                    )}
+                    {item.remiseMajorationLabel &&
+                      parseFloat(item.remiseMajorationValue) > 0 && (
+                        <>
+                          <br />
+                          {item.remiseMajorationLabel}:{' '}
+                          {item.remiseMajorationValue} %
+                        </>
+                      )}
                   </>
                 }
               />
