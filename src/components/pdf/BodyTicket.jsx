@@ -1,18 +1,18 @@
 import React from 'react'
 import { Box, Typography, Grid } from '@mui/material'
 
+// Fonction d'aide pour formater les nombres en remplaçant le point par une virgule
+const formatNumber = (number) => number.toFixed(2).replace('.', ',')
+
 const BodyTicket = ({ data, fontSize = '9px' }) => {
   const commonStyle = { fontSize, fontWeight: 'bold' }
 
-  // Initialisation vide, sera défini en fonction des données
-  let columnTitle = ''
-
-  // Modification ici pour utiliser remiseMajorationValue pour déterminer la présence de remise/majoration
+  // Détermination de la présence de remise ou majoration
   const hasRemiseOrMajoration = data.items.some(
     (item) => item.remiseMajorationValue !== 0,
   )
 
-  // Si remise ou majoration est présente, déterminer si c'est une remise ou majoration pour le titre
+  let columnTitle = ''
   if (hasRemiseOrMajoration) {
     const hasRemise = data.items.some(
       (item) =>
@@ -39,7 +39,6 @@ const BodyTicket = ({ data, fontSize = '9px' }) => {
         <Grid item xs={2}>
           <Typography sx={commonStyle}>P.U. EUR</Typography>
         </Grid>
-        {/* Affichage conditionnel de la colonne pour Remise/Majoration avec titre ajusté selon la nouvelle logique */}
         {hasRemiseOrMajoration && (
           <Grid item xs={2}>
             <Typography sx={commonStyle}>{columnTitle}</Typography>
@@ -66,24 +65,23 @@ const BodyTicket = ({ data, fontSize = '9px' }) => {
             </Grid>
             <Grid item xs={2}>
               <Typography sx={{ ...commonStyle, fontWeight: 'normal' }}>
-                {item.prixOriginal
-                  ? item.prixOriginal.toFixed(2).replace('.', ',')
-                  : item.puHT.toFixed(2).replace('.', ',')}
+                {item.prixOriginal !== undefined
+                  ? formatNumber(item.prixOriginal)
+                  : formatNumber(item.puHT)}
               </Typography>
             </Grid>
-            {/* Affichage conditionnel de la valeur de Remise/Majoration ajusté selon la nouvelle logique */}
             {hasRemiseOrMajoration && (
               <Grid item xs={2}>
                 <Typography sx={{ ...commonStyle, fontWeight: 'normal' }}>
                   {item.remiseMajorationValue !== 0
-                    ? `${item.remiseMajorationValue.toString().replace('.', ',')}`
+                    ? `${formatNumber(item.remiseMajorationValue)}`
                     : '0'}
                 </Typography>
               </Grid>
             )}
             <Grid item xs={2}>
               <Typography sx={{ ...commonStyle, fontWeight: 'normal' }}>
-                {(item.quantite * item.puTTC).toFixed(2).replace('.', ',')}
+                {formatNumber(item.quantite * item.puTTC)}
               </Typography>
             </Grid>
             <Grid item xs={1}>
