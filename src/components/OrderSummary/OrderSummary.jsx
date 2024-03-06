@@ -11,6 +11,10 @@ import {
 } from '@mui/material'
 import { formatPrice } from '../../utils/priceUtils'
 
+const formatNumberWithComma = (number) => {
+  return number.toFixed(2).replace('.', ',')
+}
+
 const OrderSummary = () => {
   const { cartItems, cartTotals, adjustmentAmount } = useContext(CartContext)
 
@@ -55,7 +59,10 @@ const OrderSummary = () => {
                         <>
                           <br />
                           {item.remiseMajorationLabel}:{' '}
-                          {item.remiseMajorationValue} %
+                          {formatNumberWithComma(
+                            parseFloat(item.remiseMajorationValue),
+                          )}{' '}
+                          %
                         </>
                       )}
                   </>
