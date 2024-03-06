@@ -325,7 +325,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
               showQuickFilter: true,
             },
           }}
-          style={{ width: '100%' }}
+          style={{ width: '100vw' }}
         />
       )}
       {isBulkUpdateModalOpen && (
