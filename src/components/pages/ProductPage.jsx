@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import Grid from '@mui/material/Grid'
 import ProductsGrid from '../PRODUCTS/ProductsGrid'
 import CategoryFilter from '../CATEGORIES/CategoryFilter'
