@@ -321,8 +321,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       ) : (
         <DataGridPremium
           key={gridKey}
-          filterModel={filterModel}
-          onFilterModelChange={setFilterModel}
           columnVisibilityModel={gridPreferences.columnsVisibility}
           onColumnVisibilityModelChange={handleColumnVisibilityChange}
           onColumnVisibilityChange={handleColumnVisibilityChange}
