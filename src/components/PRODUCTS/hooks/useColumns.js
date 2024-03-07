@@ -206,7 +206,7 @@ const useColumns = (
       field: 'tva',
       headerName: 'TVA',
       type: 'number',
-      width: 50,
+      width: 90,
       // flex: 0.5,
       editable: true,
       aggregable: false,

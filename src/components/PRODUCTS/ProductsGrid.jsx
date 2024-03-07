@@ -69,10 +69,13 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   }
 
   const openBulkUpdateModal = () => {
-    if (selectedProductIds.size > 0) {
+    if (selectedProductIds.size >= 2) {
       setIsBulkUpdateModalOpen(true)
     } else {
-      // Afficher un message d'erreur ou une notification si aucun produit n'est sélectionné
+      showToast(
+        'Veuillez cocher au moins deux produits pour la modification de masse',
+        'error',
+      )
     }
   }
 
