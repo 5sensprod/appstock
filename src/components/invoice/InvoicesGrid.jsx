@@ -38,9 +38,8 @@ const InvoicesGrid = () => {
         customerAddress: invoice.customerInfo?.adress || '',
         onViewDetails: () => handleViewDetails(invoice._id),
       }))
-      // Utilisez l'objet Date original pour le tri
       .sort((a, b) => b.date - a.date)
-      // Après le tri, vous pouvez convertir la date en chaîne si nécessaire pour l'affichage
+      // Convertir la date en chaîne si nécessaire pour l'affichage
       .map((invoice) => ({
         ...invoice,
         date: invoice.dateString,
@@ -90,7 +89,7 @@ const InvoicesGrid = () => {
               <InvoiceGenerator
                 invoiceId={selectedInvoiceId}
                 onPdfGenerated={async () => {
-                  // Passez 'invoice' comme deuxième argument pour spécifier le type
+                  // Passer 'invoice' comme deuxième argument pour spécifier le type
                   await handleIncrementPdfGenerationCount(
                     selectedInvoiceId,
                     'invoice',
