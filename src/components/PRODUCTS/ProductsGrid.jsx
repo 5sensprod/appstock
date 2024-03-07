@@ -144,7 +144,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
 
   const handleCancel = (row) => {
     setIsUpdating(false)
-    // Si la ligne est nouvelle (non enregistrée), la retirer du tableau des produits
+    // Gère l'abandon de l'ajout d'un nouveau produit
     if (isRowNew[row._id]) {
       setProducts((currentProducts) =>
         currentProducts.filter((product) => product._id !== row._id),
@@ -154,21 +154,30 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         delete newIsRowNew[row._id]
         return newIsRowNew
       })
+      // Supprime également la ligne du rowModesModel
+      setRowModesModel((oldModel) => {
+        const newModel = { ...oldModel }
+        delete newModel[row._id]
+        return newModel
+      })
     }
-    // Sinon, rétablir les valeurs originales pour une ligne existante
-    else if (editingRow) {
+    // Gère l'abandon de la modification d'un produit existant
+    else if (editingRow && editingRow._id === row._id) {
+      // Rétablit les valeurs originales de la ligne existante
       setProducts((currentProducts) =>
         currentProducts.map((product) =>
           product._id === editingRow._id ? editingRow : product,
         ),
       )
+      // S'assure que le mode de la ligne est correctement réinitialisé dans rowModesModel
+      setRowModesModel((oldModel) => {
+        const newModel = { ...oldModel, [row._id]: { mode: GridRowModes.View } }
+        return newModel
+      })
     }
 
-    // Nettoyer l'état de l'édition et sortir du mode d'édition
+    // Réinitialise l'état d'édition après l'annulation de l'ajout ou de la modification
     setEditingRow(null)
-    setRowModesModel((oldModel) => {
-      return { ...oldModel, [row._id]: { mode: GridRowModes.View } }
-    })
   }
 
   const handleDelete = async (row) => {
