@@ -26,7 +26,7 @@ const useFilteredProducts = (selectedCategoryId, searchTerm = '') => {
       !selectedCategoryId ||
       findAllSubCategoryIds(selectedCategoryId).includes(product.categorie)
 
-    // Vérifiez si searchTerm correspond à l'un des champs
+    // Vérifie si searchTerm correspond à l'un des champs
     const matchesSearchTerm =
       searchTerm.trim() === '' ||
       (product.reference &&
