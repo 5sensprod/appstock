@@ -18,6 +18,7 @@ const useHandlePayClick = () => {
   const handlePayClick = async (paymentType, customerInfo, isInvoice) => {
     const documentItems = cartItems.map((item) => ({
       reference: item.reference,
+      id: item._id,
       quantite: item.quantity,
       puHT: item.prixHT,
       puTTC: item.puTTC,
