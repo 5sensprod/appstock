@@ -53,7 +53,7 @@ const useHandlePayClick = () => {
       }
 
       try {
-        const newInvoice = await createInvoice(newInvoiceData)
+        await createInvoice(newInvoiceData)
       } catch (error) {
         console.error('Erreur lors de la création de la facture:', error)
       }
@@ -64,8 +64,7 @@ const useHandlePayClick = () => {
       }
 
       try {
-        const newTicket = await createTicket(newTicketData)
-        console.log('Ticket créé avec succès:', newTicket)
+        await createTicket(newTicketData)
       } catch (error) {
         console.error('Erreur lors de la création du ticket:', error)
       }
