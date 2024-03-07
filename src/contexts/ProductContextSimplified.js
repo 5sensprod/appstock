@@ -83,8 +83,6 @@ export const ProductProviderSimplified = ({ children }) => {
       ) {
         loadProducts()
       } else if (data.type === 'products-bulk-updated') {
-        // Gérer les mises à jour en masse
-        // Recharger les produits ou mettre à jour spécifiquement les produits concernés
         loadProducts()
       }
     }
@@ -117,8 +115,6 @@ export const ProductProviderSimplified = ({ children }) => {
           product._id === productId ? { ...product, stock: newStock } : product,
         ),
       )
-
-      // Optionnel : Dispatcher un événement ou exécuter une action supplémentaire ici
     } catch (error) {
       console.error('Erreur lors de la mise à jour du stock du produit:', error)
     }
@@ -127,8 +123,8 @@ export const ProductProviderSimplified = ({ children }) => {
   const bulkUpdateProductsInContext = async (updates) => {
     try {
       await updateProductsBulk(updates)
-      loadProducts() // Recharge les produits après la mise à jour
-      EventEmitter.dispatch('PRODUCT_CRUD_OPERATION') // Notifie les autres contextes d'une opération CRUD
+      loadProducts()
+      EventEmitter.dispatch('PRODUCT_CRUD_OPERATION')
     } catch (error) {
       console.error(
         'Erreur lors de la mise à jour en masse des produits:',
