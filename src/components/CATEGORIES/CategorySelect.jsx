@@ -1,4 +1,3 @@
-// src/components/CATEGORIES/CategorySelect.js
 import React, { useState } from 'react'
 import { TextField, Popover } from '@mui/material'
 import { TreeView } from '@mui/x-tree-view/TreeView'
@@ -8,7 +7,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 
 const CategorySelect = ({ value, onChange, size = 'small', label = '' }) => {
-  const { categories } = useCategoryContext()
+  const { categories, setCurrentCategoryId } = useCategoryContext()
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedCategoryName, setSelectedCategoryName] = useState(value)
   // Ouvre le popover
@@ -33,6 +32,7 @@ const CategorySelect = ({ value, onChange, size = 'small', label = '' }) => {
     const categoryName = selectedCategory ? selectedCategory.name : ''
     setSelectedCategoryName(categoryName)
 
+    setCurrentCategoryId(categoryId)
     onChange(categoryId) // Envoyez l'ID à DataGrid
     handleClose()
   }

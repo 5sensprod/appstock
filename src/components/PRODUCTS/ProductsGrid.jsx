@@ -16,11 +16,13 @@ import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 import Modal from '@mui/material/Modal'
 import Box from '@mui/material/Box'
 import QRCodeGenerator from './QRCodeGenerator'
+import { useCategoryContext } from '../../contexts/CategoryContext'
 
 const ProductsGrid = ({ selectedCategoryId }) => {
   const { showToast, showConfirmDialog } = useUI()
   const [open, setOpen] = useState(false)
   const [selectedProductId, setSelectedProductId] = useState(null)
+  const { currentCategoryId, setCurrentCategoryId } = useCategoryContext()
 
   const { gridPreferences, updatePreferences } = useGridPreferences()
 
@@ -188,7 +190,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     // Vérifie si le produit sélectionné a un gencode
     if (selectedProduct && selectedProduct.gencode) {
       setSelectedProductId(productId)
-      setOpen(true) // Ouvre la modale si le gencode est valide
+      setOpen(true)
     } else {
       showToast('Un gencode est nécessaire pour générer le QR code.', 'error')
     }
@@ -210,32 +212,41 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       return oldRow
     }
 
+    let updatedRow = { ...newRow }
+
+    // Appliquer l'ID de catégorie courant s'il a été modifié, sinon conserver l'ancienne catégorie
+    updatedRow.categorie =
+      currentCategoryId !== null ? currentCategoryId : oldRow.categorie
+
     try {
-      if (newRow && newRow._id && newRow._id.startsWith('temp-')) {
-        // Logique pour l'ajout d'un nouveau produit
+      if (newRow._id.startsWith('temp-')) {
+        // Ajout d'un nouveau produit
         const addedProduct = await addProductToContext({
-          ...newRow,
+          ...updatedRow,
           _id: undefined,
         })
-        setProducts((currentProducts) =>
-          currentProducts.map((row) =>
-            row._id === newRow._id ? { ...addedProduct, isNew: false } : row,
-          ),
-        )
+        // Mise à jour de la liste des produits avec le produit ajouté
+        setProducts((currentProducts) => [
+          ...currentProducts,
+          { ...addedProduct, isNew: false },
+        ])
         showToast('Produit ajouté avec succès', 'success')
       } else {
-        // Logique pour la mise à jour d'un produit existant
-        await updateProductInContext(newRow._id, newRow)
+        // Mise à jour d'un produit existant avec updatedRow qui inclut la catégorie ajustée
+        await updateProductInContext(updatedRow._id, updatedRow)
         setProducts((currentProducts) =>
-          currentProducts.map((row) => (row._id === newRow._id ? newRow : row)),
+          currentProducts.map((row) =>
+            row._id === updatedRow._id ? updatedRow : row,
+          ),
         )
         showToast('Produit modifié avec succès', 'success')
       }
-      return newRow
+      setCurrentCategoryId(null)
+      return updatedRow
     } catch (error) {
-      console.error('Erreur lors de la mise à jour de la ligne :', error)
+      console.error('Erreur lors de la mise à jour du produit:', error)
       showToast("Erreur lors de l'enregistrement du produit", 'error')
-      return oldRow
+      throw error
     }
   }
 

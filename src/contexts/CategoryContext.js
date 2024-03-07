@@ -21,6 +21,13 @@ export const CategoryProvider = ({ children }) => {
   const [productCountByCategory, setProductCountByCategory] = useState({})
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
 
+  const [currentCategoryId, setCurrentCategoryId] = useState(null)
+
+  // Utilisez useEffect pour suivre les changements de currentCategoryId
+  useEffect(() => {
+    console.log('Current Category ID:', currentCategoryId)
+  }, [currentCategoryId])
+
   const loadCategoriesAndCounts = async () => {
     try {
       const fetchedCategories = await getCategories(baseUrl)
@@ -101,6 +108,8 @@ export const CategoryProvider = ({ children }) => {
     addCategoryToContext,
     selectedCategoryId,
     setSelectedCategoryId,
+    currentCategoryId,
+    setCurrentCategoryId,
   }
 
   return (
