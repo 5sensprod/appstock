@@ -17,13 +17,14 @@ import Modal from '@mui/material/Modal'
 import Box from '@mui/material/Box'
 import QRCodeGenerator from './QRCodeGenerator'
 import { useCategoryContext } from '../../contexts/CategoryContext'
+import { useCategoryTreeSelect } from '../../contexts/CategoryTreeSelectContext'
 
 const ProductsGrid = ({ selectedCategoryId }) => {
   const { showToast, showConfirmDialog } = useUI()
   const [open, setOpen] = useState(false)
   const [selectedProductId, setSelectedProductId] = useState(null)
   const { currentCategoryId, setCurrentCategoryId } = useCategoryContext()
-
+  const { resetSelectedCategory } = useCategoryTreeSelect()
   const { gridPreferences, updatePreferences } = useGridPreferences()
 
   const {
@@ -107,6 +108,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       ...oldModel,
       [tempId]: { mode: GridRowModes.Edit },
     }))
+    resetSelectedCategory()
   }
 
   const handleEdit = (row) => {
