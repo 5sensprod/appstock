@@ -107,6 +107,9 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       items: [],
     })
     setSortModel([...initialSortModel])
+    updatePreferences({
+      paginationModel: { ...gridPreferences.paginationModel, page: 0 },
+    })
   }
 
   const handleEdit = (row) => {
