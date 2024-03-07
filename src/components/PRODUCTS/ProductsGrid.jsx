@@ -27,6 +27,10 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const { resetSelectedCategory } = useCategoryTreeSelect()
   const { gridPreferences, updatePreferences } = useGridPreferences()
   const [gridKey, setGridKey] = useState(0)
+  const [filterModel, setFilterModel] = useState({
+    items: [],
+  })
+
   const {
     products,
     setProducts,
@@ -36,26 +40,15 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     searchTerm,
   } = useProductContextSimplified()
 
-  // État pour le modèle de tri
-  const [sortModel, setSortModel] = useState([
+  const initialSortModel = [
     {
       field: 'dateSoumission',
       sort: 'desc',
     },
-  ])
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 740,
-    height: 500,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-    zIndex: 1500,
-  }
+  ]
+
+  // État pour le modèle de tri
+  const [sortModel, setSortModel] = useState(initialSortModel)
 
   const filteredProducts = useFilteredProducts(selectedCategoryId, searchTerm)
   const [isRowNew, setIsRowNew] = useState({})
@@ -110,6 +103,10 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     }))
     resetSelectedCategory()
     setGridKey((prevKey) => prevKey + 1)
+    setFilterModel({
+      items: [],
+    })
+    setSortModel([...initialSortModel])
   }
 
   const handleEdit = (row) => {
@@ -281,6 +278,20 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     updatePreferences({ paginationModel: newModel })
   }
 
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 740,
+    height: 500,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+    zIndex: 1500,
+  }
+
   const toolbar = useCallback(
     () => (
       <CustomToolbar
@@ -310,6 +321,8 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       ) : (
         <DataGridPremium
           key={gridKey}
+          filterModel={filterModel}
+          onFilterModelChange={setFilterModel}
           columnVisibilityModel={gridPreferences.columnsVisibility}
           onColumnVisibilityModelChange={handleColumnVisibilityChange}
           onColumnVisibilityChange={handleColumnVisibilityChange}
