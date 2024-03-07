@@ -26,7 +26,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
   const { currentCategoryId, setCurrentCategoryId } = useCategoryContext()
   const { resetSelectedCategory } = useCategoryTreeSelect()
   const { gridPreferences, updatePreferences } = useGridPreferences()
-
+  const [gridKey, setGridKey] = useState(0)
   const {
     products,
     setProducts,
@@ -109,6 +109,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       [tempId]: { mode: GridRowModes.Edit },
     }))
     resetSelectedCategory()
+    setGridKey((prevKey) => prevKey + 1)
   }
 
   const handleEdit = (row) => {
@@ -308,6 +309,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
         <Typography variant="h6">Aucun produit trouvé</Typography>
       ) : (
         <DataGridPremium
+          key={gridKey}
           columnVisibilityModel={gridPreferences.columnsVisibility}
           onColumnVisibilityModelChange={handleColumnVisibilityChange}
           onColumnVisibilityChange={handleColumnVisibilityChange}
@@ -315,7 +317,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
           rows={filteredProducts}
           columns={columns}
           sortModel={sortModel}
-          // selectionModel={Array.from(selectedProductIds)}
           onRowSelectionModelChange={handleSelectionModelChange}
           onSortModelChange={setSortModel}
           rowModesModel={rowModesModel}
