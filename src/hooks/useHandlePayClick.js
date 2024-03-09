@@ -11,7 +11,9 @@ const useHandlePayClick = () => {
     clearCart,
     paymentDetails,
     cashDetails,
+    calculateRemainingAmount,
   } = useContext(CartContext)
+
   const { createInvoice, createTicket } = useInvoices()
   const { updateProductStock } = useProductContextSimplified()
 
@@ -34,6 +36,10 @@ const useHandlePayClick = () => {
       adjustmentAmount !== 0 ? cartTotals.modifiedTotal : cartTotals.totalTTC
     const date = new Date().toISOString()
 
+    const rawRemainingAmount = calculateRemainingAmount()
+    // Arrondir à deux décimales et convertir en nombre
+    const remainingAmount = parseFloat(rawRemainingAmount.toFixed(2))
+
     const baseData = {
       items: documentItems,
       totalHT: cartTotals.totalHT.toFixed(2),
@@ -43,31 +49,25 @@ const useHandlePayClick = () => {
       date,
       paymentDetails,
       cashDetails,
+      ...(remainingAmount < 0 && { remainingAmount }), // Conditionnellement ajouter remainingAmount s'il est négatif
     }
 
-    if (isInvoice) {
-      const newInvoiceData = {
-        ...baseData,
-        paymentType,
-        customerInfo,
-      }
+    const data = {
+      ...baseData,
+      paymentType,
+      ...(isInvoice && { customerInfo }), // Conditionnellement ajouter customerInfo pour les factures
+    }
 
-      try {
-        await createInvoice(newInvoiceData)
-      } catch (error) {
-        console.error('Erreur lors de la création de la facture:', error)
-      }
-    } else {
-      const newTicketData = {
-        ...baseData,
-        paymentType,
-      }
-
-      try {
-        await createTicket(newTicketData)
-      } catch (error) {
-        console.error('Erreur lors de la création du ticket:', error)
-      }
+    try {
+      const response = isInvoice
+        ? await createInvoice(data)
+        : await createTicket(data)
+      console.log('Réponse:', response)
+    } catch (error) {
+      console.error(
+        `Erreur lors de la création de ${isInvoice ? 'la facture' : 'du ticket'}:`,
+        error,
+      )
     }
 
     for (const item of cartItems) {
