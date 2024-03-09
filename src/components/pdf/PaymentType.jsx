@@ -38,74 +38,100 @@ const PaymentType = ({
   }
 
   const paymentTypeDisplay = () => {
-    switch (paymentType) {
-      case 'Cash':
-        return (
-          <Grid container>
-            <Grid item xs={6} textAlign={'right'}>
-              <Typography variant="body2" sx={{ fontSize, fontWeight: 'bold' }}>
-                {`${getReadablePaymentType(paymentType)} :`}
-              </Typography>
-            </Grid>
-            <Grid item xs={6} textAlign={'right'}>
-              <Typography variant="body2" sx={{ fontSize, fontWeight: 'bold' }}>
-                {`${formatAmount(cashDetails.givenAmount)}`}
-              </Typography>
-            </Grid>
-            {cashDetails.changeAmount !== undefined && (
-              <>
-                <Grid item xs={6} textAlign={'right'}>
-                  <Typography
-                    variant="body2"
-                    sx={{ fontSize, fontWeight: 'bold' }}
-                  >
-                    Rendu :
-                  </Typography>
-                </Grid>
-                <Grid item xs={6} textAlign={'right'}>
-                  <Typography
-                    variant="body2"
-                    sx={{ fontSize, fontWeight: 'bold' }}
-                  >
-                    {formatAmount(cashDetails.changeAmount)}
-                  </Typography>
-                </Grid>
-              </>
-            )}
+    return (
+      <>
+        <Grid container sx={{ marginBottom: 1 }}>
+          <Grid item xs={6}>
+            <Typography
+              variant="body2"
+              sx={{ fontSize, fontWeight: 'bold', textAlign: 'right' }}
+            >
+              Paiement EUR
+            </Typography>
           </Grid>
-        )
-      case 'Multiple':
-        return (
+        </Grid>
+        {paymentType === 'Cash' && (
+          <>
+            <Grid container>
+              <Grid item xs={6} textAlign={'right'}>
+                <Typography
+                  variant="body2"
+                  sx={{ fontSize, fontWeight: 'normal' }}
+                >
+                  {getReadablePaymentType(paymentType)} :
+                </Typography>
+              </Grid>
+              <Grid item xs={6} textAlign={'right'}>
+                <Typography
+                  variant="body2"
+                  sx={{ fontSize, fontWeight: 'normal' }}
+                >
+                  {`${formatAmount(cashDetails.givenAmount)}`}
+                </Typography>
+              </Grid>
+              {cashDetails.changeAmount !== undefined && (
+                <>
+                  <Grid item xs={6} textAlign={'right'}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontSize, fontWeight: 'normal' }}
+                    >
+                      Rendu :
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6} textAlign={'right'}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontSize, fontWeight: 'normal' }}
+                    >
+                      {formatAmount(cashDetails.changeAmount)}
+                    </Typography>
+                  </Grid>
+                </>
+              )}
+            </Grid>
+          </>
+        )}
+        {paymentType === 'Multiple' && (
           <Grid container>
-            {paymentDetails &&
-              paymentDetails.length > 0 &&
+            {paymentDetails && paymentDetails.length > 0 ? (
               paymentDetails.map((detail, index) => (
                 <React.Fragment key={index}>
                   <Grid item xs={6} textAlign={'right'}>
                     <Typography
                       variant="body2"
-                      sx={{ fontSize, fontWeight: 'bold' }}
+                      sx={{ fontSize, fontWeight: 'normal' }}
                     >
-                      {getReadablePaymentType(detail.type)} :
+                      {`${getReadablePaymentType(detail.type)} :`}
                     </Typography>
                   </Grid>
                   <Grid item xs={6} textAlign={'right'}>
                     <Typography
                       variant="body2"
-                      sx={{ fontSize, fontWeight: 'bold' }}
+                      sx={{ fontSize, fontWeight: 'normal' }}
                     >
                       {formatAmount(detail.amount)}
                     </Typography>
                   </Grid>
                 </React.Fragment>
-              ))}
+              ))
+            ) : (
+              <Grid item xs={12}>
+                <Typography
+                  variant="body2"
+                  sx={{ fontSize, fontWeight: 'normal', textAlign: 'center' }}
+                >
+                  Paiements multiples
+                </Typography>
+              </Grid>
+            )}
             {/* Conditionnellement afficher le montant rendu si remainingAmount est négatif */}
             {remainingAmount < 0 && (
               <>
                 <Grid item xs={6} textAlign={'right'}>
                   <Typography
                     variant="body2"
-                    sx={{ fontSize, fontWeight: 'bold' }}
+                    sx={{ fontSize, fontWeight: 'normal' }}
                   >
                     Rendu :
                   </Typography>
@@ -113,32 +139,37 @@ const PaymentType = ({
                 <Grid item xs={6} textAlign={'right'}>
                   <Typography
                     variant="body2"
-                    sx={{ fontSize, fontWeight: 'bold' }}
+                    sx={{ fontSize, fontWeight: 'normal' }}
                   >
-                    {formatAmount(-remainingAmount)}{' '}
-                    {/* Utilisez le positif de remainingAmount pour l'affichage */}
+                    {formatAmount(-remainingAmount)}
                   </Typography>
                 </Grid>
               </>
             )}
           </Grid>
-        )
-      default:
-        return (
+        )}
+        {paymentType !== 'Cash' && paymentType !== 'Multiple' && (
           <Grid container>
             <Grid item xs={6} textAlign={'right'}>
-              <Typography variant="body2" sx={{ fontSize, fontWeight: 'bold' }}>
+              <Typography
+                variant="body2"
+                sx={{ fontSize, fontWeight: 'normal' }}
+              >
                 {`${getReadablePaymentType(paymentType)} :`}
               </Typography>
             </Grid>
             <Grid item xs={6} textAlign={'right'}>
-              <Typography variant="body2" sx={{ fontSize, fontWeight: 'bold' }}>
+              <Typography
+                variant="body2"
+                sx={{ fontSize, fontWeight: 'normal' }}
+              >
                 {formatAmount(totalTTC)}
               </Typography>
             </Grid>
           </Grid>
-        )
-    }
+        )}
+      </>
+    )
   }
 
   return <Box sx={{ mt: 2 }}>{paymentTypeDisplay()}</Box>
