@@ -208,6 +208,7 @@ const InvoiceGenerator = ({ invoiceId, onPdfGenerated }) => {
               cashDetails={invoice.cashDetails}
               paymentDetails={invoice.paymentDetails}
               totalTTC={invoice.totalTTC}
+              remainingAmount={invoice.remainingAmount}
               fontSize="14px"
             />
           </Box>

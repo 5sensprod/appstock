@@ -8,7 +8,8 @@ const PaymentType = ({
   cashDetails = {},
   paymentDetails = [],
   totalTTC,
-  fontSize = '12px', // Ajout de fontSize comme prop avec une valeur par défaut
+  remainingAmount,
+  fontSize = '12px',
 }) => {
   const getReadablePaymentType = (type) => {
     switch (type) {
@@ -76,7 +77,8 @@ const PaymentType = ({
       case 'Multiple':
         return (
           <Grid container>
-            {paymentDetails && paymentDetails.length > 0 ? (
+            {paymentDetails &&
+              paymentDetails.length > 0 &&
               paymentDetails.map((detail, index) => (
                 <React.Fragment key={index}>
                   <Grid item xs={6} textAlign={'right'}>
@@ -96,11 +98,28 @@ const PaymentType = ({
                     </Typography>
                   </Grid>
                 </React.Fragment>
-              ))
-            ) : (
-              <Typography variant="body2" sx={{ fontSize, fontWeight: 'bold' }}>
-                Paiements multiples
-              </Typography>
+              ))}
+            {/* Conditionnellement afficher le montant rendu si remainingAmount est négatif */}
+            {remainingAmount < 0 && (
+              <>
+                <Grid item xs={6} textAlign={'right'}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontSize, fontWeight: 'bold' }}
+                  >
+                    Rendu :
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} textAlign={'right'}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontSize, fontWeight: 'bold' }}
+                  >
+                    {formatAmount(-remainingAmount)}{' '}
+                    {/* Utilisez le positif de remainingAmount pour l'affichage */}
+                  </Typography>
+                </Grid>
+              </>
             )}
           </Grid>
         )

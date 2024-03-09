@@ -108,6 +108,7 @@ const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
           cashDetails={ticket.cashDetails}
           paymentDetails={ticket.paymentDetails}
           totalTTC={ticket.totalTTC}
+          remainingAmount={ticket.remainingAmount}
         />
         <DashedLine />
         <Remerciement />
