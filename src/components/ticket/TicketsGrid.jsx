@@ -87,7 +87,7 @@ const TicketsGrid = () => {
               <TicketGenerator
                 ticketId={selectedTicketId}
                 onPdfGenerated={async () => {
-                  // Assurez-vous de passer 'ticket' comme deuxième argument pour spécifier le type
+                  // Passer 'ticket' comme deuxième argument pour spécifier le type
                   await handleIncrementPdfGenerationCount(
                     selectedTicketId,
                     'ticket',
