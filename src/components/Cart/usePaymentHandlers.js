@@ -12,10 +12,19 @@ const usePaymentHandlers = () => {
     setPaymentDetails,
     setCashDetails,
     calculateChange,
+    resetCashDetails,
   } = useContext(CartContext)
 
   const handlePaymentTypeChange = (event) => {
-    setPaymentType(event.target.value)
+    const newPaymentType = event.target.value
+    // Set the new payment type
+    setPaymentType(newPaymentType)
+
+    // Reset cash details when changing the payment type
+    // You might choose to condition this reset, for example, only resetting when switching to or from 'Cash'
+    if (newPaymentType !== 'Cash') {
+      resetCashDetails()
+    }
   }
 
   const handleAmountPaidChange = (event) => {

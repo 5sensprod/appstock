@@ -66,6 +66,12 @@ export const CartProvider = ({ children }) => {
   // Définition de l'état pour cashDetails
   const [cashDetails, setCashDetails] = useState(initialCashDetails)
 
+  useEffect(() => {
+    console.log(
+      `Valeurs actuelles : givenAmount = ${cashDetails.givenAmount}, changeAmount = ${cashDetails.changeAmount}`,
+    )
+  }, [cashDetails])
+
   // Fonction pour réinitialiser cashDetails
   const resetCashDetails = () => {
     setCashDetails(initialCashDetails)
@@ -272,6 +278,7 @@ export const CartProvider = ({ children }) => {
         stopEditingPayment,
         calculateRemainingAmount,
         calculateChange,
+        resetCashDetails,
       }}
     >
       {children}
