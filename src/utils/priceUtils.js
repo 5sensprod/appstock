@@ -1,5 +1,20 @@
 export const formatPrice = (price, locale = 'fr-FR', currency = 'EUR') => {
-  return price.toLocaleString(locale, { style: 'currency', currency: currency })
+  // Tente de convertir l'entrée en nombre
+  const numericPrice = Number(price)
+
+  // Vérifie si le résultat est NaN (ce qui signifierait que l'entrée n'était pas un nombre valide)
+  if (isNaN(numericPrice)) {
+    console.error(
+      'formatPrice a reçu une entrée non numérique qui ne peut pas être convertie en nombre.',
+    )
+    return 'Prix invalide' // Ou toute autre gestion d'erreur ou valeur par défaut que vous préférez
+  }
+
+  // Si numericPrice est un nombre valide, formatez-le
+  return numericPrice.toLocaleString(locale, {
+    style: 'currency',
+    currency: currency,
+  })
 }
 
 export const calculateTotal = (items, getPrice) => {
