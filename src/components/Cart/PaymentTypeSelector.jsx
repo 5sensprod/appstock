@@ -19,15 +19,6 @@ import usePaymentHandlers from './usePaymentHandlers'
 import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
 
-const paymentTypeMap = {
-  CB: 'Carte Bancaire',
-  Cash: 'Espèces',
-  Cheque: 'Chèque',
-  ChequeCadeau: 'Chèque Cadeau',
-  Virement: 'Virement',
-  Avoir: 'Avoir',
-}
-
 const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
   const {
     selectedPaymentType,
