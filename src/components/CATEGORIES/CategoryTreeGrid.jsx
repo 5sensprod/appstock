@@ -86,6 +86,7 @@ const CategoryTreeGrid = () => {
             </Button>
           )
         },
+        maxWidth: 140,
       },
       {
         headerName: 'Actions',
@@ -170,7 +171,10 @@ const CategoryTreeGrid = () => {
   )
 
   return (
-    <div className="ag-theme-material" style={{ height: 600, width: '100%' }}>
+    <div
+      className="ag-theme-material"
+      style={{ height: 600, maxWidth: '600px' }}
+    >
       <TextField
         value={searchText}
         onChange={(e) => updateSearch(e.target.value)}

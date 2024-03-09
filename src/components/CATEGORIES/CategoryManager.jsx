@@ -12,7 +12,7 @@ function CategoryManager() {
             <CreateCategory />
           </Box>
         </Grid>
-        <Grid item xs={12} md={9}>
+        <Grid item xs={12} md={6}>
           <Box mt={2}>
             <CategoryTreeGrid />
           </Box>
