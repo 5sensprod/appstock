@@ -42,10 +42,20 @@ const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
     setPaymentAmount('')
   }
 
+  // Déterminer le texte à afficher en fonction de la valeur de remainingAmount
+  let paymentStatusText
+  if (remainingAmount > 0) {
+    paymentStatusText = `À payer : ${formatPrice(remainingAmount)}`
+  } else if (remainingAmount < 0) {
+    paymentStatusText = `À rendre : ${formatPrice(Math.abs(remainingAmount))}`
+  } else {
+    paymentStatusText = 'Payé'
+  }
+
   return (
     <Box>
-      <Typography variant="body1" color={'green'}>
-        Restant à payer: {formatPrice(remainingAmount)}
+      <Typography variant="body1" color={remainingAmount < 0 ? 'red' : 'green'}>
+        {paymentStatusText}
       </Typography>
       <Box>
         <Grid container spacing={1} alignItems="center" mt={1}>
