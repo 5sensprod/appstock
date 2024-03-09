@@ -37,7 +37,58 @@ const PaymentType = ({
     })
   }
 
+  const PaymentDetail = ({ label, value }) => (
+    <Grid container>
+      <Grid item xs={6} textAlign={'right'}>
+        <Typography variant="body2" sx={{ fontSize, fontWeight: 'normal' }}>
+          {label} :
+        </Typography>
+      </Grid>
+      <Grid item xs={6} textAlign={'right'}>
+        <Typography variant="body2" sx={{ fontSize, fontWeight: 'normal' }}>
+          {value}
+        </Typography>
+      </Grid>
+    </Grid>
+  )
+
   const paymentTypeDisplay = () => {
+    const details = [
+      ...(paymentType === 'Cash'
+        ? [
+            {
+              label: getReadablePaymentType(paymentType),
+              value: formatAmount(cashDetails.givenAmount),
+            },
+            ...(cashDetails.changeAmount !== undefined
+              ? [
+                  {
+                    label: 'Rendu',
+                    value: formatAmount(cashDetails.changeAmount),
+                  },
+                ]
+              : []),
+          ]
+        : []),
+      ...(paymentType === 'Multiple'
+        ? paymentDetails.map((detail) => ({
+            label: getReadablePaymentType(detail.type),
+            value: formatAmount(detail.amount),
+          }))
+        : []),
+      ...(paymentType !== 'Cash' && paymentType !== 'Multiple'
+        ? [
+            {
+              label: getReadablePaymentType(paymentType),
+              value: formatAmount(totalTTC),
+            },
+          ]
+        : []),
+      ...(remainingAmount < 0
+        ? [{ label: 'Rendu', value: formatAmount(-remainingAmount) }]
+        : []),
+    ]
+
     return (
       <>
         <Grid container sx={{ marginBottom: 1 }}>
@@ -50,124 +101,13 @@ const PaymentType = ({
             </Typography>
           </Grid>
         </Grid>
-        {paymentType === 'Cash' && (
-          <>
-            <Grid container>
-              <Grid item xs={6} textAlign={'right'}>
-                <Typography
-                  variant="body2"
-                  sx={{ fontSize, fontWeight: 'normal' }}
-                >
-                  {getReadablePaymentType(paymentType)} :
-                </Typography>
-              </Grid>
-              <Grid item xs={6} textAlign={'right'}>
-                <Typography
-                  variant="body2"
-                  sx={{ fontSize, fontWeight: 'normal' }}
-                >
-                  {`${formatAmount(cashDetails.givenAmount)}`}
-                </Typography>
-              </Grid>
-              {cashDetails.changeAmount !== undefined && (
-                <>
-                  <Grid item xs={6} textAlign={'right'}>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontSize, fontWeight: 'normal' }}
-                    >
-                      Rendu :
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6} textAlign={'right'}>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontSize, fontWeight: 'normal' }}
-                    >
-                      {formatAmount(cashDetails.changeAmount)}
-                    </Typography>
-                  </Grid>
-                </>
-              )}
-            </Grid>
-          </>
-        )}
-        {paymentType === 'Multiple' && (
-          <Grid container>
-            {paymentDetails && paymentDetails.length > 0 ? (
-              paymentDetails.map((detail, index) => (
-                <React.Fragment key={index}>
-                  <Grid item xs={6} textAlign={'right'}>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontSize, fontWeight: 'normal' }}
-                    >
-                      {`${getReadablePaymentType(detail.type)} :`}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6} textAlign={'right'}>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontSize, fontWeight: 'normal' }}
-                    >
-                      {formatAmount(detail.amount)}
-                    </Typography>
-                  </Grid>
-                </React.Fragment>
-              ))
-            ) : (
-              <Grid item xs={12}>
-                <Typography
-                  variant="body2"
-                  sx={{ fontSize, fontWeight: 'normal', textAlign: 'center' }}
-                >
-                  Paiements multiples
-                </Typography>
-              </Grid>
-            )}
-            {/* Conditionnellement afficher le montant rendu si remainingAmount est négatif */}
-            {remainingAmount < 0 && (
-              <>
-                <Grid item xs={6} textAlign={'right'}>
-                  <Typography
-                    variant="body2"
-                    sx={{ fontSize, fontWeight: 'normal' }}
-                  >
-                    Rendu :
-                  </Typography>
-                </Grid>
-                <Grid item xs={6} textAlign={'right'}>
-                  <Typography
-                    variant="body2"
-                    sx={{ fontSize, fontWeight: 'normal' }}
-                  >
-                    {formatAmount(-remainingAmount)}
-                  </Typography>
-                </Grid>
-              </>
-            )}
-          </Grid>
-        )}
-        {paymentType !== 'Cash' && paymentType !== 'Multiple' && (
-          <Grid container>
-            <Grid item xs={6} textAlign={'right'}>
-              <Typography
-                variant="body2"
-                sx={{ fontSize, fontWeight: 'normal' }}
-              >
-                {`${getReadablePaymentType(paymentType)} :`}
-              </Typography>
-            </Grid>
-            <Grid item xs={6} textAlign={'right'}>
-              <Typography
-                variant="body2"
-                sx={{ fontSize, fontWeight: 'normal' }}
-              >
-                {formatAmount(totalTTC)}
-              </Typography>
-            </Grid>
-          </Grid>
-        )}
+        {details.map((detail, index) => (
+          <PaymentDetail
+            key={index}
+            label={detail.label}
+            value={detail.value}
+          />
+        ))}
       </>
     )
   }
