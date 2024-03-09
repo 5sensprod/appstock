@@ -19,6 +19,15 @@ import usePaymentHandlers from './usePaymentHandlers'
 import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
 
+const paymentTypeMap = {
+  CB: 'Carte Bancaire',
+  Cash: 'Espèces',
+  Cheque: 'Chèque',
+  ChequeCadeau: 'Chèque Cadeau',
+  Virement: 'Virement',
+  Avoir: 'Avoir',
+}
+
 const MultiplePaymentInput = ({ onAddPayment, remainingAmount }) => {
   const {
     selectedPaymentType,
@@ -96,6 +105,15 @@ const PaymentList = ({ payments, onRemove, onUpdate }) => {
   const { editingPayment, startEditingPayment, stopEditingPayment } =
     useContext(CartContext)
 
+  const paymentTypeMap = {
+    CB: 'Carte Bancaire',
+    Cash: 'Espèces',
+    Cheque: 'Chèque',
+    ChequeCadeau: 'Chèque Cadeau',
+    Virement: 'Virement',
+    Avoir: 'Avoir',
+  }
+
   const handleEditClick = (index, amount) => {
     startEditingPayment(index, amount.toString())
   }
@@ -134,7 +152,7 @@ const PaymentList = ({ payments, onRemove, onUpdate }) => {
               />
             ) : (
               <Typography sx={{ flexGrow: 1 }}>
-                {`${payment.type}: ${formatPrice(payment.amount)}`}
+                {`${paymentTypeMap[payment.type]}: ${formatPrice(payment.amount)}`}
               </Typography>
             )}
           </Box>
