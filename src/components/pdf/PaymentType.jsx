@@ -126,7 +126,7 @@ const PaymentType = ({
       default:
         return (
           <Grid container>
-            <Grid item xs={6} textAlign={'left'}>
+            <Grid item xs={6} textAlign={'right'}>
               <Typography variant="body2" sx={{ fontSize, fontWeight: 'bold' }}>
                 {`${getReadablePaymentType(paymentType)} :`}
               </Typography>
