@@ -58,10 +58,18 @@ export const CartProvider = ({ children }) => {
     return isNaN(change) ? 0 : parseFloat(change.toFixed(2))
   }
 
-  const [cashDetails, setCashDetails] = useState({
+  const initialCashDetails = {
     givenAmount: 0,
     changeAmount: 0,
-  })
+  }
+
+  // Définition de l'état pour cashDetails
+  const [cashDetails, setCashDetails] = useState(initialCashDetails)
+
+  // Fonction pour réinitialiser cashDetails
+  const resetCashDetails = () => {
+    setCashDetails(initialCashDetails)
+  }
 
   // Ajoute une fonction pour réinitialiser les paiements
   const resetPaymentInfo = () => {
@@ -71,6 +79,7 @@ export const CartProvider = ({ children }) => {
     setPaymentDetails([])
     setPaymentType('CB')
     setAmountPaid('')
+    resetCashDetails()
   }
 
   // Fonction pour mettre à jour l'état d'édition du paiement multiple
