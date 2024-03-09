@@ -49,13 +49,13 @@ const useHandlePayClick = () => {
       date,
       paymentDetails,
       cashDetails,
-      ...(remainingAmount < 0 && { remainingAmount }), // Conditionnellement ajouter remainingAmount s'il est négatif
+      ...(remainingAmount < 0 && { remainingAmount }),
     }
 
     const data = {
       ...baseData,
       paymentType,
-      ...(isInvoice && { customerInfo }), // Conditionnellement ajouter customerInfo pour les factures
+      ...(isInvoice && { customerInfo }),
     }
 
     try {
