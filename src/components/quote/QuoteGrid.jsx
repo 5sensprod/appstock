@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import {
   DataGrid,
   frFR,
@@ -8,13 +8,14 @@ import {
 import { QuoteContext } from '../../contexts/QuoteContext'
 import { CartContext } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/priceUtils'
-import { IconButton } from '@mui/material'
+import { IconButton, Modal, Box } from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useNavigate } from 'react-router-dom'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
 import { useGenerateQuotePdf } from './useGenerateQuotePdf'
 import { useUI } from '../../contexts/UIContext'
+import QuoteGenerator from '../pdf/QuoteGenerator'
 
 const QuoteGrid = () => {
   const {
@@ -29,12 +30,15 @@ const QuoteGrid = () => {
   } = useContext(QuoteContext)
 
   const apiRef = useGridApiRef()
-
-  const generatePdf = useGenerateQuotePdf()
   const { showToast, showConfirmDialog } = useUI()
+  const [selectedQuoteId, setSelectedQuoteId] = useState(null)
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false)
+
+  // const generatePdf = useGenerateQuotePdf()
 
   const onPdfIconClick = (quoteId) => {
-    generatePdf(quoteId, (message) => showToast(message, 'success'))
+    setSelectedQuoteId(quoteId)
+    setIsPdfModalOpen(true)
   }
 
   const { setCartItems, setHasChanges } = useContext(CartContext)
@@ -106,6 +110,18 @@ const QuoteGrid = () => {
     navigate('/')
   }
 
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 790,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  }
+
   const columns = [
     {
       field: 'actions',
@@ -115,14 +131,14 @@ const QuoteGrid = () => {
       renderCell: (params) => (
         <div>
           <IconButton
-            onClick={() => onPdfIconClick(params.row._id)}
+            onClick={() => onPdfIconClick(params.row.id)}
             color="primary"
             aria-label="create pdf"
           >
             <PictureAsPdfIcon />
           </IconButton>
           <IconButton
-            onClick={() => handleViewQuote(params.row)}
+            onClick={() => handleViewQuote(params.row.id)}
             color="primary"
             aria-label="view quote"
           >
@@ -190,25 +206,43 @@ const QuoteGrid = () => {
   if (error) return <div>Erreur: {error}</div>
 
   return (
-    <div style={{ width: 852 }}>
-      <DataGrid
-        apiRef={apiRef}
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
+    <>
+      <div style={{ width: 852 }}>
+        <DataGrid
+          apiRef={apiRef}
+          rows={rows}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
             },
-          },
-        }}
-        pageSizeOptions={[5, 10, 25]}
-        pagination
-        loading={isLoading}
-        components={{ Toolbar: GridToolbarQuickFilter }}
-        localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-      />
-    </div>
+          }}
+          pageSizeOptions={[5, 10, 25]}
+          pagination
+          loading={isLoading}
+          components={{ Toolbar: GridToolbarQuickFilter }}
+          localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+        />
+      </div>
+      <Modal
+        open={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
+        aria-labelledby="pdf-modal-title"
+        aria-describedby="pdf-modal-description"
+      >
+        <Box sx={modalStyle}>
+          <QuoteGenerator
+            quoteId={selectedQuoteId}
+            onPdfGenerated={() => {
+              setIsPdfModalOpen(false)
+              showToast('PDF généré avec succès.', 'success')
+            }}
+          />
+        </Box>
+      </Modal>
+    </>
   )
 }
 

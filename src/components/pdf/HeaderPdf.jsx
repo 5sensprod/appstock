@@ -33,7 +33,7 @@ const HeaderPdf = ({
         {title}
       </Typography>
       <Typography variant="body1" sx={{ fontSize: numberFontSize }}>
-        Numéro : {data.number}
+        Numéro : {data.number || data.quoteNumber}
       </Typography>
       <Typography variant="body1" sx={{ fontSize: dateFontSize }}>
         Le {formatDate(data.date)}
