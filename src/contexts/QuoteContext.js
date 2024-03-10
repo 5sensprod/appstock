@@ -101,31 +101,20 @@ export const QuoteProvider = ({ children }) => {
   }
 
   const prepareQuoteData = (cartItems, cartTotals, adjustmentAmount) => {
-    const items = cartItems.map((item, index) => {
-      // Structure de base pour chaque item
-      const itemData = {
-        id: item._id || index,
-        reference: item.reference,
-        quantity: item.quantity,
-        prixHT: parseFloat(item.prixHT).toFixed(2),
-        prixTTC: parseFloat(item.puTTC).toFixed(2),
-        prixVente: parseFloat(item.prixVente).toFixed(2),
-        tauxTVA: item.tauxTVA,
-        totalTTCParProduit: parseFloat(item.puTTC * item.quantity).toFixed(2),
-        remiseMajorationLabel: item.remiseMajorationLabel || '',
-        remiseMajorationValue: item.remiseMajorationValue || 0,
-      }
-
-      // Conditionnellement ajouter le prixOriginal si le prix a été modifié
-      if (
-        item.prixModifie &&
-        parseFloat(item.prixModifie) !== parseFloat(item.prixVente)
-      ) {
-        itemData.prixOriginal = parseFloat(item.prixVente).toFixed(2)
-      }
-
-      return itemData
-    })
+    const items = cartItems.map((item) => ({
+      id: item._id, // Ou tout autre identifiant unique nécessaire
+      reference: item.reference,
+      quantity: item.quantity,
+      prixHT: parseFloat(item.prixHT).toFixed(2),
+      prixTTC: item.prixModifie
+        ? parseFloat(item.prixModifie).toFixed(2)
+        : parseFloat(item.prixVente).toFixed(2),
+      prixOriginal: parseFloat(item.prixVente).toFixed(2),
+      tauxTVA: item.tva,
+      totalTTCParProduit: (parseFloat(item.puTTC) * item.quantity).toFixed(2),
+      remiseMajorationLabel: item.remiseMajorationLabel || '',
+      remiseMajorationValue: item.remiseMajorationValue || 0,
+    }))
 
     const quoteData = {
       items,
@@ -136,6 +125,7 @@ export const QuoteProvider = ({ children }) => {
 
     return quoteData
   }
+
   // Désactiver le devis actif
   const deactivateQuote = () => {
     setIsActiveQuote(false)

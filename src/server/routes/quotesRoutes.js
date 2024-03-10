@@ -3,60 +3,24 @@ const router = express.Router()
 
 module.exports = (db) => {
   function formatQuoteData(body) {
-    const itemsFormatted = body.items.map((item) => {
-      // Calcul du montant de la TVA pour chaque article
-      const tauxTVA = parseFloat(item.tauxTVA) / 100 // Convertir le taux de TVA en décimal
-      const prixHT = parseFloat(item.prixHT)
-      const montantTVA = prixHT * tauxTVA // Calculer le montant de la TVA
-
-      const itemFormatted = {
-        ...item,
-        quantity: parseInt(item.quantity, 10),
-        prixHT: parseFloat(prixHT.toFixed(2)),
-        prixTTC: parseFloat(parseFloat(item.prixTTC).toFixed(2)),
-        tauxTVA: parseFloat(item.tauxTVA), // Pas besoin de double conversion ici
-        montantTVA: parseFloat(montantTVA.toFixed(2)), // Ajout du montant de la TVA calculé
-        remiseMajorationValue: parseFloat(
-          parseFloat(item.remiseMajorationValue).toFixed(2),
-        ),
-        totalTTCParProduit: parseFloat(
-          parseFloat(item.totalTTCParProduit).toFixed(2),
-        ),
-      }
-
-      // Inclure conditionnellement prixOriginal comme un nombre
-      if (
-        item.prixModifie &&
-        parseFloat(item.prixModifie) !== parseFloat(item.prixVente)
-      ) {
-        itemFormatted.prixOriginal = parseFloat(
-          parseFloat(item.prixOriginal).toFixed(2),
-        )
-      } else if (!item.prixModifie && item.remiseMajorationValue) {
-        itemFormatted.prixOriginal = parseFloat(
-          parseFloat(item.prixVente).toFixed(2),
-        )
-      }
-
-      return itemFormatted
-    })
-
-    // Correction de l'erreur 'toFixed is not a function' pour totalHT et totalTTC
-    const totalHT = body.items.reduce(
-      (total, item) => total + parseFloat(item.prixHT) * item.quantity,
-      0,
-    )
-    const totalTVA = body.items.reduce(
-      (total, item) => total + parseFloat(item.montantTVA),
-      0,
-    )
-    const totalTTC = totalHT + totalTVA
+    const itemsFormatted = body.items.map((item) => ({
+      ...item,
+      quantity: parseInt(item.quantity, 10),
+      prixHT: parseFloat(item.prixHT),
+      prixTTC: parseFloat(item.prixTTC),
+      tauxTVA: parseFloat(item.tauxTVA),
+      prixOriginal: parseFloat(item.prixOriginal),
+      remiseMajorationValue: parseFloat(item.remiseMajorationValue),
+      totalTTCParProduit: parseFloat(
+        parseFloat(item.totalTTCParProduit).toFixed(2),
+      ), // Convertir en nombre après toFixed
+    }))
 
     return {
       ...body,
       items: itemsFormatted,
-      totalHT: totalHT.toFixed(2),
-      totalTTC: totalTTC.toFixed(2),
+      totalHT: parseFloat(parseFloat(body.totalHT).toFixed(2)), // Convertir en nombre après toFixed
+      totalTTC: parseFloat(parseFloat(body.totalTTC).toFixed(2)), // Convertir en nombre après toFixed
       date: new Date().toISOString(),
     }
   }
