@@ -2,17 +2,15 @@ import React, { useContext, useState } from 'react'
 import { CartContext } from '../../contexts/CartContext'
 import CartItem from './CartItem'
 import OrderSummary from '../OrderSummary/OrderSummary'
-import { Box, Typography, Button, Grid, IconButton } from '@mui/material'
+import { Box, Typography, Button, Grid } from '@mui/material'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 import InvoiceModal from '../invoice/InvoiceModal'
 import OnHoldInvoices from '../invoice/OnHoldInvoices'
 import CartTotal from './CartTotal'
 import QuoteConfirmationModal from '../quote/QuoteConfirmationModal'
-import { useQuotes } from '../../contexts/QuoteContext'
-import { useNavigate } from 'react-router-dom'
-import { useUI } from '../../contexts/UIContext'
 import { useHoldInvoiceContext } from '../../contexts/HoldInvoiceContext'
 import InvoiceConfirmationModal from '../invoice/InvoiceConfirmationModal'
+import { useQuoteLogic } from '../../hooks/useQuoteLogic'
 
 const Cart = () => {
   const {
@@ -21,85 +19,39 @@ const Cart = () => {
     updatePrice,
     removeItem,
     taxRate,
-    setInvoiceData,
-    adjustmentAmount,
-    cartTotals,
     clearCart,
     paymentType,
     resetPaymentInfo,
+    adjustmentAmount,
+    cartTotals,
   } = useContext(CartContext)
 
   const {
+    handleSaveQuote,
+    handleExitQuoteMode,
+    handleOpenQuoteModal,
+    handleCloseQuoteModal,
     isActiveQuote,
-    deactivateQuote,
-    updateQuote,
-    setActiveQuoteDetails,
-    activeQuoteDetails,
-    prepareQuoteData,
-  } = useQuotes()
+    isQuoteModalOpen,
+  } = useQuoteLogic()
 
   const { onHoldInvoices, holdInvoice } = useHoldInvoiceContext()
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
-  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
-  const { showToast } = useUI()
+  // const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
 
   const handleItemChange = () => {
     setHasChanges(true)
   }
 
-  const navigate = useNavigate()
-
   const isCurrentCartOnHold = onHoldInvoices.some(
     (invoice) => JSON.stringify(invoice.items) === JSON.stringify(cartItems),
   )
-
-  // Définir handleSaveQuote pour mettre à jour le devis actif
-  const handleSaveQuote = async () => {
-    if (activeQuoteDetails && activeQuoteDetails.id) {
-      try {
-        // Prépare les données du devis avec les données actuelles du panier et les informations du client
-        const quoteData = prepareQuoteData(
-          cartItems,
-          cartTotals,
-          adjustmentAmount,
-        )
-        // Mise à jour du devis avec les données préparées
-        await updateQuote(activeQuoteDetails.id, quoteData)
-        showToast('Le devis a été sauvegardé avec succès.', 'success')
-        clearCart() // Optionnel: Effacer le panier après la mise à jour du devis
-        deactivateQuote() // Désactiver le mode devis actif
-        navigate('/dashboard#les-devis') // Redirection vers la page des devis
-      } catch (error) {
-        console.error('Erreur lors de la sauvegarde du devis:', error)
-        showToast('Erreur lors de la sauvegarde du devis.', 'error')
-      }
-    } else {
-      showToast('Aucun devis actif à sauvegarder.', 'warning')
-    }
-  }
-
-  const handleExitQuoteMode = () => {
-    deactivateQuote()
-    clearCart()
-    navigate('/dashboard#les-devis')
-  }
 
   const handleHoldAndClearCart = () => {
     holdInvoice(cartItems, cartTotals, adjustmentAmount) // Sauvegarde l'état actuel du panier
     clearCart()
     showToast('Facture mise en attente avec succès.', 'success')
-  }
-
-  // Fonction pour ouvrir le modal de confirmation de devis
-  const handleOpenQuoteModal = () => {
-    setIsQuoteModalOpen(true)
-  }
-
-  // La fonction pour fermer le modal et potentiellement gérer d'autres actions après fermeture
-  const handleCloseQuoteModal = () => {
-    setIsQuoteModalOpen(false)
-    // Actions supplémentaires si nécessaire...
   }
 
   return (

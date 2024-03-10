@@ -253,6 +253,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
       setCustomerAdress('')
       setShowCustomerFields(false)
       resetPaymentInfo()
+      deactivateQuote()
       onClose()
     } catch (error) {
       showToast(
