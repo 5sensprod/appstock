@@ -17,78 +17,70 @@ const QRCodeGenerator = ({ productId }) => {
     return <Typography>Produit non trouvé</Typography>
   }
 
-  const gencode = product.gencode
-
   const generatePDF = async () => {
     const input = document.getElementById('printArea')
-    input.style.height = 'auto'
-
-    const canvas = await html2canvas(input)
+    const canvas = await html2canvas(input, { scale: 4 }) // Utiliser l'échelle 4 pour une meilleure résolution
     const imgData = canvas.toDataURL('image/png')
 
     const pdf = new jsPDF({
-      orientation: 'portrait',
+      orientation: 'landscape', // Utiliser le mode paysage pour correspondre aux dimensions
       unit: 'mm',
-      format: 'a4',
+      format: [105, 74.25], // Format personnalisé pour la taille de la page
     })
 
-    // Dimensions pour l'étiquette
-    const labelWidth = 105
-
-    // Calculer le ratio de l'image pour maintenir l'aspect
-    const imgRatio = canvas.height / canvas.width
-    const actualLabelHeight = labelWidth * imgRatio
-
-    // Pour aligner l'étiquette en haut à gauche
-    const xPosition = 0
-    const yPosition = 0
-
-    pdf.addImage(
-      imgData,
-      'PNG',
-      xPosition,
-      yPosition,
-      labelWidth,
-      actualLabelHeight,
-    )
+    pdf.addImage(imgData, 'PNG', 0, 0, 105, 74.25)
     pdf.save(`${product.reference}-etiquette.pdf`)
-  }
-
-  const printAreaStyle = {
-    position: 'relative',
-    width: '105mm',
-    height: '74.25mm',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9f9f9',
-    border: '1px solid #ddd',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    padding: '20px',
-    margin: '20px auto',
-    borderRadius: '5px',
-    boxSizing: 'border-box',
-  }
-
-  const logoStyle = {
-    position: 'absolute',
-    top: '1px',
-    left: '1px',
   }
 
   return (
     <Box>
-      <Box id="printArea" sx={printAreaStyle}>
-        <Box sx={logoStyle}>
+      <Box
+        id="printArea"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between', // Permet de positionner le QR code en bas
+          width: '105mm',
+          height: '74.25mm',
+          backgroundColor: '#fff',
+          border: '1px solid #ddd',
+          padding: '10px',
+          margin: '20px auto',
+          boxSizing: 'border-box',
+        }}
+      >
+        <Box sx={{ alignSelf: 'flex-start' }}>
           <Logo />
         </Box>
-        <Typography variant="h6">{product.reference}</Typography>
+        <Typography variant="h4">{product.reference}</Typography>
+        <Box sx={{ width: '80%', textAlign: 'left' }}>
+          <Typography
+            variant="caption"
+            component="div"
+            sx={{ borderBottom: '1px dashed #cccccc' }}
+          >
+            &nbsp;
+          </Typography>
+          <Typography
+            variant="caption"
+            component="div"
+            sx={{ borderBottom: '1px dashed #cccccc' }}
+          >
+            &nbsp;
+          </Typography>
+          <Typography
+            variant="caption"
+            component="div"
+            sx={{ borderBottom: '1px dashed #cccccc' }}
+          >
+            &nbsp;
+          </Typography>
+        </Box>
         <Typography variant="h6" sx={{ mt: 2 }}>
           {formatPrice(product.prixVente)}
         </Typography>
-        <Box>
-          <QRCodeCanvas value={gencode} size={50} />
+        <Box sx={{ alignSelf: 'flex-end' }}>
+          <QRCodeCanvas value={product.gencode} size={50} />
         </Box>
       </Box>
       <Box textAlign={'center'}>
