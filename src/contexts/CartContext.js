@@ -35,6 +35,12 @@ export const CartProvider = ({ children }) => {
     value: '',
   })
 
+  const [hasChanges, setHasChanges] = useState(false)
+
+  const handleItemChange = () => {
+    setHasChanges(true)
+  }
+
   const calculateRemainingAmount = () => {
     const total =
       adjustmentAmount !== 0
@@ -190,6 +196,7 @@ export const CartProvider = ({ children }) => {
         return [...currentItems, enrichCartItem({ ...product, quantity: 1 })] // Ajouter l'article avec la quantité initialisée à 1
       }
     })
+    setHasChanges(true)
   }
 
   // Mettre à jour la quantité d'un produit dans le panier
@@ -218,6 +225,7 @@ export const CartProvider = ({ children }) => {
     setCartItems((currentItems) =>
       currentItems.filter((item) => item._id !== productId),
     )
+    setHasChanges(true)
   }
 
   // Vider panier
@@ -279,6 +287,9 @@ export const CartProvider = ({ children }) => {
         calculateRemainingAmount,
         calculateChange,
         resetCashDetails,
+        hasChanges,
+        setHasChanges,
+        handleItemChange,
       }}
     >
       {children}

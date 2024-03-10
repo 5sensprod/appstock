@@ -5,8 +5,15 @@ import { useQuotes } from '../contexts/QuoteContext'
 import { useUI } from '../contexts/UIContext'
 
 export const useQuoteLogic = () => {
-  const { cartItems, cartTotals, adjustmentAmount, clearCart } =
-    useContext(CartContext)
+  const {
+    cartItems,
+    cartTotals,
+    adjustmentAmount,
+    clearCart,
+    handleItemChange,
+    hasChanges,
+    setHasChanges,
+  } = useContext(CartContext)
 
   const {
     isActiveQuote,
@@ -17,11 +24,6 @@ export const useQuoteLogic = () => {
   } = useQuotes()
 
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
-  const [hasChanges, setHasChanges] = useState(false)
-
-  const handleItemChange = () => {
-    setHasChanges(true)
-  }
 
   const { showToast } = useUI()
   const navigate = useNavigate()
@@ -46,12 +48,14 @@ export const useQuoteLogic = () => {
     } else {
       showToast('Aucun devis actif à sauvegarder.', 'warning')
     }
+    setHasChanges(false)
   }
 
   const handleExitQuoteMode = () => {
     deactivateQuote()
     clearCart()
     navigate('/dashboard#les-devis')
+    setHasChanges(false)
   }
 
   const handleOpenQuoteModal = () => {
@@ -69,7 +73,8 @@ export const useQuoteLogic = () => {
     handleCloseQuoteModal,
     isActiveQuote,
     isQuoteModalOpen,
-    hasChanges,
     handleItemChange,
+    hasChanges,
+    setHasChanges,
   }
 }

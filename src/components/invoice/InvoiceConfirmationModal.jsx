@@ -45,6 +45,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     calculateRemainingAmount,
     multiplePayment,
     calculateChange,
+    setHasChanges,
   } = useContext(CartContext)
 
   const { showToast } = useUI()
@@ -253,6 +254,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
       setCustomerAdress('')
       setShowCustomerFields(false)
       resetPaymentInfo()
+      setHasChanges(false)
       deactivateQuote()
       onClose()
     } catch (error) {
