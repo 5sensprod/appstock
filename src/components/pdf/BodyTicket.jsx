@@ -61,7 +61,7 @@ const BodyTicket = ({ data, fontSize = '9px' }) => {
           <React.Fragment key={item.reference}>
             <Grid item xs={2}>
               <Typography sx={{ ...commonStyle, fontWeight: 'normal' }}>
-                {item.quantite}
+                {item.quantite || item.quantity}
               </Typography>
             </Grid>
             <Grid item xs={hasRemiseOrMajoration ? 3 : 4}>
@@ -87,7 +87,10 @@ const BodyTicket = ({ data, fontSize = '9px' }) => {
             )}
             <Grid item xs={2}>
               <Typography sx={{ ...commonStyle, fontWeight: 'normal' }}>
-                {formatNumber(item.quantite * item.puTTC)}
+                {formatNumber(
+                  (item.quantite || item.quantity) *
+                    (item.puTTC || item.prixTTC),
+                )}
               </Typography>
             </Grid>
             <Grid item xs={1}>

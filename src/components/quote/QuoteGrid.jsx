@@ -13,7 +13,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useNavigate } from 'react-router-dom'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
-import { useGenerateQuotePdf } from './useGenerateQuotePdf'
 import { useUI } from '../../contexts/UIContext'
 import QuoteGenerator from '../pdf/QuoteGenerator'
 
@@ -30,11 +29,10 @@ const QuoteGrid = () => {
   } = useContext(QuoteContext)
 
   const apiRef = useGridApiRef()
+
   const { showToast, showConfirmDialog } = useUI()
   const [selectedQuoteId, setSelectedQuoteId] = useState(null)
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false)
-
-  // const generatePdf = useGenerateQuotePdf()
 
   const onPdfIconClick = (quoteId) => {
     setSelectedQuoteId(quoteId)
@@ -110,18 +108,6 @@ const QuoteGrid = () => {
     navigate('/')
   }
 
-  const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 790,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  }
-
   const columns = [
     {
       field: 'actions',
@@ -131,14 +117,14 @@ const QuoteGrid = () => {
       renderCell: (params) => (
         <div>
           <IconButton
-            onClick={() => onPdfIconClick(params.row.id)}
+            onClick={() => onPdfIconClick(params.row._id)}
             color="primary"
             aria-label="create pdf"
           >
             <PictureAsPdfIcon />
           </IconButton>
           <IconButton
-            onClick={() => handleViewQuote(params.row.id)}
+            onClick={() => handleViewQuote(params.row)}
             color="primary"
             aria-label="view quote"
           >
@@ -205,27 +191,32 @@ const QuoteGrid = () => {
 
   if (error) return <div>Erreur: {error}</div>
 
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 790,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  }
+
   return (
-    <>
-      <div style={{ width: 852 }}>
-        <DataGrid
-          apiRef={apiRef}
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-          }}
-          pageSizeOptions={[5, 10, 25]}
-          pagination
-          loading={isLoading}
-          components={{ Toolbar: GridToolbarQuickFilter }}
-          localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-        />
-      </div>
+    <div style={{ width: '100%' }}>
+      <DataGrid
+        apiRef={apiRef}
+        rows={rows}
+        columns={columns}
+        pageSize={5}
+        rowsPerPageOptions={[5, 10, 25]}
+        pagination
+        loading={isLoading}
+        components={{ Toolbar: GridToolbarQuickFilter }}
+        localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+      />
+      {/* Modale pour la génération du PDF */}
       <Modal
         open={isPdfModalOpen}
         onClose={() => setIsPdfModalOpen(false)}
@@ -233,16 +224,17 @@ const QuoteGrid = () => {
         aria-describedby="pdf-modal-description"
       >
         <Box sx={modalStyle}>
-          <QuoteGenerator
-            quoteId={selectedQuoteId}
-            onPdfGenerated={() => {
-              setIsPdfModalOpen(false)
-              showToast('PDF généré avec succès.', 'success')
-            }}
-          />
+          {selectedQuoteId && (
+            <QuoteGenerator
+              quoteId={selectedQuoteId}
+              onPdfGenerated={() => {
+                setIsPdfModalOpen(false)
+              }}
+            />
+          )}
         </Box>
       </Modal>
-    </>
+    </div>
   )
 }
 

@@ -4,18 +4,25 @@ import { Box, Typography } from '@mui/material'
 const TotauxTVA = ({ data, fontSize = '10px' }) => {
   // Grouper les articles par taux de TVA et additionner les valeurs
   const totauxParTVA = data.items.reduce((acc, item) => {
-    const { tauxTVA, montantTVA, puHT, quantite } = item
-    const totalHT = puHT * quantite
-    const totalTVA = montantTVA * quantite
+    // Récupération ou calcul des valeurs nécessaires
+    const tauxTVA = item.tauxTVA
+    const quantite = item.quantite || item.quantity
+    const puHT = item.puHT || item.prixHT
+    const puTTC = item.puTTC || item.prixTTC
+
+    // Calcul de montantTVA si non fourni
+    const montantTVA = item.montantTVA || (puTTC - puHT) * quantite
+
     const tauxKey = `${tauxTVA}%`
+    const totalHT = puHT * quantite
 
     if (!acc[tauxKey]) {
       acc[tauxKey] = { totalHT: 0, montantTVA: 0, totalTTC: 0 }
     }
 
     acc[tauxKey].totalHT += totalHT
-    acc[tauxKey].montantTVA += totalTVA
-    acc[tauxKey].totalTTC += totalHT + totalTVA
+    acc[tauxKey].montantTVA += montantTVA
+    acc[tauxKey].totalTTC += totalHT + montantTVA
     return acc
   }, {})
 
