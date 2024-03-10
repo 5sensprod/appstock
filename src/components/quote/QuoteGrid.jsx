@@ -37,7 +37,7 @@ const QuoteGrid = () => {
     generatePdf(quoteId, (message) => showToast(message, 'success'))
   }
 
-  const { setCartItems } = useContext(CartContext)
+  const { setCartItems, setHasChanges } = useContext(CartContext)
   const navigate = useNavigate()
 
   const handleDeleteQuoteFromGrid = (id) => {
@@ -103,6 +103,7 @@ const QuoteGrid = () => {
     })
 
     setCartItems(cartItemsFromQuote)
+    setHasChanges(false)
     navigate('/')
   }
 
