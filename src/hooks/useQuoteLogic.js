@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CartContext } from '../contexts/CartContext'
 import { useQuotes } from '../contexts/QuoteContext'
@@ -17,6 +17,11 @@ export const useQuoteLogic = () => {
   } = useQuotes()
 
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
+
+  const handleItemChange = () => {
+    setHasChanges(true)
+  }
 
   const { showToast } = useUI()
   const navigate = useNavigate()
@@ -64,5 +69,7 @@ export const useQuoteLogic = () => {
     handleCloseQuoteModal,
     isActiveQuote,
     isQuoteModalOpen,
+    hasChanges,
+    handleItemChange,
   }
 }

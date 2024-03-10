@@ -33,23 +33,19 @@ const Cart = () => {
     handleCloseQuoteModal,
     isActiveQuote,
     isQuoteModalOpen,
+    hasChanges,
+    handleItemChange,
   } = useQuoteLogic()
 
   const { onHoldInvoices, holdInvoice } = useHoldInvoiceContext()
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
-  // const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
-  const [hasChanges, setHasChanges] = useState(false)
-
-  const handleItemChange = () => {
-    setHasChanges(true)
-  }
 
   const isCurrentCartOnHold = onHoldInvoices.some(
     (invoice) => JSON.stringify(invoice.items) === JSON.stringify(cartItems),
   )
 
   const handleHoldAndClearCart = () => {
-    holdInvoice(cartItems, cartTotals, adjustmentAmount) // Sauvegarde l'état actuel du panier
+    holdInvoice(cartItems, cartTotals, adjustmentAmount)
     clearCart()
     showToast('Facture mise en attente avec succès.', 'success')
   }
