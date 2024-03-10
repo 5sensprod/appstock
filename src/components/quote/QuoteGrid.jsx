@@ -81,8 +81,7 @@ const QuoteGrid = () => {
           : parseFloat(item.prixOriginal)
       const quantity = parseInt(item.quantity, 10)
 
-      // Calcul du montant de la TVA pour chaque article
-      const montantTVA = (prixTTC - prixHT) * quantity
+      const montantTVA = prixTTC - prixHT
 
       return {
         ...item,
