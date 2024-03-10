@@ -1,8 +1,9 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState } from 'react'
 import { CartContext } from '../../contexts/CartContext'
 import CartItem from './CartItem'
 import OrderSummary from '../OrderSummary/OrderSummary'
-import { Box, Typography, Button, Grid } from '@mui/material'
+import { Box, Typography, Button, Grid, IconButton } from '@mui/material'
+import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 import InvoiceModal from '../invoice/InvoiceModal'
 import OnHoldInvoices from '../invoice/OnHoldInvoices'
 import CartTotal from './CartTotal'
@@ -12,7 +13,6 @@ import { useNavigate } from 'react-router-dom'
 import { useUI } from '../../contexts/UIContext'
 import { useHoldInvoiceContext } from '../../contexts/HoldInvoiceContext'
 import InvoiceConfirmationModal from '../invoice/InvoiceConfirmationModal'
-import PaymentTypeSelector from './PaymentTypeSelector'
 
 const Cart = () => {
   const {
@@ -41,8 +41,8 @@ const Cart = () => {
   const { onHoldInvoices, holdInvoice } = useHoldInvoiceContext()
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
-  const [hasChanges, setHasChanges] = useState(false)
   const { showToast } = useUI()
+  const [hasChanges, setHasChanges] = useState(false)
 
   const handleItemChange = () => {
     setHasChanges(true)
@@ -172,6 +172,7 @@ const Cart = () => {
                   <>
                     <Button
                       variant="contained"
+                      color="success"
                       onClick={handleSaveQuote}
                       disabled={!hasChanges}
                       sx={{ ml: 2 }}
@@ -180,10 +181,22 @@ const Cart = () => {
                     </Button>
                     <Button
                       variant="contained"
+                      // color="error"
                       onClick={handleExitQuoteMode}
-                      sx={{ ml: 2 }}
+                      sx={{
+                        ml: 2,
+                        minWidth: '40px',
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '10%',
+                        padding: '6px',
+                        '&:hover': {
+                          backgroundColor: 'dark',
+                        },
+                      }}
+                      aria-label="sortir"
                     >
-                      Sortir
+                      <ExitToAppIcon sx={{ color: '#fff' }} />{' '}
                     </Button>
                   </>
                 )}
