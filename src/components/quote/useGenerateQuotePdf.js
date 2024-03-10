@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
 import { getQuoteDetailsById } from '../../api/quoteService'
@@ -8,7 +8,6 @@ import { formatPrice } from '../../utils/priceUtils'
 export const useGenerateQuotePdf = () => {
   const { companyInfo } = useContext(CompanyInfoContext)
 
-  // Calculer la date de validité (30 jours après la date du devis)
   const generatePdf = async (quoteId, onSuccess) => {
     try {
       const quoteDetails = await getQuoteDetailsById(quoteId)

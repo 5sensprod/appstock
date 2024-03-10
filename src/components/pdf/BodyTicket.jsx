@@ -2,7 +2,13 @@ import React from 'react'
 import { Box, Typography, Grid } from '@mui/material'
 
 // Fonction d'aide pour formater les nombres en remplaçant le point par une virgule
-const formatNumber = (number) => number.toFixed(2).replace('.', ',')
+const formatNumber = (input) => {
+  const number = parseFloat(input)
+  if (isNaN(number)) {
+    return 'Invalid input' // Retourne un message ou gère l'erreur comme souhaité
+  }
+  return number.toFixed(2).replace('.', ',')
+}
 
 const BodyTicket = ({ data, fontSize = '9px' }) => {
   const commonStyle = { fontSize, fontWeight: 'bold' }
