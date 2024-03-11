@@ -204,7 +204,7 @@ const QuoteGrid = () => {
   }
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: 852 }}>
       <DataGrid
         apiRef={apiRef}
         rows={rows}
