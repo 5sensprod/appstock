@@ -42,7 +42,7 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
     })
 
     pdf.addImage(imgData, 'PNG', 0, 0, format[0], format[1])
-    pdf.save(`${product.reference}-etiquette.pdf`)
+    pdf.save(`${product.reference}-etiquette-${orientation}.pdf`)
   }
 
   return (
@@ -91,7 +91,7 @@ const generateLines = (orientation) => {
   for (let i = 0; i < linesCount; i++) {
     lines.push(
       <Typography
-        key={i} // Assurez-vous d'utiliser une clé unique pour chaque élément
+        key={i}
         variant="caption"
         component="div"
         sx={{ borderBottom: '1px dashed #cccccc' }}
