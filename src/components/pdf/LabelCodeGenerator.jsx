@@ -30,6 +30,10 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
 
   const [sheetCellStates, setSheetCellStates] = useState([])
 
+  useEffect(() => {
+    console.log(sheetCellStates)
+  }, [sheetCellStates])
+
   const handleSheetStateChange = (newCellStates) => {
     setSheetCellStates(newCellStates)
   }
@@ -226,8 +230,13 @@ const Sheet = ({ orientation, onStateChange }) => {
             // Premier clic, activer si pas déjà activé
             newState = { ...cell, present: true, clicks: newClicks }
           } else if (newClicks === 2) {
-            // Deuxième clic, rotation de 90°
-            newState = { ...cell, clicks: newClicks }
+            // Deuxième clic, rotation de 90° et changement d'orientation
+            newState = {
+              ...cell,
+              orientation:
+                cell.orientation === 'portrait' ? 'landscape' : 'portrait', // Changement d'orientation ici
+              clicks: newClicks,
+            }
           } else {
             // Troisième clic, désactiver la cellule
             newState = {
