@@ -1,17 +1,52 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
+import {
+  Box,
+  Button,
+  FormControlLabel,
+  Switch,
+  Typography,
+} from '@mui/material'
+
 import { formatPrice } from '../../utils/priceUtils'
 import Logo from '../ui/Logo'
 
-const QRCodeGenerator = ({ productId }) => {
+const generateLines = (orientation) => {
+  // Déterminer le nombre de lignes basé sur l'orientation
+  const linesCount = orientation === 'portrait' ? 6 : 3
+
+  // Générer un tableau de composants <Typography>
+  const lines = []
+  for (let i = 0; i < linesCount; i++) {
+    lines.push(
+      <Typography
+        key={i} // Assurez-vous d'utiliser une clé unique pour chaque élément
+        variant="caption"
+        component="div"
+        sx={{ borderBottom: '1px dashed #cccccc' }}
+      >
+        &nbsp;
+      </Typography>,
+    )
+  }
+  return lines
+}
+
+const QRCodeGenerator = ({ productId, onOrientationChange }) => {
   const { products } = useProductContextSimplified()
   const product = products.find((product) => product._id === productId)
+
+  const [orientation, setOrientation] = useState('landscape')
+
+  const handleOrientationChange = (event) => {
+    const newOrientation = event.target.checked ? 'landscape' : 'portrait'
+    setOrientation(newOrientation)
+    // Appeler la fonction du parent pour ajuster la hauteur de la modal
+    onOrientationChange(newOrientation === 'landscape')
+  }
 
   if (!product) {
     return <Typography>Produit non trouvé</Typography>
@@ -22,13 +57,15 @@ const QRCodeGenerator = ({ productId }) => {
     const canvas = await html2canvas(input, { scale: 4 }) // Utiliser l'échelle 4 pour une meilleure résolution
     const imgData = canvas.toDataURL('image/png')
 
+    const format = orientation === 'portrait' ? [74.25, 105] : [105, 74.25]
+
     const pdf = new jsPDF({
-      orientation: 'landscape', // Utiliser le mode paysage pour correspondre aux dimensions
+      orientation,
       unit: 'mm',
-      format: [105, 74.25], // Format personnalisé pour la taille de la page
+      format,
     })
 
-    pdf.addImage(imgData, 'PNG', 0, 0, 105, 74.25)
+    pdf.addImage(imgData, 'PNG', 0, 0, format[0], format[1])
     pdf.save(`${product.reference}-etiquette.pdf`)
   }
 
@@ -39,9 +76,9 @@ const QRCodeGenerator = ({ productId }) => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between', // Permet de positionner le QR code en bas
-          width: '105mm',
-          height: '74.25mm',
+          justifyContent: 'space-between',
+          width: orientation === 'portrait' ? '74.25mm' : '105mm',
+          height: orientation === 'portrait' ? '105mm' : '74.25mm',
           backgroundColor: '#fff',
           border: '1px solid #ddd',
           padding: '10px',
@@ -71,27 +108,7 @@ const QRCodeGenerator = ({ productId }) => {
         </Box>
         <Typography variant="h4">{product.reference}</Typography>
         <Box sx={{ width: '80%', textAlign: 'left' }}>
-          <Typography
-            variant="caption"
-            component="div"
-            sx={{ borderBottom: '1px dashed #cccccc' }}
-          >
-            &nbsp;
-          </Typography>
-          <Typography
-            variant="caption"
-            component="div"
-            sx={{ borderBottom: '1px dashed #cccccc' }}
-          >
-            &nbsp;
-          </Typography>
-          <Typography
-            variant="caption"
-            component="div"
-            sx={{ borderBottom: '1px dashed #cccccc' }}
-          >
-            &nbsp;
-          </Typography>
+          {generateLines(orientation)}
         </Box>
         <Box
           sx={{
@@ -107,6 +124,15 @@ const QRCodeGenerator = ({ productId }) => {
         </Box>
       </Box>
       <Box textAlign={'center'}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={orientation === 'landscape'}
+              onChange={handleOrientationChange}
+            />
+          }
+          label="Mode Paysage"
+        />
         <Button
           variant="contained"
           color="primary"

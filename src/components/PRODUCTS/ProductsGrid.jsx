@@ -31,6 +31,12 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     items: [],
   })
 
+  const [modalHeight, setModalHeight] = useState(500)
+
+  const handleModalHeightChange = (isLandscape) => {
+    setModalHeight(isLandscape ? 500 : 600)
+  }
+
   const {
     products,
     setProducts,
@@ -286,8 +292,8 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 740,
-    height: 500,
+    width: 740, // Largeur fixe, ajustez selon vos besoins
+    height: modalHeight, // Hauteur dynamique basée sur l'état
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -307,18 +313,6 @@ const ProductsGrid = ({ selectedCategoryId }) => {
 
   return (
     <>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          {selectedProductId && (
-            <QRCodeGenerator productId={selectedProductId} />
-          )}
-        </Box>
-      </Modal>
       {filteredProducts.length === 0 ? (
         <Typography variant="h6">Aucun produit trouvé</Typography>
       ) : (
@@ -388,7 +382,10 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       >
         <Box sx={style}>
           {selectedProductId && (
-            <QRCodeGenerator productId={selectedProductId} />
+            <QRCodeGenerator
+              onOrientationChange={handleModalHeightChange}
+              productId={selectedProductId}
+            />
           )}
         </Box>
       </Modal>
