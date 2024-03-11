@@ -189,6 +189,44 @@ const ControlGenerator = ({ orientation, toggleOrientation, generatePDF }) => (
 const Sheet = ({ labelsCount, orientation }) => {
   const pageDimensions = { width: 210, height: 297 }
   const labelDimensions = { width: 74.25, height: 105 }
+  const [cellStates, setCellStates] = useState(
+    [{ present: true, orientation: 'portrait', copies: 1, clicks: 0 }].concat(
+      Array(7).fill({
+        present: false,
+        orientation: 'portrait',
+        copies: 1,
+        clicks: 0,
+      }),
+    ),
+  )
+
+  const handleCellClick = (index) => {
+    setCellStates(
+      cellStates.map((cell, idx) => {
+        if (idx === index) {
+          const newClicks = cell.clicks + 1
+          let newState = {}
+          if (newClicks === 1) {
+            // Premier clic, activer si pas déjà activé
+            newState = { ...cell, present: true, clicks: newClicks }
+          } else if (newClicks === 2) {
+            // Deuxième clic, rotation de 90°
+            newState = { ...cell, clicks: newClicks }
+          } else {
+            // Troisième clic, désactiver la cellule
+            newState = {
+              present: false,
+              orientation: 'portrait',
+              copies: 1,
+              clicks: 0,
+            }
+          }
+          return newState
+        }
+        return cell
+      }),
+    )
+  }
 
   const baseWidthPx = 50
 
@@ -224,22 +262,36 @@ const Sheet = ({ labelsCount, orientation }) => {
 
   return (
     <Box sx={gridStyle}>
-      {Array.from({ length: 8 }).map((_, index) => (
+      {cellStates.map((cell, index) => (
         <Box
           key={index}
+          onClick={() => handleCellClick(index)}
           sx={{
             width: '100%',
             height: 0,
-            paddingTop: `${(labelDimensions.height / labelDimensions.width) * 100}%`, // Conservation du ratio d'aspect
-            position: 'relative', // Nécessaire pour positionner absolument le numéro à l'intérieur
-            backgroundColor: index < labelsCount ? '#ddd' : 'transparent',
+            paddingTop: `${(labelDimensions.height / labelDimensions.width) * 100}%`,
+            position: 'relative',
+            backgroundColor: cell.present ? '#ddd' : 'transparent',
             border: '1px solid black',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            cursor: 'pointer',
           }}
         >
-          <span style={cellNumberStyle}>{index + 1}</span>
+          {cell.present && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: `translate(-50%, -50%) rotate(${cell.clicks === 2 ? -90 : 0}deg)`,
+                pointerEvents: 'auto', // Permettre les clics sur ce div et ses enfants
+              }}
+            >
+              <span style={cellNumberStyle}>{index + 1}</span>
+            </div>
+          )}
         </Box>
       ))}
     </Box>
