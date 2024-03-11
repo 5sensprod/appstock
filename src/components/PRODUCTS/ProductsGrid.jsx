@@ -31,10 +31,10 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     items: [],
   })
 
-  const [modalHeight, setModalHeight] = useState(500)
+  const [modalHeight, setModalHeight] = useState(600)
 
   const handleModalHeightChange = (isLandscape) => {
-    setModalHeight(isLandscape ? 500 : 600)
+    setModalHeight(isLandscape ? 600 : 600)
   }
 
   const {

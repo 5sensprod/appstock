@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { jsPDF } from 'jspdf'
@@ -18,9 +18,10 @@ import useOrientation from './hooks/useOrientation'
 const labelCodeGenerator = ({ productId, onOrientationChange }) => {
   const { products } = useProductContextSimplified()
   const product = products.find((product) => product._id === productId)
+  const [labelsCount, setLabelsCount] = useState(1)
 
   const [orientation, toggleOrientation] = useOrientation(
-    'landscape',
+    'portrait',
     onOrientationChange,
   )
 
@@ -33,20 +34,49 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
     const canvas = await html2canvas(input, { scale: 4 })
     const imgData = canvas.toDataURL('image/png')
 
-    const format = orientation === 'portrait' ? [74.25, 105] : [105, 74.25]
+    // Format pour une seule étiquette
+    const singleLabelFormat = [74.25, 105]
 
+    // Créez un nouveau PDF en mode paysage, qui peut contenir 8 étiquettes
     const pdf = new jsPDF({
-      orientation,
+      orientation: 'landscape',
       unit: 'mm',
-      format,
+      format: 'a4',
     })
 
-    pdf.addImage(imgData, 'PNG', 0, 0, format[0], format[1])
-    pdf.save(`${product.reference}-etiquette-${orientation}.pdf`)
+    // Calcul des positions où les étiquettes doivent être placées sur la page
+    const positions = generateLabelPositions()
+
+    // Ajout de chaque étiquette à la page
+    positions.forEach((position) => {
+      pdf.addImage(
+        imgData,
+        'PNG',
+        position.x,
+        position.y,
+        singleLabelFormat[0],
+        singleLabelFormat[1],
+      )
+    })
+
+    // Enregistrez le PDF
+    pdf.save(`${product.reference}-etiquettes.pdf`)
   }
 
   return (
     <Box>
+      <ControlGenerator
+        orientation={orientation}
+        toggleOrientation={toggleOrientation}
+        generatePDF={generatePDF}
+      />
+      <Box
+        sx={{
+          mb: orientation === 'landscape' ? 5 : -5,
+        }}
+      >
+        <Sheet labelsCount={labelsCount} orientation={orientation} />
+      </Box>
       <Box
         id="printArea"
         sx={{
@@ -55,6 +85,8 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
           justifyContent: 'space-between',
           width: orientation === 'portrait' ? '74.25mm' : '105mm',
           height: orientation === 'portrait' ? '105mm' : '74.25mm',
+          transform: orientation === 'landscape' ? 'rotate(-90deg)' : 'none',
+          // transformOrigin: 'center center',
           backgroundColor: '#fff',
           border: '1px solid #ddd',
           padding: '10px',
@@ -71,11 +103,6 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
         </Box>
         <FooterLabel product={product} />
       </Box>
-      <ControlGenerator
-        orientation={orientation}
-        toggleOrientation={toggleOrientation}
-        generatePDF={generatePDF}
-      />
     </Box>
   )
 }
@@ -138,7 +165,7 @@ const HeaderLabel = ({ product }) => (
 )
 
 const ControlGenerator = ({ orientation, toggleOrientation, generatePDF }) => (
-  <Box textAlign={'center'}>
+  <Box textAlign={'center'} mb={4}>
     <FormControlLabel
       control={
         <Switch
@@ -158,3 +185,119 @@ const ControlGenerator = ({ orientation, toggleOrientation, generatePDF }) => (
     </Button>
   </Box>
 )
+
+const Sheet = ({ labelsCount, orientation }) => {
+  const [labels, setLabels] = useState([])
+  const [vignettes, setVignettes] = useState(
+    Array(8).fill({ present: false, orientation: 'portrait' }),
+  )
+
+  const pageDimensions = { width: 210, height: 297 }
+  const labelDimensions = { width: 74.25, height: 105 }
+
+  const baseWidthPx = 50
+
+  const handleCellClick = (index) => {
+    setVignettes(
+      vignettes.map((vignette, idx) => {
+        if (idx === index) {
+          return {
+            ...vignette,
+            present: !vignette.present, // ou une logique pour ajouter spécifiquement un produit
+            orientation:
+              vignette.orientation === 'portrait' ? 'landscape' : 'portrait',
+          }
+        }
+        return vignette
+      }),
+    )
+  }
+
+  // Longueur cible en pixels pour le côté de 210mm
+
+  const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: `repeat(4, 1fr)`,
+    gap: '1px',
+    padding: '1px',
+    border: '1px solid #ddd',
+    backgroundColor: '#f0f0f0',
+    // Largeur et hauteur fixes basées sur le mode paysage
+    width: `${baseWidthPx * (pageDimensions.height / pageDimensions.width)}px`,
+    height: `${baseWidthPx}px`,
+  }
+
+  const cellNumberStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    // Retirez la rotation pour le mode portrait et appliquez-la pour le mode paysage
+    transform:
+      orientation === 'portrait'
+        ? 'translate(-50%, -50%)'
+        : 'translate(-50%, -50%) rotate(-90deg)',
+    width: 'max-content',
+    height: 'max-content',
+    fontFamily: 'Arial, sans-serif',
+    fontSize: '12px',
+    pointerEvents: 'none',
+  }
+
+  return (
+    <Box sx={gridStyle}>
+      {Array.from({ length: 8 }).map((_, index) => (
+        <Box
+          key={index}
+          onClick={() => handleCellClick(index)}
+          sx={{
+            width: '100%',
+            height: 0,
+            paddingTop: `${(labelDimensions.height / labelDimensions.width) * 100}%`,
+            position: 'relative',
+            backgroundColor: labels.find((label) => label.position === index)
+              ? '#ddd'
+              : 'transparent',
+            border: '1px solid black',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer', // Ajoutez un curseur pour indiquer que la cellule est cliquable
+          }}
+        >
+          {labels
+            .filter((label) => label.position === index)
+            .map((label, labelIndex) => (
+              <span
+                key={labelIndex}
+                style={{
+                  ...cellNumberStyle,
+                  transform:
+                    label.orientation === 'portrait'
+                      ? 'translate(-50%, -50%)'
+                      : 'translate(-50%, -50%) rotate(-90deg)',
+                }}
+              >
+                Produit {index + 1} - {label.orientation}
+              </span>
+            ))}
+        </Box>
+      ))}
+    </Box>
+  )
+}
+
+const generateLabelPositions = () => {
+  const positions = []
+  const labelsPerRow = 4 // Nombre d'étiquettes par rangée
+  const rowHeight = 105 // Hauteur d'une rangée
+  const labelWidth = 74.25 // Largeur d'une étiquette
+
+  for (let i = 0; i < 8; i++) {
+    // Pour 8 étiquettes
+    const x = (i % labelsPerRow) * labelWidth
+    const y = Math.floor(i / labelsPerRow) * rowHeight
+    positions.push({ x, y })
+  }
+
+  return positions
+}
