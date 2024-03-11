@@ -15,7 +15,7 @@ import BulkUpdateProduct from '../product/BulkUpdateProduct'
 import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 import Modal from '@mui/material/Modal'
 import Box from '@mui/material/Box'
-import LabelCodeGenerator from './LabelCodeGenerator'
+import LabelCodeGenerator from '../pdf/LabelCodeGenerator'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useCategoryTreeSelect } from '../../contexts/CategoryTreeSelectContext'
 
