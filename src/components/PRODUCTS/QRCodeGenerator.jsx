@@ -49,8 +49,25 @@ const QRCodeGenerator = ({ productId }) => {
           boxSizing: 'border-box',
         }}
       >
-        <Box sx={{ alignSelf: 'flex-start' }}>
-          <Logo />
+        {/* Conteneur principal pour le logo et la marque */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start', // Alignés en haut
+            width: '100%',
+          }}
+        >
+          {/* Logo à gauche */}
+          <Box>
+            <Logo />
+          </Box>
+
+          {/* Marque entièrement à droite et alignée au centre dans son espace vertical */}
+          <Typography variant="body2" mr={5}>
+            {product.marque}
+          </Typography>
         </Box>
         <Typography variant="h4">{product.reference}</Typography>
         <Box sx={{ width: '80%', textAlign: 'left' }}>
@@ -76,10 +93,16 @@ const QRCodeGenerator = ({ productId }) => {
             &nbsp;
           </Typography>
         </Box>
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          {formatPrice(product.prixVente)}
-        </Typography>
-        <Box sx={{ alignSelf: 'flex-end' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mt: 2,
+          }}
+        >
+          <Typography variant="h5">{formatPrice(product.prixVente)}</Typography>
           <QRCodeCanvas value={product.gencode} size={50} />
         </Box>
       </Box>
