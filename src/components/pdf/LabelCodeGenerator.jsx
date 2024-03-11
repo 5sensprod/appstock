@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { jsPDF } from 'jspdf'
@@ -13,40 +13,16 @@ import {
 
 import { formatPrice } from '../../utils/priceUtils'
 import Logo from '../ui/Logo'
-
-const generateLines = (orientation) => {
-  // Déterminer le nombre de lignes basé sur l'orientation
-  const linesCount = orientation === 'portrait' ? 6 : 3
-
-  // Générer un tableau de composants <Typography>
-  const lines = []
-  for (let i = 0; i < linesCount; i++) {
-    lines.push(
-      <Typography
-        key={i} // Assurez-vous d'utiliser une clé unique pour chaque élément
-        variant="caption"
-        component="div"
-        sx={{ borderBottom: '1px dashed #cccccc' }}
-      >
-        &nbsp;
-      </Typography>,
-    )
-  }
-  return lines
-}
+import useOrientation from './hooks/useOrientation'
 
 const labelCodeGenerator = ({ productId, onOrientationChange }) => {
   const { products } = useProductContextSimplified()
   const product = products.find((product) => product._id === productId)
 
-  const [orientation, setOrientation] = useState('landscape')
-
-  const handleOrientationChange = (event) => {
-    const newOrientation = event.target.checked ? 'landscape' : 'portrait'
-    setOrientation(newOrientation)
-    // Appeler la fonction du parent pour ajuster la hauteur de la modal
-    onOrientationChange(newOrientation === 'landscape')
-  }
+  const [orientation, toggleOrientation] = useOrientation(
+    'landscape',
+    onOrientationChange,
+  )
 
   if (!product) {
     return <Typography>Produit non trouvé</Typography>
@@ -54,7 +30,7 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
 
   const generatePDF = async () => {
     const input = document.getElementById('printArea')
-    const canvas = await html2canvas(input, { scale: 4 }) // Utiliser l'échelle 4 pour une meilleure résolution
+    const canvas = await html2canvas(input, { scale: 4 })
     const imgData = canvas.toDataURL('image/png')
 
     const format = orientation === 'portrait' ? [74.25, 105] : [105, 74.25]
@@ -128,7 +104,7 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
           control={
             <Switch
               checked={orientation === 'landscape'}
-              onChange={handleOrientationChange}
+              onChange={toggleOrientation}
             />
           }
           label="Mode Paysage"
@@ -147,3 +123,24 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
 }
 
 export default labelCodeGenerator
+
+const generateLines = (orientation) => {
+  // Déterminer le nombre de lignes basé sur l'orientation
+  const linesCount = orientation === 'portrait' ? 6 : 3
+
+  // Générer un tableau de composants <Typography>
+  const lines = []
+  for (let i = 0; i < linesCount; i++) {
+    lines.push(
+      <Typography
+        key={i} // Assurez-vous d'utiliser une clé unique pour chaque élément
+        variant="caption"
+        component="div"
+        sx={{ borderBottom: '1px dashed #cccccc' }}
+      >
+        &nbsp;
+      </Typography>,
+    )
+  }
+  return lines
+}
