@@ -35,7 +35,7 @@ const generateLines = (orientation) => {
   return lines
 }
 
-const QRCodeGenerator = ({ productId, onOrientationChange }) => {
+const labelCodeGenerator = ({ productId, onOrientationChange }) => {
   const { products } = useProductContextSimplified()
   const product = products.find((product) => product._id === productId)
 
@@ -146,4 +146,4 @@ const QRCodeGenerator = ({ productId, onOrientationChange }) => {
   )
 }
 
-export default QRCodeGenerator
+export default labelCodeGenerator

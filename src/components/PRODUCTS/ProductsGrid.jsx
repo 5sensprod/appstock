@@ -15,7 +15,7 @@ import BulkUpdateProduct from '../product/BulkUpdateProduct'
 import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 import Modal from '@mui/material/Modal'
 import Box from '@mui/material/Box'
-import QRCodeGenerator from './QRCodeGenerator'
+import LabelCodeGenerator from './LabelCodeGenerator'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useCategoryTreeSelect } from '../../contexts/CategoryTreeSelectContext'
 
@@ -382,7 +382,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       >
         <Box sx={style}>
           {selectedProductId && (
-            <QRCodeGenerator
+            <LabelCodeGenerator
               onOrientationChange={handleModalHeightChange}
               productId={selectedProductId}
             />
