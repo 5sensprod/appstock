@@ -28,16 +28,16 @@ const CustomDataGrid = ({
       renderCell: (params) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <IconButton
-            onClick={() => onViewDetails(params.row.id)}
-            color="primary"
-          >
-            <VisibilityIcon />
-          </IconButton>
-          <IconButton
             onClick={() => onPdfIconClick(params.row)}
             color="primary"
           >
             <PictureAsPdfIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => onViewDetails(params.row.id)}
+            color="primary"
+          >
+            <VisibilityIcon />
           </IconButton>
         </div>
       ),

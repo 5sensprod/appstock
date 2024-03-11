@@ -70,7 +70,7 @@ ipcMain.handle('export-to-sftp', async (event, backupPath, dbName) => {
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 800,
+    width: 980,
     height: 600,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,

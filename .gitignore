@@ -32,6 +32,9 @@ coverage
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
+src/assets/fonts
+src/assets/css
+
 # Dependency directories
 node_modules/
 dist/
