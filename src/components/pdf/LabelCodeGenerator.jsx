@@ -62,62 +62,20 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
           boxSizing: 'border-box',
         }}
       >
-        {/* Conteneur principal pour le logo et la marque */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start', // Alignés en haut
-            width: '100%',
-          }}
-        >
-          {/* Logo à gauche */}
-          <Box>
-            <Logo />
-          </Box>
-
-          {/* Marque entièrement à droite et alignée au centre dans son espace vertical */}
-          <Typography variant="body2" mr={5}>
-            {product.marque}
-          </Typography>
-        </Box>
-        <Typography variant="h4">{product.reference}</Typography>
-        <Box sx={{ width: '80%', textAlign: 'left' }}>
+        <HeaderLabel product={product} />
+        <Typography variant="h4" sx={{ textAlign: 'left' }}>
+          {product.reference}
+        </Typography>
+        <Box sx={{ width: '80%', mx: 'auto', my: 2 }}>
           {generateLines(orientation)}
         </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mt: 2,
-          }}
-        >
-          <Typography variant="h5">{formatPrice(product.prixVente)}</Typography>
-          <QRCodeCanvas value={product.gencode} size={50} />
-        </Box>
+        <FooterLabel product={product} />
       </Box>
-      <Box textAlign={'center'}>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={orientation === 'landscape'}
-              onChange={toggleOrientation}
-            />
-          }
-          label="Mode Paysage"
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={generatePDF}
-          sx={{ mt: 2 }}
-        >
-          Générer
-        </Button>
-      </Box>
+      <ControlGenerator
+        orientation={orientation}
+        toggleOrientation={toggleOrientation}
+        generatePDF={generatePDF}
+      />
     </Box>
   )
 }
@@ -144,3 +102,59 @@ const generateLines = (orientation) => {
   }
   return lines
 }
+
+const FooterLabel = ({ product }) => (
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      mt: 2,
+    }}
+  >
+    <Typography variant="h5">{formatPrice(product.prixVente)}</Typography>
+    <QRCodeCanvas value={product.gencode} size={50} />
+  </Box>
+)
+
+const HeaderLabel = ({ product }) => (
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      width: '100%',
+    }}
+  >
+    <Box>
+      <Logo />
+    </Box>
+    <Typography variant="body2" mr={5}>
+      {product.marque}
+    </Typography>
+  </Box>
+)
+
+const ControlGenerator = ({ orientation, toggleOrientation, generatePDF }) => (
+  <Box textAlign={'center'}>
+    <FormControlLabel
+      control={
+        <Switch
+          checked={orientation === 'landscape'}
+          onChange={toggleOrientation}
+        />
+      }
+      label="Mode Paysage"
+    />
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={generatePDF}
+      sx={{ mt: 2 }}
+    >
+      Générer
+    </Button>
+  </Box>
+)
