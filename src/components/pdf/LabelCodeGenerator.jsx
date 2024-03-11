@@ -187,31 +187,10 @@ const ControlGenerator = ({ orientation, toggleOrientation, generatePDF }) => (
 )
 
 const Sheet = ({ labelsCount, orientation }) => {
-  const [labels, setLabels] = useState([])
-  const [vignettes, setVignettes] = useState(
-    Array(8).fill({ present: false, orientation: 'portrait' }),
-  )
-
   const pageDimensions = { width: 210, height: 297 }
   const labelDimensions = { width: 74.25, height: 105 }
 
   const baseWidthPx = 50
-
-  const handleCellClick = (index) => {
-    setVignettes(
-      vignettes.map((vignette, idx) => {
-        if (idx === index) {
-          return {
-            ...vignette,
-            present: !vignette.present, // ou une logique pour ajouter spécifiquement un produit
-            orientation:
-              vignette.orientation === 'portrait' ? 'landscape' : 'portrait',
-          }
-        }
-        return vignette
-      }),
-    )
-  }
 
   // Longueur cible en pixels pour le côté de 210mm
 
@@ -248,38 +227,19 @@ const Sheet = ({ labelsCount, orientation }) => {
       {Array.from({ length: 8 }).map((_, index) => (
         <Box
           key={index}
-          onClick={() => handleCellClick(index)}
           sx={{
             width: '100%',
             height: 0,
-            paddingTop: `${(labelDimensions.height / labelDimensions.width) * 100}%`,
-            position: 'relative',
-            backgroundColor: labels.find((label) => label.position === index)
-              ? '#ddd'
-              : 'transparent',
+            paddingTop: `${(labelDimensions.height / labelDimensions.width) * 100}%`, // Conservation du ratio d'aspect
+            position: 'relative', // Nécessaire pour positionner absolument le numéro à l'intérieur
+            backgroundColor: index < labelsCount ? '#ddd' : 'transparent',
             border: '1px solid black',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer', // Ajoutez un curseur pour indiquer que la cellule est cliquable
           }}
         >
-          {labels
-            .filter((label) => label.position === index)
-            .map((label, labelIndex) => (
-              <span
-                key={labelIndex}
-                style={{
-                  ...cellNumberStyle,
-                  transform:
-                    label.orientation === 'portrait'
-                      ? 'translate(-50%, -50%)'
-                      : 'translate(-50%, -50%) rotate(-90deg)',
-                }}
-              >
-                Produit {index + 1} - {label.orientation}
-              </span>
-            ))}
+          <span style={cellNumberStyle}>{index + 1}</span>
         </Box>
       ))}
     </Box>
