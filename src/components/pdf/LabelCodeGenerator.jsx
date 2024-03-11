@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { jsPDF } from 'jspdf'
@@ -18,7 +18,6 @@ import useOrientation from './hooks/useOrientation'
 const labelCodeGenerator = ({ productId, onOrientationChange }) => {
   const { products } = useProductContextSimplified()
   const product = products.find((product) => product._id === productId)
-  const [labelsCount, setLabelsCount] = useState(1)
 
   const [orientation, toggleOrientation] = useOrientation(
     'portrait',
@@ -29,6 +28,12 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
     return <Typography>Produit non trouvé</Typography>
   }
 
+  const [sheetCellStates, setSheetCellStates] = useState([])
+
+  const handleSheetStateChange = (newCellStates) => {
+    setSheetCellStates(newCellStates)
+  }
+
   const generatePDF = async () => {
     const input = document.getElementById('printArea')
     const canvas = await html2canvas(input, { scale: 4 })
@@ -36,6 +41,10 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
 
     // Format pour une seule étiquette
     const singleLabelFormat = [74.25, 105]
+    const totalCopies = sheetCellStates.reduce(
+      (acc, cell) => (cell.present ? acc + cell.copies : acc),
+      0,
+    )
 
     // Créez un nouveau PDF en mode paysage, qui peut contenir 8 étiquettes
     const pdf = new jsPDF({
@@ -45,7 +54,7 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
     })
 
     // Calcul des positions où les étiquettes doivent être placées sur la page
-    const positions = generateLabelPositions()
+    const positions = generateLabelPositions(totalCopies) // Adaptez cette fonction si nécessaire
 
     // Ajout de chaque étiquette à la page
     positions.forEach((position) => {
@@ -75,7 +84,10 @@ const labelCodeGenerator = ({ productId, onOrientationChange }) => {
           mb: orientation === 'landscape' ? 5 : -5,
         }}
       >
-        <Sheet labelsCount={labelsCount} orientation={orientation} />
+        <Sheet
+          orientation={orientation}
+          onStateChange={handleSheetStateChange}
+        />
       </Box>
       <Box
         id="printArea"
@@ -186,7 +198,7 @@ const ControlGenerator = ({ orientation, toggleOrientation, generatePDF }) => (
   </Box>
 )
 
-const Sheet = ({ labelsCount, orientation }) => {
+const Sheet = ({ orientation, onStateChange }) => {
   const pageDimensions = { width: 210, height: 297 }
   const labelDimensions = { width: 74.25, height: 105 }
   const [cellStates, setCellStates] = useState(
@@ -199,6 +211,10 @@ const Sheet = ({ labelsCount, orientation }) => {
       }),
     ),
   )
+
+  useEffect(() => {
+    onStateChange(cellStates)
+  }, [cellStates, onStateChange])
 
   const handleCellClick = (index) => {
     setCellStates(
@@ -285,7 +301,7 @@ const Sheet = ({ labelsCount, orientation }) => {
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
-                transform: `translate(-50%, -50%) rotate(${cell.clicks === 2 ? -90 : 0}deg)`,
+                transform: `translate(-50%, -50%) rotate(${cell.clicks === 2 ? 90 : 0}deg)`,
                 pointerEvents: 'auto', // Permettre les clics sur ce div et ses enfants
               }}
             >
@@ -298,14 +314,13 @@ const Sheet = ({ labelsCount, orientation }) => {
   )
 }
 
-const generateLabelPositions = () => {
+const generateLabelPositions = (totalCopies) => {
   const positions = []
-  const labelsPerRow = 4 // Nombre d'étiquettes par rangée
-  const rowHeight = 105 // Hauteur d'une rangée
-  const labelWidth = 74.25 // Largeur d'une étiquette
+  const labelsPerRow = 4 // ou un autre nombre en fonction de la mise en page souhaitée
+  const rowHeight = 105
+  const labelWidth = 74.25
 
-  for (let i = 0; i < 8; i++) {
-    // Pour 8 étiquettes
+  for (let i = 0; i < totalCopies; i++) {
     const x = (i % labelsPerRow) * labelWidth
     const y = Math.floor(i / labelsPerRow) * rowHeight
     positions.push({ x, y })
