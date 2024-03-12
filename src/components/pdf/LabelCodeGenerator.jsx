@@ -226,25 +226,16 @@ const Sheet = ({ orientation, onStateChange }) => {
         if (idx === index) {
           const newClicks = cell.clicks + 1
           let newState = {}
+
           if (newClicks === 1) {
             // Premier clic, activer si pas déjà activé
             newState = { ...cell, present: true, clicks: newClicks }
-          } else if (newClicks === 2) {
-            // Deuxième clic, rotation de 90° et changement d'orientation
-            newState = {
-              ...cell,
-              orientation:
-                cell.orientation === 'portrait' ? 'landscape' : 'portrait', // Changement d'orientation ici
-              clicks: newClicks,
-            }
+          } else if (newClicks >= 3) {
+            // Troisième clic (et plus), désactiver la cellule
+            newState = { ...cell, present: false, clicks: 0 }
           } else {
-            // Troisième clic, désactiver la cellule
-            newState = {
-              present: false,
-              orientation: 'portrait',
-              copies: 1,
-              clicks: 0,
-            }
+            // Pour le deuxième clic, on garde l'état actuel mais on met à jour le nombre de clics
+            newState = { ...cell, clicks: newClicks }
           }
           return newState
         }
