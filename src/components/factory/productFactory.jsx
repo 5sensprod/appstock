@@ -37,7 +37,11 @@ function productFactory(props) {
         height="140"
         image={imageUrl}
         alt={`Image de ${reference}`}
-        style={{ opacity: isDefaultImage ? 0.1 : 1 }}
+        style={{
+          opacity: isDefaultImage ? 0.04 : 0.8,
+          objectFit: 'cover',
+          objectPosition: 'center',
+        }}
       />
       <Box flexGrow={1} overflow="hidden">
         <CardContent>
@@ -49,6 +53,8 @@ function productFactory(props) {
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              fontWeight: 'bold',
+              opacity: '.8',
             }}
           >
             {reference}

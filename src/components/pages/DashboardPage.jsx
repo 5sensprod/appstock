@@ -5,6 +5,7 @@ import UserDetails from '../users/UserDetails'
 import DateRangePicker from '../ui/DateRangePicker'
 import Typography from '@mui/material/Typography'
 import QuoteGrid from '../quote/QuoteGrid'
+import ShadowBox from '../ui/ShadowBox'
 
 const DashboardPage = () => {
   const [selectedRange, setSelectedRange] = useState('this_month')
@@ -20,8 +21,10 @@ const DashboardPage = () => {
 
   return (
     <Box>
-      <Box mb={4}>
-        <UserDetails />
+      <Box mb={4} width={'fit-content'}>
+        <ShadowBox>
+          <UserDetails />
+        </ShadowBox>
       </Box>
       <Box my={2}>
         <Typography

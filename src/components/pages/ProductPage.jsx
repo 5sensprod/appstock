@@ -14,7 +14,7 @@ const ProductPage = () => {
   return (
     <Grid container direction="column" spacing={1} mt={2}>
       <Box ml={1} mb={1} sx={{ width: 'fit-content' }}>
-        <Box>
+        <Box maxWidth={'450px'}>
           <CategoryFilter />
         </Box>
         <Box>

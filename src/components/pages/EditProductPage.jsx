@@ -10,6 +10,7 @@ import { useParams } from 'react-router-dom'
 import { useProductContext } from '../../contexts/ProductContext'
 import { useConfig } from '../../contexts/ConfigContext'
 import { formatPrice } from '../../utils/priceUtils'
+import ShadowBox from '../ui/ShadowBox'
 
 const EditProductPage = () => {
   const { id: productId } = useParams()
@@ -65,33 +66,46 @@ const EditProductPage = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box display="flex" alignItems="center" gap={2} mt={4}>
-        <Typography variant="h4" component="h2">
-          {productName || 'Produit'}
-        </Typography>
-        {/* Affichez le chemin de la catégorie ici, sous le titre du produit */}
+      <Box maxWidth={'500px'} p={4} mt={2}>
+        <ShadowBox>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography variant="h4" component="h2">
+              {productName || 'Produit'}
+            </Typography>
+            {/* Affichez le chemin de la catégorie ici, sous le titre du produit */}
 
-        {selectedTab === 0 && (
-          <IconButton onClick={toggleEditMode} style={{ cursor: 'pointer' }}>
-            {isEditable ? <VisibilityIcon /> : <EditIcon />}
-          </IconButton>
-        )}
+            {selectedTab === 0 && (
+              <IconButton
+                onClick={toggleEditMode}
+                style={{ cursor: 'pointer' }}
+              >
+                {isEditable ? <VisibilityIcon /> : <EditIcon />}
+              </IconButton>
+            )}
+          </Box>
+          <Typography variant="subtitle2" component="h2">
+            {categoryPath}
+          </Typography>
+          <Typography variant="subtitle2" component="h2">
+            Marque : {brandName}
+          </Typography>
+          <Typography variant="subtitle2" component="h2">
+            Prix public : {salePrice}
+          </Typography>
+          <Typography variant="subtitle2" component="h2" mb={2}>
+            Gencode : {gencode}
+          </Typography>
+        </ShadowBox>
       </Box>
-      <Typography variant="subtitle2" component="h2">
-        {categoryPath}
-      </Typography>
-      <Typography variant="subtitle2" component="h2">
-        Marque : {brandName}
-      </Typography>
-      <Typography variant="subtitle2" component="h2">
-        Prix public : {salePrice}
-      </Typography>
-      <Typography variant="subtitle2" component="h2" mb={2}>
-        Gencode : {gencode}
-      </Typography>
-      <Tabs value={selectedTab} onChange={handleTabChange}>
-        <Tab label="Présentation" />
-        <Tab label="Médias" />
+      <Tabs
+        value={selectedTab}
+        onChange={handleTabChange}
+        variant="scrollable"
+        scrollButtons="auto"
+      >
+        <Tab label="Présentation" sx={{ minWidth: 160, width: 160 }} />{' '}
+        {/* Appliquer un style spécifique à chaque Tab */}
+        <Tab label="Médias" sx={{ minWidth: 160, width: 160 }} />
       </Tabs>
       <Box sx={{ mt: 3 }}>
         {selectedTab === 0 &&
@@ -105,11 +119,13 @@ const EditProductPage = () => {
           ))}
 
         {selectedTab === 1 && (
-          <Media
-            productId={productId}
-            baseUrl={baseUrl}
-            onAddPhoto={handleAddPhoto}
-          />
+          <Box maxWidth={'800px'}>
+            <Media
+              productId={productId}
+              baseUrl={baseUrl}
+              onAddPhoto={handleAddPhoto}
+            />
+          </Box>
         )}
       </Box>
     </Box>
