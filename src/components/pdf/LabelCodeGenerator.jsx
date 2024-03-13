@@ -224,18 +224,14 @@ const Sheet = ({ orientation, onStateChange }) => {
     setCellStates(
       cellStates.map((cell, idx) => {
         if (idx === index) {
-          const newClicks = cell.clicks + 1
           let newState = {}
-
-          if (newClicks === 1) {
+          // Si c'est le premier clic, on active la cellule, sinon on la désactive
+          if (cell.clicks === 0) {
             // Premier clic, activer si pas déjà activé
-            newState = { ...cell, present: true, clicks: newClicks }
-          } else if (newClicks >= 3) {
-            // Troisième clic (et plus), désactiver la cellule
-            newState = { ...cell, present: false, clicks: 0 }
+            newState = { ...cell, present: true, clicks: 1 }
           } else {
-            // Pour le deuxième clic, on garde l'état actuel mais on met à jour le nombre de clics
-            newState = { ...cell, clicks: newClicks }
+            // Deuxième clic, désactiver la cellule
+            newState = { ...cell, present: false, clicks: 0 }
           }
           return newState
         }
@@ -243,7 +239,6 @@ const Sheet = ({ orientation, onStateChange }) => {
       }),
     )
   }
-
   const baseWidthPx = 50
 
   // Longueur cible en pixels pour le côté de 210mm
