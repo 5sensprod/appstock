@@ -6,6 +6,9 @@ export const GridPreferenceProvider = ({ children }) => {
   // Définition de l'état initial des préférences
   const [searchTerm, setSearchTerm] = useState('')
 
+  const [selectedProductId, setSelectedProductId] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
+
   const [gridPreferences, setGridPreferences] = useState({
     paginationModel: {
       pageSize: 10,
@@ -27,9 +30,28 @@ export const GridPreferenceProvider = ({ children }) => {
     })
   }
 
+  const resetCurrentPageAfterDelay = (delay) => {
+    setTimeout(() => {
+      setCurrentPage(1)
+    }, delay)
+  }
+
+  const resetCurrentPage = () => setCurrentPage(1)
+
   return (
     <GridPreferenceContext.Provider
-      value={{ gridPreferences, updatePreferences, searchTerm, setSearchTerm }}
+      value={{
+        gridPreferences,
+        updatePreferences,
+        searchTerm,
+        setSearchTerm,
+        selectedProductId,
+        setSelectedProductId,
+        currentPage,
+        setCurrentPage,
+        resetCurrentPageAfterDelay,
+        resetCurrentPage,
+      }}
     >
       {children}
     </GridPreferenceContext.Provider>

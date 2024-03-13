@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box, Stack, Pagination, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useProductContext } from '../../contexts/ProductContext'
 import { useConfig } from '../../contexts/ConfigContext'
 import { productFactory } from '../factory/productFactory'
+import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 
 const ProductItem = ({
   product,
@@ -50,12 +51,28 @@ const CustomPagination = ({
 
 const ProductGallery = ({ products }) => {
   const { baseUrl } = useConfig()
-  const { categories, getCategoryPath, getParentCategoryName } =
-    useProductContext()
+  const { getParentCategoryName } = useProductContext()
   const navigate = useNavigate()
 
-  const [currentPage, setCurrentPage] = useState(1)
+  // const [currentPage, setCurrentPage] = useState(1)
+  const { currentPage, setCurrentPage, selectedProductId } =
+    useGridPreferences() // Modifier ici
   const productsPerPage = 10
+
+  useEffect(() => {
+    // Si un produit était sélectionné, assurez-vous que la page contenant ce produit est affichée
+    if (selectedProductId) {
+      const selectedProductIndex = products.findIndex(
+        (p) => p._id === selectedProductId,
+      )
+      if (selectedProductIndex >= 0) {
+        const pageContainingProduct = Math.ceil(
+          (selectedProductIndex + 1) / productsPerPage,
+        )
+        setCurrentPage(pageContainingProduct)
+      }
+    }
+  }, [selectedProductId, products, setCurrentPage, productsPerPage])
 
   // Tri des produits par date de soumission en ordre décroissant
   const sortedProducts = products.sort(

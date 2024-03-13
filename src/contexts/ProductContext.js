@@ -156,8 +156,9 @@ export const ProductProvider = ({ children }) => {
     return currentCategory ? currentCategory.name : 'Non catégorisé'
   }
 
-  const handleCategoryChange = (event) => {
+  const handleCategoryChange = (event, resetCurrentPage = () => {}) => {
     setSelectedCategoryId(event.target.value)
+    resetCurrentPage()
   }
 
   const handleSubCategoryChange = (event) => {

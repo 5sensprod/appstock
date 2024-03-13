@@ -7,15 +7,13 @@ import useSearch from '../hooks/useSearch'
 import ProductGallery from '../product/ProductGallery'
 import { Box } from '@mui/material'
 import { useCategoryContext } from '../../contexts/CategoryContext'
+import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 
 const CatalogPageSimple = () => {
-  const {
-    // categories,
-    products,
-    searchTerm,
-    selectedCategoryId,
-    handleCategoryChange,
-  } = useProductContext()
+  const { products, searchTerm, selectedCategoryId, handleCategoryChange } =
+    useProductContext()
+
+  const { resetCurrentPage } = useGridPreferences()
 
   const { categories } = useCategoryContext()
 
@@ -31,6 +29,10 @@ const CatalogPageSimple = () => {
     navigate(`/edit-product/${productId}`)
   }
 
+  const handleCategoryChangeWithReset = (event) => {
+    handleCategoryChange(event, resetCurrentPage)
+  }
+
   return (
     <div style={{ width: '100%' }}>
       <Box display="flex" alignItems="center" gap={2} my={2}>
@@ -38,7 +40,8 @@ const CatalogPageSimple = () => {
           <SelectCategory
             categories={categories}
             selectedCategoryId={selectedCategoryId}
-            onCategoryChange={handleCategoryChange}
+            onCategoryChange={handleCategoryChangeWithReset}
+            onFocus={resetCurrentPage}
           />
         </Box>
         <Box width={'70%'}>

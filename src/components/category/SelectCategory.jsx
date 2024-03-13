@@ -5,6 +5,7 @@ const SelectCategory = ({
   categories,
   selectedCategoryId,
   onCategoryChange,
+  onFocus,
   label = 'Catégorie',
   disabled = false,
 }) => {
@@ -15,6 +16,7 @@ const SelectCategory = ({
         labelId="category-select-label"
         value={selectedCategoryId || ''}
         onChange={onCategoryChange}
+        onFocus={onFocus}
         label={label}
       >
         <MenuItem value="">
