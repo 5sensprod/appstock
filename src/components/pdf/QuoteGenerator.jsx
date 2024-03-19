@@ -94,12 +94,11 @@ const QuoteGenerator = ({ quoteId, onPdfGenerated }) => {
         id="printQuoteArea"
         sx={{
           width: '720px',
-          height: 'auto', // Set height to auto to accommodate content
+          height: 'auto',
           overflowY: 'auto',
           backgroundColor: '#fff',
           padding: '15px',
           margin: '20px auto',
-          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', // Optional shadow for aesthetics
         }}
       >
         <Box
