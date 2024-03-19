@@ -429,7 +429,36 @@ const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
 
     currentY += 60
 
-    pdf.save(`ticket-${ticket.number}.pdf`)
+    // Gestion de la mention "DUPLICATA" si nécessaire
+    // Avant de sauvegarder ou d'imprimer le PDF, vérifiez si c'est un duplicata
+    if (ticket.pdfGenerationCount > 0) {
+      pdf.setGState(new pdf.GState({ opacity: 0.9 })) // Ajustez l'opacité si nécessaire
+      pdf.setTextColor(255, 0, 0) // Rouge
+      pdf.setFontSize(24) // Taille de la police pour "DUPLICATA"
+
+      // Calculer la position centrale sur l'axe X
+      const textWidth =
+        (pdf.getStringUnitWidth('DUPLICATA') * pdf.internal.getFontSize()) /
+        pdf.internal.scaleFactor
+      const textX = (pdf.internal.pageSize.getWidth() - textWidth) / 2
+
+      // Définir la position Y à 10mm du haut
+      const textY = 42
+
+      // Ajouter le texte "DUPLICATA" en utilisant les coordonnées calculées
+      pdf.text('DUPLICATA', textX, textY, { align: 'center' })
+    }
+
+    // Sauvegarder le PDF ou le préparer pour l'impression
+    // Construire le nom du fichier en incluant "duplicata" si nécessaire
+    let fileName = `${ticket.number}.pdf`
+    if (ticket.pdfGenerationCount > 0) {
+      fileName = `${ticket.number}-duplicata${ticket.pdfGenerationCount}.pdf`
+    }
+
+    pdf.save(fileName)
+
+    // Si vous avez une fonction de callback à appeler une fois le PDF généré
     if (onPdfGenerated) {
       onPdfGenerated()
     }
