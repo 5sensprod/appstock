@@ -2,27 +2,23 @@ import React, { useEffect, useState } from 'react'
 import CustomDataGrid from '../ui/CustomDataGrid'
 import { useInvoices } from '../../contexts/InvoicesContext'
 import DetailsModal from '../ui/DetailsModal'
-import Modal from '@mui/material/Modal'
 import TicketGenerator from '../pdf/TicketGenerator'
-import { Box } from '@mui/material'
 
 const TicketsGrid = () => {
   const { tickets, loading, handleIncrementPdfGenerationCount } = useInvoices()
   const [rows, setRows] = useState([])
   const [selectedTicketId, setSelectedTicketId] = useState(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
-  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false)
+  const [generatePdf, setGeneratePdf] = useState(false)
 
   const handleViewDetails = (ticketId) => {
     setSelectedTicketId(ticketId)
     setIsDetailsModalOpen(true)
-    setIsPdfModalOpen(false)
   }
 
   const handlePdfIconClick = (ticket) => {
     setSelectedTicketId(ticket.id)
-    setIsPdfModalOpen(true)
-    setIsDetailsModalOpen(false)
+    setGeneratePdf(true) // Préparez-vous à générer le PDF
   }
 
   useEffect(() => {
@@ -45,18 +41,6 @@ const TicketsGrid = () => {
     setRows(formattedRows)
   }, [tickets])
 
-  const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  }
-
   return (
     <>
       <CustomDataGrid
@@ -67,37 +51,22 @@ const TicketsGrid = () => {
         onViewDetails={handleViewDetails}
         onPdfIconClick={handlePdfIconClick}
       />
-      {selectedTicketId && (
-        <>
-          {/* Modale pour les détails du ticket */}
-          <DetailsModal
-            open={isDetailsModalOpen}
-            onClose={() => setIsDetailsModalOpen(false)}
-            itemId={selectedTicketId}
-            itemType="ticket"
-          />
-          {/* Modale pour la génération du PDF */}
-          <Modal
-            open={isPdfModalOpen}
-            onClose={() => setIsPdfModalOpen(false)}
-            aria-labelledby="pdf-modal-title"
-            aria-describedby="pdf-modal-description"
-          >
-            <Box sx={modalStyle}>
-              <TicketGenerator
-                ticketId={selectedTicketId}
-                onPdfGenerated={async () => {
-                  // Passer 'ticket' comme deuxième argument pour spécifier le type
-                  await handleIncrementPdfGenerationCount(
-                    selectedTicketId,
-                    'ticket',
-                  )
-                  setIsPdfModalOpen(false)
-                }}
-              />
-            </Box>
-          </Modal>
-        </>
+      {selectedTicketId && isDetailsModalOpen && (
+        <DetailsModal
+          open={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          itemId={selectedTicketId}
+          itemType="ticket"
+        />
+      )}
+      {selectedTicketId && generatePdf && (
+        <TicketGenerator
+          ticketId={selectedTicketId}
+          onPdfGenerated={async () => {
+            await handleIncrementPdfGenerationCount(selectedTicketId, 'ticket')
+            setGeneratePdf(false) // Réinitialiser l'état après la génération du PDF
+          }}
+        />
       )}
     </>
   )
