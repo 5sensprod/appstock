@@ -15,7 +15,8 @@ const useHandlePayClick = () => {
     calculateRemainingAmount,
   } = useContext(CartContext)
 
-  const { createInvoice, createTicket } = useInvoices()
+  const { createInvoice, createTicket, handleIncrementPdfGenerationCount } =
+    useInvoices()
   const { updateProductStock } = useProductContextSimplified()
 
   const handlePayClick = async (
@@ -66,27 +67,32 @@ const useHandlePayClick = () => {
 
     try {
       let responseData
+      let documentType
+
       if (isInvoice) {
         responseData = await createInvoice(data)
-        console.log('Facture créée avec succès. ID:', responseData)
+        documentType = 'invoice'
+        console.log('Facture créée avec succès. ID:', responseData._id)
       } else {
         responseData = await createTicket(data)
-        console.log('Ticket créé avec succès. ID:', responseData)
+        documentType = 'ticket'
+        console.log('Ticket créé avec succès. ID:', responseData._id)
       }
 
+      // Appeler printTicket si nécessaire
       if (shouldPrint && responseData) {
-        // Vérifiez si shouldPrint est vrai avant d'appeler printTicket
-        printTicket(responseData)
+        await printTicket(responseData, documentType)
+        await handleIncrementPdfGenerationCount(responseData._id, documentType) // Incrémenter le compteur de génération de PDF
       }
+
+      // Mise à jour du stock et nettoyage du panier...
+      cartItems.forEach(async (item) => {
+        await updateProductStock(item._id, item.quantity)
+      })
+      clearCart()
     } catch (error) {
       console.error(`Erreur lors de la création du document:`, error)
     }
-
-    // Mise à jour du stock et nettoyage du panier
-    cartItems.forEach(async (item) => {
-      await updateProductStock(item._id, item.quantity)
-    })
-    clearCart()
   }
 
   return handlePayClick
