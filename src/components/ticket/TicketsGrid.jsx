@@ -18,7 +18,7 @@ const TicketsGrid = () => {
 
   const handlePdfIconClick = (ticket) => {
     setSelectedTicketId(ticket.id)
-    setGeneratePdf(true) // Préparez-vous à générer le PDF
+    setGeneratePdf(true)
   }
 
   useEffect(() => {
@@ -64,7 +64,7 @@ const TicketsGrid = () => {
           ticketId={selectedTicketId}
           onPdfGenerated={async () => {
             await handleIncrementPdfGenerationCount(selectedTicketId, 'ticket')
-            setGeneratePdf(false) // Réinitialiser l'état après la génération du PDF
+            setGeneratePdf(false)
           }}
         />
       )}
