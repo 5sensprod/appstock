@@ -2,6 +2,7 @@ import { useContext } from 'react'
 import { CartContext } from '../contexts/CartContext'
 import { useInvoices } from '../contexts/InvoicesContext'
 import { useProductContextSimplified } from '../contexts/ProductContextSimplified'
+import { printTicket } from '../components/ticket/printTicket'
 
 const useHandlePayClick = () => {
   const {
@@ -17,7 +18,12 @@ const useHandlePayClick = () => {
   const { createInvoice, createTicket } = useInvoices()
   const { updateProductStock } = useProductContextSimplified()
 
-  const handlePayClick = async (paymentType, customerInfo, isInvoice) => {
+  const handlePayClick = async (
+    paymentType,
+    customerInfo,
+    isInvoice,
+    shouldPrint,
+  ) => {
     const documentItems = cartItems.map((item) => ({
       reference: item.reference,
       id: item._id,
@@ -59,21 +65,27 @@ const useHandlePayClick = () => {
     }
 
     try {
-      const response = isInvoice
-        ? await createInvoice(data)
-        : await createTicket(data)
-      console.log('Réponse:', response)
+      let responseData
+      if (isInvoice) {
+        responseData = await createInvoice(data)
+        console.log('Facture créée avec succès. ID:', responseData)
+      } else {
+        responseData = await createTicket(data)
+        console.log('Ticket créé avec succès. ID:', responseData)
+      }
+
+      if (shouldPrint && responseData) {
+        // Vérifiez si shouldPrint est vrai avant d'appeler printTicket
+        printTicket(responseData)
+      }
     } catch (error) {
-      console.error(
-        `Erreur lors de la création de ${isInvoice ? 'la facture' : 'du ticket'}:`,
-        error,
-      )
+      console.error(`Erreur lors de la création du document:`, error)
     }
 
-    for (const item of cartItems) {
+    // Mise à jour du stock et nettoyage du panier
+    cartItems.forEach(async (item) => {
       await updateProductStock(item._id, item.quantity)
-    }
-
+    })
     clearCart()
   }
 

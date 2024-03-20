@@ -84,6 +84,8 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     totals: {},
   })
 
+  const [shouldPrint, setShouldPrint] = useState(true)
+
   const handlePayClick = useHandlePayClick()
 
   const { prepareInvoiceData } = useInvoices()
@@ -237,13 +239,13 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
           email: customerEmail,
           phone: customerPhone,
         }
-        await handlePayClick(paymentType, customerInfo, true)
+        await handlePayClick(paymentType, customerInfo, true, shouldPrint)
         showToast('La facture a été créée avec succès.', 'success')
         if (isActiveQuote) {
           deactivateQuote()
         }
       } else {
-        await handlePayClick(paymentType, {}, false)
+        await handlePayClick(paymentType, {}, false, shouldPrint)
         showToast('Le ticket a été validé avec succès.', 'success')
       }
 
@@ -368,6 +370,12 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
         <Box mt={2}>
           <PaymentTypeSelector isActiveQuote={isActiveQuote} />
         </Box>
+        <Checkbox
+          checked={shouldPrint}
+          onChange={(e) => setShouldPrint(e.target.checked)}
+          color="primary"
+        />
+        <label>Imprimer le ticket/facture</label>
         <Box mt={4} display="flex" justifyContent="space-between">
           <Button
             variant="contained"
