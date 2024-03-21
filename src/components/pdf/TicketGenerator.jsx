@@ -434,8 +434,8 @@ const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
       // Gestion de la mention "DUPLICATA" si nécessaire
       // Avant de sauvegarder ou d'imprimer le PDF, vérifiez si c'est un duplicata
       if (ticket.pdfGenerationCount > 0) {
-        pdf.setGState(new pdf.GState({ opacity: 0.9 })) // Ajustez l'opacité si nécessaire
-        pdf.setTextColor(255, 0, 0) // Rouge
+        // pdf.setGState(new pdf.GState({ opacity: 0.9 })) // Ajustez l'opacité si nécessaire
+        // pdf.setTextColor(255, 0, 0) // Rouge
         pdf.setFontSize(24) // Taille de la police pour "DUPLICATA"
 
         // Calculer la position centrale sur l'axe X
