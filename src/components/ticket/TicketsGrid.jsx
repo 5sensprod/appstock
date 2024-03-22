@@ -9,7 +9,6 @@ const TicketsGrid = () => {
   const [rows, setRows] = useState([])
   const [selectedTicketId, setSelectedTicketId] = useState(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
-  const [generatePdf, setGeneratePdf] = useState(false)
   const [mode, setMode] = useState('save')
 
   const handleViewDetails = (ticketId) => {
@@ -67,7 +66,7 @@ const TicketsGrid = () => {
         includeCustomerAddress={false}
         onViewDetails={handleViewDetails}
         onPdfIconClick={(ticket) => handlePdfIconClick(ticket, 'save')} // Déjà là
-        onPrintIconClick={(ticket) => handlePdfIconClick(ticket, 'print')} // Assurez-vous que cette fonction est bien définie et passe le mode 'print'
+        onPrintIconClick={handlePrintClick}
       />
       {selectedTicketId && isDetailsModalOpen && (
         <DetailsModal
@@ -82,10 +81,11 @@ const TicketsGrid = () => {
           ticketId={selectedTicketId}
           onPdfGenerated={async (blob, number, generationCount) => {
             if (mode === 'print') {
-              // Implémentez votre logique d'impression ici
-              // Par exemple, envoyer le blob pour impression
+              // Ouvrir le blob PDF dans un nouvel onglet pour l'impression
+              const pdfUrl = URL.createObjectURL(blob)
+              window.open(pdfUrl, '_blank')
             } else if (mode === 'save') {
-              // Utilisez saveBlobAsFile pour sauvegarder le PDF
+              // Sauvegarde le PDF localement
               const fileName = `${number}${generationCount > 0 ? `-duplicata${generationCount}` : ''}.pdf`
               saveBlobAsFile(blob, fileName)
             }
@@ -93,7 +93,7 @@ const TicketsGrid = () => {
             // Après avoir traité le PDF, incrémentez le compteur de génération de PDF
             await handleIncrementPdfGenerationCount(selectedTicketId, 'ticket')
 
-            setMode(null) // Réinitialisez le mode après l'action
+            setMode(null) // Réinitialisez le mode après l'action pour éviter des actions répétitives non désirées
           }}
         />
       )}
