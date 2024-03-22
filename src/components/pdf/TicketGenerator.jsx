@@ -7,7 +7,7 @@ import moment from 'moment'
 import 'jspdf-autotable'
 import QRCode from 'qrcode'
 
-const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
+const TicketGenerator = ({ ticketId, onPdfGenerated, outputMode = 'save' }) => {
   const { tickets } = useInvoices()
   const { companyInfo } = useContext(CompanyInfoContext)
 
@@ -453,21 +453,14 @@ const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
 
       // Sauvegarder le PDF ou le préparer pour l'impression
       // Construire le nom du fichier en incluant "duplicata" si nécessaire
-      let fileName = `${ticket.number}.pdf`
-      if (ticket.pdfGenerationCount > 0) {
-        fileName = `${ticket.number}-duplicata${ticket.pdfGenerationCount}.pdf`
-      }
-
-      pdf.save(fileName)
-
-      // Callback après génération
+      const blob = pdf.output('blob')
       if (onPdfGenerated) {
-        onPdfGenerated()
+        onPdfGenerated(blob, ticket.number, ticket.pdfGenerationCount)
       }
     }
 
     generatePDF()
-  }, []) // Assurez-vous d'inclure toutes les dépendances nécessaires
+  }, [ticketId, outputMode]) // Assurez-vous d'inclure toutes les dépendances nécessaires
 
   // Le composant ne rend rien visuellement
   return null

@@ -18,7 +18,7 @@ const CustomDataGrid = ({
   includeCustomerAddress,
   onViewDetails,
   onPdfIconClick,
-  onPrintTicket,
+  onPrintIconClick,
 }) => {
   const apiRef = useGridApiRef()
 
@@ -30,7 +30,7 @@ const CustomDataGrid = ({
       renderCell: (params) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <IconButton
-            onClick={() => onPdfIconClick(params.row)}
+            onClick={() => onPdfIconClick(params.row, 'save')}
             color="primary"
           >
             <PictureAsPdfIcon />
@@ -41,7 +41,10 @@ const CustomDataGrid = ({
           >
             <VisibilityIcon />
           </IconButton>
-          <IconButton onClick={() => onPrintTicket(params.row)} color="primary">
+          <IconButton
+            onClick={() => onPrintIconClick(params.row)}
+            color="primary"
+          >
             <PrintIcon />
           </IconButton>
         </div>
