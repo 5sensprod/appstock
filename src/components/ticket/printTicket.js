@@ -3,15 +3,17 @@ import { sendPrintRequest } from '../../ipcHelper'
 // Fonction pour générer l'en-tête du ticket
 function generateHeader(documentData, dateStr, timeStr) {
   return `
-  <p style="text-align: center; font-size: 15px; margin-top: 0; margin-bottom: 1px; font-weight: bold;">AXE MUSIQUE</p>
-  <p style="text-align: center; margin-top: 0; margin-bottom: 1px;">4 rue LOCHET</p>
-  <p style="text-align: center; margin-top: 0; margin-bottom: 1px;">51000 Châlons en Champagne</p>
-  <p style="text-align: center; margin-top: 0; margin-bottom: 1px;">03 26 65 74 95</p>
-  <p style="text-align: center; margin-top: 0; margin-bottom: 1px;">contact@axemusique.com</p>
-  <p style="text-align: center; margin-top: 0; margin-bottom: 1px;">FR23 4186475400031</p>
-  <p style="text-align: center; margin-bottom: 1px; font-size: 14px; font-weight: bold;">TICKET</p>
-  <p style="text-align: center;margin-bottom: 1px;margin-top: 0;">${documentData.number}</p>
-  <p style="text-align: center;margin-bottom: 1px;margin-top: 0;">${dateStr}, ${timeStr}</p>
+  <p class="company">AXE MUSIQUE</p>
+  <p class="content">4 rue LOCHET</p>
+  <p class="content"font-size: 11px">51000 Châlons en Champagne</p>
+  <p class="content">03 26 65 74 95</p>
+  <p class="content">contact@axemusique.com</p>
+  <p class="content">FR23 4186475400031</p>
+  <p class="line" style="margin-bottom: 5px;">.............................................................</p>
+  <p class="header">TICKET</p>
+  <p class="content">${documentData.number}</p>
+  <p class="content">${dateStr}, ${timeStr}</p>
+  <p class="line" style="margin-bottom: 0;">.............................................................</p>
 `
 }
 
@@ -53,34 +55,49 @@ export const printTicket = async (documentData) => {
 <style>
   @media print {
     @page {
-      margin-top: -2mm; /* Réduit la marge du haut */
+      margin-top: -2mm;
 
     }
     html, body {
-
-      font-family: 'Helvetica';
-      font-size: 12pt; /* Augmente la taille de la police pour l'impression */
+      font-family: 'Helvetica', sans-serif;
+      font-size: 12px;
     }
     .header, .content, .item, .item-details, .totalht, .total, .message {
-      text-align: center;
+      text-align: center; margin-top: 0; margin-bottom: 1px;
+    }
+    .company {
+      font-size: 15px;
+      font-weight: bold;
     }
     .header {
-      font-size: 13px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .line {
+      text-align: center; margin-top: 0;
     }
     .content {
-      font-size: 12px;
+      font-size: 11px;
     }
     .item-details span {
       display: block;
     }
   }
-  body {
-    font-family: 'Arial', sans-serif;
-    font-size: 10pt; /* Taille de police standard pour l'affichage à l'écran */
+  .company, .header, .content, .item, .item-details, .totalht, .total, .message {
+    text-align: center; margin-top: 0; margin-bottom: 1px;
   }
-  .header, .content, .item, .item-details, .totalht, .total, .message {
-    text-align: center;
+  .company {
+    font-size: 15px;
+    font-weight: bold;
   }
+  .header {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .line {
+    text-align: center; margin-top: 0;
+  }
+
 </style>
 </head>
 <body>`
