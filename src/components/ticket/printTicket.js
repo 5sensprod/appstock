@@ -1,9 +1,9 @@
 import { sendPrintRequest } from '../../ipcHelper'
 
 // Fonction pour générer l'en-tête du ticket
-function generateHeader(documentData, dateStr, timeStr) {
+function generateHeader(documentData, dateStr, timeStr, companyInfo) {
   return `
-  <p class="company">AXE MUSIQUE</p>
+  <p class="company">${companyInfo.name}</p>
   <p class="content">4 rue LOCHET</p>
   <p class="content"font-size: 11px">51000 Châlons en Champagne</p>
   <p class="content">03 26 65 74 95</p>
@@ -43,7 +43,7 @@ function generateFooter(documentData) {
   `
 }
 
-export const printTicket = async (documentData) => {
+export const printTicket = async (documentData, documentType, companyInfo) => {
   const now = new Date()
   const dateStr = now.toLocaleDateString('fr-FR')
   const timeStr = now.toLocaleTimeString('fr-FR')
@@ -102,7 +102,7 @@ export const printTicket = async (documentData) => {
 </head>
 <body>`
 
-  printContent += generateHeader(documentData, dateStr, timeStr)
+  printContent += generateHeader(documentData, dateStr, timeStr, companyInfo)
   printContent += generateBody(documentData.items)
   printContent += generateFooter(documentData)
   printContent += '</body></html>'

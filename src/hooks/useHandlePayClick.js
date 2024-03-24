@@ -3,6 +3,7 @@ import { CartContext } from '../contexts/CartContext'
 import { useInvoices } from '../contexts/InvoicesContext'
 import { useProductContextSimplified } from '../contexts/ProductContextSimplified'
 import { printTicket } from '../components/ticket/printTicket'
+import { CompanyInfoContext } from '../contexts/CompanyInfoContext'
 
 const useHandlePayClick = () => {
   const {
@@ -18,12 +19,13 @@ const useHandlePayClick = () => {
   const { createInvoice, createTicket, handleIncrementPdfGenerationCount } =
     useInvoices()
   const { updateProductStock } = useProductContextSimplified()
-
+  const { companyInfo } = useContext(CompanyInfoContext)
   const handlePayClick = async (
     paymentType,
     customerInfo,
     isInvoice,
     shouldPrint,
+    // companyInfo,
   ) => {
     const documentItems = cartItems.map((item) => ({
       reference: item.reference,
@@ -81,7 +83,7 @@ const useHandlePayClick = () => {
 
       // Appeler printTicket si nécessaire
       if (shouldPrint && responseData) {
-        await printTicket(responseData, documentType)
+        await printTicket(responseData, documentType, companyInfo)
         await handleIncrementPdfGenerationCount(responseData._id, documentType) // Incrémenter le compteur de génération de PDF
       }
 
