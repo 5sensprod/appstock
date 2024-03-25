@@ -1,37 +1,50 @@
 import { sendPrintRequest } from '../../ipcHelper'
-
-// Fonction pour générer l'en-tête du ticket
-function generateHeader(documentData, dateStr, timeStr, companyInfo) {
-  return `
-  <p class="company">${companyInfo.name}</p>
-  <p class="content">4 rue LOCHET</p>
-  <p class="content"font-size: 11px">51000 Châlons en Champagne</p>
-  <p class="content">03 26 65 74 95</p>
-  <p class="content">contact@axemusique.com</p>
-  <p class="content">FR23 4186475400031</p>
-  <p class="line" style="margin-bottom: 5px;">.............................................................</p>
-  <p class="header">TICKET</p>
-  <p class="content">${documentData.number}</p>
-  <p class="content">${dateStr}, ${timeStr}</p>
-  <p class="line" style="margin-bottom: 0;">.............................................................</p>
-`
-}
+import { generateHeader } from './generateHeader'
+import moment from 'moment'
+import 'moment/locale/fr'
 
 // Fonction pour générer le corps du ticket avec les articles
 function generateBody(items) {
-  let bodyContent = ''
+  // Fonction pour formater les nombres
+  const formatNumber = (input) => {
+    const number = parseFloat(input)
+    if (isNaN(number)) {
+      return 'Invalid input' // Gère l'erreur selon les besoins
+    }
+    return number.toFixed(2).replace('.', ',')
+  }
+
+  // Détermine si la remise ou la majoration est appliquée
+  const hasRemiseOrMajoration = items.some(
+    (item) => item.remiseMajorationValue !== 0,
+  )
+
+  // Création du contenu du tableau
+  let tableContent = '<table style="width:100%; border-collapse: collapse;">'
+  tableContent += '<tr>'
+  tableContent += '<th>Qté</th><th>Article</th><th>P.U. EUR</th>'
+  if (hasRemiseOrMajoration) {
+    tableContent += '<th>Rem. %</th>' // Ajoute la colonne si nécessaire
+  }
+  tableContent += '<th>TTC EUR</th><th>Tx</th>'
+  tableContent += '</tr>'
+
+  // Générer les lignes du tableau
   items.forEach((item) => {
-    bodyContent += `
-      <div class="item" style="text-align: center;">
-        <div>${item.reference}</div>
-        <div class="item-details" style="text-align: center;">
-          <span>Quantité: ${item.quantite}</span>
-          <span>Prix: ${item.puTTC}€</span>
-        </div>
-      </div>
-    `
+    tableContent += '<tr>'
+    tableContent += `<td style="text-align:center;">${item.quantite}</td>`
+    tableContent += `<td>${item.reference}</td>`
+    tableContent += `<td>${formatNumber(item.puHT)}</td>`
+    if (hasRemiseOrMajoration) {
+      tableContent += `<td>${formatNumber(item.remiseMajorationValue)}</td>` // Ajoute la cellule si nécessaire
+    }
+    tableContent += `<td>${formatNumber(item.prixTTC)}</td>`
+    tableContent += `<td>${item.tauxTVA.toString().replace('.', ',')}</td>`
+    tableContent += '</tr>'
   })
-  return bodyContent
+
+  tableContent += '</table>'
+  return tableContent
 }
 
 // Fonction pour générer le pied de page du ticket
@@ -44,9 +57,11 @@ function generateFooter(documentData) {
 }
 
 export const printTicket = async (documentData, documentType, companyInfo) => {
-  const now = new Date()
-  const dateStr = now.toLocaleDateString('fr-FR')
-  const timeStr = now.toLocaleTimeString('fr-FR')
+  moment.locale('fr') // Configure le locale de Moment.js à français
+
+  const now = new Date() // Obtient la date et l'heure actuelles
+  // Utilise Moment.js pour formater 'now' selon le format désiré directement
+  let formattedDateTime = moment(now).format('dddd D MMMM, HH:mm:ss')
 
   let printContent = `
 <html>
@@ -102,7 +117,7 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
 </head>
 <body>`
 
-  printContent += generateHeader(documentData, dateStr, timeStr, companyInfo)
+  printContent += generateHeader(documentData, formattedDateTime, companyInfo)
   printContent += generateBody(documentData.items)
   printContent += generateFooter(documentData)
   printContent += '</body></html>'
