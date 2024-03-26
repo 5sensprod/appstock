@@ -5,24 +5,15 @@ import { generateTotals } from './generateTotal'
 import { generateTVA } from './generateTVA'
 import { generatePaymentType } from './generatePaymentType'
 import { generateRemerciement } from './generateRemerciement'
-import QRCode from 'qrcode'
+import { generateQRCodeHTML } from './generateQRCode'
 import moment from 'moment'
 import 'moment/locale/fr'
 
-const generateQRCodeDataURL = async (data) => {
-  try {
-    return await QRCode.toDataURL(data, { width: 60, margin: 1 })
-  } catch (err) {
-    console.error(err)
-    return ''
-  }
-}
-
 export const printTicket = async (documentData, documentType, companyInfo) => {
-  moment.locale('fr') // Configure le locale de Moment.js à français
-  const qrCodeDataURL = await generateQRCodeDataURL(documentData.number)
-  const now = new Date() // Obtient la date et l'heure actuelles
-  // Utilise Moment.js pour formater 'now' selon le format désiré directement
+  moment.locale('fr')
+  const qrCodeHTML = await generateQRCodeHTML(documentData.number)
+
+  const now = new Date()
   let formattedDateTime = moment(now).format('dddd D MMMM, HH:mm:ss')
 
   let printContent = `
@@ -79,7 +70,7 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
     fontSize: '13px',
   })
   printContent += generateRemerciement()
-  printContent += `<div style="text-align: center; margin-top: 20px;"><img src="${qrCodeDataURL}" alt="QR Code" style="width: 60px; height: 60px;"></div>`
+  printContent += qrCodeHTML
   printContent += '</body></html>'
 
   sendPrintRequest(printContent)
