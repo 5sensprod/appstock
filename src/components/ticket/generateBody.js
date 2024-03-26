@@ -13,7 +13,7 @@ export function generateBody(items) {
   )
 
   let tableContent =
-    '<table style="width:100%; border-collapse: collapse; font-size: 14px;text-align:left">' // Applique la taille de police de 10px au tableau entier
+    '<table style="width:100%; border-collapse: collapse; font-size: 10px; text-align:left">' // Applique la taille de police de 10px au tableau entier
   tableContent += '<tr>'
   tableContent += '<th>Qté</th><th>Article</th><th>P.U. EUR</th>'
   if (hasRemiseOrMajoration) {

@@ -36,24 +36,24 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
 
     }
     html, body {
-      font-family: 'Helvetica', sans-serif;
+      font-family: 'Helvetica', 'normal', sans-serif;
     }
     .header, .content, .item, .item-details, .totalht, .total, .message {
       text-align: center; margin-top: 0; margin-bottom: 1px;
     }
     .company {
-      font-size: 22px;
+      font-size: 15px;
       font-weight: bold;
     }
     .header {
-      font-size: 21px;
+      font-size: 14px;
       font-weight: bold;
     }
     .line {
       text-align: center; margin-top: 0;
     }
     .content {
-      font-size: 18px;
+      font-size: 13px;
     }
     .item-details span {
       display: block;
@@ -79,7 +79,7 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
     fontSize: '13px',
   })
   printContent += generateRemerciement()
-  printContent += `<div style="text-align: center; margin-top: 20px;"><img src="${qrCodeDataURL}" alt="QR Code" style="width: 50px; height: 50px;"></div>`
+  printContent += `<div style="text-align: center; margin-top: 20px;"><img src="${qrCodeDataURL}" alt="QR Code" style="width: 60px; height: 60px;"></div>`
   printContent += '</body></html>'
 
   sendPrintRequest(printContent)

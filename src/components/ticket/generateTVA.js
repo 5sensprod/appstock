@@ -39,7 +39,7 @@ export function generateTVA(items) {
 
   // En-têtes de colonne
   tvaContent += `
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; font-size: 14px; font-weight: bold; text-align: left;">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; font-size: 10px; font-weight: bold; text-align: left;">
         <span>Tx TVA</span>
         <span>HT</span>
         <span>TVA</span>
@@ -49,7 +49,7 @@ export function generateTVA(items) {
   // Valeurs pour chaque taux de TVA
   Object.entries(totauxParTVA).forEach(([taux, totals]) => {
     tvaContent += `
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; font-size: 14px; text-align: left;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; font-size: 10px; text-align: left;">
           <span>${taux}</span>
           <span>${formatNumber(totals.totalHT)}</span>
           <span>${formatNumber(totals.montantTVA)}</span>
@@ -59,7 +59,7 @@ export function generateTVA(items) {
 
   // Totals généraux
   tvaContent += `
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 20px; border-top: 1px dashed black; padding-top: 10px; font-size: 14px; text-align: left;">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 20px; border-top: 1px dashed black; padding-top: 10px; font-size: 10px; text-align: left;">
         <span style="font-weight: bold;">TOTAUX</span>
         <span>${formatNumber(totalHT)}</span>
         <span>${formatNumber(totalTVA)}</span>
