@@ -4,12 +4,10 @@ export function generateTotals(documentData) {
 
   return `
     <div style="margin-top: 10px;">
-    <div style="border-top: 1px dashed black; margin-bottom: 5px;"></div>
     <div style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: bold; font-size: 13px;">
         <span>Total TTC EUR</span>
         <span>${formatNumber(documentData.totalTTC)}</span>
       </div>
-      <div style="border-bottom: 1px dashed black; margin-bottom: 5px; margin-top: 5px;"></div>
       </div>
     `
 }

@@ -29,12 +29,10 @@ const formatAmount = (amount) => {
 // Générer le détail de paiement sous forme de ligne HTML
 const generatePaymentDetail = (label, value, fontSize = '12px') => {
   return `
-  <div style="border-top: 1px dashed black; margin-bottom: 5px;"></div>
   <div style="display: flex; justify-content: space-between; align-items: center; font-size: ${fontSize};">
     <span style="font-weight: normal;">${label} :</span>
     <span style="font-weight: normal;">${value} €</span>
   </div>
-  <div style="border-bottom: 1px dashed black; margin-bottom: 5px;"></div>
 `
 }
 

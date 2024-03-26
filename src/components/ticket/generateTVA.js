@@ -59,7 +59,7 @@ export function generateTVA(items) {
 
   // Totals généraux
   tvaContent += `
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 20px; border-top: 1px dashed black; padding-top: 10px; font-size: 10px; text-align: left;">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 20px; padding-top: 10px; font-size: 10px; text-align: left;">
         <span style="font-weight: bold;">TOTAUX</span>
         <span>${formatNumber(totalHT)}</span>
         <span>${formatNumber(totalTVA)}</span>

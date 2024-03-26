@@ -1,11 +1,13 @@
 import { sendPrintRequest } from '../../ipcHelper'
-import { generateHeader } from './generateHeader'
+import { generateCompanieInfo } from './generateCompanieInfo'
+import { generateHeaderTicket } from './generateHeaderTicket'
 import { generateBody } from './generateBody'
 import { generateTotals } from './generateTotal'
 import { generateTVA } from './generateTVA'
 import { generatePaymentType } from './generatePaymentType'
 import { generateRemerciement } from './generateRemerciement'
 import { generateQRCodeHTML } from './generateQRCode'
+import { generateLine } from './generateLine'
 import moment from 'moment'
 import 'moment/locale/fr'
 
@@ -57,9 +59,16 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
 </head>
 <body>`
 
-  printContent += generateHeader(documentData, formattedDateTime, companyInfo)
+  printContent += generateCompanieInfo(companyInfo)
+  printContent += generateHeaderTicket(documentData, formattedDateTime)
   printContent += generateBody(documentData.items)
+
+  // Insérer une ligne de séparation avant et après generateTotals
+  printContent += generateLine('10px', '5px')
   printContent += generateTotals(documentData)
+  printContent += generateLine('5px', '10px')
+
+  // Continuer à ajouter d'autres sections...
   printContent += generateTVA(documentData.items)
   printContent += generatePaymentType({
     paymentType: documentData.paymentType,
@@ -71,7 +80,8 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
   })
   printContent += generateRemerciement()
   printContent += qrCodeHTML
-  printContent += '</body></html>'
 
+  // Fin du contenu et envoi pour impression
+  printContent += '</body></html>'
   sendPrintRequest(printContent)
 }
