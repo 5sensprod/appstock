@@ -10,6 +10,6 @@ export function generateHeader(documentData, formattedDateTime, companyInfo) {
       <p class="header">TICKET</p>
       <p class="content">${documentData.number}</p>
       <p class="content">le ${formattedDateTime}</p> <!-- Utilisation de la date/heure formatée -->
-      <p class="line" style="margin-bottom: 0;">.............................................................</p>
+      <p class="line" style="margin-bottom: 5;">.............................................................</p>
     `
 }
