@@ -68,10 +68,10 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
   printContent += generateBody(documentData.items)
 
   // Insérer une ligne de séparation avant et après generateTotals
-  printContent += generateLine('10px', '5px')
+  printContent += generateLine('10px', '10px')
   printContent += generateTotals(documentData)
 
-  printContent += generateLine('5px', '10px')
+  printContent += generateLine('10px', '5px')
   printContent += generateTVA(documentData.items)
 
   printContent += generateLine('10px', '5px')

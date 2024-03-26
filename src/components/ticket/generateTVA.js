@@ -37,7 +37,7 @@ export function generateTVA(items) {
     totalTTC += totals.totalTTC
   })
 
-  let tvaContent = '<div style="margin-top: 20px;">'
+  let tvaContent = '<div>'
 
   // En-têtes de colonne
   tvaContent += `
