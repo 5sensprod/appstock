@@ -60,16 +60,21 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
 <body>`
 
   printContent += generateCompanieInfo(companyInfo)
+
+  printContent += generateLine('10px', '5px')
   printContent += generateHeaderTicket(documentData, formattedDateTime)
+
+  printContent += generateLine('10px', '5px')
   printContent += generateBody(documentData.items)
 
   // Insérer une ligne de séparation avant et après generateTotals
   printContent += generateLine('10px', '5px')
   printContent += generateTotals(documentData)
-  printContent += generateLine('5px', '10px')
 
-  // Continuer à ajouter d'autres sections...
+  printContent += generateLine('5px', '10px')
   printContent += generateTVA(documentData.items)
+
+  printContent += generateLine('10px', '5px')
   printContent += generatePaymentType({
     paymentType: documentData.paymentType,
     cashDetails: documentData.cashDetails,
@@ -78,6 +83,8 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
     remainingAmount: documentData.remainingAmount,
     fontSize: '13px',
   })
+
+  printContent += generateLine('5px', '10px')
   printContent += generateRemerciement()
   printContent += qrCodeHTML
 
