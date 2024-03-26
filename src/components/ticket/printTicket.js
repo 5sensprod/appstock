@@ -2,6 +2,7 @@ import { sendPrintRequest } from '../../ipcHelper'
 import { generateHeader } from './generateHeader'
 import { generateBody } from './generateBody'
 import { generateTotals } from './generateTotal'
+import { generateTVA } from './generateTVA'
 import moment from 'moment'
 import 'moment/locale/fr'
 
@@ -56,6 +57,7 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
   printContent += generateHeader(documentData, formattedDateTime, companyInfo)
   printContent += generateBody(documentData.items)
   printContent += generateTotals(documentData)
+  printContent += generateTVA(documentData.items)
   printContent += '</body></html>'
 
   sendPrintRequest(printContent)
