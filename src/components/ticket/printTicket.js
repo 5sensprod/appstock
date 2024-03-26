@@ -1,18 +1,9 @@
 import { sendPrintRequest } from '../../ipcHelper'
 import { generateHeader } from './generateHeader'
 import { generateBody } from './generateBody'
+import { generateTotals } from './generateTotal'
 import moment from 'moment'
 import 'moment/locale/fr'
-
-// Fonction pour générer le pied de page du ticket
-function generateFooter(documentData) {
-  return `
-  <p class="line" style="margin-bottom: 5;margin-top: 0;">.............................................................</p>
-    <div class="totalht" style="text-align: center;">Total HT: ${documentData.totalHT}€</div>
-    <div class="total" style="text-align: center;">Total TTC: ${documentData.totalTTC}€</div>
-    <div class="message" style="text-align: center;">Merci de votre visite</div>
-  `
-}
 
 export const printTicket = async (documentData, documentType, companyInfo) => {
   moment.locale('fr') // Configure le locale de Moment.js à français
@@ -64,7 +55,7 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
 
   printContent += generateHeader(documentData, formattedDateTime, companyInfo)
   printContent += generateBody(documentData.items)
-  printContent += generateFooter(documentData)
+  printContent += generateTotals(documentData)
   printContent += '</body></html>'
 
   sendPrintRequest(printContent)
