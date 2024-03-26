@@ -30,13 +30,12 @@ const formatAmount = (amount) => {
 const generatePaymentDetail = (label, value, fontSize = '12px') => {
   return `
   <div style="border-top: 1px dashed black; margin-bottom: 5px;"></div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; font-size: ${fontSize};">
-        <span style="text-align: right; font-weight: normal;">${label} :</span>
-        <span style="text-align: right; font-weight: normal; padding-left: 5px;">${value} €</span>
-      </div>
-      <div style="border-bottom: 1px dashed black; margin-bottom: 5px;"></div>
-
-    `
+  <div style="display: flex; justify-content: space-between; align-items: center; font-size: ${fontSize};">
+    <span style="font-weight: normal;">${label} :</span>
+    <span style="font-weight: normal;">${value} €</span>
+  </div>
+  <div style="border-bottom: 1px dashed black; margin-bottom: 5px;"></div>
+`
 }
 
 // Fonction principale pour générer les détails de paiement

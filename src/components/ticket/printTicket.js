@@ -3,7 +3,7 @@ import { generateHeader } from './generateHeader'
 import { generateBody } from './generateBody'
 import { generateTotals } from './generateTotal'
 import { generateTVA } from './generateTVA'
-import { generatePaymentType } from '../pdf/generatePaymentType'
+import { generatePaymentType } from './generatePaymentType'
 import { generateRemerciement } from './generateRemerciement'
 import QRCode from 'qrcode'
 import moment from 'moment'
@@ -76,7 +76,7 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
     paymentDetails: documentData.paymentDetails,
     totalTTC: documentData.totalTTC,
     remainingAmount: documentData.remainingAmount,
-    fontSize: '16px', // Vous pouvez ajuster la taille de la police si nécessaire
+    fontSize: '13px',
   })
   printContent += generateRemerciement()
   printContent += `<div style="text-align: center; margin-top: 20px;"><img src="${qrCodeDataURL}" alt="QR Code" style="width: 50px; height: 50px;"></div>`
