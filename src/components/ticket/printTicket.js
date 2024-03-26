@@ -26,6 +26,9 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
   @media print {
     @page {
       margin-top: -2mm;
+      width: 10cm;
+      margin-left:10px;
+      margin-right:10px;
 
     }
     html, body {
