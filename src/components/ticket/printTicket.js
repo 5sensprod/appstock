@@ -3,6 +3,8 @@ import { generateHeader } from './generateHeader'
 import { generateBody } from './generateBody'
 import { generateTotals } from './generateTotal'
 import { generateTVA } from './generateTVA'
+import { generatePaymentType } from '../pdf/generatePaymentType'
+import { generateRemerciement } from './generateRemerciement'
 import moment from 'moment'
 import 'moment/locale/fr'
 
@@ -58,6 +60,15 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
   printContent += generateBody(documentData.items)
   printContent += generateTotals(documentData)
   printContent += generateTVA(documentData.items)
+  printContent += generatePaymentType({
+    paymentType: documentData.paymentType,
+    cashDetails: documentData.cashDetails,
+    paymentDetails: documentData.paymentDetails,
+    totalTTC: documentData.totalTTC,
+    remainingAmount: documentData.remainingAmount,
+    fontSize: '16px', // Vous pouvez ajuster la taille de la police si nécessaire
+  })
+  printContent += generateRemerciement()
   printContent += '</body></html>'
 
   sendPrintRequest(printContent)
