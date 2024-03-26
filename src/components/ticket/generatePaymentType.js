@@ -45,7 +45,7 @@ export const generatePaymentType = ({
   remainingAmount,
   fontSize = '12px',
 }) => {
-  let paymentContent = '<div style="margin-top: 20px;">'
+  let paymentContent = '<div>'
 
   const details = [
     ...(paymentType === 'Cash'

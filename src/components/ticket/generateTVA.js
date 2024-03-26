@@ -1,3 +1,5 @@
+import { generateLine } from './generateLine'
+
 export function generateTVA(items) {
   // Fonction pour formater les nombres
   const formatNumber = (number) => number.toFixed(2).replace('.', ',')
@@ -57,9 +59,10 @@ export function generateTVA(items) {
         </div>`
   })
 
+  tvaContent += generateLine('5px', '5px')
   // Totals généraux
   tvaContent += `
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 20px; padding-top: 10px; font-size: 10px; text-align: left;">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; font-size: 10px; text-align: left;">
         <span style="font-weight: bold;">TOTAUX</span>
         <span>${formatNumber(totalHT)}</span>
         <span>${formatNumber(totalTVA)}</span>
