@@ -5,7 +5,6 @@ import 'moment/locale/fr'
 
 // Fonction pour générer le corps du ticket avec les articles
 function generateBody(items) {
-  // Fonction pour formater les nombres
   const formatNumber = (input) => {
     const number = parseFloat(input)
     if (isNaN(number)) {
@@ -14,13 +13,12 @@ function generateBody(items) {
     return number.toFixed(2).replace('.', ',')
   }
 
-  // Détermine si la remise ou la majoration est appliquée
   const hasRemiseOrMajoration = items.some(
     (item) => item.remiseMajorationValue !== 0,
   )
 
-  // Création du contenu du tableau
-  let tableContent = '<table style="width:100%; border-collapse: collapse;">'
+  let tableContent =
+    '<table style="width:100%; border-collapse: collapse; font-size: 14px;text-align:left">' // Applique la taille de police de 10px au tableau entier
   tableContent += '<tr>'
   tableContent += '<th>Qté</th><th>Article</th><th>P.U. EUR</th>'
   if (hasRemiseOrMajoration) {
@@ -29,16 +27,15 @@ function generateBody(items) {
   tableContent += '<th>TTC EUR</th><th>Tx</th>'
   tableContent += '</tr>'
 
-  // Générer les lignes du tableau
   items.forEach((item) => {
     tableContent += '<tr>'
-    tableContent += `<td style="text-align:center;">${item.quantite}</td>`
+    tableContent += `<td>${item.quantite}</td>`
     tableContent += `<td>${item.reference}</td>`
-    tableContent += `<td>${formatNumber(item.puHT)}</td>`
+    tableContent += `<td>${formatNumber(item.prixOriginal !== undefined ? item.prixOriginal : item.puTTC)}</td>`
     if (hasRemiseOrMajoration) {
-      tableContent += `<td>${formatNumber(item.remiseMajorationValue)}</td>` // Ajoute la cellule si nécessaire
+      tableContent += `<td>${formatNumber(item.remiseMajorationValue)}</td>`
     }
-    tableContent += `<td>${formatNumber(item.prixTTC)}</td>`
+    tableContent += `<td>${formatNumber(item.totalItem)}</td>`
     tableContent += `<td>${item.tauxTVA.toString().replace('.', ',')}</td>`
     tableContent += '</tr>'
   })
@@ -75,24 +72,23 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
     }
     html, body {
       font-family: 'Helvetica', sans-serif;
-      font-size: 12px;
     }
     .header, .content, .item, .item-details, .totalht, .total, .message {
       text-align: center; margin-top: 0; margin-bottom: 1px;
     }
     .company {
-      font-size: 15px;
+      font-size: 22px;
       font-weight: bold;
     }
     .header {
-      font-size: 14px;
+      font-size: 21px;
       font-weight: bold;
     }
     .line {
       text-align: center; margin-top: 0;
     }
     .content {
-      font-size: 11px;
+      font-size: 18px;
     }
     .item-details span {
       display: block;
@@ -101,18 +97,6 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
   .company, .header, .content, .item, .item-details, .totalht, .total, .message {
     text-align: center; margin-top: 0; margin-bottom: 1px;
   }
-  .company {
-    font-size: 15px;
-    font-weight: bold;
-  }
-  .header {
-    font-size: 14px;
-    font-weight: bold;
-  }
-  .line {
-    text-align: center; margin-top: 0;
-  }
-
 </style>
 </head>
 <body>`
