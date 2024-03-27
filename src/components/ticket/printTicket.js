@@ -26,13 +26,13 @@ export const printTicket = async (documentData, documentType, companyInfo) => {
   @media print {
     @page {
       margin-top: -2mm;
-      width: 10cm;
+      width: 8cm;
       margin-left:10px;
       margin-right:10px;
 
     }
     html, body {
-      font-family: 'Helvetica', 'normal', sans-serif;
+      font-family: 'Helvetica', 'normal', sans-serif; width:8cm;
     }
     .header, .content, .item, .item-details, .totalht, .total, .message {
       text-align: center; margin-top: 0; margin-bottom: 1px;

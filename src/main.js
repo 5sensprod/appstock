@@ -40,13 +40,51 @@ async function exportBackupToSftp(dbPath, dbName) {
   }
 }
 
-ipcMain.on('print', (event, content) => {
+ipcMain.on('print', async (event, content) => {
   let win = new BrowserWindow({ show: false })
   win.loadURL('data:text/html;charset=utf-8,' + encodeURI(content))
-  win.webContents.on('did-finish-load', () => {
-    win.webContents.print({}, (success, errorType) => {
-      if (!success) console.log(errorType)
-    })
+
+  win.webContents.on('did-finish-load', async () => {
+    // Obtenir la liste des imprimantes disponibles de manière asynchrone
+    const printers = await win.webContents.getPrintersAsync()
+
+    // Trouver l'imprimante POS-80 parmi les imprimantes disponibles
+    const posPrinter = printers.find((printer) =>
+      printer.name.includes('POS-80'),
+    )
+
+    if (posPrinter) {
+      // Options d'impression pour sélectionner spécifiquement l'imprimante POS-80
+      // et d'autres paramètres recommandés pour l'impression thermique
+      const printOptions = {
+        deviceName: posPrinter.name,
+        color: false,
+        margins: {
+          marginType: 'custom',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+        },
+        landscape: false,
+        silent: true,
+        pageSize: {
+          width: 314961, // Largeur de 8cm en micropouces
+          height: 600000, // Hauteur ajustée
+        },
+        scaleFactor: 233, // Ajuster selon besoin
+      }
+
+      // Lancer l'impression avec les options définies
+      win.webContents.print(printOptions, (success, errorType) => {
+        if (!success) console.log(`Erreur d'impression: ${errorType}`)
+        else console.log('Impression réussie !')
+      })
+    } else {
+      console.log(
+        "Imprimante POS-80 non trouvée. Vérifiez que l'imprimante est correctement connectée et réessayez.",
+      )
+    }
   })
 })
 
