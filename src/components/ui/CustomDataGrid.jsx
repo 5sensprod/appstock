@@ -9,7 +9,6 @@ import { formatPrice } from '../../utils/priceUtils'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
 import { IconButton, Box } from '@mui/material'
-import PrintIcon from '@mui/icons-material/Print'
 
 const CustomDataGrid = ({
   rows,
@@ -18,7 +17,6 @@ const CustomDataGrid = ({
   includeCustomerAddress,
   onViewDetails,
   onPdfIconClick,
-  onPrintIconClick,
 }) => {
   const apiRef = useGridApiRef()
 
@@ -30,7 +28,7 @@ const CustomDataGrid = ({
       renderCell: (params) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <IconButton
-            onClick={() => onPdfIconClick(params.row, 'save')}
+            onClick={() => onPdfIconClick(params.row)}
             color="primary"
           >
             <PictureAsPdfIcon />
@@ -40,12 +38,6 @@ const CustomDataGrid = ({
             color="primary"
           >
             <VisibilityIcon />
-          </IconButton>
-          <IconButton
-            onClick={() => onPrintIconClick(params.row)}
-            color="primary"
-          >
-            <PrintIcon />
           </IconButton>
         </div>
       ),

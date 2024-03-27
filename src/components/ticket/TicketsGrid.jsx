@@ -9,7 +9,7 @@ const TicketsGrid = () => {
   const [rows, setRows] = useState([])
   const [selectedTicketId, setSelectedTicketId] = useState(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
-  const [mode, setMode] = useState('save')
+  const [generatePdf, setGeneratePdf] = useState(false)
 
   const handleViewDetails = (ticketId) => {
     setSelectedTicketId(ticketId)
@@ -18,23 +18,7 @@ const TicketsGrid = () => {
 
   const handlePdfIconClick = (ticket) => {
     setSelectedTicketId(ticket.id)
-    setMode('save')
-  }
-
-  const handlePrintClick = (ticket) => {
-    setSelectedTicketId(ticket.id)
-    setMode('print')
-  }
-
-  const saveBlobAsFile = (blob, fileName) => {
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = fileName
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
+    setGeneratePdf(true) // Préparez-vous à générer le PDF
   }
 
   useEffect(() => {
@@ -65,8 +49,7 @@ const TicketsGrid = () => {
         includeCustomerName={false}
         includeCustomerAddress={false}
         onViewDetails={handleViewDetails}
-        onPdfIconClick={(ticket) => handlePdfIconClick(ticket, 'save')} // Déjà là
-        onPrintIconClick={handlePrintClick}
+        onPdfIconClick={handlePdfIconClick}
       />
       {selectedTicketId && isDetailsModalOpen && (
         <DetailsModal
@@ -76,24 +59,12 @@ const TicketsGrid = () => {
           itemType="ticket"
         />
       )}
-      {selectedTicketId && mode && (
+      {selectedTicketId && generatePdf && (
         <TicketGenerator
           ticketId={selectedTicketId}
-          onPdfGenerated={async (blob, number, generationCount) => {
-            if (mode === 'print') {
-              // Ouvrir le blob PDF dans un nouvel onglet pour l'impression
-              const pdfUrl = URL.createObjectURL(blob)
-              window.open(pdfUrl, '_blank')
-            } else if (mode === 'save') {
-              // Sauvegarde le PDF localement
-              const fileName = `${number}${generationCount > 0 ? `-duplicata${generationCount}` : ''}.pdf`
-              saveBlobAsFile(blob, fileName)
-            }
-
-            // Après avoir traité le PDF, incrémentez le compteur de génération de PDF
+          onPdfGenerated={async () => {
             await handleIncrementPdfGenerationCount(selectedTicketId, 'ticket')
-
-            setMode(null) // Réinitialisez le mode après l'action pour éviter des actions répétitives non désirées
+            setGeneratePdf(false) // Réinitialiser l'état après la génération du PDF
           }}
         />
       )}

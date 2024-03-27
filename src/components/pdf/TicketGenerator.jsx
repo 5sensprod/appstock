@@ -7,7 +7,7 @@ import moment from 'moment'
 import 'jspdf-autotable'
 import QRCode from 'qrcode'
 
-const TicketGenerator = ({ ticketId, onPdfGenerated, outputMode = 'save' }) => {
+const TicketGenerator = ({ ticketId, onPdfGenerated }) => {
   const { tickets } = useInvoices()
   const { companyInfo } = useContext(CompanyInfoContext)
 
@@ -434,8 +434,6 @@ const TicketGenerator = ({ ticketId, onPdfGenerated, outputMode = 'save' }) => {
       // Gestion de la mention "DUPLICATA" si nécessaire
       // Avant de sauvegarder ou d'imprimer le PDF, vérifiez si c'est un duplicata
       if (ticket.pdfGenerationCount > 0) {
-        // pdf.setGState(new pdf.GState({ opacity: 0.9 })) // Ajustez l'opacité si nécessaire
-        // pdf.setTextColor(255, 0, 0) // Rouge
         pdf.setFontSize(24) // Taille de la police pour "DUPLICATA"
 
         // Calculer la position centrale sur l'axe X
@@ -453,14 +451,21 @@ const TicketGenerator = ({ ticketId, onPdfGenerated, outputMode = 'save' }) => {
 
       // Sauvegarder le PDF ou le préparer pour l'impression
       // Construire le nom du fichier en incluant "duplicata" si nécessaire
-      const blob = pdf.output('blob')
+      let fileName = `${ticket.number}.pdf`
+      if (ticket.pdfGenerationCount > 0) {
+        fileName = `${ticket.number}-duplicata${ticket.pdfGenerationCount}.pdf`
+      }
+
+      pdf.save(fileName)
+
+      // Callback après génération
       if (onPdfGenerated) {
-        onPdfGenerated(blob, ticket.number, ticket.pdfGenerationCount)
+        onPdfGenerated()
       }
     }
 
     generatePDF()
-  }, [ticketId, outputMode]) // Assurez-vous d'inclure toutes les dépendances nécessaires
+  }, []) // Assurez-vous d'inclure toutes les dépendances nécessaires
 
   // Le composant ne rend rien visuellement
   return null
