@@ -227,7 +227,6 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
 
   const handleActionClick = async () => {
     try {
-      // Préparation des informations du client, si nécessaires
       const customerInfo = {
         name: customerName,
         adress: customerAdress,
@@ -235,34 +234,32 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
         phone: customerPhone,
       }
 
-      // Détermine si un ticket vide doit être imprimé (pour ouvrir le tiroir-caisse)
-      const printEmptyTicket = !shouldPrint
-
+      // Lorsque "Avec facture" est coché, imprimez un ticket vide pour ouvrir le tiroir-caisse
+      // sans imprimer de ticket ou facture détaillé(e).
       if (showCustomerFields) {
         if (!customerName || !customerAdress) {
           showToast('Veuillez remplir tous les champs obligatoires.', 'error')
           return
         }
 
+        // Même si "Avec facture" est coché, on appelle handlePayClick avec shouldPrint défini sur false
+        // et un paramètre supplémentaire pour indiquer qu'un ticket vide doit être imprimé.
         await handlePayClick(
           paymentType,
           customerInfo,
-          true,
-          shouldPrint,
-          printEmptyTicket,
+          true, // isInvoice
+          false, // shouldPrint, forcé à faux car "Avec facture" est coché
+          true, // Indique que nous voulons imprimer un ticket vide
         )
         showToast('La facture a été créée avec succès.', 'success')
-
-        if (isActiveQuote) {
-          deactivateQuote()
-        }
       } else {
+        // Pour les ventes sans facture, on suit la préférence de l'utilisateur concernant l'impression du ticket.
         await handlePayClick(
           paymentType,
-          {},
-          false,
-          shouldPrint,
-          printEmptyTicket,
+          {}, // Aucune info client pour un ticket
+          false, // isInvoice
+          shouldPrint, // Utilise la préférence de l'utilisateur
+          !shouldPrint, // Imprime un ticket vide si l'utilisateur choisit de ne pas imprimer
         )
         showToast('Le ticket a été validé avec succès.', 'success')
       }
@@ -389,12 +386,16 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
         <Box mt={2}>
           <PaymentTypeSelector isActiveQuote={isActiveQuote} />
         </Box>
-        <Checkbox
-          checked={shouldPrint}
-          onChange={(e) => setShouldPrint(e.target.checked)}
-          color="primary"
-        />
-        <label>Imprimer le ticket/facture</label>
+        {!showCustomerFields && (
+          <>
+            <Checkbox
+              checked={shouldPrint}
+              onChange={(e) => setShouldPrint(e.target.checked)}
+              color="primary"
+            />
+            <label>Imprimer le ticket</label>
+          </>
+        )}
         <Box mt={4} display="flex" justifyContent="space-between">
           <Button
             variant="contained"
