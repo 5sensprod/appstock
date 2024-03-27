@@ -25,7 +25,7 @@ const useHandlePayClick = () => {
     customerInfo,
     isInvoice,
     shouldPrint,
-    // companyInfo,
+    isEmpty = false,
   ) => {
     const documentItems = cartItems.map((item) => ({
       reference: item.reference,
@@ -84,8 +84,12 @@ const useHandlePayClick = () => {
       // Appeler printTicket si nécessaire
       if (shouldPrint && responseData) {
         await printTicket(responseData, documentType, companyInfo)
-        await handleIncrementPdfGenerationCount(responseData._id, documentType) // Incrémenter le compteur de génération de PDF
+      } else if (!shouldPrint && responseData) {
+        // Imprimer un ticket vide pour ouvrir le tiroir-caisse si shouldPrint est false
+        await printTicket(responseData, documentType, companyInfo, true)
       }
+
+      await handleIncrementPdfGenerationCount(responseData._id, documentType)
 
       // Mise à jour du stock et nettoyage du panier...
       cartItems.forEach(async (item) => {

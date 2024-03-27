@@ -11,8 +11,34 @@ import { generateLine } from './generateLine'
 import moment from 'moment'
 import 'moment/locale/fr'
 
-export const printTicket = async (documentData, documentType, companyInfo) => {
+export const printTicket = async (
+  documentData,
+  documentType,
+  companyInfo,
+  isEmpty = false,
+) => {
   moment.locale('fr')
+
+  if (isEmpty) {
+    let printContentEmpty = `
+<html>
+<head>
+<title>Ticket Vide</title>
+<style>
+  body {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    width: 8cm; /* Définit la largeur du contenu pour correspondre à la largeur du papier */
+  }
+</style>
+</head>
+<body>
+  <!-- Contenu intentionnellement vide pour déclencher l'ouverture du tiroir-caisse -->
+</body>
+</html>`
+    sendPrintRequest(printContentEmpty)
+    return
+  }
+
   const qrCodeHTML = await generateQRCodeHTML(documentData.number)
 
   const now = new Date()

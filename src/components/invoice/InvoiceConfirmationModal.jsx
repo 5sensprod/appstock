@@ -227,28 +227,47 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
 
   const handleActionClick = async () => {
     try {
+      // Préparation des informations du client, si nécessaires
+      const customerInfo = {
+        name: customerName,
+        adress: customerAdress,
+        email: customerEmail,
+        phone: customerPhone,
+      }
+
+      // Détermine si un ticket vide doit être imprimé (pour ouvrir le tiroir-caisse)
+      const printEmptyTicket = !shouldPrint
+
       if (showCustomerFields) {
         if (!customerName || !customerAdress) {
           showToast('Veuillez remplir tous les champs obligatoires.', 'error')
           return
         }
 
-        const customerInfo = {
-          name: customerName,
-          adress: customerAdress,
-          email: customerEmail,
-          phone: customerPhone,
-        }
-        await handlePayClick(paymentType, customerInfo, true, shouldPrint)
+        await handlePayClick(
+          paymentType,
+          customerInfo,
+          true,
+          shouldPrint,
+          printEmptyTicket,
+        )
         showToast('La facture a été créée avec succès.', 'success')
+
         if (isActiveQuote) {
           deactivateQuote()
         }
       } else {
-        await handlePayClick(paymentType, {}, false, shouldPrint)
+        await handlePayClick(
+          paymentType,
+          {},
+          false,
+          shouldPrint,
+          printEmptyTicket,
+        )
         showToast('Le ticket a été validé avec succès.', 'success')
       }
 
+      // Réinitialisation de l'état et fermeture du modal
       clearCart()
       setCustomerName('')
       setCustomerEmail('')
