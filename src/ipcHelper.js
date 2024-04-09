@@ -36,7 +36,7 @@ export const sendPrintRequest = async (printContent) => {
     console.log('Contenu à imprimer (Navigateur) :', printContent)
 
     // Créer une nouvelle fenêtre ou un nouvel onglet pour l'impression
-    const printWindow = window.open('', '_blank')
+    const printWindow = window.open('', '_blank', 'width=800,height=600')
     if (printWindow) {
       printWindow.document.open()
       printWindow.document.write(printContent)
