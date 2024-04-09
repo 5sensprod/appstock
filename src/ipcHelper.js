@@ -23,15 +23,36 @@ export const getLocalIp = async () => {
 export const sendPrintRequest = async (printContent) => {
   if (window.electron) {
     try {
-      // Envoyer la demande d'impression au processus principal
+      console.log('Contenu à imprimer (Electron) :', printContent)
+      // Envoyer la demande d'impression au processus principal dans Electron
       await window.electron.ipcRenderer.send('print', printContent)
     } catch (error) {
       console.error("Erreur lors de l'envoi de la demande d'impression:", error)
     }
   } else {
     console.log(
-      "Contexte Electron non disponible. Impossible d'envoyer la demande d'impression.",
+      "Contexte Electron non disponible. Utilisation de l'impression native du navigateur.",
     )
+    console.log('Contenu à imprimer (Navigateur) :', printContent)
+
+    // Créer une nouvelle fenêtre ou un nouvel onglet pour l'impression
+    const printWindow = window.open('', '_blank')
+    if (printWindow) {
+      printWindow.document.open()
+      printWindow.document.write(printContent)
+      printWindow.document.close()
+
+      // Attendre que le contenu soit chargé avant de déclencher l'impression
+      printWindow.onload = function () {
+        printWindow.focus() // Nécessaire pour certains navigateurs
+        printWindow.print()
+        printWindow.close()
+      }
+    } else {
+      console.error(
+        "Impossible d'ouvrir la fenêtre d'impression. Vérifiez si les bloqueurs de pop-up sont activés.",
+      )
+    }
   }
 }
 
