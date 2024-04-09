@@ -9,6 +9,7 @@ const cors = require('cors')
 const { getLocalIPv4Address } = require('./networkUtils')
 const staticFilesPath = path.join(__dirname, '..', 'renderer', 'main_window')
 const fs = require('fs')
+const { dialog } = electron
 
 const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const cataloguePath = path.join(userDataPath, 'catalogue')
@@ -142,7 +143,9 @@ server
   .on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
       console.error(`Port ${port} est déjà utilisé.`)
-      // Vous pouvez choisir de fermer l'application ou de réessayer sur un autre port
-      process.exit(1) // Arrête le processus du serveur
+      // Affiche une boîte de dialogue avec le message personnalisé avant de quitter
+      dialog.showMessageBox("Instance déjà en cours d'exécution").then(() => {
+        electron.app.quit()
+      })
     }
   })

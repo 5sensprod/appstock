@@ -7,7 +7,7 @@ const {
   dialog,
 } = require('electron')
 const path = require('path')
-// require('../src/server/server.js')
+require('../src/server/server.js')
 const { getLocalIPv4Address } = require('./server/networkUtils')
 const Store = require('electron-store')
 const store = new Store()
@@ -86,6 +86,7 @@ ipcMain.on('print', async (event, content) => {
       win.webContents.print(printOptions, (success, errorType) => {
         if (!success) console.log(`Erreur d'impression: ${errorType}`)
         else console.log('Impression réussie !')
+        win.destroy()
       })
     } else {
       console.log(

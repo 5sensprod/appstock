@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Erreur de lancement</title>
+  <!-- Ajoutez du style ici si nécessaire -->
+</head>
+<body>
+  <h1>Instance déjà en cours d'exécution</h1>
+  <p>Une autre instance de cette application est déjà en cours d'exécution. Veuillez la fermer avant d'en ouvrir une nouvelle.</p>
+  <button id="closeButton">Fermer</button>
+  <script>
+    // Ce script fermera la fenêtre lorsque l'utilisateur cliquera sur le bouton
+    document.getElementById('closeButton').addEventListener('click', () => {
+      const { remote } = require('electron');
+      remote.getCurrentWindow().close();
+    });
+  </script>
+</body>
+</html>
