@@ -135,6 +135,14 @@ app.get('/api/serverStatus', (req, res) => {
   }
 })
 
-server.listen(port, '0.0.0.0', () => {
-  console.log(`Server running on http://${getLocalIPv4Address()}:${port}`)
-})
+server
+  .listen(port, '0.0.0.0', () => {
+    console.log(`Server running on http://${getLocalIPv4Address()}:${port}`)
+  })
+  .on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Port ${port} est déjà utilisé.`)
+      // Vous pouvez choisir de fermer l'application ou de réessayer sur un autre port
+      process.exit(1) // Arrête le processus du serveur
+    }
+  })

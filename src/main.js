@@ -1,6 +1,13 @@
-const { app, BrowserWindow, ipcMain, session, shell } = require('electron')
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  session,
+  shell,
+  dialog,
+} = require('electron')
 const path = require('path')
-require('../src/server/server.js')
+// require('../src/server/server.js')
 const { getLocalIPv4Address } = require('./server/networkUtils')
 const Store = require('electron-store')
 const store = new Store()
@@ -152,11 +159,10 @@ const scheduleExport = () => {
   })
 }
 
-app.on('ready', async () => {
-  createWindow()
-
+async function initializeApp() {
   // Récupération de l'adresse IP actuelle
   const currentIp = await getLocalIPv4Address()
+
   // Récupération de l'adresse IP stockée dans electron-store
   const storedIp = store.get('localIp')
 
@@ -165,7 +171,7 @@ app.on('ready', async () => {
     store.set('localIp', currentIp)
     console.log(`Adresse IP mise à jour dans electron-store: ${currentIp}`)
   } else {
-    console.log(`Adresse IP deja stockee dans electron-store: ${storedIp}`)
+    console.log(`Adresse IP déjà stockée dans electron-store: ${storedIp}`)
   }
 
   // Mise à jour de la politique de sécurité du contenu avec l'adresse IP actuelle
@@ -194,6 +200,35 @@ app.on('ready', async () => {
   })
 
   scheduleExport()
+}
+
+app.on('ready', () => {
+  const gotTheLock = app.requestSingleInstanceLock()
+
+  if (!gotTheLock) {
+    dialog.showErrorBox(
+      "Instance déjà en cours d'exécution",
+      "Une autre instance de cette application est déjà en cours d'exécution. Veuillez la fermer avant d'en ouvrir une nouvelle.",
+    )
+    app.quit()
+  } else {
+    app.on('second-instance', () => {
+      // Logique pour gérer une deuxième instance ici...
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) mainWindow.restore()
+        mainWindow.focus()
+      }
+    })
+
+    createWindow()
+
+    // Maintenant, vous pouvez démarrer votre serveur en toute sécurité, car cela ne se produira que si gotTheLock est true.
+    require('../src/server/server.js') // Assurez-vous que le chemin est correct
+
+    initializeApp().catch((error) => {
+      console.error("Erreur lors de l'initialisation de l'application:", error)
+    })
+  }
 })
 
 app.on('window-all-closed', () => {
