@@ -57,7 +57,7 @@ ipcMain.on('print', async (event, content) => {
 
     // Trouver l'imprimante EPSON XP-212 213 Series parmi les imprimantes disponibles
     const posPrinter = printers.find((printer) =>
-      printer.name.includes('EPSON XP-212 213 Series'),
+      printer.name.includes('POS-80'),
     )
 
     if (posPrinter) {

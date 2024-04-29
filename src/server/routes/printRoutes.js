@@ -17,7 +17,7 @@ router.post('/', (req, res) => {
   win.webContents.on('did-finish-load', async () => {
     const printers = await win.webContents.getPrintersAsync()
     const posPrinter = printers.find((printer) =>
-      printer.name.includes('EPSON XP-212 213 Series'),
+      printer.name.includes('POS-80'),
     )
 
     if (posPrinter) {
