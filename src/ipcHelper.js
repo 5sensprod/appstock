@@ -1,4 +1,5 @@
-// ipcHelper.js
+import { sendPrintRequest as sendPrintRequestToServer } from './api/printService'
+
 export const getLocalIp = async () => {
   if (window.electron) {
     try {
@@ -30,28 +31,13 @@ export const sendPrintRequest = async (printContent) => {
       console.error("Erreur lors de l'envoi de la demande d'impression:", error)
     }
   } else {
-    console.log(
-      "Contexte Electron non disponible. Utilisation de l'impression native du navigateur.",
-    )
-    console.log('Contenu à imprimer (Navigateur) :', printContent)
-
-    // Créer une nouvelle fenêtre ou un nouvel onglet pour l'impression
-    const printWindow = window.open('', '_blank', 'width=800,height=600')
-    if (printWindow) {
-      printWindow.document.open()
-      printWindow.document.write(printContent)
-      printWindow.document.close()
-
-      // Attendre que le contenu soit chargé avant de déclencher l'impression
-      printWindow.onload = function () {
-        printWindow.focus() // Nécessaire pour certains navigateurs
-        printWindow.print()
-        printWindow.close()
-      }
-    } else {
-      console.error(
-        "Impossible d'ouvrir la fenêtre d'impression. Vérifiez si les bloqueurs de pop-up sont activés.",
-      )
+    // Contexte Electron non disponible, essaie d'imprimer via le serveur
+    console.log('Contenu à imprimer (Serveur) :', printContent)
+    try {
+      await sendPrintRequestToServer(printContent) // Utiliser le service d'impression API
+      console.log('Impression réussie via le serveur!')
+    } catch (error) {
+      console.error("Erreur lors de l'impression via le serveur:", error)
     }
   }
 }

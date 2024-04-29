@@ -55,9 +55,9 @@ ipcMain.on('print', async (event, content) => {
     // Obtenir la liste des imprimantes disponibles de manière asynchrone
     const printers = await win.webContents.getPrintersAsync()
 
-    // Trouver l'imprimante POS-80 parmi les imprimantes disponibles
+    // Trouver l'imprimante EPSON XP-212 213 Series parmi les imprimantes disponibles
     const posPrinter = printers.find((printer) =>
-      printer.name.includes('POS-80'),
+      printer.name.includes('EPSON XP-212 213 Series'),
     )
 
     if (posPrinter) {
@@ -74,7 +74,7 @@ ipcMain.on('print', async (event, content) => {
           right: 0,
         },
         landscape: false,
-        silent: true,
+        silent: false,
         pageSize: {
           width: 314961, // Largeur de 8cm en micropouces
           height: 600000, // Hauteur ajustée
@@ -90,7 +90,7 @@ ipcMain.on('print', async (event, content) => {
       })
     } else {
       console.log(
-        "Imprimante POS-80 non trouvée. Vérifiez que l'imprimante est correctement connectée et réessayez.",
+        "Imprimante EPSON XP-212 213 Series non trouvée. Vérifiez que l'imprimante est correctement connectée et réessayez.",
       )
     }
   })

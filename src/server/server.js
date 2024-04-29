@@ -106,6 +106,9 @@ const categoriesRoutes = require('./routes/categoriesRoutes')
 const invoicesRoutes = require('./routes/invoicesRoutes')
 const quotesRoutes = require('./routes/quotesRoutes')
 const ticketsRoutes = require('./routes/ticketsRoutes')
+const printRoutes = require('./routes/printRoutes')
+
+app.use('/api/print', printRoutes)
 
 initializeDatabases().then((db) => {
   app.use('/api/users', usersRoutes(db))
