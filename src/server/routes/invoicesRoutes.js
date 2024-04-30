@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-module.exports = (db) => {
+module.exports = (db, sendSseEvent) => {
   router.get('/', (req, res) => {
     db.invoices.find({}, (err, invoices) => {
       if (err) {
@@ -74,6 +74,7 @@ module.exports = (db) => {
           if (err) {
             return res.status(500).send("Erreur lors de l'ajout de la facture.")
           }
+          sendSseEvent({ type: 'invoice-added', data: invoice })
           res.status(201).json(invoice)
         })
       })

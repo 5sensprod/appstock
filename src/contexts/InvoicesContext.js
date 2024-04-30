@@ -52,16 +52,23 @@ export const InvoicesProvider = ({ children }) => {
           // Re-fetch des tickets à chaque ajout pour assurer la synchronisation
           fetchTickets()
           break
+        case 'invoice-added':
+          // Re-fetch des invoices à chaque ajout pour assurer la synchronisation
+          fetchInvoices()
+          break
         // Pas besoin d'une gestion de cas par défaut si aucun autre type d'événement n'est traité
       }
     }
 
     eventSource.onmessage = handleEvent
+    eventSource.onerror = (error) => {
+      console.error('SSE error:', error) // Garder pour déboguer les erreurs de connexion SSE
+    }
 
     return () => {
       eventSource.close()
     }
-  }, [baseUrl, fetchTickets])
+  }, [baseUrl, fetchTickets, fetchInvoices])
 
   useEffect(() => {
     fetchInvoices()

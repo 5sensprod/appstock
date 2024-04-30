@@ -114,8 +114,8 @@ initializeDatabases().then((db) => {
   app.use('/api/users', usersRoutes(db))
   app.use('/api/products', productsRoutes(db, sendSseEvent))
   app.use('/api/categories', categoriesRoutes(db, sendSseEvent))
-  app.use('/api/invoices', invoicesRoutes(db))
-  app.use('/api/quotes', quotesRoutes(db))
+  app.use('/api/invoices', invoicesRoutes(db, sendSseEvent))
+  app.use('/api/quotes', quotesRoutes(db, sendSseEvent))
   app.use('/api/tickets', ticketsRoutes(db, sendSseEvent))
 })
 
