@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-module.exports = (db) => {
+module.exports = (db, sendSseEvent) => {
   function formatQuoteData(body) {
     const itemsFormatted = body.items.map((item) => ({
       ...item,
@@ -71,6 +71,7 @@ module.exports = (db) => {
       if (err) {
         res.status(500).send("Erreur lors de l'ajout du devis.")
       } else {
+        sendSseEvent({ type: 'quote-added', data: quote })
         res.status(201).json(quote)
       }
     })

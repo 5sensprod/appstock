@@ -1,6 +1,13 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react'
 import * as quoteService from '../api/quoteService'
-import { CartContext } from './CartContext'
+// import { CartContext } from './CartContext'
+import { useConfig } from './ConfigContext'
 
 // Création du contexte
 export const QuoteContext = createContext()
@@ -17,6 +24,7 @@ export const QuoteProvider = ({ children }) => {
   const [customerAdress, setCustomerAdress] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
+  const { baseUrl } = useConfig()
 
   const [isActiveQuote, setIsActiveQuote] = useState(false)
   const [activeQuoteDetails, setActiveQuoteDetails] = useState({
@@ -24,30 +32,50 @@ export const QuoteProvider = ({ children }) => {
     contact: '',
   })
 
-  // Charger tous les devis au démarrage
+  const fetchQuotes = async () => {
+    setIsLoading(true)
+    try {
+      const data = await quoteService.getQuotes()
+      setQuotes(data)
+      setError(null)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setIsLoading(false)
+    }
+  } // Les dépendances vides signifient que la fonction ne sera pas recréée
+
   useEffect(() => {
-    const fetchQuotes = async () => {
-      setIsLoading(true)
-      try {
-        const data = await quoteService.getQuotes()
-        setQuotes(data)
-        setError(null)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setIsLoading(false)
+    // fetchQuotes()
+
+    const eventSource = new EventSource(`${baseUrl}/api/events`)
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      if (data.type === 'quote-added') {
+        fetchQuotes() // Rafraîchir tous les devis après l'ajout d'un nouveau
       }
     }
 
+    eventSource.onerror = (error) => {
+      console.error('SSE error:', error)
+      setError('Erreur lors de la connexion SSE')
+    }
+
+    return () => {
+      eventSource.close()
+    }
+  }, [baseUrl, fetchQuotes])
+
+  useEffect(() => {
     fetchQuotes()
   }, [])
 
-  // Ajouter un devis
   const addQuote = async (quoteData) => {
     setIsLoading(true)
     try {
       const newQuote = await quoteService.addQuote(quoteData)
-      setQuotes([...quotes, newQuote])
+      setQuotes((prevQuotes) => [...prevQuotes, newQuote])
       setError(null)
     } catch (err) {
       setError(err.message)
