@@ -30,9 +30,7 @@ const TicketsGrid = () => {
         date: new Date(ticket.date),
         totalTTC: ticket.totalTTC,
       }))
-      // Tri par date en utilisant les objets Date
       .sort((a, b) => b.date - a.date)
-      // Formatage de la date pour l'affichage après le tri
       .map((ticket) => ({
         ...ticket,
         date: ticket.date.toLocaleDateString('fr-FR'),

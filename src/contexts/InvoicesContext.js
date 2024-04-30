@@ -6,6 +6,7 @@ import {
 } from '../api/invoiceService'
 import { getTickets, addTicket } from '../api/ticketService'
 import { incrementPdfGenerationCount as incrementTicketPdfGenerationCount } from '../api/ticketService'
+import { useConfig } from './ConfigContext'
 
 const InvoicesContext = createContext()
 
@@ -15,11 +16,7 @@ export const InvoicesProvider = ({ children }) => {
   const [invoices, setInvoices] = useState([])
   const [tickets, setTickets] = useState([])
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchInvoices()
-    fetchTickets()
-  }, [])
+  const { baseUrl } = useConfig()
 
   const fetchInvoices = async () => {
     setLoading(true)
@@ -44,6 +41,32 @@ export const InvoicesProvider = ({ children }) => {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    const eventSource = new EventSource(`${baseUrl}/api/events`)
+
+    const handleEvent = (event) => {
+      const data = JSON.parse(event.data)
+      switch (data.type) {
+        case 'ticket-added':
+          // Re-fetch des tickets à chaque ajout pour assurer la synchronisation
+          fetchTickets()
+          break
+        // Pas besoin d'une gestion de cas par défaut si aucun autre type d'événement n'est traité
+      }
+    }
+
+    eventSource.onmessage = handleEvent
+
+    return () => {
+      eventSource.close()
+    }
+  }, [baseUrl, fetchTickets])
+
+  useEffect(() => {
+    fetchInvoices()
+    fetchTickets()
+  }, [])
 
   const prepareInvoiceData = (cartItems, cartTotals, adjustmentAmount) => {
     const items = cartItems.map((item, index) => ({

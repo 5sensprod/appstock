@@ -11,7 +11,7 @@ router.post('/', (req, res) => {
     webPreferences: { offscreen: true },
   })
 
-  console.log(`Chargement du contenu: ${encodeURI(content)}`)
+  // console.log(`Chargement du contenu: ${encodeURI(content)}`)
   win.loadURL(`data:text/html;charset=utf-8,${encodeURI(content)}`)
 
   win.webContents.on('did-finish-load', async () => {
@@ -32,14 +32,14 @@ router.post('/', (req, res) => {
       }
 
       win.webContents.print(printOptions, (success, errorType) => {
-        console.log(
-          `Tentative d'impression: ${success ? 'Réussie' : 'Échouée'}`,
-        )
+        // console.log(
+        //   `Tentative d'impression: ${success ? 'Réussie' : 'Échouée'}`,
+        // )
         if (!success) {
           console.error(`Erreur d'impression: ${errorType}`)
           res.status(500).send("Erreur lors de l'impression")
         } else {
-          console.log('Impression réussie !')
+          // console.log('Impression réussie !')
           res.send('Impression réussie !')
         }
         win.destroy()

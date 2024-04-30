@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-module.exports = (db) => {
+module.exports = (db, sendSseEvent) => {
   // Obtenir tous les tickets
   router.get('/', (req, res) => {
     db.tickets.find({}, (err, tickets) => {
@@ -79,6 +79,7 @@ module.exports = (db) => {
           if (err) {
             return res.status(500).send("Erreur lors de l'ajout du ticket.")
           }
+          sendSseEvent({ type: 'ticket-added', data: ticket })
           return res.status(201).json(ticket)
         })
       })
@@ -86,7 +87,6 @@ module.exports = (db) => {
 
   router.put('/:id', (req, res) => {
     const { id } = req.params
-
     db.tickets.update(
       { _id: id },
       { $set: req.body },
@@ -96,8 +96,16 @@ module.exports = (db) => {
           console.error('Erreur lors de la mise à jour du ticket:', err)
           res.status(500).send('Erreur lors de la mise à jour du ticket.')
         } else {
-          console.log(`Ticket mis à jour; Documents affectés: `, numAffected)
-          res.status(200).send({ numAffected })
+          db.tickets.findOne({ _id: id }, (err, updatedTicket) => {
+            if (err) {
+              res
+                .status(500)
+                .send('Erreur lors de la récupération du ticket mis à jour.')
+            } else {
+              sendSseEvent({ type: 'updateTicket', data: updatedTicket }) // Envoyer un événement SSE
+              res.status(200).json(updatedTicket)
+            }
+          })
         }
       },
     )

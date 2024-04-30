@@ -116,7 +116,7 @@ initializeDatabases().then((db) => {
   app.use('/api/categories', categoriesRoutes(db, sendSseEvent))
   app.use('/api/invoices', invoicesRoutes(db))
   app.use('/api/quotes', quotesRoutes(db))
-  app.use('/api/tickets', ticketsRoutes(db))
+  app.use('/api/tickets', ticketsRoutes(db, sendSseEvent))
 })
 
 app.use(errorHandler)
