@@ -11,6 +11,7 @@ import QuoteConfirmationModal from '../quote/QuoteConfirmationModal'
 import { useHoldInvoiceContext } from '../../contexts/HoldInvoiceContext'
 import InvoiceConfirmationModal from '../invoice/InvoiceConfirmationModal'
 import { useQuoteLogic } from '../../hooks/useQuoteLogic'
+import { useUI } from '../../contexts/UIContext'
 
 const Cart = () => {
   const {
@@ -25,7 +26,7 @@ const Cart = () => {
     adjustmentAmount,
     cartTotals,
   } = useContext(CartContext)
-
+  const { showToast } = useUI()
   const {
     handleSaveQuote,
     handleExitQuoteMode,
