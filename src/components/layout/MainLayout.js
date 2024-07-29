@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
@@ -12,7 +12,6 @@ import ReceiptIcon from '@mui/icons-material/Receipt'
 import SellIcon from '@mui/icons-material/Sell'
 import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import DrawerHeader from './DrawerHeader'
-// import CatalogCreateButton from './CatalogCreateButton'
 import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import BackButton from './BackButton'
 import SideDrawer from './SideDrawer'
@@ -21,7 +20,7 @@ import { useUI } from '../../contexts/UIContext'
 
 export default function MiniDrawer({ children }) {
   const theme = useTheme()
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false)
   const { updatePageTitle, pageTitle } = useUI()
   const location = useLocation()
 
@@ -51,10 +50,10 @@ export default function MiniDrawer({ children }) {
 
   const supplierMenuItems = [
     { text: 'Commandes', icon: <SellIcon />, link: '/order' },
-    { text: 'Fournisseurs', icon: <LocalShippingIcon />, link: '/supplier' },
+    { text: 'Fournisseurs', icon: <LocalShippingIcon />, link: '/suppliers' }, // Correction du lien ici
   ]
 
-  React.useEffect(() => {
+  useEffect(() => {
     const currentItem = menuItems
       .concat(productItems, clientMenuItems, supplierMenuItems)
       .find((item) => item.link === location.pathname)
@@ -81,7 +80,6 @@ export default function MiniDrawer({ children }) {
       />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        {/* <CatalogCreateButton theme={theme} /> */}
         <BackButton theme={theme} />
         {children}
       </Box>

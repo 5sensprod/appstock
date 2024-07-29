@@ -107,6 +107,7 @@ const invoicesRoutes = require('./routes/invoicesRoutes')
 const quotesRoutes = require('./routes/quotesRoutes')
 const ticketsRoutes = require('./routes/ticketsRoutes')
 const printRoutes = require('./routes/printRoutes')
+const suppliersRoutes = require('./routes/suppliersRoutes')
 
 app.use('/api/print', printRoutes)
 
@@ -117,6 +118,7 @@ initializeDatabases().then((db) => {
   app.use('/api/invoices', invoicesRoutes(db, sendSseEvent))
   app.use('/api/quotes', quotesRoutes(db, sendSseEvent))
   app.use('/api/tickets', ticketsRoutes(db, sendSseEvent))
+  app.use('/api/suppliers', suppliersRoutes(db, sendSseEvent)) // Utilisation des routes des fournisseurs
 })
 
 app.use(errorHandler)

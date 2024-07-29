@@ -27,7 +27,8 @@ import { GridPreferenceProvider } from './contexts/GridPreferenceContext'
 import { QuoteProvider } from './contexts/QuoteContext'
 import { InvoicesProvider } from './contexts/InvoicesContext'
 import { HoldInvoiceProvider } from './contexts/HoldInvoiceContext'
-
+import { SupplierProvider } from './contexts/SupplierContext'
+import SupplierPage from './components/pages/SupplierPage'
 const licenseKey =
   'CompanyName=Equinix Asia Pacific pte ltd,LicensedGroup=equinixMendixPrivateLib,LicenseType=MultipleApplications,LicensedConcurrentDeveloperCount=2,LicensedProductionInstancesCount=0,AssetReference=AG-027567,SupportServicesEnd=18_June_2023_[v2]_MTY4NzA0MjgwMDAwMA==4be2c388f9a8a7443c72842dff53d5b2'
 LicenseManager.setLicenseKey(licenseKey)
@@ -37,8 +38,6 @@ LicenseInfo.setLicenseKey(
 )
 
 const App = () => {
-  const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
-
   return (
     <ThemeProvider theme={theme}>
       <ConfigProvider>
@@ -53,18 +52,10 @@ const App = () => {
                         <ProductProviderSimplified>
                           <CartProvider>
                             <CategoryProvider>
-                              <Router>
-                                {isAndroidWebView ? (
-                                  // Affichage pour WebView Android
-                                  <Routes>
-                                    <Route
-                                      path="/mobil"
-                                      element={<MobilPage />}
-                                    />
-                                    {/* Ajoutez ici d'autres routes si nécessaire pour WebView */}
-                                  </Routes>
-                                ) : (
-                                  // Affichage normal avec MainLayout
+                              <SupplierProvider>
+                                {' '}
+                                {/* Ajoutez le Provider pour les fournisseurs */}
+                                <Router>
                                   <MainLayout>
                                     <Routes>
                                       <Route path="/" element={<POSPage />} />
@@ -76,10 +67,6 @@ const App = () => {
                                         path="/catalog"
                                         element={<CatalogPageSimple />}
                                       />
-                                      {/* <Route
-                            path="/products/:productIds?/:categoryId?"
-                            element={<ProductPage />}
-                          /> */}
                                       <Route
                                         path="/products"
                                         element={<ProductPage />}
@@ -104,12 +91,15 @@ const App = () => {
                                         path="/edit-product/:id"
                                         element={<EditProductPage />}
                                       />
-                                      {/* Autres routes ici */}
-                                      {/* La route /mobil est accessible uniquement dans WebView */}
+                                      <Route
+                                        path="/suppliers"
+                                        element={<SupplierPage />}
+                                      />{' '}
+                                      {/* Nouvelle route pour les fournisseurs */}
                                     </Routes>
                                   </MainLayout>
-                                )}
-                              </Router>
+                                </Router>
+                              </SupplierProvider>
                             </CategoryProvider>
                           </CartProvider>
                         </ProductProviderSimplified>

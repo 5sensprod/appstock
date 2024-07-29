@@ -51,7 +51,7 @@ const SideDrawer = ({
   menuItems,
   productItems,
   clientMenuItems,
-  supplierMenuItems,
+  supplierMenuItems, // Ajout
 }) => {
   return (
     <Drawer variant="permanent" open={open}>
@@ -63,7 +63,7 @@ const SideDrawer = ({
       <Divider />
       <MenuList menuItems={clientMenuItems} open={open} />
       <Divider />
-      <MenuList menuItems={supplierMenuItems} open={open} />
+      <MenuList menuItems={supplierMenuItems} open={open} /> {/* Ajout */}
     </Drawer>
   )
 }
