@@ -3,11 +3,9 @@ import { DataGrid, frFR, GridToolbarQuickFilter } from '@mui/x-data-grid'
 import { useSuppliers } from '../../contexts/SupplierContext'
 import { Button, TextField, Box, Modal, IconButton } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
 import SaveIcon from '@mui/icons-material/Save'
-import CancelIcon from '@mui/icons-material/Close'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import SupplierColumns from './SupplierColumns'
 
 const style = {
   position: 'absolute',
@@ -87,33 +85,7 @@ const SupplierTable = () => {
     await removeSupplier(id)
   }
 
-  const columns = [
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 150,
-      renderCell: (params) => (
-        <div>
-          <IconButton onClick={() => handleEdit(params.row)}>
-            <EditIcon />
-          </IconButton>
-          <IconButton onClick={() => handleDelete(params.row._id)}>
-            <DeleteIcon />
-          </IconButton>
-        </div>
-      ),
-      editable: false,
-      disableColumnMenu: true,
-      sortable: false,
-      hideable: false,
-    },
-    { field: 'name', headerName: 'Nom', width: 150 },
-    { field: 'contact', headerName: 'Contact', width: 150 },
-    { field: 'email', headerName: 'Email', width: 200 },
-    { field: 'phone', headerName: 'Téléphone', width: 150 },
-    { field: 'iban', headerName: 'IBAN', width: 200 },
-    { field: 'address', headerName: 'Adresse', width: 250 },
-  ]
+  const columns = SupplierColumns(handleEdit, handleDelete)
 
   return (
     <ThemeProvider theme={theme}>
