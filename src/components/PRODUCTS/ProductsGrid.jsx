@@ -18,6 +18,7 @@ import Box from '@mui/material/Box'
 import LabelCodeGenerator from '../pdf/LabelCodeGenerator'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useCategoryTreeSelect } from '../../contexts/CategoryTreeSelectContext'
+import { useSuppliers } from '../../contexts/SupplierContext' // Importation du contexte des fournisseurs
 
 const ProductsGrid = ({ selectedCategoryId }) => {
   const { showToast, showConfirmDialog } = useUI()
@@ -46,6 +47,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     searchTerm,
   } = useProductContextSimplified()
 
+  const { suppliers } = useSuppliers() // Récupération des fournisseurs
   const initialSortModel = [
     {
       field: 'dateSoumission',
@@ -99,6 +101,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
       marque: '',
       gencode: '',
       tva: 20,
+      supplierId: null, // Ajout du champ supplierId
     }
 
     setIsRowNew({ ...isRowNew, [tempId]: true })
@@ -226,6 +229,7 @@ const ProductsGrid = ({ selectedCategoryId }) => {
     handleCancel,
     handleOpen,
     rowModesModel,
+    suppliers, // Passer les fournisseurs pour créer la colonne fournisseur
   )
 
   const processRowUpdate = async (newRow, oldRow) => {

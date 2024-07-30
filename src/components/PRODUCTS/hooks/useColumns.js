@@ -1,5 +1,6 @@
 import React from 'react'
 import { useCategoryContext } from '../../../contexts/CategoryContext'
+import { useSuppliers } from '../../../contexts/SupplierContext' // Importation du contexte des fournisseurs
 import { formatNumberFrench } from '../../../utils/priceUtils'
 import moment from 'moment'
 import CategorySelect from '../../CATEGORIES/CategorySelect'
@@ -16,6 +17,8 @@ import {
 import CustomSelect from '../../ui/CustomSelect'
 import { TVA_RATES } from '../../../utils/constants'
 import { formatNumberWithComma } from '../../../utils/formatUtils'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
 
 const useColumns = (
   handleEdit,
@@ -26,6 +29,7 @@ const useColumns = (
   rowModesModel,
 ) => {
   const { categories } = useCategoryContext()
+  const { suppliers } = useSuppliers() // Utilisation du contexte des fournisseurs
 
   const getCategoryPath = (categoryId) => {
     let path = []
@@ -95,7 +99,6 @@ const useColumns = (
       field: 'reference',
       headerName: 'Référence',
       width: 300,
-      // flex: 1,
       editable: true,
       aggregable: false,
       groupable: false,
@@ -105,7 +108,6 @@ const useColumns = (
       headerName: 'P.V',
       type: 'number',
       width: 80,
-      // flex: 0.5,
       editable: true,
       groupable: false,
       align: 'right',
@@ -125,7 +127,6 @@ const useColumns = (
       headerName: 'P.A',
       type: 'number',
       width: 80,
-      // flex: 0.5,
       editable: true,
       groupable: false,
       headerAlign: 'left',
@@ -144,7 +145,6 @@ const useColumns = (
       headerName: 'Stock',
       type: 'number',
       width: 70,
-      // flex: 0.5,
       editable: true,
       groupable: false,
       headerAlign: 'left',
@@ -155,7 +155,6 @@ const useColumns = (
       field: 'categorie',
       headerName: 'Catégorie',
       width: 150,
-      // flex: 0.75,
       editable: true,
       aggregable: false,
       valueGetter: (params) => {
@@ -188,7 +187,6 @@ const useColumns = (
       field: 'marque',
       headerName: 'Marque',
       width: 150,
-      // flex: 0.75,
       editable: true,
       aggregable: false,
     },
@@ -196,7 +194,6 @@ const useColumns = (
       field: 'gencode',
       headerName: 'GenCode',
       width: 150,
-      // flex: 0.75,
       editable: true,
       disableColumnMenu: true,
       sortable: true,
@@ -207,7 +204,6 @@ const useColumns = (
       headerName: 'TVA',
       type: 'number',
       width: 90,
-      // flex: 0.5,
       editable: true,
       aggregable: false,
       disableColumnMenu: true,
@@ -240,7 +236,6 @@ const useColumns = (
       headerName: 'Date Ajout',
       type: 'date',
       width: 120,
-      // flex: 0.75,
       aggregable: false,
       hideable: true,
       valueGetter: (params) => {
@@ -250,6 +245,35 @@ const useColumns = (
         return moment(params.value).isValid()
           ? moment(params.value).toDate()
           : null
+      },
+    },
+    {
+      field: 'supplierId',
+      headerName: 'Fournisseur',
+      width: 200,
+      editable: true,
+      renderEditCell: (params) => (
+        <Select
+          value={params.value || ''}
+          onChange={(event) => {
+            params.api.setEditCellValue({
+              id: params.id,
+              field: 'supplierId',
+              value: event.target.value,
+            })
+          }}
+          fullWidth
+        >
+          {suppliers.map((supplier) => (
+            <MenuItem key={supplier._id} value={supplier._id}>
+              {supplier.name}
+            </MenuItem>
+          ))}
+        </Select>
+      ),
+      valueGetter: (params) => {
+        const supplier = suppliers.find((s) => s._id === params.value)
+        return supplier ? supplier.name : ''
       },
     },
   ]

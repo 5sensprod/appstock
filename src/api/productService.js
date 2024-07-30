@@ -1,5 +1,4 @@
 import { fetchApi } from './axiosConfig'
-// import defaultImage from '../assets/default.png'
 
 async function getProducts() {
   try {
@@ -12,13 +11,13 @@ async function getProducts() {
 
 async function addProduct(productData) {
   try {
-    // Assurez-vous que prixVente, prixAchat et stock sont des nombres
     const formattedData = {
       ...productData,
       prixVente: parseFloat(productData.prixVente) || 0,
       prixAchat: parseFloat(productData.prixAchat) || 0,
       stock: parseInt(productData.stock, 10) || 0,
       tva: parseFloat(productData.tva) || 20,
+      supplierId: productData.supplierId || null, // Ajout du champ supplierId
     }
 
     return await fetchApi('products', 'POST', formattedData)
@@ -30,7 +29,12 @@ async function addProduct(productData) {
 
 async function updateProduct(productId, productData) {
   try {
-    return await fetchApi(`products/${productId}`, 'PUT', productData)
+    const formattedData = {
+      ...productData,
+      supplierId: productData.supplierId || null, // Ajout du champ supplierId
+    }
+
+    return await fetchApi(`products/${productId}`, 'PUT', formattedData)
   } catch (error) {
     console.error('Erreur lors de la mise à jour du produit:', error)
     throw error

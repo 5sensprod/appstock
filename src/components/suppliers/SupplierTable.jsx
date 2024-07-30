@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from 'react'
-import { DataGrid } from '@mui/x-data-grid'
+import React, { useState } from 'react'
+import { DataGrid, frFR } from '@mui/x-data-grid'
 import { useSuppliers } from '../../contexts/SupplierContext'
-import { Button, TextField, Box, Modal } from '@mui/material'
+import { Button, TextField, Box, Modal, IconButton } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import SaveIcon from '@mui/icons-material/Save'
+import CancelIcon from '@mui/icons-material/Close'
 
 const style = {
   position: 'absolute',
@@ -65,32 +70,41 @@ const SupplierTable = () => {
   }
 
   const columns = [
-    { field: 'name', headerName: 'Nom', width: 150 },
-    { field: 'contact', headerName: 'Contact', width: 150 },
-    { field: 'email', headerName: 'Email', width: 200 },
-    { field: 'phone', headerName: 'Téléphone', width: 150 },
-    { field: 'iban', headerName: 'IBAN', width: 200 },
-    { field: 'address', headerName: 'Adresse', width: 250 },
     {
       field: 'actions',
       headerName: 'Actions',
       width: 150,
       renderCell: (params) => (
         <div>
-          <Button onClick={() => handleEdit(params.row)}>Modifier</Button>
-          <Button onClick={() => handleDelete(params.row._id)}>
-            Supprimer
-          </Button>
+          <IconButton onClick={() => handleEdit(params.row)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDelete(params.row._id)}>
+            <DeleteIcon />
+          </IconButton>
         </div>
       ),
+      editable: false,
+      disableColumnMenu: true,
+      sortable: false,
+      hideable: false,
     },
+    { field: 'name', headerName: 'Nom', width: 150 },
+    { field: 'contact', headerName: 'Contact', width: 150 },
+    { field: 'email', headerName: 'Email', width: 200 },
+    { field: 'phone', headerName: 'Téléphone', width: 150 },
+    { field: 'iban', headerName: 'IBAN', width: 200 },
+    { field: 'address', headerName: 'Adresse', width: 250 },
   ]
 
   return (
     <div>
-      <Button onClick={handleOpen}>Ajouter un fournisseur</Button>
-      <div style={{ height: 400, width: '100%' }}>
+      <IconButton onClick={handleOpen}>
+        <AddIcon />
+      </IconButton>
+      <div style={{ height: 400, width: 1252 }}>
         <DataGrid
+          localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
           rows={suppliers}
           columns={columns}
           pageSize={5}
@@ -157,7 +171,7 @@ const SupplierTable = () => {
             variant="contained"
             color="primary"
           >
-            {supplierInfo.id ? 'Modifier' : 'Ajouter'}
+            {supplierInfo.id ? <SaveIcon /> : <AddIcon />}
           </Button>
         </Box>
       </Modal>

@@ -282,7 +282,7 @@ module.exports = (db, sendSseEvent) => {
   })
 
   router.post('/', (req, res) => {
-    const newProduct = req.body
+    const newProduct = { ...req.body, supplierId: req.body.supplierId || null }
     products.insert(newProduct, (err, doc) => {
       if (err) {
         console.error("Erreur lors de l'insertion du produit:", err)
@@ -324,7 +324,9 @@ module.exports = (db, sendSseEvent) => {
   })
   router.put('/:id', (req, res) => {
     const id = req.params.id
-    const updatedProduct = { $set: req.body }
+    const updatedProduct = {
+      $set: { ...req.body, supplierId: req.body.supplierId || null },
+    }
 
     products.update({ _id: id }, updatedProduct, {}, (err, numReplaced) => {
       if (err) {
