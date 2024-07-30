@@ -1,10 +1,13 @@
 import React from 'react'
 import SupplierTable from '../suppliers/SupplierTable'
+import Typography from '@mui/material/Typography'
 
 const SupplierPage = () => {
   return (
     <div>
-      <h1>Fournisseurs</h1>
+      <Typography variant="h5" mb={2}>
+        FOURNISSEURS
+      </Typography>
       <SupplierTable />
     </div>
   )
