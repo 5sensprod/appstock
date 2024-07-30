@@ -93,7 +93,7 @@ const SupplierTable = () => {
         <IconButton onClick={handleOpen}>
           <AddIcon />
         </IconButton>
-        <div style={{ height: 400, width: 'fit-content' }}>
+        <div style={{ width: 'fit-content' }}>
           <DataGrid
             localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
             rows={suppliers}
