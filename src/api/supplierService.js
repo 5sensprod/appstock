@@ -11,7 +11,14 @@ async function getSuppliers() {
 
 async function addSupplier(supplierData) {
   try {
-    return await fetchApi('suppliers', 'POST', supplierData)
+    const formattedData = {
+      ...supplierData,
+      email: supplierData.email || '',
+      phone: supplierData.phone || '',
+      iban: supplierData.iban || '',
+      address: supplierData.address || '',
+    }
+    return await fetchApi('suppliers', 'POST', formattedData)
   } catch (error) {
     console.error("Erreur lors de l'ajout du fournisseur:", error)
     throw error
@@ -20,7 +27,14 @@ async function addSupplier(supplierData) {
 
 async function updateSupplier(supplierId, supplierData) {
   try {
-    return await fetchApi(`suppliers/${supplierId}`, 'PUT', supplierData)
+    const formattedData = {
+      ...supplierData,
+      email: supplierData.email || '',
+      phone: supplierData.phone || '',
+      iban: supplierData.iban || '',
+      address: supplierData.address || '',
+    }
+    return await fetchApi(`suppliers/${supplierId}`, 'PUT', formattedData)
   } catch (error) {
     console.error('Erreur lors de la mise à jour du fournisseur:', error)
     throw error

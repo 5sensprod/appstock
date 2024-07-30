@@ -23,7 +23,8 @@ module.exports = (db, sendSseEvent) => {
 
   // Route pour ajouter un nouveau fournisseur
   router.post('/', (req, res) => {
-    const newSupplier = req.body
+    const { name, contact, email, phone, iban, address } = req.body
+    const newSupplier = { name, contact, email, phone, iban, address }
     suppliers.insert(newSupplier, (err, doc) => {
       if (err) res.status(500).send(err)
       else {
@@ -36,7 +37,10 @@ module.exports = (db, sendSseEvent) => {
   // Route pour mettre à jour un fournisseur
   router.put('/:id', (req, res) => {
     const id = req.params.id
-    const updatedSupplier = { $set: req.body }
+    const { name, contact, email, phone, iban, address } = req.body
+    const updatedSupplier = {
+      $set: { name, contact, email, phone, iban, address },
+    }
 
     suppliers.update({ _id: id }, updatedSupplier, {}, (err, numReplaced) => {
       if (err) res.status(500).send(err)
