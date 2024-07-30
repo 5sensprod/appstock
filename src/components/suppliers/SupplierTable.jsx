@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { DataGrid, frFR } from '@mui/x-data-grid'
+import { DataGrid, frFR, GridToolbarQuickFilter } from '@mui/x-data-grid'
 import { useSuppliers } from '../../contexts/SupplierContext'
 import { Button, TextField, Box, Modal, IconButton } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 
 const style = {
   position: 'absolute',
@@ -19,6 +20,23 @@ const style = {
   boxShadow: 24,
   p: 4,
 }
+
+const theme = createTheme({
+  components: {
+    MuiDataGrid: {
+      styleOverrides: {
+        root: {
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#f0f0f0',
+          },
+        },
+      },
+      defaultProps: {
+        localeText: frFR.components.MuiDataGrid.defaultProps.localeText,
+      },
+    },
+  },
+})
 
 const SupplierTable = () => {
   const { suppliers, createSupplier, modifySupplier, removeSupplier } =
@@ -98,84 +116,87 @@ const SupplierTable = () => {
   ]
 
   return (
-    <div>
-      <IconButton onClick={handleOpen}>
-        <AddIcon />
-      </IconButton>
-      <div style={{ height: 400, width: 1252 }}>
-        <DataGrid
-          localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-          rows={suppliers}
-          columns={columns}
-          pageSize={5}
-          getRowId={(row) => row._id} // Utilisez _id comme identifiant unique pour chaque ligne
-        />
+    <ThemeProvider theme={theme}>
+      <div>
+        <IconButton onClick={handleOpen}>
+          <AddIcon />
+        </IconButton>
+        <div style={{ height: 400, width: 'fit-content' }}>
+          <DataGrid
+            localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+            rows={suppliers}
+            columns={columns}
+            pageSize={5}
+            getRowId={(row) => row._id}
+            components={{ Toolbar: GridToolbarQuickFilter }}
+          />
+        </div>
+        <Modal open={open} onClose={handleClose}>
+          <Box sx={style}>
+            <h2>
+              {supplierInfo.id
+                ? 'Modifier le fournisseur'
+                : 'Ajouter un fournisseur'}
+            </h2>
+            <TextField
+              label="Nom"
+              name="name"
+              value={supplierInfo.name}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Contact"
+              name="contact"
+              value={supplierInfo.contact}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Email"
+              name="email"
+              value={supplierInfo.email}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Téléphone"
+              name="phone"
+              value={supplierInfo.phone}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="IBAN"
+              name="iban"
+              value={supplierInfo.iban}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Adresse"
+              name="address"
+              value={supplierInfo.address}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <Button
+              onClick={handleAddOrUpdateSupplier}
+              variant="contained"
+              color="primary"
+            >
+              {supplierInfo.id ? <SaveIcon /> : <AddIcon />}
+            </Button>
+          </Box>
+        </Modal>
       </div>
-      <Modal open={open} onClose={handleClose}>
-        <Box sx={style}>
-          <h2>
-            {supplierInfo.id
-              ? 'Modifier le fournisseur'
-              : 'Ajouter un fournisseur'}
-          </h2>
-          <TextField
-            label="Nom"
-            name="name"
-            value={supplierInfo.name}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Contact"
-            name="contact"
-            value={supplierInfo.contact}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Email"
-            name="email"
-            value={supplierInfo.email}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Téléphone"
-            name="phone"
-            value={supplierInfo.phone}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="IBAN"
-            name="iban"
-            value={supplierInfo.iban}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Adresse"
-            name="address"
-            value={supplierInfo.address}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-          <Button
-            onClick={handleAddOrUpdateSupplier}
-            variant="contained"
-            color="primary"
-          >
-            {supplierInfo.id ? <SaveIcon /> : <AddIcon />}
-          </Button>
-        </Box>
-      </Modal>
-    </div>
+    </ThemeProvider>
   )
 }
 
