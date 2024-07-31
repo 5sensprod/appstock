@@ -1,12 +1,12 @@
 import React from 'react'
 import { useCategoryContext } from '../../../contexts/CategoryContext'
-import { useSuppliers } from '../../../contexts/SupplierContext' // Importation du contexte des fournisseurs
+import { useSuppliers } from '../../../contexts/SupplierContext'
 import { formatNumberFrench } from '../../../utils/priceUtils'
 import moment from 'moment'
 import CategorySelect from '../../CATEGORIES/CategorySelect'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
-import { IconButton } from '@mui/material'
+import { IconButton, MenuItem, Select } from '@mui/material'
 import QrCodeIcon from '@mui/icons-material/QrCode'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -17,8 +17,6 @@ import {
 import CustomSelect from '../../ui/CustomSelect'
 import { TVA_RATES } from '../../../utils/constants'
 import { formatNumberWithComma } from '../../../utils/formatUtils'
-import MenuItem from '@mui/material/MenuItem'
-import Select from '@mui/material/Select'
 
 const useColumns = (
   handleEdit,
@@ -27,9 +25,9 @@ const useColumns = (
   handleCancel,
   handleOpen,
   rowModesModel,
+  suppliers, // Utilisation des fournisseurs
 ) => {
   const { categories } = useCategoryContext()
-  const { suppliers } = useSuppliers() // Utilisation du contexte des fournisseurs
 
   const getCategoryPath = (categoryId) => {
     let path = []
@@ -184,11 +182,67 @@ const useColumns = (
       },
     },
     {
+      field: 'supplierId',
+      headerName: 'Fournisseur',
+      width: 200,
+      editable: true,
+      renderCell: (params) => {
+        const supplier = suppliers.find((s) => s._id === params.value)
+        return supplier ? supplier.name : ''
+      },
+      renderEditCell: (params) => (
+        <Select
+          value={params.value || ''}
+          onChange={(event) => {
+            params.api.setEditCellValue({
+              id: params.id,
+              field: 'supplierId',
+              value: event.target.value,
+            })
+          }}
+          fullWidth
+        >
+          {suppliers.map((supplier) => (
+            <MenuItem key={supplier._id} value={supplier._id}>
+              {supplier.name}
+            </MenuItem>
+          ))}
+        </Select>
+      ),
+    },
+    {
       field: 'marque',
       headerName: 'Marque',
       width: 150,
       editable: true,
       aggregable: false,
+      renderEditCell: (params) => {
+        const supplierId = params.row.supplierId
+        const selectedSupplier = suppliers.find(
+          (supplier) => supplier._id === supplierId,
+        )
+        const brands = selectedSupplier ? selectedSupplier.brands : []
+
+        return (
+          <Select
+            value={params.value || ''}
+            onChange={(event) => {
+              params.api.setEditCellValue({
+                id: params.id,
+                field: 'marque',
+                value: event.target.value,
+              })
+            }}
+            fullWidth
+          >
+            {brands.map((brand, index) => (
+              <MenuItem key={index} value={brand}>
+                {brand}
+              </MenuItem>
+            ))}
+          </Select>
+        )
+      },
     },
     {
       field: 'gencode',
@@ -245,35 +299,6 @@ const useColumns = (
         return moment(params.value).isValid()
           ? moment(params.value).toDate()
           : null
-      },
-    },
-    {
-      field: 'supplierId',
-      headerName: 'Fournisseur',
-      width: 200,
-      editable: true,
-      renderEditCell: (params) => (
-        <Select
-          value={params.value || ''}
-          onChange={(event) => {
-            params.api.setEditCellValue({
-              id: params.id,
-              field: 'supplierId',
-              value: event.target.value,
-            })
-          }}
-          fullWidth
-        >
-          {suppliers.map((supplier) => (
-            <MenuItem key={supplier._id} value={supplier._id}>
-              {supplier.name}
-            </MenuItem>
-          ))}
-        </Select>
-      ),
-      valueGetter: (params) => {
-        const supplier = suppliers.find((s) => s._id === params.value)
-        return supplier ? supplier.name : ''
       },
     },
   ]
