@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, TextField, Button, Modal } from '@mui/material'
+import { Box, TextField, Button, Modal, IconButton, Chip } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import SaveIcon from '@mui/icons-material/Save'
 
@@ -21,11 +21,17 @@ const SupplierForm = ({
   supplierInfo,
   handleInputChange,
   handleAddOrUpdateSupplier,
+  handleAddBrand,
+  handleRemoveBrand,
+  newBrand,
+  setNewBrand,
 }) => (
   <Modal open={open} onClose={handleClose}>
     <Box sx={style}>
       <h2>
-        {supplierInfo.id ? 'Modifier le fournisseur' : 'Ajouter un fournisseur'}
+        {supplierInfo._id
+          ? 'Modifier le fournisseur'
+          : 'Ajouter un fournisseur'}
       </h2>
       <TextField
         label="Nom"
@@ -75,12 +81,34 @@ const SupplierForm = ({
         fullWidth
         margin="normal"
       />
+      <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
+        <TextField
+          label="Ajouter une marque"
+          value={newBrand}
+          onChange={(e) => setNewBrand(e.target.value)}
+          fullWidth
+          margin="normal"
+        />
+        <IconButton onClick={handleAddBrand}>
+          <AddIcon />
+        </IconButton>
+      </Box>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginTop: 2 }}>
+        {(supplierInfo.brands || []).map((brand, index) => (
+          <Chip
+            key={index}
+            label={brand}
+            onDelete={() => handleRemoveBrand(index)}
+          />
+        ))}
+      </Box>
       <Button
         onClick={handleAddOrUpdateSupplier}
         variant="contained"
         color="primary"
+        sx={{ marginTop: 2 }}
       >
-        {supplierInfo.id ? <SaveIcon /> : <AddIcon />}
+        {supplierInfo._id ? <SaveIcon /> : <AddIcon />}
       </Button>
     </Box>
   </Modal>

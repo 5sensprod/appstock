@@ -29,14 +29,16 @@ const SupplierTable = () => {
     useSuppliers()
   const [open, setOpen] = useState(false)
   const [supplierInfo, setSupplierInfo] = useState({
-    id: '',
+    _id: null,
     name: '',
     contact: '',
     email: '',
     phone: '',
     iban: '',
     address: '',
+    brands: [],
   })
+  const [newBrand, setNewBrand] = useState('')
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
@@ -47,30 +49,55 @@ const SupplierTable = () => {
   }
 
   const handleAddOrUpdateSupplier = async () => {
-    if (supplierInfo.id) {
-      await modifySupplier(supplierInfo.id, supplierInfo)
+    const supplierData = { ...supplierInfo }
+    if (supplierData._id) {
+      await modifySupplier(supplierData._id, supplierData)
     } else {
-      await createSupplier(supplierInfo)
+      delete supplierData._id // Supprimez l'_id pour permettre à NeDB de le générer automatiquement
+      await createSupplier(supplierData)
     }
     handleClose()
     setSupplierInfo({
-      id: '',
+      _id: null,
       name: '',
       contact: '',
       email: '',
       phone: '',
       iban: '',
       address: '',
+      brands: [],
     })
+    setNewBrand('')
   }
 
   const handleEdit = (supplier) => {
-    setSupplierInfo({ ...supplier, id: supplier._id })
+    setSupplierInfo({
+      ...supplier,
+      _id: supplier._id,
+      brands: supplier.brands || [],
+    })
     handleOpen()
   }
 
   const handleDelete = async (id) => {
     await removeSupplier(id)
+  }
+
+  const handleAddBrand = () => {
+    if (newBrand && !supplierInfo.brands.includes(newBrand)) {
+      setSupplierInfo((prevInfo) => ({
+        ...prevInfo,
+        brands: [...prevInfo.brands, newBrand],
+      }))
+      setNewBrand('')
+    }
+  }
+
+  const handleRemoveBrand = (index) => {
+    setSupplierInfo((prevInfo) => ({
+      ...prevInfo,
+      brands: prevInfo.brands.filter((_, i) => i !== index),
+    }))
   }
 
   const columns = SupplierColumns(handleEdit, handleDelete)
@@ -97,6 +124,10 @@ const SupplierTable = () => {
           supplierInfo={supplierInfo}
           handleInputChange={handleInputChange}
           handleAddOrUpdateSupplier={handleAddOrUpdateSupplier}
+          handleAddBrand={handleAddBrand}
+          handleRemoveBrand={handleRemoveBrand}
+          newBrand={newBrand}
+          setNewBrand={setNewBrand}
         />
       </div>
     </ThemeProvider>
