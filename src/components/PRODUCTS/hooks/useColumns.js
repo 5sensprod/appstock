@@ -1,6 +1,5 @@
 import React from 'react'
 import { useCategoryContext } from '../../../contexts/CategoryContext'
-import { useSuppliers } from '../../../contexts/SupplierContext'
 import { formatNumberFrench } from '../../../utils/priceUtils'
 import moment from 'moment'
 import CategorySelect from '../../CATEGORIES/CategorySelect'
@@ -17,6 +16,8 @@ import {
 import CustomSelect from '../../ui/CustomSelect'
 import { TVA_RATES } from '../../../utils/constants'
 import { formatNumberWithComma } from '../../../utils/formatUtils'
+import MarqueEditCell from './MarqueEditCell'
+import SupplierSelect from './SupplierSelect'
 
 const useColumns = (
   handleEdit,
@@ -25,7 +26,7 @@ const useColumns = (
   handleCancel,
   handleOpen,
   rowModesModel,
-  suppliers, // Utilisation des fournisseurs
+  suppliers,
 ) => {
   const { categories } = useCategoryContext()
 
@@ -44,7 +45,6 @@ const useColumns = (
   }
 
   const isNewRowFunction = (row) => {
-    // Déterminez si la ligne est nouvelle. Par exemple, une ligne sans ID est considérée comme nouvelle.
     return !row._id
   }
 
@@ -157,7 +157,7 @@ const useColumns = (
       aggregable: false,
       valueGetter: (params) => {
         if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
-          return '' // Ne rien afficher pour les lignes d'agrégation
+          return ''
         }
         return getCategoryPath(params.value) || 'Non catégorisé'
       },
@@ -191,28 +191,7 @@ const useColumns = (
         return supplier ? supplier.name : ''
       },
       renderEditCell: (params) => (
-        <Select
-          value={params.value || ''}
-          onChange={(event) => {
-            params.api.setEditCellValue({
-              id: params.id,
-              field: 'supplierId',
-              value: event.target.value,
-            })
-            params.api.setEditCellValue({
-              id: params.id,
-              field: 'marque',
-              value: '',
-            })
-          }}
-          fullWidth
-        >
-          {suppliers.map((supplier) => (
-            <MenuItem key={supplier._id} value={supplier._id}>
-              {supplier.name}
-            </MenuItem>
-          ))}
-        </Select>
+        <SupplierSelect params={params} suppliers={suppliers} />
       ),
     },
     {
@@ -222,33 +201,8 @@ const useColumns = (
       editable: true,
       aggregable: false,
       renderEditCell: (params) => {
-        const supplierId = params.row.supplierId || params.value
-        const selectedSupplier = suppliers.find(
-          (supplier) => supplier._id === supplierId,
-        )
-        const brands = selectedSupplier ? selectedSupplier.brands : []
-
-        return (
-          <Select
-            value={
-              params.value && brands.includes(params.value) ? params.value : ''
-            }
-            onChange={(event) => {
-              params.api.setEditCellValue({
-                id: params.id,
-                field: 'marque',
-                value: event.target.value,
-              })
-            }}
-            fullWidth
-          >
-            {brands.map((brand, index) => (
-              <MenuItem key={index} value={brand}>
-                {brand}
-              </MenuItem>
-            ))}
-          </Select>
-        )
+        console.log('Rendering MarqueEditCell with params:', params)
+        return <MarqueEditCell params={params} suppliers={suppliers} />
       },
     },
     {
@@ -273,7 +227,7 @@ const useColumns = (
       align: 'left',
       valueFormatter: (params) => {
         if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
-          return '' // Ne rien afficher pour les lignes d'agrégation
+          return ''
         }
         return `${formatNumberWithComma(params.value)}`
       },
@@ -301,7 +255,7 @@ const useColumns = (
       hideable: true,
       valueGetter: (params) => {
         if (params.id === GRID_AGGREGATION_ROOT_FOOTER_ROW_ID) {
-          return null // Ne rien afficher pour les lignes d'agrégation
+          return null
         }
         return moment(params.value).isValid()
           ? moment(params.value).toDate()

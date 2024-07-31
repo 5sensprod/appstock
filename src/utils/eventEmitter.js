@@ -1,4 +1,3 @@
-// src/utils/eventEmitter.js
 export const EventEmitter = {
   events: {},
   dispatch: function (event, data) {
