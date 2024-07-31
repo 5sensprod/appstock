@@ -199,6 +199,11 @@ const useColumns = (
               field: 'supplierId',
               value: event.target.value,
             })
+            params.api.setEditCellValue({
+              id: params.id,
+              field: 'marque',
+              value: '',
+            })
           }}
           fullWidth
         >
@@ -217,7 +222,7 @@ const useColumns = (
       editable: true,
       aggregable: false,
       renderEditCell: (params) => {
-        const supplierId = params.row.supplierId
+        const supplierId = params.row.supplierId || params.value
         const selectedSupplier = suppliers.find(
           (supplier) => supplier._id === supplierId,
         )
@@ -225,7 +230,9 @@ const useColumns = (
 
         return (
           <Select
-            value={params.value || ''}
+            value={
+              params.value && brands.includes(params.value) ? params.value : ''
+            }
             onChange={(event) => {
               params.api.setEditCellValue({
                 id: params.id,
