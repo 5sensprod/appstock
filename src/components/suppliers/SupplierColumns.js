@@ -1,10 +1,11 @@
 import React from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import SearchIcon from '@mui/icons-material/Search'
 import { IconButton } from '@mui/material'
 import { formatPhoneNumber } from '../../utils/phoneUtils'
 
-const SupplierColumns = (handleEdit, handleDelete) => [
+const SupplierColumns = (handleEdit, handleDelete, handleViewDetails) => [
   {
     field: 'actions',
     headerName: 'Actions',
@@ -16,6 +17,9 @@ const SupplierColumns = (handleEdit, handleDelete) => [
         </IconButton>
         <IconButton onClick={() => handleDelete(params.row._id)}>
           <DeleteIcon />
+        </IconButton>
+        <IconButton onClick={() => handleViewDetails(params.row)}>
+          <SearchIcon />
         </IconButton>
       </div>
     ),

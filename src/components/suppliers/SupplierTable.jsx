@@ -6,6 +6,7 @@ import AddIcon from '@mui/icons-material/Add'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import SupplierColumns from './SupplierColumns'
 import SupplierForm from './SupplierForm'
+import SupplierDetailsModal from './SupplierDetailsModal'
 
 const theme = createTheme({
   components: {
@@ -28,6 +29,8 @@ const SupplierTable = () => {
   const { suppliers, createSupplier, modifySupplier, removeSupplier } =
     useSuppliers()
   const [open, setOpen] = useState(false)
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [selectedSupplier, setSelectedSupplier] = useState(null)
   const [supplierInfo, setSupplierInfo] = useState({
     _id: null,
     name: '',
@@ -42,6 +45,12 @@ const SupplierTable = () => {
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+
+  const handleDetailsOpen = (supplier) => {
+    setSelectedSupplier(supplier)
+    setDetailsOpen(true)
+  }
+  const handleDetailsClose = () => setDetailsOpen(false)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -100,7 +109,7 @@ const SupplierTable = () => {
     }))
   }
 
-  const columns = SupplierColumns(handleEdit, handleDelete)
+  const columns = SupplierColumns(handleEdit, handleDelete, handleDetailsOpen)
 
   return (
     <ThemeProvider theme={theme}>
@@ -128,6 +137,11 @@ const SupplierTable = () => {
           handleRemoveBrand={handleRemoveBrand}
           newBrand={newBrand}
           setNewBrand={setNewBrand}
+        />
+        <SupplierDetailsModal
+          open={detailsOpen}
+          handleClose={handleDetailsClose}
+          supplier={selectedSupplier}
         />
       </div>
     </ThemeProvider>
