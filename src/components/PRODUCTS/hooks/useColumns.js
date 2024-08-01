@@ -201,7 +201,6 @@ const useColumns = (
       editable: true,
       aggregable: false,
       renderEditCell: (params) => {
-        console.log('Rendering MarqueEditCell with params:', params)
         return <MarqueEditCell params={params} suppliers={suppliers} />
       },
     },

@@ -7,11 +7,9 @@ const MarqueEditCell = ({ params, suppliers }) => {
 
   useEffect(() => {
     const handleSupplierChange = (supplierId) => {
-      console.log('Received SUPPLIER_CHANGED event with:', supplierId)
       const selectedSupplier = suppliers.find(
         (supplier) => supplier._id === supplierId,
       )
-      console.log('Selected Supplier:', selectedSupplier)
       setBrands(selectedSupplier ? selectedSupplier.brands : [])
     }
 
@@ -35,7 +33,6 @@ const MarqueEditCell = ({ params, suppliers }) => {
     <Select
       value={params.value || ''}
       onChange={(event) => {
-        console.log('Brand changed:', event.target.value)
         params.api.setEditCellValue({
           id: params.id,
           field: 'marque',
@@ -44,7 +41,10 @@ const MarqueEditCell = ({ params, suppliers }) => {
       }}
       fullWidth
     >
-      {brands.map((brand, index) => (
+      <MenuItem value="">
+        <em>Aucune</em>
+      </MenuItem>
+      {(brands || []).map((brand, index) => (
         <MenuItem key={index} value={brand}>
           {brand}
         </MenuItem>
