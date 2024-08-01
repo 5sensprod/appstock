@@ -2,6 +2,7 @@ import React from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { IconButton } from '@mui/material'
+import { formatPhoneNumber } from '../../utils/phoneUtils'
 
 const SupplierColumns = (handleEdit, handleDelete) => [
   {
@@ -26,7 +27,12 @@ const SupplierColumns = (handleEdit, handleDelete) => [
   { field: 'name', headerName: 'Nom', width: 150 },
   { field: 'contact', headerName: 'Contact', width: 150 },
   { field: 'email', headerName: 'Email', width: 200 },
-  { field: 'phone', headerName: 'Téléphone', width: 150 },
+  {
+    field: 'phone',
+    headerName: 'Téléphone',
+    width: 150,
+    valueFormatter: (params) => formatPhoneNumber(params.value),
+  },
   { field: 'iban', headerName: 'IBAN', width: 200 },
   { field: 'address', headerName: 'Adresse', width: 250 },
 ]
