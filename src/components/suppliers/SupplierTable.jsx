@@ -36,10 +36,11 @@ const SupplierTable = () => {
   const [supplierInfo, setSupplierInfo] = useState({
     _id: null,
     name: '',
+    supplierCode: '',
     contact: '',
     email: '',
     phone: '',
-    website: '', // Ajouter ce champ
+    website: '',
     iban: '',
     street: '',
     city: '',
@@ -78,10 +79,11 @@ const SupplierTable = () => {
       setSupplierInfo({
         _id: null,
         name: '',
+        supplierCode: '',
         contact: '',
         email: '',
         phone: '',
-        website: '', // Réinitialiser ce champ
+        website: '',
         iban: '',
         street: '',
         city: '',
@@ -145,21 +147,19 @@ const SupplierTable = () => {
           <AddIcon />
         </IconButton>
         <div style={{ width: 'fit-content' }}>
-          {columns && suppliers && (
-            <DataGrid
-              localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-              rows={suppliers}
-              columns={columns}
-              pageSize={5}
-              getRowId={(row) => row._id}
-              components={{ Toolbar: GridToolbarQuickFilter }}
-              initialState={{
-                sorting: {
-                  sortModel: [{ field: 'name', sort: 'asc' }],
-                },
-              }}
-            />
-          )}
+          <DataGrid
+            localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+            rows={suppliers}
+            columns={columns}
+            pageSize={5}
+            getRowId={(row) => row._id}
+            components={{ Toolbar: GridToolbarQuickFilter }}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: 'name', sort: 'asc' }],
+              },
+            }}
+          />
         </div>
         <SupplierForm
           open={open}

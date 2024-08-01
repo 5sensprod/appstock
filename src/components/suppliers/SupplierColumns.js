@@ -29,6 +29,7 @@ const SupplierColumns = (handleEdit, handleDelete, handleViewDetails) => [
     hideable: false,
   },
   { field: 'name', headerName: 'Nom', width: 150 },
+  { field: 'supplierCode', headerName: 'Code fournisseur', width: 150 }, // Ajout de la colonne
   { field: 'contact', headerName: 'Contact', width: 150 },
   { field: 'email', headerName: 'Email', width: 200 },
   {
@@ -38,6 +39,7 @@ const SupplierColumns = (handleEdit, handleDelete, handleViewDetails) => [
     valueFormatter: (params) => formatPhoneNumber(params.value),
   },
   { field: 'website', headerName: 'Site Web', width: 200 },
+  { field: 'iban', headerName: 'IBAN', width: 200, hide: true }, // Caché par défaut, visible dans la modale
 ]
 
 export default SupplierColumns

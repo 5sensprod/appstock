@@ -121,6 +121,16 @@ const SupplierForm = ({
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextFieldWithValidation
+              label="Code fournisseur"
+              name="supplierCode"
+              value={supplierInfo.supplierCode}
+              onChange={handleChange}
+              error={errors.supplierCode}
+              helperText={errors.supplierCode}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextFieldWithValidation
               label="Contact"
               name="contact"
               value={supplierInfo.contact}

@@ -20,24 +20,15 @@ const SupplierDetailsModal = ({ open, handleClose, supplier }) => {
     { label: 'Contact', value: supplier.contact },
     { label: 'Email', value: supplier.email },
     { label: 'Téléphone', value: supplier.phone },
-    { label: 'IBAN', value: supplier.iban },
     { label: 'Site Web', value: supplier.website },
+    { label: 'IBAN', value: supplier.iban },
     {
       label: 'Adresse',
-      value:
-        `${supplier.street || ''}\n${supplier.postalCode || ''} ${supplier.city || ''}\n${supplier.country || ''}`.trim(),
+      value: `${supplier.street}\n${supplier.postalCode} ${supplier.city}\n${supplier.country}`,
       multiline: true,
     },
     { label: 'Marques', value: (supplier.brands || []).join(', ') },
   ]
-
-  // Filtre les champs vides et les adresses mal formatées
-  const filteredDetails = details.filter((detail) => {
-    if (detail.label === 'Adresse') {
-      return detail.value.trim().replace(/\n/g, ' ') !== ''
-    }
-    return detail.value
-  })
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -45,19 +36,26 @@ const SupplierDetailsModal = ({ open, handleClose, supplier }) => {
         <Typography variant="h5" mb={2}>
           {supplier.name}
         </Typography>
-        {filteredDetails.map((detail, index) => (
-          <Box key={index} sx={{ mt: 2 }}>
-            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-              {detail.label}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ whiteSpace: detail.multiline ? 'pre-line' : 'normal' }}
-            >
-              {detail.value}
-            </Typography>
-          </Box>
-        ))}
+        <Typography variant="subtitle1" mb={2}>
+          Code fournisseur: {supplier.supplierCode}
+        </Typography>
+        {details
+          .filter((detail) => detail.value) // Filtrer les champs vides
+          .map((detail, index) => (
+            <Box key={index} sx={{ mt: 2 }}>
+              <Typography variant="subtitle1" component="div">
+                {detail.label}
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  whiteSpace: detail.multiline ? 'pre-line' : 'normal',
+                }}
+              >
+                {detail.value}
+              </Typography>
+            </Box>
+          ))}
       </Box>
     </Modal>
   )
