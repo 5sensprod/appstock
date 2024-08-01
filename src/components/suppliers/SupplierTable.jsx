@@ -144,6 +144,11 @@ const SupplierTable = () => {
             pageSize={5}
             getRowId={(row) => row._id}
             components={{ Toolbar: GridToolbarQuickFilter }}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: 'name', sort: 'asc' }],
+              },
+            }}
           />
         </div>
         <SupplierForm
