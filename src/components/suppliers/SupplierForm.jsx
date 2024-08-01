@@ -1,13 +1,5 @@
 import React, { useState } from 'react'
-import {
-  Box,
-  TextField,
-  Button,
-  Modal,
-  IconButton,
-  Chip,
-  Grid,
-} from '@mui/material'
+import { Box, Button, Modal, Grid } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import SaveIcon from '@mui/icons-material/Save'
 import {
@@ -16,6 +8,8 @@ import {
   validateWebsite,
   validatePostalCode,
 } from '../../utils/validationUtils'
+import TextFieldWithValidation from './TextFieldWithValidation'
+import BrandChipInput from './BrandChipInput'
 
 const style = {
   position: 'absolute',
@@ -116,153 +110,113 @@ const SupplierForm = ({
         </h2>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <TextFieldWithValidation
               label="Nom"
               name="name"
               value={supplierInfo.name}
               onChange={handleChange}
-              fullWidth
-              margin="normal"
-              error={!!errors.name}
+              error={errors.name}
               helperText={errors.name}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <TextFieldWithValidation
               label="Contact"
               name="contact"
               value={supplierInfo.contact}
               onChange={handleChange}
-              fullWidth
-              margin="normal"
-              error={!!errors.contact}
+              error={errors.contact}
               helperText={errors.contact}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <TextFieldWithValidation
               label="Email"
               name="email"
               value={supplierInfo.email}
               onChange={handleChange}
-              fullWidth
-              margin="normal"
-              error={!!errors.email}
+              error={errors.email}
               helperText={errors.email}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <TextFieldWithValidation
               label="Téléphone"
               name="phone"
               value={supplierInfo.phone}
               onChange={handleChange}
-              fullWidth
-              margin="normal"
-              error={!!errors.phone}
+              error={errors.phone}
               helperText={errors.phone}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <TextFieldWithValidation
               label="Site Web"
               name="website"
               value={supplierInfo.website}
               onChange={handleChange}
-              fullWidth
-              margin="normal"
-              error={!!errors.website}
+              error={errors.website}
               helperText={errors.website}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <TextFieldWithValidation
               label="IBAN"
               name="iban"
               value={supplierInfo.iban}
               onChange={handleChange}
-              fullWidth
-              margin="normal"
-              error={!!errors.iban}
+              error={errors.iban}
               helperText={errors.iban}
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <TextFieldWithValidation
               label="Rue"
               name="street"
               value={supplierInfo.street}
               onChange={handleChange}
-              fullWidth
-              margin="normal"
-              error={!!errors.street}
+              error={errors.street}
               helperText={errors.street}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <TextFieldWithValidation
               label="Ville"
               name="city"
               value={supplierInfo.city}
               onChange={handleChange}
-              fullWidth
-              margin="normal"
-              error={!!errors.city}
+              error={errors.city}
               helperText={errors.city}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <TextFieldWithValidation
               label="Code Postal"
               name="postalCode"
               value={supplierInfo.postalCode}
               onChange={handleChange}
-              fullWidth
-              margin="normal"
-              error={!!errors.postalCode}
+              error={errors.postalCode}
               helperText={errors.postalCode}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <TextFieldWithValidation
               label="Pays"
               name="country"
               value={supplierInfo.country}
               onChange={handleChange}
-              fullWidth
-              margin="normal"
-              error={!!errors.country}
+              error={errors.country}
               helperText={errors.country}
             />
           </Grid>
           <Grid item xs={12}>
-            <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
-              <TextField
-                label="Ajouter une marque"
-                value={newBrand}
-                onChange={(e) => setNewBrand(e.target.value)}
-                fullWidth
-                margin="normal"
-                error={!!errors.newBrand}
-                helperText={errors.newBrand}
-              />
-              <IconButton onClick={handleAddBrand}>
-                <AddIcon />
-              </IconButton>
-            </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <Box
-              sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginTop: 2 }}
-            >
-              {(supplierInfo.brands || []).map((brand, index) => (
-                <Chip
-                  key={index}
-                  label={brand}
-                  onDelete={() => handleRemoveBrand(index)}
-                />
-              ))}
-            </Box>
+            <BrandChipInput
+              newBrand={newBrand}
+              setNewBrand={setNewBrand}
+              handleAddBrand={handleAddBrand}
+              handleRemoveBrand={handleRemoveBrand}
+              brands={supplierInfo.brands || []}
+            />
           </Grid>
           <Grid item xs={12}>
             <Button
