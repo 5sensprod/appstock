@@ -21,6 +21,7 @@ const SupplierDetailsModal = ({ open, handleClose, supplier }) => {
     { label: 'Email', value: supplier.email },
     { label: 'Téléphone', value: supplier.phone },
     { label: 'IBAN', value: supplier.iban },
+    { label: 'Site Web', value: supplier.website },
     {
       label: 'Adresse',
       value:

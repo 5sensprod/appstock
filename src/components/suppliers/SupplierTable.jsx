@@ -39,6 +39,7 @@ const SupplierTable = () => {
     contact: '',
     email: '',
     phone: '',
+    website: '', // Ajouter ce champ
     iban: '',
     street: '',
     city: '',
@@ -80,6 +81,7 @@ const SupplierTable = () => {
         contact: '',
         email: '',
         phone: '',
+        website: '', // Réinitialiser ce champ
         iban: '',
         street: '',
         city: '',
