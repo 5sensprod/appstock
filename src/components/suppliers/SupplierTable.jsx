@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { DataGrid, frFR, GridToolbarQuickFilter } from '@mui/x-data-grid'
 import { useSuppliers } from '../../contexts/SupplierContext'
+import { useUI } from '../../contexts/UIContext'
 import { IconButton } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
@@ -28,6 +29,7 @@ const theme = createTheme({
 const SupplierTable = () => {
   const { suppliers, createSupplier, modifySupplier, removeSupplier } =
     useSuppliers()
+  const { showToast, showConfirmDialog } = useUI()
   const [open, setOpen] = useState(false)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [selectedSupplier, setSelectedSupplier] = useState(null)
@@ -59,24 +61,30 @@ const SupplierTable = () => {
 
   const handleAddOrUpdateSupplier = async () => {
     const supplierData = { ...supplierInfo }
-    if (supplierData._id) {
-      await modifySupplier(supplierData._id, supplierData)
-    } else {
-      delete supplierData._id // Supprimez l'_id pour permettre à NeDB de le générer automatiquement
-      await createSupplier(supplierData)
+    try {
+      if (supplierData._id) {
+        await modifySupplier(supplierData._id, supplierData)
+        showToast('Fournisseur modifié avec succès', 'success')
+      } else {
+        delete supplierData._id // Supprimez l'_id pour permettre à NeDB de le générer automatiquement
+        await createSupplier(supplierData)
+        showToast('Fournisseur ajouté avec succès', 'success')
+      }
+      handleClose()
+      setSupplierInfo({
+        _id: null,
+        name: '',
+        contact: '',
+        email: '',
+        phone: '',
+        iban: '',
+        address: '',
+        brands: [],
+      })
+      setNewBrand('')
+    } catch (error) {
+      showToast("Erreur lors de l'enregistrement du fournisseur", 'error')
     }
-    handleClose()
-    setSupplierInfo({
-      _id: null,
-      name: '',
-      contact: '',
-      email: '',
-      phone: '',
-      iban: '',
-      address: '',
-      brands: [],
-    })
-    setNewBrand('')
   }
 
   const handleEdit = (supplier) => {
@@ -89,7 +97,18 @@ const SupplierTable = () => {
   }
 
   const handleDelete = async (id) => {
-    await removeSupplier(id)
+    showConfirmDialog(
+      'Confirmer la suppression',
+      'Êtes-vous sûr de vouloir supprimer ce fournisseur ?',
+      async () => {
+        try {
+          await removeSupplier(id)
+          showToast('Fournisseur supprimé avec succès', 'success')
+        } catch (error) {
+          showToast('Erreur lors de la suppression du fournisseur', 'error')
+        }
+      },
+    )
   }
 
   const handleAddBrand = () => {
