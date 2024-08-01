@@ -38,7 +38,6 @@ const SupplierColumns = (handleEdit, handleDelete, handleViewDetails) => [
     valueFormatter: (params) => formatPhoneNumber(params.value),
   },
   { field: 'iban', headerName: 'IBAN', width: 200 },
-  { field: 'address', headerName: 'Adresse', width: 250 },
 ]
 
 export default SupplierColumns

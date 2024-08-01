@@ -22,9 +22,22 @@ const SupplierDetailsModal = ({ open, handleClose, supplier }) => {
     { label: 'Email', value: supplier.email },
     { label: 'Téléphone', value: supplier.phone },
     { label: 'IBAN', value: supplier.iban },
-    { label: 'Adresse', value: supplier.address },
+    {
+      label: 'Adresse',
+      value:
+        `${supplier.street || ''}\n${supplier.postalCode || ''} ${supplier.city || ''}\n${supplier.country || ''}`.trim(),
+      multiline: true,
+    },
     { label: 'Marques', value: (supplier.brands || []).join(', ') },
   ]
+
+  // Filtre les champs vides et les adresses mal formatées
+  const filteredDetails = details.filter((detail) => {
+    if (detail.label === 'Adresse') {
+      return detail.value.trim().replace(/\n/g, ' ') !== ''
+    }
+    return detail.value
+  })
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -32,13 +45,17 @@ const SupplierDetailsModal = ({ open, handleClose, supplier }) => {
         <Typography variant="h6" component="h2">
           Détails du fournisseur
         </Typography>
-        {details
-          .filter((detail) => detail.value) // Filtrer les champs vides
-          .map((detail, index) => (
-            <Typography key={index} sx={{ mt: 2 }}>
-              <strong>{detail.label}:</strong> {detail.value}
-            </Typography>
-          ))}
+        {filteredDetails.map((detail, index) => (
+          <Typography
+            key={index}
+            sx={{
+              mt: 2,
+              whiteSpace: detail.multiline ? 'pre-line' : 'normal',
+            }}
+          >
+            <strong>{detail.label}:</strong> {detail.value}
+          </Typography>
+        ))}
       </Box>
     </Modal>
   )

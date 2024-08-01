@@ -82,21 +82,41 @@ const SupplierForm = ({
             margin="normal"
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12}>
           <TextField
-            label="IBAN"
-            name="iban"
-            value={supplierInfo.iban}
+            label="Rue"
+            name="street"
+            value={supplierInfo.street}
             onChange={handleInputChange}
             fullWidth
             margin="normal"
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={4}>
           <TextField
-            label="Adresse"
-            name="address"
-            value={supplierInfo.address}
+            label="Ville"
+            name="city"
+            value={supplierInfo.city}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            label="Code Postal"
+            name="postalCode"
+            value={supplierInfo.postalCode}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            label="Pays"
+            name="country"
+            value={supplierInfo.country}
             onChange={handleInputChange}
             fullWidth
             margin="normal"
