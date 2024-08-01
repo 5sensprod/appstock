@@ -1,5 +1,18 @@
 import { fetchApi } from './axiosConfig'
 
+// Fonction utilitaire pour supprimer les espaces avant les données
+const cleanData = (data) => {
+  const cleanedData = {}
+  for (const key in data) {
+    if (typeof data[key] === 'string') {
+      cleanedData[key] = data[key].replace(/^\s+/, '') // Supprimer les espaces avant
+    } else {
+      cleanedData[key] = data[key]
+    }
+  }
+  return cleanedData
+}
+
 async function getCategories() {
   try {
     return await fetchApi('categories')
@@ -11,7 +24,8 @@ async function getCategories() {
 
 async function addCategory(categoryData) {
   try {
-    return await fetchApi('categories', 'POST', categoryData)
+    const cleanedData = cleanData(categoryData)
+    return await fetchApi('categories', 'POST', cleanedData)
   } catch (error) {
     console.error("Erreur lors de l'ajout de la catégorie:", error)
     throw error
@@ -20,7 +34,8 @@ async function addCategory(categoryData) {
 
 async function updateCategory(id, categoryData) {
   try {
-    return await fetchApi(`categories/${id}`, 'PUT', categoryData)
+    const cleanedData = cleanData(categoryData)
+    return await fetchApi(`categories/${id}`, 'PUT', cleanedData)
   } catch (error) {
     console.error('Erreur lors de la mise à jour de la catégorie:', error)
     throw error

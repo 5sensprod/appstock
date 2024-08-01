@@ -1,5 +1,18 @@
 import { fetchApi } from './axiosConfig'
 
+// Fonction utilitaire pour supprimer les espaces avant les données
+const cleanData = (data) => {
+  const cleanedData = {}
+  for (const key in data) {
+    if (typeof data[key] === 'string') {
+      cleanedData[key] = data[key].replace(/^\s+/, '') // Supprimer les espaces avant
+    } else {
+      cleanedData[key] = data[key]
+    }
+  }
+  return cleanedData
+}
+
 async function getSuppliers() {
   try {
     return await fetchApi('suppliers')
@@ -11,7 +24,8 @@ async function getSuppliers() {
 
 async function addSupplier(supplierData) {
   try {
-    return await fetchApi('suppliers', 'POST', supplierData)
+    const cleanedData = cleanData(supplierData)
+    return await fetchApi('suppliers', 'POST', cleanedData)
   } catch (error) {
     console.error("Erreur lors de l'ajout du fournisseur:", error)
     throw error
@@ -20,7 +34,8 @@ async function addSupplier(supplierData) {
 
 async function updateSupplier(supplierId, supplierData) {
   try {
-    return await fetchApi(`suppliers/${supplierId}`, 'PUT', supplierData)
+    const cleanedData = cleanData(supplierData)
+    return await fetchApi(`suppliers/${supplierId}`, 'PUT', cleanedData)
   } catch (error) {
     console.error('Erreur lors de la mise à jour du fournisseur:', error)
     throw error

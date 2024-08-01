@@ -1,5 +1,18 @@
 import { fetchApi } from './axiosConfig'
 
+// Fonction utilitaire pour supprimer les espaces avant les données
+const cleanData = (data) => {
+  const cleanedData = {}
+  for (const key in data) {
+    if (typeof data[key] === 'string') {
+      cleanedData[key] = data[key].replace(/^\s+/, '') // Supprimer les espaces avant
+    } else {
+      cleanedData[key] = data[key]
+    }
+  }
+  return cleanedData
+}
+
 async function getProducts() {
   try {
     return await fetchApi('products')
@@ -11,13 +24,14 @@ async function getProducts() {
 
 async function addProduct(productData) {
   try {
+    const cleanedData = cleanData(productData)
     const formattedData = {
-      ...productData,
-      prixVente: parseFloat(productData.prixVente) || 0,
-      prixAchat: parseFloat(productData.prixAchat) || 0,
-      stock: parseInt(productData.stock, 10) || 0,
-      tva: parseFloat(productData.tva) || 20,
-      supplierId: productData.supplierId || null, // Ajout du champ supplierId
+      ...cleanedData,
+      prixVente: parseFloat(cleanedData.prixVente) || 0,
+      prixAchat: parseFloat(cleanedData.prixAchat) || 0,
+      stock: parseInt(cleanedData.stock, 10) || 0,
+      tva: parseFloat(cleanedData.tva) || 20,
+      supplierId: cleanedData.supplierId || null, // Ajout du champ supplierId
     }
 
     return await fetchApi('products', 'POST', formattedData)
@@ -29,9 +43,10 @@ async function addProduct(productData) {
 
 async function updateProduct(productId, productData) {
   try {
+    const cleanedData = cleanData(productData)
     const formattedData = {
-      ...productData,
-      supplierId: productData.supplierId || null, // Ajout du champ supplierId
+      ...cleanedData,
+      supplierId: cleanedData.supplierId || null, // Ajout du champ supplierId
     }
 
     return await fetchApi(`products/${productId}`, 'PUT', formattedData)
@@ -43,7 +58,8 @@ async function updateProduct(productId, productData) {
 
 async function updateProductsBulk(productsData) {
   try {
-    return await fetchApi('products/bulk-update', 'PUT', productsData)
+    const cleanedDataArray = productsData.map((product) => cleanData(product))
+    return await fetchApi('products/bulk-update', 'PUT', cleanedDataArray)
   } catch (error) {
     console.error('Erreur lors de la mise à jour en masse des produits:', error)
     throw error
