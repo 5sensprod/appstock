@@ -17,7 +17,6 @@ const SupplierDetailsModal = ({ open, handleClose, supplier }) => {
   if (!supplier) return null
 
   const details = [
-    { label: 'Nom', value: supplier.name },
     { label: 'Contact', value: supplier.contact },
     { label: 'Email', value: supplier.email },
     { label: 'Téléphone', value: supplier.phone },
@@ -42,19 +41,21 @@ const SupplierDetailsModal = ({ open, handleClose, supplier }) => {
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
-        <Typography variant="h6" component="h2">
-          Détails du fournisseur
+        <Typography variant="h5" mb={2}>
+          {supplier.name}
         </Typography>
         {filteredDetails.map((detail, index) => (
-          <Typography
-            key={index}
-            sx={{
-              mt: 2,
-              whiteSpace: detail.multiline ? 'pre-line' : 'normal',
-            }}
-          >
-            <strong>{detail.label}:</strong> {detail.value}
-          </Typography>
+          <Box key={index} sx={{ mt: 2 }}>
+            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+              {detail.label}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ whiteSpace: detail.multiline ? 'pre-line' : 'normal' }}
+            >
+              {detail.value}
+            </Typography>
+          </Box>
         ))}
       </Box>
     </Modal>
