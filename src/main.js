@@ -143,6 +143,7 @@ const getDatabasePaths = () => {
     users: path.join(userDataPath, 'users.db'),
     products: path.join(userDataPath, 'products.db'),
     invoices: path.join(userDataPath, 'invoices.db'),
+    suppliers: path.join(userDataPath, 'suppliers.db'),
   }
 }
 
