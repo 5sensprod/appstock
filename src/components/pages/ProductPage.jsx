@@ -1,9 +1,8 @@
 import React, { useContext } from 'react'
 import Grid from '@mui/material/Grid'
-import ProductsGrid from '../PRODUCTS/ProductsGrid'
+import ProductManager from '../PRODUCTS/ProductManager'
 import CategoryFilter from '../CATEGORIES/CategoryFilter'
 import { CategoryTreeSelectContext } from '../../contexts/CategoryTreeSelectContext'
-import ProductSearch from '../PRODUCTS/ProductSearch'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { Box } from '@mui/material'
 
@@ -18,7 +17,7 @@ const ProductPage = () => {
           <CategoryFilter />
         </Box>
         <Box>
-          <ProductsGrid
+          <ProductManager
             selectedCategoryId={selectedCategory.categoryId}
             searchTerm={searchTerm}
           />
