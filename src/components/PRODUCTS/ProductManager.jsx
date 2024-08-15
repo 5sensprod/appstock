@@ -4,19 +4,20 @@ import {
   frFR,
   GridToolbarQuickFilter,
 } from '@mui/x-data-grid-premium'
-import { Box, Typography, Button, Modal, Paper } from '@mui/material'
+import { Box, Typography, Button } from '@mui/material'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useSuppliers } from '../../contexts/SupplierContext'
-import { useUI } from '../../contexts/UIContext' // Importation du contexte UI
+import { useUI } from '../../contexts/UIContext'
 import useProductManagerColumns from './hooks/useProductManagerColumns'
 import ProductForm from './ProductForm'
+import ReusableModal from '../ui/ReusableModal'
 
 const ProductManager = ({ selectedCategoryId, searchTerm }) => {
   const { products, addProductToContext } = useProductContextSimplified()
   const { categories } = useCategoryContext()
   const { suppliers } = useSuppliers()
-  const { showToast } = useUI() // Utilisation du hook UI pour le toast
+  const { showToast } = useUI()
   const columns = useProductManagerColumns({ categories, suppliers })
 
   const [isModalOpen, setModalOpen] = useState(false)
@@ -27,12 +28,20 @@ const ProductManager = ({ selectedCategoryId, searchTerm }) => {
   const handleProductSubmit = async (newProduct) => {
     try {
       await addProductToContext(newProduct)
-      showToast('Produit ajouté avec succès', 'success') // Affiche le toast de succès
+      showToast('Produit ajouté avec succès', 'success')
       handleCloseModal()
     } catch (error) {
-      showToast("Erreur lors de l'ajout du produit", 'error') // Affiche un toast d'erreur en cas de problème
+      showToast("Erreur lors de l'ajout du produit", 'error')
     }
   }
+
+  // Filtrer les produits par catégorie si une catégorie est sélectionnée
+  const filteredProducts = products.filter((product) => {
+    if (!selectedCategoryId) {
+      return true // Si aucune catégorie n'est sélectionnée, afficher tous les produits
+    }
+    return product.categorie === selectedCategoryId // Afficher uniquement les produits qui correspondent à la catégorie sélectionnée
+  })
 
   return (
     <Box>
@@ -40,11 +49,11 @@ const ProductManager = ({ selectedCategoryId, searchTerm }) => {
         Créer un produit
       </Button>
 
-      {products.length === 0 ? (
+      {filteredProducts.length === 0 ? (
         <Typography variant="h6">Aucun produit trouvé</Typography>
       ) : (
         <DataGridPremium
-          rows={products}
+          rows={filteredProducts} // Utilisation des produits filtrés
           columns={columns}
           pageSize={5}
           localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
@@ -53,27 +62,25 @@ const ProductManager = ({ selectedCategoryId, searchTerm }) => {
         />
       )}
 
-      {/* Modal pour la création de produit */}
-      <Modal open={isModalOpen} onClose={handleCloseModal}>
-        <Paper style={{ margin: 'auto', padding: 20, maxWidth: 600 }}>
-          <Typography variant="h6">Créer un produit</Typography>
-          <ProductForm
-            initialProduct={{
-              reference: '',
-              marque: '',
-              prixAchat: 0,
-              prixVente: 0,
-              stock: 0,
-              gencode: '',
-              categorie: '',
-              supplierId: '',
-              tva: 20,
-            }}
-            onSubmit={handleProductSubmit}
-            onCancel={handleCloseModal}
-          />
-        </Paper>
-      </Modal>
+      {/* Utilisation de ReusableModal */}
+      <ReusableModal open={isModalOpen} onClose={handleCloseModal}>
+        <Typography variant="h6">Créer un produit</Typography>
+        <ProductForm
+          initialProduct={{
+            reference: '',
+            marque: '',
+            prixAchat: 0,
+            prixVente: 0,
+            stock: 0,
+            gencode: '',
+            categorie: '',
+            supplierId: '',
+            tva: 20,
+          }}
+          onSubmit={handleProductSubmit}
+          onCancel={handleCloseModal}
+        />
+      </ReusableModal>
     </Box>
   )
 }
