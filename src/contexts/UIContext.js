@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react'
 import Toast from '../components/ui/Toast'
 import ConfirmationDialog from '../components/ui/ConfirmationDialog'
+import { Modal, Paper } from '@mui/material'
 
 const UIContext = createContext()
 
@@ -36,10 +37,25 @@ export const UIProvider = ({ children }) => {
     setConfirmDialogInfo({ ...confirmDialogInfo, open: false })
   }
 
-  const [pageTitle, setPageTitle] = useState('Tableau de bord') // Nouvel état pour le titre de la page
+  // Gestion du titre de la page
+  const [pageTitle, setPageTitle] = useState('Tableau de bord')
 
   const updatePageTitle = (title) => {
     setPageTitle(title)
+  }
+
+  // Gestion des modales
+  const [modalInfo, setModalInfo] = useState({
+    open: false,
+    content: null,
+  })
+
+  const showModal = (content) => {
+    setModalInfo({ open: true, content })
+  }
+
+  const closeModal = () => {
+    setModalInfo({ open: false, content: null })
   }
 
   return (
@@ -51,6 +67,8 @@ export const UIProvider = ({ children }) => {
         closeConfirmDialog,
         pageTitle,
         updatePageTitle,
+        showModal,
+        closeModal,
       }}
     >
       {children}
@@ -70,6 +88,12 @@ export const UIProvider = ({ children }) => {
         title={confirmDialogInfo.title}
         content={confirmDialogInfo.content}
       />
+      {/* Modale globale */}
+      <Modal open={modalInfo.open} onClose={closeModal}>
+        <Paper style={{ margin: 'auto', padding: 20, maxWidth: 600 }}>
+          {modalInfo.content}
+        </Paper>
+      </Modal>
     </UIContext.Provider>
   )
 }

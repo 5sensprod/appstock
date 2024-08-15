@@ -282,7 +282,13 @@ module.exports = (db, sendSseEvent) => {
   })
 
   router.post('/', (req, res) => {
-    const newProduct = { ...req.body, supplierId: req.body.supplierId || null }
+    // Ajout automatique de la date d'ajout (dateSoumission)
+    const newProduct = {
+      ...req.body,
+      supplierId: req.body.supplierId || null,
+      dateSoumission: new Date(), // Ajouter la date actuelle ici
+    }
+
     products.insert(newProduct, (err, doc) => {
       if (err) {
         console.error("Erreur lors de l'insertion du produit:", err)

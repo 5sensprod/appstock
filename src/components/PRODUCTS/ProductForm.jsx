@@ -1,82 +1,176 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
   TextField,
+  Button,
+  Grid,
   MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
 } from '@mui/material'
-import SupplierSelect from './hooks/SupplierSelect'
+import { useCategoryContext } from '../../contexts/CategoryContext'
+import { useSuppliers } from '../../contexts/SupplierContext'
 
-const ProductForm = ({
-  open,
-  handleClose,
-  productInfo,
-  handleInputChange,
-  handleSave,
-  suppliers,
-  isEditing,
-}) => {
+const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
+  const [product, setProduct] = useState(initialProduct)
+  const { categories } = useCategoryContext()
+  const { suppliers } = useSuppliers()
+
+  // Mettre à jour l'état du produit lorsque initialProduct change
+  useEffect(() => {
+    setProduct(initialProduct)
+  }, [initialProduct])
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setProduct({
+      ...product,
+      [name]: value,
+    })
+  }
+
+  // Obtenir les marques disponibles en fonction du fournisseur sélectionné
+  const availableBrands =
+    suppliers.find((supplier) => supplier._id === product.supplierId)?.brands ||
+    []
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onSubmit(product) // Envoie le produit au parent
+  }
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        {isEditing ? 'Modifier le produit' : 'Ajouter un produit'}
-      </DialogTitle>
-      <DialogContent>
-        <TextField
-          name="reference"
-          label="Référence"
-          fullWidth
-          value={productInfo.reference}
-          onChange={handleInputChange}
-          margin="normal"
-        />
-        <TextField
-          name="prixAchat"
-          label="Prix d'Achat"
-          type="number"
-          fullWidth
-          value={productInfo.prixAchat}
-          onChange={handleInputChange}
-          margin="normal"
-        />
-        <TextField
-          name="prixVente"
-          label="Prix de Vente"
-          type="number"
-          fullWidth
-          value={productInfo.prixVente}
-          onChange={handleInputChange}
-          margin="normal"
-        />
-        <TextField
-          name="stock"
-          label="Stock"
-          type="number"
-          fullWidth
-          value={productInfo.stock}
-          onChange={handleInputChange}
-          margin="normal"
-        />
-        <SupplierSelect
-          value={productInfo.supplierId}
-          onChange={(e) =>
-            handleInputChange({
-              target: { name: 'supplierId', value: e.target.value },
-            })
-          }
-          suppliers={suppliers}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Annuler</Button>
-        <Button onClick={handleSave} variant="contained" color="primary">
-          {isEditing ? 'Enregistrer' : 'Ajouter'}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <form onSubmit={handleSubmit}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            name="reference"
+            label="Référence"
+            value={product.reference || ''}
+            onChange={handleInputChange}
+            fullWidth
+            required // Seule la référence est obligatoire
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth required>
+            <InputLabel>Fournisseur</InputLabel>
+            <Select
+              name="supplierId"
+              value={product.supplierId || ''}
+              onChange={handleInputChange}
+              fullWidth
+            >
+              {suppliers.map((supplier) => (
+                <MenuItem key={supplier._id} value={supplier._id}>
+                  {supplier.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <FormControl
+            fullWidth
+            required={!!product.supplierId}
+            disabled={!availableBrands.length}
+          >
+            <InputLabel>Marque</InputLabel>
+            <Select
+              name="marque"
+              value={product.marque || ''}
+              onChange={handleInputChange}
+              fullWidth
+            >
+              {availableBrands.map((brand) => (
+                <MenuItem key={brand} value={brand}>
+                  {brand}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            name="prixAchat"
+            label="Prix d'Achat"
+            type="number"
+            value={product.prixAchat || ''}
+            onChange={handleInputChange}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            name="prixVente"
+            label="Prix de Vente"
+            type="number"
+            value={product.prixVente || ''}
+            onChange={handleInputChange}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            name="stock"
+            label="Stock"
+            type="number"
+            value={product.stock || ''}
+            onChange={handleInputChange}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            name="gencode"
+            label="GenCode"
+            value={product.gencode || ''}
+            onChange={handleInputChange}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth>
+            <InputLabel>Catégorie</InputLabel>
+            <Select
+              name="categorie"
+              value={product.categorie || ''}
+              onChange={handleInputChange}
+              fullWidth
+            >
+              {categories.map((category) => (
+                <MenuItem key={category._id} value={category._id}>
+                  {category.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            name="tva"
+            label="TVA"
+            type="number"
+            value={product.tva || ''}
+            onChange={handleInputChange}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Button type="submit" variant="contained" color="primary">
+            Enregistrer
+          </Button>
+          <Button
+            onClick={onCancel}
+            variant="outlined"
+            color="secondary"
+            style={{ marginLeft: 8 }}
+          >
+            Annuler
+          </Button>
+        </Grid>
+      </Grid>
+    </form>
   )
 }
 
