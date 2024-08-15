@@ -1,9 +1,11 @@
 import { useProductContextSimplified } from '../../../contexts/ProductContextSimplified'
 import { useCategoryContext } from '../../../contexts/CategoryContext'
+import { useSuppliers } from '../../../contexts/SupplierContext'
 
 const useFilteredProducts = (selectedCategoryId, searchTerm = '') => {
   const { products } = useProductContextSimplified()
   const { categories } = useCategoryContext()
+  const { suppliers } = useSuppliers()
 
   const findAllSubCategoryIds = (categoryId) => {
     const subCategoryIds = [categoryId]
@@ -21,18 +23,30 @@ const useFilteredProducts = (selectedCategoryId, searchTerm = '') => {
     return subCategoryIds
   }
 
-  const filteredProducts = products.filter((product) => {
+  // Associe chaque produit avec son fournisseur
+  const enrichedProducts = products.map((product) => {
+    const supplier = suppliers.find((s) => s._id === product.supplierId)
+    return {
+      ...product,
+      supplierName: supplier ? supplier.name : 'Inconnu',
+    }
+  })
+
+  const filteredProducts = enrichedProducts.filter((product) => {
     const matchesCategory =
       !selectedCategoryId ||
       findAllSubCategoryIds(selectedCategoryId).includes(product.categorie)
 
-    // Vérifie si searchTerm correspond à l'un des champs
     const matchesSearchTerm =
       searchTerm.trim() === '' ||
       (product.reference &&
         product.reference.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (product.marque &&
         product.marque.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (product.supplierName &&
+        product.supplierName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())) || // Ajout du filtre par fournisseur
       (product.gencode &&
         product.gencode.toLowerCase().includes(searchTerm.toLowerCase()))
 

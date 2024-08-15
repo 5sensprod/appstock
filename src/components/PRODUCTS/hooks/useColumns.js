@@ -186,13 +186,23 @@ const useColumns = (
       headerName: 'Fournisseur',
       width: 200,
       editable: true,
+      filterable: true,
       renderCell: (params) => {
         const supplier = suppliers.find((s) => s._id === params.value)
-        return supplier ? supplier.name : ''
+        return supplier ? supplier.name : 'Inconnu'
       },
       renderEditCell: (params) => (
         <SupplierSelect params={params} suppliers={suppliers} />
       ),
+      // Fonction de filtrage rapide qui compare le nom du fournisseur
+      getApplyQuickFilterFn: (value) => {
+        return ({ value: supplierId }) => {
+          const supplier = suppliers.find((s) => s._id === supplierId)
+          return supplier
+            ? supplier.name.toLowerCase().includes(value.toLowerCase())
+            : false
+        }
+      },
     },
     {
       field: 'marque',
