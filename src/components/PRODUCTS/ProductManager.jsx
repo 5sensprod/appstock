@@ -6,23 +6,31 @@ import {
 } from '@mui/x-data-grid-premium'
 import { Box, Typography } from '@mui/material'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
-import { useCategoryContext } from '../../contexts/CategoryContext' // Importer le contexte des catégories
-import { useSuppliers } from '../../contexts/SupplierContext' // Importer le contexte des fournisseurs
+import { useCategoryContext } from '../../contexts/CategoryContext'
+import { useSuppliers } from '../../contexts/SupplierContext'
 import useProductManagerColumns from './hooks/useProductManagerColumns'
 
-const ProductManager = () => {
+const ProductManager = ({ selectedCategoryId, searchTerm }) => {
   const { products } = useProductContextSimplified()
-  const { categories } = useCategoryContext() // Accès aux catégories
-  const { suppliers } = useSuppliers() // Accès aux fournisseurs
-  const columns = useProductManagerColumns({ categories, suppliers }) // Transmettre les catégories et fournisseurs
+  const { categories } = useCategoryContext()
+  const { suppliers } = useSuppliers()
+  const columns = useProductManagerColumns({ categories, suppliers })
+
+  // Filtrer les produits par catégorie si une catégorie est sélectionnée
+  const filteredProducts = products.filter((product) => {
+    if (!selectedCategoryId) {
+      return true // Si aucune catégorie n'est sélectionnée, afficher tous les produits
+    }
+    return product.categorie === selectedCategoryId // Afficher uniquement les produits qui correspondent à la catégorie sélectionnée
+  })
 
   return (
     <Box>
-      {products.length === 0 ? (
+      {filteredProducts.length === 0 ? (
         <Typography variant="h6">Aucun produit trouvé</Typography>
       ) : (
         <DataGridPremium
-          rows={products}
+          rows={filteredProducts} // Utilisation des produits filtrés
           columns={columns}
           pageSize={5}
           localeText={frFR.components.MuiDataGrid.defaultProps.localeText}

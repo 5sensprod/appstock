@@ -98,6 +98,21 @@ export const CategoryProvider = ({ children }) => {
     setSelectedCategoryId(event.target.value)
   }
 
+  // Fonction pour obtenir le chemin complet de la catégorie
+  const getCategoryPath = (categoryId) => {
+    const categoryPath = []
+    let currentCategory = categories.find((cat) => cat._id === categoryId)
+
+    while (currentCategory) {
+      categoryPath.unshift(currentCategory.name)
+      currentCategory = categories.find(
+        (cat) => cat._id === currentCategory.parentId,
+      )
+    }
+
+    return categoryPath.join(' > ') // Retourne le chemin sous forme de chaîne
+  }
+
   const contextValue = {
     categories,
     setCategories,
@@ -110,6 +125,7 @@ export const CategoryProvider = ({ children }) => {
     setSelectedCategoryId,
     currentCategoryId,
     setCurrentCategoryId,
+    getCategoryPath, // Exposez la fonction de chemin de catégorie ici
   }
 
   return (

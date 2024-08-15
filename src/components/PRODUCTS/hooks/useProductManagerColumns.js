@@ -1,7 +1,10 @@
 import { useMemo } from 'react'
 import moment from 'moment'
+import { useCategoryContext } from '../../../contexts/CategoryContext'
 
-const useProductManagerColumns = ({ categories, suppliers }) => {
+const useProductManagerColumns = ({ suppliers }) => {
+  const { getCategoryPath } = useCategoryContext() // Récupère getCategoryPath depuis le contexte
+
   const columns = useMemo(
     () => [
       { field: 'reference', headerName: 'Référence', width: 200 },
@@ -24,8 +27,7 @@ const useProductManagerColumns = ({ categories, suppliers }) => {
         headerName: 'Catégorie',
         width: 200,
         renderCell: (params) => {
-          const category = categories.find((cat) => cat._id === params.value)
-          return category ? category.name : 'Non définie'
+          return getCategoryPath(params.value) || 'Inconnu'
         },
       },
       { field: 'gencode', headerName: 'Gencode', width: 150 },
@@ -35,7 +37,15 @@ const useProductManagerColumns = ({ categories, suppliers }) => {
         width: 200,
         renderCell: (params) => {
           const supplier = suppliers.find((sup) => sup._id === params.value)
-          return supplier ? supplier.name : 'Non défini'
+          return supplier ? supplier.name : 'Inconnu'
+        },
+        getApplyQuickFilterFn: (filterValue) => {
+          return (params) => {
+            const supplier = suppliers.find((sup) => sup._id === params.value)
+            return supplier
+              ? supplier.name.toLowerCase().includes(filterValue.toLowerCase())
+              : false
+          }
         },
       },
       { field: 'tva', headerName: 'TVA', width: 100, type: 'number' },
@@ -48,7 +58,7 @@ const useProductManagerColumns = ({ categories, suppliers }) => {
           params.value ? moment(params.value).toDate() : null,
       },
     ],
-    [categories, suppliers],
+    [getCategoryPath, suppliers],
   )
 
   return columns
