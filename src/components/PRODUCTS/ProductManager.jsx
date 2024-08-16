@@ -12,17 +12,21 @@ import { useUI } from '../../contexts/UIContext'
 import useProductManagerColumns from './hooks/useProductManagerColumns'
 import ProductForm from './ProductForm'
 import ReusableModal from '../ui/ReusableModal'
+import { useGridPreferences } from '../../contexts/GridPreferenceContext' // Importation du contexte
 
-const ProductManager = ({ selectedCategoryId, searchTerm }) => {
+const ProductManager = ({ selectedCategoryId }) => {
   const { products, addProductToContext, updateProductInContext } =
     useProductContextSimplified()
   const { categories } = useCategoryContext()
   const { suppliers } = useSuppliers()
   const { showToast } = useUI()
 
+  const { gridPreferences, updatePreferences } = useGridPreferences() // Utilisation du contexte des préférences
+
   const [isModalOpen, setModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
 
+  // Gestion de l'ouverture et de la fermeture de la modal
   const handleOpenModal = (product = null) => {
     setEditingProduct(product)
     setModalOpen(true)
@@ -33,14 +37,13 @@ const ProductManager = ({ selectedCategoryId, searchTerm }) => {
     setEditingProduct(null)
   }
 
+  // Gestion de la soumission du produit
   const handleProductSubmit = async (productData) => {
     try {
       if (editingProduct) {
-        // Mise à jour d'un produit existant
         await updateProductInContext(editingProduct._id, productData)
         showToast('Produit modifié avec succès', 'success')
       } else {
-        // Ajout d'un nouveau produit
         await addProductToContext(productData)
         showToast('Produit ajouté avec succès', 'success')
       }
@@ -61,11 +64,16 @@ const ProductManager = ({ selectedCategoryId, searchTerm }) => {
 
   // Filtrer les produits par catégorie si une catégorie est sélectionnée
   const filteredProducts = products.filter((product) => {
-    if (!selectedCategoryId) {
-      return true
-    }
+    if (!selectedCategoryId) return true
     return product.categorie === selectedCategoryId
   })
+
+  // Gestion des changements dans la pagination
+  const handlePaginationModelChange = (model) => {
+    updatePreferences({
+      paginationModel: model,
+    })
+  }
 
   return (
     <Box>
@@ -82,15 +90,24 @@ const ProductManager = ({ selectedCategoryId, searchTerm }) => {
       ) : (
         <DataGridPremium
           rows={filteredProducts}
-          columns={columns} // Utilisation des colonnes avec bouton d'édition
-          pageSize={5}
+          columns={columns}
+          paginationModel={gridPreferences.paginationModel} // Utilisation des préférences globales pour la pagination
+          onPaginationModelChange={handlePaginationModelChange} // Met à jour la pagination dans le contexte
+          pageSize={gridPreferences.paginationModel.pageSize} // Utilise la pageSize des préférences
+          onPageSizeChange={(newPageSize) => {
+            handlePaginationModelChange({
+              ...gridPreferences.paginationModel,
+              pageSize: newPageSize,
+            })
+          }}
+          pageSizeOptions={[10, 25, 50]} // Options de taille de page
           localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
           slots={{ toolbar: GridToolbarQuickFilter }}
           getRowId={(row) => row._id}
+          pagination // Active la pagination
         />
       )}
 
-      {/* Utilisation de ReusableModal pour la création/modification de produit */}
       <ReusableModal open={isModalOpen} onClose={handleCloseModal}>
         <Typography variant="h6">
           {editingProduct ? 'Modifier le produit' : 'Créer un produit'}
