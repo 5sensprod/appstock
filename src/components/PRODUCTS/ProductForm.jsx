@@ -23,10 +23,20 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    setProduct({
-      ...product,
-      [name]: value,
-    })
+
+    // Si le fournisseur change, réinitialiser la marque
+    if (name === 'supplierId' && product.supplierId !== value) {
+      setProduct({
+        ...product,
+        [name]: value,
+        marque: '', // Réinitialiser la marque
+      })
+    } else {
+      setProduct({
+        ...product,
+        [name]: value,
+      })
+    }
   }
 
   // Obtenir les marques disponibles en fonction du fournisseur sélectionné

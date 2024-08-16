@@ -11,14 +11,14 @@ const useProductManagerColumns = ({ suppliers }) => {
       { field: 'marque', headerName: 'Marque', width: 150 },
       {
         field: 'prixAchat',
-        headerName: "Prix d'Achat",
-        width: 150,
+        headerName: 'Px Achat',
+        width: '80',
         type: 'number',
       },
       {
         field: 'prixVente',
-        headerName: 'Prix de Vente',
-        width: 150,
+        headerName: 'px Vente',
+        width: 80,
         type: 'number',
       },
       { field: 'stock', headerName: 'Stock', width: 150, type: 'number' },
@@ -34,7 +34,7 @@ const useProductManagerColumns = ({ suppliers }) => {
       {
         field: 'supplierId',
         headerName: 'Fournisseur',
-        width: 200,
+        width: 100,
         renderCell: (params) => {
           const supplier = suppliers.find((sup) => sup._id === params.value)
           return supplier ? supplier.name : 'Inconnu'
@@ -48,7 +48,7 @@ const useProductManagerColumns = ({ suppliers }) => {
           }
         },
       },
-      { field: 'tva', headerName: 'TVA', width: 100, type: 'number' },
+      { field: 'tva', headerName: 'TVA', width: 70, type: 'number' },
       {
         field: 'dateSoumission',
         headerName: 'Date Ajout',
