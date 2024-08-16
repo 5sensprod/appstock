@@ -4,8 +4,7 @@ import {
   frFR,
   GridToolbarQuickFilter,
 } from '@mui/x-data-grid-premium'
-import { Box, Typography, Button, IconButton } from '@mui/material'
-import EditIcon from '@mui/icons-material/Edit'
+import { Box, Typography, Button } from '@mui/material'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useSuppliers } from '../../contexts/SupplierContext'
@@ -20,7 +19,6 @@ const ProductManager = ({ selectedCategoryId, searchTerm }) => {
   const { categories } = useCategoryContext()
   const { suppliers } = useSuppliers()
   const { showToast } = useUI()
-  const columns = useProductManagerColumns({ categories, suppliers })
 
   const [isModalOpen, setModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
@@ -55,22 +53,11 @@ const ProductManager = ({ selectedCategoryId, searchTerm }) => {
     }
   }
 
-  const renderEditButton = (params) => (
-    <IconButton onClick={() => handleOpenModal(params.row)}>
-      <EditIcon />
-    </IconButton>
-  )
-
-  // Ajouter une colonne pour le bouton d'édition
-  const columnsWithEdit = [
-    ...columns,
-    {
-      field: 'edit',
-      headerName: 'Modifier',
-      width: 100,
-      renderCell: renderEditButton,
-    },
-  ]
+  const columns = useProductManagerColumns({
+    categories,
+    suppliers,
+    handleOpenModal,
+  })
 
   // Filtrer les produits par catégorie si une catégorie est sélectionnée
   const filteredProducts = products.filter((product) => {
@@ -95,7 +82,7 @@ const ProductManager = ({ selectedCategoryId, searchTerm }) => {
       ) : (
         <DataGridPremium
           rows={filteredProducts}
-          columns={columnsWithEdit} // Utilisation des colonnes avec bouton d'édition
+          columns={columns} // Utilisation des colonnes avec bouton d'édition
           pageSize={5}
           localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
           slots={{ toolbar: GridToolbarQuickFilter }}

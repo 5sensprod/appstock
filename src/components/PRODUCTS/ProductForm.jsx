@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useSuppliers } from '../../contexts/SupplierContext'
+import { TVA_RATES } from '../../utils/constants'
 
 const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
   const [product, setProduct] = useState(initialProduct)
@@ -157,14 +158,21 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <TextField
-            name="tva"
-            label="TVA"
-            type="number"
-            value={product.tva || ''}
-            onChange={handleInputChange}
-            fullWidth
-          />
+          <FormControl fullWidth>
+            <InputLabel>TVA</InputLabel>
+            <Select
+              name="tva"
+              value={product.tva || ''}
+              onChange={handleInputChange}
+              fullWidth
+            >
+              {TVA_RATES.map((rate) => (
+                <MenuItem key={rate.value} value={rate.value}>
+                  {rate.label} %
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={12}>
           <Button type="submit" variant="contained" color="primary">

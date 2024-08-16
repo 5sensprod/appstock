@@ -1,12 +1,29 @@
-import { useMemo } from 'react'
+import React, { useMemo } from 'react' // Ajout de l'import de React
 import moment from 'moment'
 import { useCategoryContext } from '../../../contexts/CategoryContext'
+import EditIcon from '@mui/icons-material/Edit'
+import { IconButton } from '@mui/material'
 
-const useProductManagerColumns = ({ suppliers }) => {
-  const { getCategoryPath } = useCategoryContext() // Récupère getCategoryPath depuis le contexte
+const useProductManagerColumns = ({ suppliers, handleOpenModal }) => {
+  const { getCategoryPath } = useCategoryContext()
+
+  // Fonction pour rendre le bouton d'édition
+  const renderEditButton = (params) => (
+    <IconButton onClick={() => handleOpenModal(params.row)}>
+      <EditIcon />
+    </IconButton>
+  )
 
   const columns = useMemo(
     () => [
+      {
+        field: 'edit',
+        headerName: 'Modifier',
+        width: 100,
+        renderCell: renderEditButton,
+        sortable: false, // Le rendre non triable pour l'action
+        filterable: false, // Désactiver les filtres pour la colonne action
+      },
       { field: 'reference', headerName: 'Référence', width: 200 },
       { field: 'marque', headerName: 'Marque', width: 150 },
       {
@@ -17,7 +34,7 @@ const useProductManagerColumns = ({ suppliers }) => {
       },
       {
         field: 'prixVente',
-        headerName: 'px Vente',
+        headerName: 'Px Vente',
         width: 80,
         type: 'number',
       },
@@ -26,9 +43,7 @@ const useProductManagerColumns = ({ suppliers }) => {
         field: 'categorie',
         headerName: 'Catégorie',
         width: 200,
-        renderCell: (params) => {
-          return getCategoryPath(params.value) || 'Inconnu'
-        },
+        renderCell: (params) => getCategoryPath(params.value) || 'Inconnu',
       },
       { field: 'gencode', headerName: 'Gencode', width: 150 },
       {
@@ -52,13 +67,13 @@ const useProductManagerColumns = ({ suppliers }) => {
       {
         field: 'dateSoumission',
         headerName: 'Date Ajout',
-        width: 150,
+        width: 100,
         type: 'date',
         valueGetter: (params) =>
           params.value ? moment(params.value).toDate() : null,
       },
     ],
-    [getCategoryPath, suppliers],
+    [getCategoryPath, suppliers, handleOpenModal], // handleOpenModal doit être passé comme dépendance
   )
 
   return columns
