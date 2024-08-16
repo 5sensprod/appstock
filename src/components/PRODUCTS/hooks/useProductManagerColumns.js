@@ -43,7 +43,7 @@ const useProductManagerColumns = ({ suppliers, handleOpenModal }) => {
         field: 'categorie',
         headerName: 'Catégorie',
         width: 200,
-        renderCell: (params) => getCategoryPath(params.value) || 'Inconnu',
+        renderCell: (params) => getCategoryPath(params.value) || '',
       },
       { field: 'gencode', headerName: 'Gencode', width: 150 },
       {
@@ -52,7 +52,7 @@ const useProductManagerColumns = ({ suppliers, handleOpenModal }) => {
         width: 100,
         renderCell: (params) => {
           const supplier = suppliers.find((sup) => sup._id === params.value)
-          return supplier ? supplier.name : 'Inconnu'
+          return supplier ? supplier.name : ''
         },
         getApplyQuickFilterFn: (filterValue) => {
           return (params) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   TextField,
   Button,
@@ -11,44 +11,66 @@ import {
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useSuppliers } from '../../contexts/SupplierContext'
 import { TVA_RATES } from '../../utils/constants'
+import CategorySelect from '../CATEGORIES/CategorySelect'
 
 const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
   const [product, setProduct] = useState(initialProduct)
-  const { categories } = useCategoryContext()
+  const { getCategoryPath } = useCategoryContext()
   const { suppliers } = useSuppliers()
 
-  // Mettre à jour l'état du produit lorsque initialProduct change
+  // Ref to check if it's the first render
+  const isInitialMount = useRef(true)
+
+  // Mettre à jour l'état du produit seulement à l'initialisation ou lors de l'édition, mais pas lors de changements normaux de catégorie
   useEffect(() => {
-    setProduct(initialProduct)
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      setProduct(initialProduct) // Set initial product on mount
+    }
   }, [initialProduct])
 
+  // Gère la modification des champs du formulaire
   const handleInputChange = (e) => {
     const { name, value } = e.target
 
     // Si le fournisseur change, réinitialiser la marque
     if (name === 'supplierId' && product.supplierId !== value) {
-      setProduct({
-        ...product,
+      setProduct((prevProduct) => ({
+        ...prevProduct,
         [name]: value,
-        marque: '', // Réinitialiser la marque
-      })
+        marque: '', // Réinitialiser uniquement la marque
+      }))
     } else {
-      setProduct({
-        ...product,
-        [name]: value,
-      })
+      setProduct((prevProduct) => ({
+        ...prevProduct,
+        [name]: value, // Mise à jour partielle, conserve les autres champs
+      }))
     }
   }
 
-  // Obtenir les marques disponibles en fonction du fournisseur sélectionné
-  const availableBrands =
-    suppliers.find((supplier) => supplier._id === product.supplierId)?.brands ||
-    []
+  // Gère la modification de la catégorie via CategorySelect
+  const handleCategoryChange = (categoryId) => {
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      categorie: categoryId, // Ne modifie que la catégorie
+    }))
+  }
 
+  // Gère l'envoi du formulaire
   const handleSubmit = (e) => {
     e.preventDefault()
     onSubmit(product) // Envoie le produit au parent
   }
+
+  // Obtenez le chemin de la catégorie pour l'affichage
+  const selectedCategoryPath = product.categorie
+    ? getCategoryPath(product.categorie)
+    : ''
+
+  // Obtenez les marques disponibles en fonction du fournisseur sélectionné
+  const availableBrands =
+    suppliers.find((supplier) => supplier._id === product.supplierId)?.brands ||
+    []
 
   return (
     <form onSubmit={handleSubmit}>
@@ -60,18 +82,32 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             value={product.reference || ''}
             onChange={handleInputChange}
             fullWidth
-            required // Seule la référence est obligatoire
+            required
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <FormControl fullWidth required>
+          <FormControl fullWidth>
             <InputLabel>Fournisseur</InputLabel>
             <Select
               name="supplierId"
               value={product.supplierId || ''}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                const { value } = e.target
+                if (value === '') {
+                  setProduct((prevProduct) => ({
+                    ...prevProduct,
+                    supplierId: '',
+                    marque: '', // Réinitialiser la marque
+                  }))
+                } else {
+                  handleInputChange(e)
+                }
+              }}
               fullWidth
             >
+              <MenuItem value="">
+                <em>Aucun</em>
+              </MenuItem>
               {suppliers.map((supplier) => (
                 <MenuItem key={supplier._id} value={supplier._id}>
                   {supplier.name}
@@ -80,12 +116,9 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item xs={12} sm={6}>
-          <FormControl
-            fullWidth
-            required={!!product.supplierId}
-            disabled={!availableBrands.length}
-          >
+          <FormControl fullWidth disabled={!availableBrands.length}>
             <InputLabel>Marque</InputLabel>
             <Select
               name="marque"
@@ -93,6 +126,9 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
               onChange={handleInputChange}
               fullWidth
             >
+              <MenuItem value="">
+                <em>Aucun</em>
+              </MenuItem>
               {availableBrands.map((brand) => (
                 <MenuItem key={brand} value={brand}>
                   {brand}
@@ -141,21 +177,12 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <FormControl fullWidth>
-            <InputLabel>Catégorie</InputLabel>
-            <Select
-              name="categorie"
-              value={product.categorie || ''}
-              onChange={handleInputChange}
-              fullWidth
-            >
-              {categories.map((category) => (
-                <MenuItem key={category._id} value={category._id}>
-                  {category.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          {/* Utilisation de CategorySelect pour la sélection de catégorie */}
+          <CategorySelect
+            value={selectedCategoryPath} // Affiche le chemin complet de la catégorie
+            onChange={handleCategoryChange} // Met à jour uniquement la catégorie sélectionnée
+            label="Catégorie"
+          />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
