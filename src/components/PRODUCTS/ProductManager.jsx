@@ -13,7 +13,7 @@ import BulkEditForm from './BulkEditForm'
 import ReusableModal from '../ui/ReusableModal'
 import { useProductManagerLogic } from './hooks/useProductManagerLogic'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
-import { useGridPreferences } from '../../contexts/GridPreferenceContext' // Importer useGridPreferences
+import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 
 const ProductManager = ({ selectedCategoryId }) => {
   const { products } = useProductContextSimplified() // Récupération des produits depuis le contexte
@@ -95,10 +95,16 @@ const ProductManager = ({ selectedCategoryId }) => {
           getRowId={(row) => row._id}
           pagination
           checkboxSelection
+          disableRowSelectionOnClick // Désactiver la sélection des lignes lors du clic
           onRowSelectionModelChange={(newSelection) =>
             setRowSelectionModel(newSelection)
           }
           rowSelectionModel={rowSelectionModel}
+          initialState={{
+            sorting: {
+              sortModel: [{ field: 'dateSoumission', sort: 'desc' }], // Trier par défaut par date décroissante
+            },
+          }}
         />
       )}
 
