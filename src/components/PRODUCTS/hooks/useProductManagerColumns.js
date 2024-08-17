@@ -22,7 +22,7 @@ const useProductManagerColumns = ({
   // Fonction pour rendre le bouton de suppression
   const renderDeleteButton = (params) => (
     <IconButton onClick={() => handleDeleteProduct(params.row._id)}>
-      <DeleteIcon color="error" />
+      <DeleteIcon />
     </IconButton>
   )
 
