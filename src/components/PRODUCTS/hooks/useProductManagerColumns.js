@@ -25,7 +25,6 @@ const useProductManagerColumns = ({ suppliers, handleOpenModal }) => {
         filterable: false, // Désactiver les filtres pour la colonne action
       },
       { field: 'reference', headerName: 'Référence', width: 200 },
-      { field: 'marque', headerName: 'Marque', width: 150 },
       {
         field: 'prixAchat',
         headerName: 'Px Achat',
@@ -38,14 +37,13 @@ const useProductManagerColumns = ({ suppliers, handleOpenModal }) => {
         width: 80,
         type: 'number',
       },
-      { field: 'stock', headerName: 'Stock', width: 150, type: 'number' },
+      { field: 'stock', headerName: 'Stock', width: 90, type: 'number' },
       {
         field: 'categorie',
         headerName: 'Catégorie',
         width: 200,
         renderCell: (params) => getCategoryPath(params.value) || '',
       },
-      { field: 'gencode', headerName: 'Gencode', width: 150 },
       {
         field: 'supplierId',
         headerName: 'Fournisseur',
@@ -63,6 +61,8 @@ const useProductManagerColumns = ({ suppliers, handleOpenModal }) => {
           }
         },
       },
+      { field: 'marque', headerName: 'Marque', width: 150 },
+      { field: 'gencode', headerName: 'Gencode', width: 150 },
       { field: 'tva', headerName: 'TVA', width: 70, type: 'number' },
       {
         field: 'dateSoumission',
