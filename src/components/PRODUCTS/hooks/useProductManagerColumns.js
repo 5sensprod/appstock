@@ -22,7 +22,7 @@ const useProductManagerColumns = ({
   // Fonction pour rendre le bouton de suppression
   const renderDeleteButton = (params) => (
     <IconButton onClick={() => handleDeleteProduct(params.row._id)}>
-      <DeleteIcon />
+      <DeleteIcon color="error" />
     </IconButton>
   )
 
@@ -42,12 +42,7 @@ const useProductManagerColumns = ({
         filterable: false,
       },
       { field: 'reference', headerName: 'Référence', width: 200 },
-      {
-        field: 'prixAchat',
-        headerName: 'Px Achat',
-        width: '80',
-        type: 'number',
-      },
+      { field: 'prixAchat', headerName: 'Px Achat', width: 80, type: 'number' },
       { field: 'prixVente', headerName: 'Px Vente', width: 80, type: 'number' },
       { field: 'stock', headerName: 'Stock', width: 90, type: 'number' },
       {
@@ -59,10 +54,19 @@ const useProductManagerColumns = ({
       {
         field: 'supplierId',
         headerName: 'Fournisseur',
-        width: 100,
+        width: 150,
         renderCell: (params) => {
           const supplier = suppliers.find((sup) => sup._id === params.value)
           return supplier ? supplier.name : ''
+        },
+        // Fonction pour filtrer par nom de fournisseur lors de la recherche rapide
+        getApplyQuickFilterFn: (filterValue) => {
+          return (params) => {
+            const supplier = suppliers.find((sup) => sup._id === params.value)
+            return supplier
+              ? supplier.name.toLowerCase().includes(filterValue.toLowerCase())
+              : false
+          }
         },
       },
       { field: 'marque', headerName: 'Marque', width: 150 },
