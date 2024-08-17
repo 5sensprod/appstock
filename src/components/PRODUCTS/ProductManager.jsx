@@ -24,7 +24,7 @@ const ProductManager = ({ selectedCategoryId }) => {
   } = useProductContextSimplified()
   const { categories } = useCategoryContext()
   const { suppliers } = useSuppliers()
-  const { showToast, showConfirmDialog } = useUI() // Utiliser Toast et ConfirmDialog depuis le contexte UI
+  const { showToast, showConfirmDialog } = useUI()
 
   const [isModalOpen, setModalOpen] = useState(false)
   const [isBulkEditModalOpen, setBulkEditModalOpen] = useState(false)
@@ -96,7 +96,7 @@ const ProductManager = ({ selectedCategoryId }) => {
     categories,
     suppliers,
     handleOpenModal,
-    handleDeleteProduct, // Passer la fonction de suppression
+    handleDeleteProduct,
   })
 
   // Filtrer les produits par catégorie si une catégorie est sélectionnée

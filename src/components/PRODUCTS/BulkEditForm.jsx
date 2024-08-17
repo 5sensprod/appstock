@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import { TVA_RATES } from '../../utils/constants'
 import CategorySelect from '../CATEGORIES/CategorySelect'
-import { useSuppliers } from '../../contexts/SupplierContext' // Importez le contexte des fournisseurs
+import { useSuppliers } from '../../contexts/SupplierContext'
 
 const BulkEditForm = ({
   onSubmit,
@@ -28,7 +28,7 @@ const BulkEditForm = ({
     tva: '',
   })
 
-  const { suppliers } = useSuppliers() // Utilisation du contexte des fournisseurs
+  const { suppliers } = useSuppliers()
 
   // Gère les changements dans les champs de texte
   const handleChange = (e) => {
