@@ -11,22 +11,28 @@ import { useSuppliers } from '../../contexts/SupplierContext'
 import { useUI } from '../../contexts/UIContext'
 import useProductManagerColumns from './hooks/useProductManagerColumns'
 import ProductForm from './ProductForm'
+import BulkEditForm from './BulkEditForm'
 import ReusableModal from '../ui/ReusableModal'
-import { useGridPreferences } from '../../contexts/GridPreferenceContext' // Importation du contexte
+import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 
 const ProductManager = ({ selectedCategoryId }) => {
-  const { products, addProductToContext, updateProductInContext } =
-    useProductContextSimplified()
+  const {
+    products,
+    addProductToContext,
+    updateProductInContext,
+    bulkUpdateProductsInContext,
+  } = useProductContextSimplified()
   const { categories } = useCategoryContext()
   const { suppliers } = useSuppliers()
   const { showToast } = useUI()
 
-  const { gridPreferences, updatePreferences } = useGridPreferences() // Utilisation du contexte des préférences
+  const { gridPreferences, updatePreferences } = useGridPreferences()
 
   const [isModalOpen, setModalOpen] = useState(false)
+  const [isBulkEditModalOpen, setBulkEditModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
+  const [rowSelectionModel, setRowSelectionModel] = useState([])
 
-  // Gestion de l'ouverture et de la fermeture de la modal
   const handleOpenModal = (product = null) => {
     setEditingProduct(product)
     setModalOpen(true)
@@ -37,7 +43,14 @@ const ProductManager = ({ selectedCategoryId }) => {
     setEditingProduct(null)
   }
 
-  // Gestion de la soumission du produit
+  const handleBulkEditModalOpen = () => {
+    setBulkEditModalOpen(true)
+  }
+
+  const handleBulkEditModalClose = () => {
+    setBulkEditModalOpen(false)
+  }
+
   const handleProductSubmit = async (productData) => {
     try {
       if (editingProduct) {
@@ -56,6 +69,16 @@ const ProductManager = ({ selectedCategoryId }) => {
     }
   }
 
+  const handleBulkEditSubmit = async (updates) => {
+    try {
+      await bulkUpdateProductsInContext(updates) // Envoi direct des données
+      showToast('Produits modifiés avec succès', 'success')
+      handleBulkEditModalClose()
+    } catch (error) {
+      showToast('Erreur lors de la modification des produits', 'error')
+    }
+  }
+
   const columns = useProductManagerColumns({
     categories,
     suppliers,
@@ -68,7 +91,6 @@ const ProductManager = ({ selectedCategoryId }) => {
     return product.categorie === selectedCategoryId
   })
 
-  // Gestion des changements dans la pagination
   const handlePaginationModelChange = (model) => {
     updatePreferences({
       paginationModel: model,
@@ -85,26 +107,41 @@ const ProductManager = ({ selectedCategoryId }) => {
         Créer un produit
       </Button>
 
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleBulkEditModalOpen}
+        disabled={rowSelectionModel.length < 2} // Désactiver si moins de 2 lignes sélectionnées
+        style={{ marginLeft: 16 }}
+      >
+        Modifier en masse
+      </Button>
+
       {filteredProducts.length === 0 ? (
         <Typography variant="h6">Aucun produit trouvé</Typography>
       ) : (
         <DataGridPremium
           rows={filteredProducts}
           columns={columns}
-          paginationModel={gridPreferences.paginationModel} // Utilisation des préférences globales pour la pagination
-          onPaginationModelChange={handlePaginationModelChange} // Met à jour la pagination dans le contexte
-          pageSize={gridPreferences.paginationModel.pageSize} // Utilise la pageSize des préférences
+          paginationModel={gridPreferences.paginationModel}
+          onPaginationModelChange={handlePaginationModelChange}
+          pageSize={gridPreferences.paginationModel.pageSize}
           onPageSizeChange={(newPageSize) => {
             handlePaginationModelChange({
               ...gridPreferences.paginationModel,
               pageSize: newPageSize,
             })
           }}
-          pageSizeOptions={[10, 25, 50]} // Options de taille de page
+          pageSizeOptions={[10, 25, 50]}
           localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
           slots={{ toolbar: GridToolbarQuickFilter }}
           getRowId={(row) => row._id}
-          pagination // Active la pagination
+          pagination
+          checkboxSelection
+          onRowSelectionModelChange={(newSelection) =>
+            setRowSelectionModel(newSelection)
+          } // Gère la sélection
+          rowSelectionModel={rowSelectionModel} // Liaison de la sélection au modèle d'état
         />
       )}
 
@@ -128,6 +165,18 @@ const ProductManager = ({ selectedCategoryId }) => {
           }
           onSubmit={handleProductSubmit}
           onCancel={handleCloseModal}
+        />
+      </ReusableModal>
+
+      <ReusableModal
+        open={isBulkEditModalOpen}
+        onClose={handleBulkEditModalClose}
+      >
+        <Typography variant="h6">Modifier les produits sélectionnés</Typography>
+        <BulkEditForm
+          onSubmit={handleBulkEditSubmit}
+          onCancel={handleBulkEditModalClose}
+          selectedProducts={rowSelectionModel}
         />
       </ReusableModal>
     </Box>
