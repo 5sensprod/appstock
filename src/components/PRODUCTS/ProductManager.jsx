@@ -12,12 +12,14 @@ import ProductForm from './ProductForm'
 import BulkEditForm from './BulkEditForm'
 import ReusableModal from '../ui/ReusableModal'
 import { useProductManagerLogic } from './hooks/useProductManagerLogic'
-import { useProductContextSimplified } from '../../contexts/ProductContextSimplified' // Ajout pour utiliser les produits
+import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
+import { useGridPreferences } from '../../contexts/GridPreferenceContext' // Importer useGridPreferences
 
 const ProductManager = ({ selectedCategoryId }) => {
   const { products } = useProductContextSimplified() // Récupération des produits depuis le contexte
   const { categories } = useCategoryContext()
   const { suppliers } = useSuppliers()
+  const { gridPreferences, updatePreferences } = useGridPreferences() // Récupérer et mettre à jour les préférences de grille
 
   const {
     isModalOpen,
@@ -46,6 +48,12 @@ const ProductManager = ({ selectedCategoryId }) => {
     return product.categorie === selectedCategoryId
   })
 
+  const handlePaginationModelChange = (model) => {
+    updatePreferences({
+      paginationModel: model,
+    })
+  }
+
   return (
     <Box>
       <Button
@@ -72,8 +80,16 @@ const ProductManager = ({ selectedCategoryId }) => {
         <DataGridPremium
           rows={filteredProducts}
           columns={columns}
-          paginationModel={{ page: 0, pageSize: 10 }}
-          pageSizeOptions={[10, 25, 50]}
+          paginationModel={gridPreferences.paginationModel} // Utilisation des préférences pour la pagination
+          onPaginationModelChange={handlePaginationModelChange} // Met à jour les préférences dans le contexte
+          pageSize={gridPreferences.paginationModel.pageSize} // Taille de page depuis les préférences
+          onPageSizeChange={(newPageSize) => {
+            handlePaginationModelChange({
+              ...gridPreferences.paginationModel,
+              pageSize: newPageSize,
+            })
+          }}
+          pageSizeOptions={[10, 25, 50]} // Options de taille de page
           localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
           slots={{ toolbar: GridToolbarQuickFilter }}
           getRowId={(row) => row._id}
