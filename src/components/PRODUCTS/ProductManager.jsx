@@ -1,96 +1,38 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   DataGridPremium,
   frFR,
   GridToolbarQuickFilter,
 } from '@mui/x-data-grid-premium'
 import { Box, Typography, Button } from '@mui/material'
-import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useSuppliers } from '../../contexts/SupplierContext'
-import { useUI } from '../../contexts/UIContext'
 import useProductManagerColumns from './hooks/useProductManagerColumns'
 import ProductForm from './ProductForm'
 import BulkEditForm from './BulkEditForm'
 import ReusableModal from '../ui/ReusableModal'
+import { useProductManagerLogic } from './hooks/useProductManagerLogic'
+import { useProductContextSimplified } from '../../contexts/ProductContextSimplified' // Ajout pour utiliser les produits
 
 const ProductManager = ({ selectedCategoryId }) => {
-  const {
-    products,
-    addProductToContext,
-    updateProductInContext,
-    bulkUpdateProductsInContext,
-    deleteProductFromContext,
-  } = useProductContextSimplified()
+  const { products } = useProductContextSimplified() // Récupération des produits depuis le contexte
   const { categories } = useCategoryContext()
   const { suppliers } = useSuppliers()
-  const { showToast, showConfirmDialog } = useUI()
 
-  const [isModalOpen, setModalOpen] = useState(false)
-  const [isBulkEditModalOpen, setBulkEditModalOpen] = useState(false)
-  const [editingProduct, setEditingProduct] = useState(null)
-  const [rowSelectionModel, setRowSelectionModel] = useState([])
-
-  const handleOpenModal = (product = null) => {
-    setEditingProduct(product)
-    setModalOpen(true)
-  }
-
-  const handleCloseModal = () => {
-    setModalOpen(false)
-    setEditingProduct(null)
-  }
-
-  const handleBulkEditModalOpen = () => {
-    setBulkEditModalOpen(true)
-  }
-
-  const handleBulkEditModalClose = () => {
-    setBulkEditModalOpen(false)
-  }
-
-  const handleProductSubmit = async (productData) => {
-    try {
-      if (editingProduct) {
-        await updateProductInContext(editingProduct._id, productData)
-        showToast('Produit modifié avec succès', 'success')
-      } else {
-        await addProductToContext(productData)
-        showToast('Produit ajouté avec succès', 'success')
-      }
-      handleCloseModal()
-    } catch (error) {
-      showToast(
-        "Erreur lors de l'ajout ou de la modification du produit",
-        'error',
-      )
-    }
-  }
-
-  const handleBulkEditSubmit = async (updates) => {
-    try {
-      await bulkUpdateProductsInContext(updates)
-      showToast('Produits modifiés avec succès', 'success')
-      handleBulkEditModalClose()
-    } catch (error) {
-      showToast('Erreur lors de la modification des produits', 'error')
-    }
-  }
-
-  const handleDeleteProduct = (productId) => {
-    showConfirmDialog(
-      'Confirmer la suppression',
-      'Êtes-vous sûr de vouloir supprimer ce produit ?',
-      async () => {
-        try {
-          await deleteProductFromContext(productId)
-          showToast('Produit supprimé avec succès', 'success')
-        } catch (error) {
-          showToast('Erreur lors de la suppression du produit', 'error')
-        }
-      },
-    )
-  }
+  const {
+    isModalOpen,
+    isBulkEditModalOpen,
+    editingProduct,
+    rowSelectionModel,
+    handleOpenModal,
+    handleCloseModal,
+    handleBulkEditModalOpen,
+    handleBulkEditModalClose,
+    handleProductSubmit,
+    handleBulkEditSubmit,
+    handleDeleteProduct,
+    setRowSelectionModel,
+  } = useProductManagerLogic()
 
   const columns = useProductManagerColumns({
     categories,
@@ -99,7 +41,6 @@ const ProductManager = ({ selectedCategoryId }) => {
     handleDeleteProduct,
   })
 
-  // Filtrer les produits par catégorie si une catégorie est sélectionnée
   const filteredProducts = products.filter((product) => {
     if (!selectedCategoryId) return true
     return product.categorie === selectedCategoryId
