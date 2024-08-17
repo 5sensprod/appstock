@@ -13,7 +13,6 @@ import useProductManagerColumns from './hooks/useProductManagerColumns'
 import ProductForm from './ProductForm'
 import BulkEditForm from './BulkEditForm'
 import ReusableModal from '../ui/ReusableModal'
-import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 
 const ProductManager = ({ selectedCategoryId }) => {
   const {
@@ -21,12 +20,11 @@ const ProductManager = ({ selectedCategoryId }) => {
     addProductToContext,
     updateProductInContext,
     bulkUpdateProductsInContext,
+    deleteProductFromContext,
   } = useProductContextSimplified()
   const { categories } = useCategoryContext()
   const { suppliers } = useSuppliers()
-  const { showToast } = useUI()
-
-  const { gridPreferences, updatePreferences } = useGridPreferences()
+  const { showToast, showConfirmDialog } = useUI() // Utiliser Toast et ConfirmDialog depuis le contexte UI
 
   const [isModalOpen, setModalOpen] = useState(false)
   const [isBulkEditModalOpen, setBulkEditModalOpen] = useState(false)
@@ -71,7 +69,7 @@ const ProductManager = ({ selectedCategoryId }) => {
 
   const handleBulkEditSubmit = async (updates) => {
     try {
-      await bulkUpdateProductsInContext(updates) // Envoi direct des données
+      await bulkUpdateProductsInContext(updates)
       showToast('Produits modifiés avec succès', 'success')
       handleBulkEditModalClose()
     } catch (error) {
@@ -79,10 +77,26 @@ const ProductManager = ({ selectedCategoryId }) => {
     }
   }
 
+  const handleDeleteProduct = (productId) => {
+    showConfirmDialog(
+      'Confirmer la suppression',
+      'Êtes-vous sûr de vouloir supprimer ce produit ?',
+      async () => {
+        try {
+          await deleteProductFromContext(productId)
+          showToast('Produit supprimé avec succès', 'success')
+        } catch (error) {
+          showToast('Erreur lors de la suppression du produit', 'error')
+        }
+      },
+    )
+  }
+
   const columns = useProductManagerColumns({
     categories,
     suppliers,
     handleOpenModal,
+    handleDeleteProduct, // Passer la fonction de suppression
   })
 
   // Filtrer les produits par catégorie si une catégorie est sélectionnée
@@ -90,12 +104,6 @@ const ProductManager = ({ selectedCategoryId }) => {
     if (!selectedCategoryId) return true
     return product.categorie === selectedCategoryId
   })
-
-  const handlePaginationModelChange = (model) => {
-    updatePreferences({
-      paginationModel: model,
-    })
-  }
 
   return (
     <Box>
@@ -111,7 +119,7 @@ const ProductManager = ({ selectedCategoryId }) => {
         variant="contained"
         color="secondary"
         onClick={handleBulkEditModalOpen}
-        disabled={rowSelectionModel.length < 2} // Désactiver si moins de 2 lignes sélectionnées
+        disabled={rowSelectionModel.length < 2}
         style={{ marginLeft: 16 }}
       >
         Modifier en masse
@@ -123,15 +131,7 @@ const ProductManager = ({ selectedCategoryId }) => {
         <DataGridPremium
           rows={filteredProducts}
           columns={columns}
-          paginationModel={gridPreferences.paginationModel}
-          onPaginationModelChange={handlePaginationModelChange}
-          pageSize={gridPreferences.paginationModel.pageSize}
-          onPageSizeChange={(newPageSize) => {
-            handlePaginationModelChange({
-              ...gridPreferences.paginationModel,
-              pageSize: newPageSize,
-            })
-          }}
+          paginationModel={{ page: 0, pageSize: 10 }}
           pageSizeOptions={[10, 25, 50]}
           localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
           slots={{ toolbar: GridToolbarQuickFilter }}
@@ -140,8 +140,8 @@ const ProductManager = ({ selectedCategoryId }) => {
           checkboxSelection
           onRowSelectionModelChange={(newSelection) =>
             setRowSelectionModel(newSelection)
-          } // Gère la sélection
-          rowSelectionModel={rowSelectionModel} // Liaison de la sélection au modèle d'état
+          }
+          rowSelectionModel={rowSelectionModel}
         />
       )}
 
