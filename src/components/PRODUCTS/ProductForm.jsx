@@ -58,17 +58,21 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             onChange={handleInputChange}
             fullWidth
             required
+            variant="outlined"
           />
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <FormControl fullWidth>
-            <InputLabel>Fournisseur</InputLabel>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel shrink={product.supplierId ? true : undefined}>
+              Fournisseur
+            </InputLabel>
             <Select
               name="supplierId"
               value={product.supplierId || ''}
               onChange={handleInputChange}
               fullWidth
+              label="Fournisseur"
             >
               <MenuItem value="">
                 <em>Aucun</em>
@@ -83,13 +87,20 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <FormControl fullWidth disabled={!availableBrands.length}>
-            <InputLabel>Marque</InputLabel>
+          <FormControl
+            fullWidth
+            variant="outlined"
+            disabled={!availableBrands.length}
+          >
+            <InputLabel shrink={product.marque ? true : undefined}>
+              Marque
+            </InputLabel>
             <Select
               name="marque"
               value={product.marque || ''}
               onChange={handleInputChange}
               fullWidth
+              label="Marque"
             >
               <MenuItem value="">
                 <em>Aucun</em>
@@ -111,6 +122,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             value={product.prixAchat || ''}
             onChange={handlePrixAchatChange}
             fullWidth
+            variant="outlined"
           />
         </Grid>
 
@@ -137,6 +149,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             onChange={handleMargeChange}
             fullWidth
             disabled={!isCalculatingPrice}
+            variant="outlined"
           />
         </Grid>
 
@@ -149,6 +162,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             onChange={handlePrixVenteChange}
             fullWidth
             disabled={isCalculatingPrice}
+            variant="outlined"
           />
         </Grid>
 
@@ -160,6 +174,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             value={product.stock || ''}
             onChange={handleInputChange}
             fullWidth
+            variant="outlined"
           />
         </Grid>
 
@@ -170,6 +185,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             value={product.gencode || ''}
             onChange={handleInputChange}
             fullWidth
+            variant="outlined"
           />
         </Grid>
 
@@ -182,13 +198,14 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <FormControl fullWidth>
-            <InputLabel>TVA</InputLabel>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel shrink={product.tva ? true : undefined}>TVA</InputLabel>
             <Select
               name="tva"
               value={product.tva || ''}
               onChange={handleTVAChange}
               fullWidth
+              label="TVA"
             >
               {TVA_RATES.map((rate) => (
                 <MenuItem key={rate.value} value={rate.value}>
