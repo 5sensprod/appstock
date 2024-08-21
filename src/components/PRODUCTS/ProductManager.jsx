@@ -56,23 +56,25 @@ const ProductManager = ({ selectedCategoryId }) => {
 
   return (
     <Box>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => handleOpenModal()}
-      >
-        Créer un produit
-      </Button>
+      <Box mb={2} mt={1}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleOpenModal()}
+        >
+          Créer un produit
+        </Button>
 
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={handleBulkEditModalOpen}
-        disabled={rowSelectionModel.length < 2}
-        style={{ marginLeft: 16 }}
-      >
-        Modifier en masse
-      </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleBulkEditModalOpen}
+          disabled={rowSelectionModel.length < 2}
+          style={{ marginLeft: 16 }}
+        >
+          Modifier en masse
+        </Button>
+      </Box>
 
       {filteredProducts.length === 0 ? (
         <Typography variant="h6">Aucun produit trouvé</Typography>
@@ -109,7 +111,7 @@ const ProductManager = ({ selectedCategoryId }) => {
       )}
 
       <ReusableModal open={isModalOpen} onClose={handleCloseModal}>
-        <Typography variant="h6">
+        <Typography variant="h5" mb={2}>
           {editingProduct ? 'Modifier le produit' : 'Créer un produit'}
         </Typography>
         <ProductForm

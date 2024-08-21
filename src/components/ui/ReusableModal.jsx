@@ -1,7 +1,7 @@
 import React from 'react'
 import { Modal, Paper, Box } from '@mui/material'
 
-const ReusableModal = ({ open, onClose, children, maxWidth = 600 }) => {
+const ReusableModal = ({ open, onClose, children, maxWidth = 900 }) => {
   return (
     <Modal
       open={open}

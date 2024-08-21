@@ -50,7 +50,8 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        {/* Référence - Pleine largeur */}
+        <Grid item xs={12}>
           <TextField
             name="reference"
             label="Référence"
@@ -62,6 +63,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           />
         </Grid>
 
+        {/* Fournisseur et Marque */}
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth variant="outlined">
             <InputLabel shrink={product.supplierId ? true : undefined}>
@@ -114,86 +116,16 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           </FormControl>
         </Grid>
 
+        {/* Prix d'Achat et TVA */}
         <Grid item xs={12} sm={6}>
           <TextField
             name="prixAchat"
-            label="Prix d'Achat"
+            label="Prix d'Achat (HT)"
             type="number"
             value={product.prixAchat || ''}
             onChange={handlePrixAchatChange}
             fullWidth
             variant="outlined"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isCalculatingPrice}
-                onChange={toggleCalculationMode}
-              />
-            }
-            label={
-              isCalculatingPrice ? 'Calculer prix de vente' : 'Calculer marge'
-            }
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="marge"
-            label="Marge (%)"
-            type="text"
-            value={marge.toString().replace('.', ',')}
-            onChange={handleMargeChange}
-            fullWidth
-            disabled={!isCalculatingPrice}
-            variant="outlined"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="prixVente"
-            label="Prix de Vente"
-            type="number"
-            value={product.prixVente || ''}
-            onChange={handlePrixVenteChange}
-            fullWidth
-            disabled={isCalculatingPrice}
-            variant="outlined"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="stock"
-            label="Stock"
-            type="number"
-            value={product.stock || ''}
-            onChange={handleInputChange}
-            fullWidth
-            variant="outlined"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="gencode"
-            label="GenCode"
-            value={product.gencode || ''}
-            onChange={handleInputChange}
-            fullWidth
-            variant="outlined"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <CategorySelect
-            value={selectedCategoryPath}
-            onChange={handleCategoryChange}
-            label="Catégorie"
           />
         </Grid>
 
@@ -216,16 +148,88 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           </FormControl>
         </Grid>
 
+        {/* Toggle Saisir la marge - Pleine largeur */}
         <Grid item xs={12}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={isCalculatingPrice}
+                onChange={toggleCalculationMode}
+              />
+            }
+            label={
+              isCalculatingPrice ? 'Saisir la marge' : 'Saisir le prix de vente'
+            }
+          />
+        </Grid>
+
+        {/* Marge (%) et Prix Vente */}
+        <Grid item xs={12} sm={6}>
+          <TextField
+            name="marge"
+            label="Marge (%)"
+            type="text"
+            value={marge.toString().replace('.', ',')}
+            onChange={handleMargeChange}
+            fullWidth
+            disabled={!isCalculatingPrice}
+            variant="outlined"
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            name="prixVente"
+            label="Prix vente (TTC)"
+            type="number"
+            value={product.prixVente || ''}
+            onChange={handlePrixVenteChange}
+            fullWidth
+            disabled={isCalculatingPrice}
+            variant="outlined"
+          />
+        </Grid>
+
+        {/* Catégorie et Stock */}
+        <Grid item xs={12} sm={6}>
+          <CategorySelect
+            value={selectedCategoryPath}
+            onChange={handleCategoryChange}
+            label="Catégorie"
+            size="medium"
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            name="stock"
+            label="Stock"
+            type="number"
+            value={product.stock || ''}
+            onChange={handleInputChange}
+            fullWidth
+            variant="outlined"
+          />
+        </Grid>
+
+        {/* Code-barres - Pleine largeur */}
+        <Grid item xs={12}>
+          <TextField
+            name="gencode"
+            label="Code-barres (Gencode)"
+            value={product.gencode || ''}
+            onChange={handleInputChange}
+            fullWidth
+            variant="outlined"
+          />
+        </Grid>
+
+        {/* Buttons */}
+        <Grid item xs={12} display="flex" justifyContent="space-between">
           <Button type="submit" variant="contained" color="primary">
             Enregistrer
           </Button>
-          <Button
-            onClick={onCancel}
-            variant="outlined"
-            color="secondary"
-            style={{ marginLeft: 8 }}
-          >
+          <Button onClick={onCancel} variant="outlined" color="secondary">
             Annuler
           </Button>
         </Grid>
