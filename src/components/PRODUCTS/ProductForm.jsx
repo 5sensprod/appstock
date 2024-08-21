@@ -167,7 +167,11 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSubmit({ ...product, marge }) // Enregistre la marge ou le prix de vente
+
+    // Toujours enregistrer la marge avec un point comme séparateur décimal pour la base de données
+    const formattedMarge = parseFloat(marge.toString().replace(',', '.'))
+
+    onSubmit({ ...product, marge: formattedMarge }) // Enregistre la marge en nombre
   }
 
   const selectedCategoryPath = product.categorie
@@ -264,7 +268,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             name="marge"
             label="Marge (%)"
             type="text" // Champ texte pour gérer la virgule et le point
-            value={marge?.toLocaleString('fr-FR')} // Afficher la marge avec une virgule
+            value={marge}
             onChange={handleMargeChange}
             fullWidth
             disabled={!isCalculatingPrice} // Désactiver si on calcule la marge
