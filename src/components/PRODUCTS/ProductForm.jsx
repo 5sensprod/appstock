@@ -7,16 +7,22 @@ import {
   Select,
   InputLabel,
   FormControl,
+  FormControlLabel,
+  Switch,
 } from '@mui/material'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useSuppliers } from '../../contexts/SupplierContext'
 import { TVA_RATES } from '../../utils/constants'
 import CategorySelect from '../CATEGORIES/CategorySelect'
-import { calculatePriceWithMargin } from '../../utils/calculations' // Fonction de calcul
+import {
+  calculatePriceWithMargin,
+  calculateMarginFromPrice,
+} from '../../utils/calculations'
 
 const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
   const [product, setProduct] = useState(initialProduct)
-  const [marge, setMarge] = useState(initialProduct.marge || 0) // Nouvel état pour la marge
+  const [marge, setMarge] = useState(parseFloat(initialProduct.marge) || 0)
+  const [isCalculatingPrice, setIsCalculatingPrice] = useState(true)
   const { getCategoryPath } = useCategoryContext()
   const { suppliers } = useSuppliers()
 
@@ -31,39 +37,59 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-
-    if (name === 'supplierId' && product.supplierId !== value) {
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        [name]: value,
-        marque: '',
-      }))
-    } else {
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        [name]: value,
-      }))
-    }
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      [name]: value,
+    }))
   }
 
   const handleMargeChange = (e) => {
+    let value = e.target.value
+
+    // Remplacer les virgules par des points pour les décimales
+    value = value.replace(',', '.')
+
+    // Convertir la valeur en nombre
+    const numericValue = parseFloat(value) || 0
+    setMarge(numericValue)
+
+    if (isCalculatingPrice) {
+      const prixAchat = parseFloat(product.prixAchat) || 0
+      const tvaRate = parseFloat(product.tva) || 0
+
+      if (prixAchat > 0) {
+        const prixVenteArrondi = calculatePriceWithMargin(
+          prixAchat,
+          numericValue,
+          tvaRate,
+        )
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          prixVente: prixVenteArrondi?.toFixed(2) || '', // Mise à jour du prix de vente
+        }))
+      }
+    }
+  }
+
+  const handlePrixVenteChange = (e) => {
     const value = parseFloat(e.target.value) || 0
-    setMarge(value)
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      prixVente: value,
+    }))
 
-    const prixAchat = parseFloat(product.prixAchat) || 0
-    const tvaRate = parseFloat(product.tva) || 20
+    if (!isCalculatingPrice) {
+      const prixAchat = parseFloat(product.prixAchat) || 0
+      const tvaRate = parseFloat(product.tva) || 0
 
-    if (prixAchat > 0) {
-      // Calcul du prix de vente seulement si le prix d'achat est renseigné
-      const prixVenteArrondi = calculatePriceWithMargin(
-        prixAchat,
-        value,
-        tvaRate,
-      )
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        prixVente: prixVenteArrondi?.toFixed(2) || '', // Si null, laisse vide
-      }))
+      if (prixAchat > 0 && value > 0) {
+        const calculatedMarge = calculateMarginFromPrice(
+          prixAchat,
+          value,
+          tvaRate,
+        )
+        setMarge(calculatedMarge.toFixed(2)) // Mise à jour de la marge limitée à 2 décimales
+      }
     }
   }
 
@@ -74,9 +100,74 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
     }))
   }
 
+  const handleTVAChange = (e) => {
+    const tvaRate = parseFloat(e.target.value) || 0
+
+    handleInputChange(e)
+
+    if (isCalculatingPrice) {
+      const prixAchat = parseFloat(product.prixAchat) || 0
+
+      if (prixAchat > 0) {
+        const prixVenteArrondi = calculatePriceWithMargin(
+          prixAchat,
+          marge,
+          tvaRate,
+        )
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          prixVente: prixVenteArrondi?.toFixed(2) || '',
+        }))
+      }
+    } else {
+      const prixVente = parseFloat(product.prixVente) || 0
+      const prixAchat = parseFloat(product.prixAchat) || 0
+
+      if (prixAchat > 0 && prixVente > 0) {
+        const calculatedMarge = calculateMarginFromPrice(
+          prixAchat,
+          prixVente,
+          tvaRate,
+        )
+        setMarge(calculatedMarge.toFixed(2))
+      }
+    }
+  }
+
+  const handlePrixAchatChange = (e) => {
+    handleInputChange(e)
+    const prixAchat = parseFloat(e.target.value) || 0
+    const tvaRate = parseFloat(product.tva) || 0
+
+    if (prixAchat > 0) {
+      if (isCalculatingPrice) {
+        const prixVenteArrondi = calculatePriceWithMargin(
+          prixAchat,
+          marge,
+          tvaRate,
+        )
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          prixVente: prixVenteArrondi?.toFixed(2) || '',
+        }))
+      } else {
+        const prixVente = parseFloat(product.prixVente) || 0
+
+        if (prixVente > 0) {
+          const calculatedMarge = calculateMarginFromPrice(
+            prixAchat,
+            prixVente,
+            tvaRate,
+          )
+          setMarge(calculatedMarge.toFixed(2))
+        }
+      }
+    }
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSubmit({ ...product, marge }) // Enregistre également la marge dans la base de données
+    onSubmit({ ...product, marge }) // Enregistre la marge ou le prix de vente
   }
 
   const selectedCategoryPath = product.categorie
@@ -100,24 +191,14 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             required
           />
         </Grid>
+
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <InputLabel>Fournisseur</InputLabel>
             <Select
               name="supplierId"
               value={product.supplierId || ''}
-              onChange={(e) => {
-                const { value } = e.target
-                if (value === '') {
-                  setProduct((prevProduct) => ({
-                    ...prevProduct,
-                    supplierId: '',
-                    marque: '',
-                  }))
-                } else {
-                  handleInputChange(e)
-                }
-              }}
+              onChange={handleInputChange}
               fullWidth
             >
               <MenuItem value="">
@@ -159,11 +240,22 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             label="Prix d'Achat"
             type="number"
             value={product.prixAchat || ''}
-            onChange={(e) => {
-              handleInputChange(e)
-              handleMargeChange({ target: { value: marge } }) // Recalculer la marge si prix d'achat modifié
-            }}
+            onChange={handlePrixAchatChange} // Changement du prix d'achat
             fullWidth
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={isCalculatingPrice}
+                onChange={() => setIsCalculatingPrice(!isCalculatingPrice)}
+              />
+            }
+            label={
+              isCalculatingPrice ? 'Calculer prix de vente' : 'Calculer marge'
+            }
           />
         </Grid>
 
@@ -171,10 +263,11 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           <TextField
             name="marge"
             label="Marge (%)"
-            type="number"
-            value={marge}
+            type="text" // Champ texte pour gérer la virgule et le point
+            value={marge?.toLocaleString('fr-FR')} // Afficher la marge avec une virgule
             onChange={handleMargeChange}
             fullWidth
+            disabled={!isCalculatingPrice} // Désactiver si on calcule la marge
           />
         </Grid>
 
@@ -184,9 +277,9 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             label="Prix de Vente"
             type="number"
             value={product.prixVente || ''}
-            onChange={handleInputChange}
+            onChange={handlePrixVenteChange}
             fullWidth
-            disabled // Le champ prix de vente est calculé automatiquement
+            disabled={isCalculatingPrice} // Désactiver si on calcule le prix
           />
         </Grid>
 
@@ -225,10 +318,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             <Select
               name="tva"
               value={product.tva || ''}
-              onChange={(e) => {
-                handleInputChange(e)
-                handleMargeChange({ target: { value: marge } }) // Recalculer la marge si TVA modifiée
-              }}
+              onChange={handleTVAChange} // Changement de la TVA
               fullWidth
             >
               {TVA_RATES.map((rate) => (

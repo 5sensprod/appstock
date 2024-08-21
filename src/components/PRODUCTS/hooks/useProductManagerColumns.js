@@ -27,6 +27,16 @@ const useProductManagerColumns = ({
     </IconButton>
   )
 
+  // Fonction pour formater la marge avec une virgule
+  const formatMargeFrench = (marge) => {
+    return (
+      marge?.toLocaleString('fr-FR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }) || '0,00'
+    )
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -55,7 +65,7 @@ const useProductManagerColumns = ({
         headerName: 'Marge (%)',
         width: 80,
         type: 'number',
-        valueGetter: (params) => params.row.marge || 0, // Utilise la valeur de la marge
+        valueGetter: (params) => formatMargeFrench(params.row.marge), // Formater la marge avec une virgule
       },
       {
         field: 'prixVente',
