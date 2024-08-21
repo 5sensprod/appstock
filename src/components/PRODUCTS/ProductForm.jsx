@@ -47,10 +47,13 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
     suppliers.find((supplier) => supplier._id === product.supplierId)?.brands ||
     []
 
+  const isPrixAchatEmpty =
+    !product.prixAchat || parseFloat(product.prixAchat) === 0
+
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={2}>
-        {/* Référence - Pleine largeur */}
+        {/* Première ligne */}
         <Grid item xs={12}>
           <TextField
             name="reference"
@@ -63,7 +66,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           />
         </Grid>
 
-        {/* Fournisseur et Marque */}
+        {/* Deuxième ligne */}
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth variant="outlined">
             <InputLabel shrink={product.supplierId ? true : undefined}>
@@ -116,11 +119,11 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           </FormControl>
         </Grid>
 
-        {/* Prix d'Achat et TVA */}
+        {/* Troisième ligne */}
         <Grid item xs={12} sm={6}>
           <TextField
             name="prixAchat"
-            label="Prix d'Achat (HT)"
+            label="Prix d'Achat"
             type="number"
             value={product.prixAchat || ''}
             onChange={handlePrixAchatChange}
@@ -148,22 +151,26 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           </FormControl>
         </Grid>
 
-        {/* Toggle Saisir la marge - Pleine largeur */}
+        {/* Ligne Toggle - Désactivé si prixAchat est vide */}
         <Grid item xs={12}>
           <FormControlLabel
             control={
               <Switch
                 checked={isCalculatingPrice}
                 onChange={toggleCalculationMode}
+                disabled={isPrixAchatEmpty} // Désactiver si prixAchat est vide
               />
             }
             label={
-              isCalculatingPrice ? 'Saisir la marge' : 'Saisir le prix de vente'
+              isCalculatingPrice ? 'Calculer prix de vente' : 'Calculer marge'
             }
+            style={{
+              color: isPrixAchatEmpty ? 'rgba(0, 0, 0, 0.38)' : 'inherit',
+            }} // Griser le label si désactivé
           />
         </Grid>
 
-        {/* Marge (%) et Prix Vente */}
+        {/* Ligne Marge et Prix de Vente */}
         <Grid item xs={12} sm={6}>
           <TextField
             name="marge"
@@ -172,7 +179,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             value={marge.toString().replace('.', ',')}
             onChange={handleMargeChange}
             fullWidth
-            disabled={!isCalculatingPrice}
+            disabled={!isCalculatingPrice || isPrixAchatEmpty} // Désactiver si prixAchat est vide
             variant="outlined"
           />
         </Grid>
@@ -180,7 +187,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
         <Grid item xs={12} sm={6}>
           <TextField
             name="prixVente"
-            label="Prix vente (TTC)"
+            label="Prix de Vente"
             type="number"
             value={product.prixVente || ''}
             onChange={handlePrixVenteChange}
@@ -190,13 +197,13 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           />
         </Grid>
 
-        {/* Catégorie et Stock */}
+        {/* Ligne Catégorie et Stock */}
         <Grid item xs={12} sm={6}>
           <CategorySelect
             value={selectedCategoryPath}
             onChange={handleCategoryChange}
             label="Catégorie"
-            size="medium"
+            size="medium" // S'assurer que le champ ait la même hauteur que les autres champs.
           />
         </Grid>
 
@@ -212,11 +219,11 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           />
         </Grid>
 
-        {/* Code-barres - Pleine largeur */}
+        {/* Ligne Code-barres */}
         <Grid item xs={12}>
           <TextField
             name="gencode"
-            label="Code-barres (Gencode)"
+            label="GenCode"
             value={product.gencode || ''}
             onChange={handleInputChange}
             fullWidth
@@ -224,12 +231,17 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
           />
         </Grid>
 
-        {/* Buttons */}
-        <Grid item xs={12} display="flex" justifyContent="space-between">
+        {/* Ligne Boutons */}
+        <Grid item xs={12}>
           <Button type="submit" variant="contained" color="primary">
             Enregistrer
           </Button>
-          <Button onClick={onCancel} variant="outlined" color="secondary">
+          <Button
+            onClick={onCancel}
+            variant="outlined"
+            color="secondary"
+            style={{ marginLeft: 8 }}
+          >
             Annuler
           </Button>
         </Grid>
