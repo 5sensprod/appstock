@@ -36,6 +36,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     const formattedMarge = parseFloat(marge.toString().replace(',', '.'))
+
     onSubmit({ ...product, marge: formattedMarge })
   }
 
@@ -128,7 +129,12 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             value={product.prixAchat || ''}
             onChange={handlePrixAchatChange}
             fullWidth
+            required
             variant="outlined"
+            inputProps={{
+              min: '0.01',
+              step: '0.01',
+            }}
           />
         </Grid>
 
@@ -179,6 +185,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             value={marge.toString().replace('.', ',')}
             onChange={handleMargeChange}
             fullWidth
+            required={isCalculatingPrice} // Obligatoire si toggle sur marge
             disabled={!isCalculatingPrice || isPrixAchatEmpty} // Désactiver si prixAchat est vide
             variant="outlined"
           />
@@ -192,8 +199,13 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             value={product.prixVente || ''}
             onChange={handlePrixVenteChange}
             fullWidth
+            required={!isCalculatingPrice} // Obligatoire si toggle sur prix de vente
             disabled={isCalculatingPrice}
             variant="outlined"
+            inputProps={{
+              min: '0.01',
+              step: '0.01',
+            }}
           />
         </Grid>
 

@@ -5,8 +5,18 @@ import {
 } from '../../../utils/calculations'
 
 export const useProductFormLogic = (initialProduct) => {
-  const [product, setProduct] = useState(initialProduct)
-  const [marge, setMarge] = useState(parseFloat(initialProduct.marge) || 0)
+  // Initialisation de marge avec une chaîne vide si initialProduct.marge est vide ou 0
+  const [marge, setMarge] = useState(
+    initialProduct.marge !== undefined && initialProduct.marge !== 0
+      ? parseFloat(initialProduct.marge).toString().replace('.', ',')
+      : '',
+  )
+
+  const [product, setProduct] = useState({
+    ...initialProduct,
+    prixVente: initialProduct.prixVente !== 0 ? initialProduct.prixVente : '',
+  })
+
   const [isCalculatingPrice, setIsCalculatingPrice] = useState(true)
   const isInitialMount = useRef(true)
 
@@ -27,10 +37,10 @@ export const useProductFormLogic = (initialProduct) => {
 
   const handleMargeChange = (e) => {
     let value = e.target.value.replace(',', '.')
-    const numericValue = parseFloat(value) || 0
-    setMarge(numericValue)
+    const numericValue = parseFloat(value) || ''
+    setMarge(value) // Garde la valeur brute de marge
 
-    if (isCalculatingPrice) {
+    if (isCalculatingPrice && numericValue) {
       const prixAchat = parseFloat(product.prixAchat) || 0
       const tvaRate = parseFloat(product.tva) || 0
 
@@ -49,13 +59,13 @@ export const useProductFormLogic = (initialProduct) => {
   }
 
   const handlePrixVenteChange = (e) => {
-    const value = parseFloat(e.target.value) || 0
+    const value = parseFloat(e.target.value) || ''
     setProduct((prevProduct) => ({
       ...prevProduct,
       prixVente: value,
     }))
 
-    if (!isCalculatingPrice) {
+    if (!isCalculatingPrice && value) {
       const prixAchat = parseFloat(product.prixAchat) || 0
       const tvaRate = parseFloat(product.tva) || 0
 
@@ -76,10 +86,10 @@ export const useProductFormLogic = (initialProduct) => {
     const tvaRate = parseFloat(product.tva) || 0
 
     if (prixAchat > 0) {
-      if (isCalculatingPrice) {
+      if (isCalculatingPrice && marge !== '') {
         const prixVenteArrondi = calculatePriceWithMargin(
           prixAchat,
-          marge,
+          parseFloat(marge.replace(',', '.')),
           tvaRate,
         )
         setProduct((prevProduct) => ({
@@ -104,12 +114,12 @@ export const useProductFormLogic = (initialProduct) => {
     const tvaRate = parseFloat(e.target.value) || 0
     handleInputChange(e)
 
-    if (isCalculatingPrice) {
+    if (isCalculatingPrice && marge !== '') {
       const prixAchat = parseFloat(product.prixAchat) || 0
       if (prixAchat > 0) {
         const prixVenteArrondi = calculatePriceWithMargin(
           prixAchat,
-          marge,
+          parseFloat(marge.replace(',', '.')),
           tvaRate,
         )
         setProduct((prevProduct) => ({

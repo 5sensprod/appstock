@@ -31,6 +31,8 @@ const BulkEditForm = ({ onSubmit, onCancel, selectedProducts }) => {
     stock: '',
     tva: '',
     categorie: '',
+    supplierId: '',
+    marque: '',
   })
 
   const { suppliers } = useSuppliers()
@@ -42,6 +44,16 @@ const BulkEditForm = ({ onSubmit, onCancel, selectedProducts }) => {
       ...bulkData,
       [e.target.name]: e.target.value,
     })
+  }
+
+  // Gère la sélection du fournisseur et réinitialise la marque si le fournisseur change
+  const handleSupplierChange = (e) => {
+    const { value } = e.target
+    setBulkData((prevData) => ({
+      ...prevData,
+      supplierId: value,
+      marque: '', // Réinitialiser la marque lorsque le fournisseur change
+    }))
   }
 
   // Gère la soumission du formulaire
@@ -79,6 +91,12 @@ const BulkEditForm = ({ onSubmit, onCancel, selectedProducts }) => {
         if (bulkData.categorie !== '') {
           changes.categorie = bulkData.categorie
         }
+        if (bulkData.supplierId !== '') {
+          changes.supplierId = bulkData.supplierId
+        }
+        if (bulkData.marque !== '') {
+          changes.marque = bulkData.marque
+        }
 
         return { id: productId, changes }
       })
@@ -87,6 +105,11 @@ const BulkEditForm = ({ onSubmit, onCancel, selectedProducts }) => {
     // Appelle la fonction onSubmit avec les modifications
     onSubmit(updates)
   }
+
+  // Obtenir les marques disponibles en fonction du fournisseur sélectionné
+  const availableBrands =
+    suppliers.find((supplier) => supplier._id === bulkData.supplierId)
+      ?.brands || []
 
   return (
     <Box component="form" onSubmit={handleSubmit}>
@@ -111,6 +134,40 @@ const BulkEditForm = ({ onSubmit, onCancel, selectedProducts }) => {
         fullWidth
         margin="normal"
       />
+
+      {/* Sélection du Fournisseur */}
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Fournisseur</InputLabel>
+        <Select
+          name="supplierId"
+          value={bulkData.supplierId}
+          onChange={handleSupplierChange}
+        >
+          <MenuItem value="">
+            <em>Aucun</em>
+          </MenuItem>
+          {suppliers.map((supplier) => (
+            <MenuItem key={supplier._id} value={supplier._id}>
+              {supplier.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* Sélection de la Marque */}
+      <FormControl fullWidth margin="normal" disabled={!availableBrands.length}>
+        <InputLabel>Marque</InputLabel>
+        <Select name="marque" value={bulkData.marque} onChange={handleChange}>
+          <MenuItem value="">
+            <em>Aucun</em>
+          </MenuItem>
+          {availableBrands.map((brand) => (
+            <MenuItem key={brand} value={brand}>
+              {brand}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
       {/* Sélection de la Catégorie via CategorySelect */}
       <CategorySelect
