@@ -4,6 +4,7 @@ import { useCategoryContext } from '../../../contexts/CategoryContext'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { IconButton } from '@mui/material'
+import { formatPriceFrench } from '../../../utils/priceUtils' // Importer la fonction de formatage
 
 const useProductManagerColumns = ({
   suppliers,
@@ -42,8 +43,27 @@ const useProductManagerColumns = ({
         filterable: false,
       },
       { field: 'reference', headerName: 'Référence', width: 200 },
-      { field: 'prixAchat', headerName: 'Px Achat', width: 80, type: 'number' },
-      { field: 'prixVente', headerName: 'Px Vente', width: 80, type: 'number' },
+      {
+        field: 'prixAchat',
+        headerName: 'Px Achat',
+        width: 80,
+        type: 'number',
+        valueGetter: (params) => formatPriceFrench(params.row.prixAchat), // Formater le prix d'achat
+      },
+      {
+        field: 'marge',
+        headerName: 'Marge (%)',
+        width: 80,
+        type: 'number',
+        valueGetter: (params) => params.row.marge || 0, // Utilise la valeur de la marge
+      },
+      {
+        field: 'prixVente',
+        headerName: 'Px Vente',
+        width: 80,
+        type: 'number',
+        valueGetter: (params) => formatPriceFrench(params.row.prixVente), // Formater le prix de vente
+      },
       { field: 'stock', headerName: 'Stock', width: 90, type: 'number' },
       {
         field: 'categorie',

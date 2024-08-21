@@ -104,3 +104,17 @@ export const recalculateTotalTaxFromHTandTTC = (
 ) => {
   return discountedTTC - recalculatedHT
 }
+
+export const formatPriceFrench = (price) => {
+  const numericPrice = Number(price)
+
+  if (isNaN(numericPrice)) {
+    console.error('formatPriceFrench a reçu une entrée non valide.')
+    return 'Prix invalide'
+  }
+
+  return numericPrice.toLocaleString('fr-FR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}

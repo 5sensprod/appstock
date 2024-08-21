@@ -12,62 +12,77 @@ import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useSuppliers } from '../../contexts/SupplierContext'
 import { TVA_RATES } from '../../utils/constants'
 import CategorySelect from '../CATEGORIES/CategorySelect'
+import { calculatePriceWithMargin } from '../../utils/calculations' // Fonction de calcul
 
 const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
   const [product, setProduct] = useState(initialProduct)
+  const [marge, setMarge] = useState(initialProduct.marge || 0) // Nouvel état pour la marge
   const { getCategoryPath } = useCategoryContext()
   const { suppliers } = useSuppliers()
 
-  // Ref to check if it's the first render
   const isInitialMount = useRef(true)
 
-  // Mettre à jour l'état du produit seulement à l'initialisation ou lors de l'édition, mais pas lors de changements normaux de catégorie
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false
-      setProduct(initialProduct) // Set initial product on mount
+      setProduct(initialProduct)
     }
   }, [initialProduct])
 
-  // Gère la modification des champs du formulaire
   const handleInputChange = (e) => {
     const { name, value } = e.target
 
-    // Si le fournisseur change, réinitialiser la marque
     if (name === 'supplierId' && product.supplierId !== value) {
       setProduct((prevProduct) => ({
         ...prevProduct,
         [name]: value,
-        marque: '', // Réinitialiser uniquement la marque
+        marque: '',
       }))
     } else {
       setProduct((prevProduct) => ({
         ...prevProduct,
-        [name]: value, // Mise à jour partielle, conserve les autres champs
+        [name]: value,
       }))
     }
   }
 
-  // Gère la modification de la catégorie via CategorySelect
+  const handleMargeChange = (e) => {
+    const value = parseFloat(e.target.value) || 0
+    setMarge(value)
+
+    const prixAchat = parseFloat(product.prixAchat) || 0
+    const tvaRate = parseFloat(product.tva) || 20
+
+    if (prixAchat > 0) {
+      // Calcul du prix de vente seulement si le prix d'achat est renseigné
+      const prixVenteArrondi = calculatePriceWithMargin(
+        prixAchat,
+        value,
+        tvaRate,
+      )
+      setProduct((prevProduct) => ({
+        ...prevProduct,
+        prixVente: prixVenteArrondi?.toFixed(2) || '', // Si null, laisse vide
+      }))
+    }
+  }
+
   const handleCategoryChange = (categoryId) => {
     setProduct((prevProduct) => ({
       ...prevProduct,
-      categorie: categoryId, // Ne modifie que la catégorie
+      categorie: categoryId,
     }))
   }
 
-  // Gère l'envoi du formulaire
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSubmit(product) // Envoie le produit au parent
+    onSubmit({ ...product, marge }) // Enregistre également la marge dans la base de données
   }
 
-  // Obtenez le chemin de la catégorie pour l'affichage
   const selectedCategoryPath = product.categorie
     ? getCategoryPath(product.categorie)
     : ''
 
-  // Obtenez les marques disponibles en fonction du fournisseur sélectionné
   const availableBrands =
     suppliers.find((supplier) => supplier._id === product.supplierId)?.brands ||
     []
@@ -97,7 +112,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
                   setProduct((prevProduct) => ({
                     ...prevProduct,
                     supplierId: '',
-                    marque: '', // Réinitialiser la marque
+                    marque: '',
                   }))
                 } else {
                   handleInputChange(e)
@@ -137,16 +152,32 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item xs={12} sm={6}>
           <TextField
             name="prixAchat"
             label="Prix d'Achat"
             type="number"
             value={product.prixAchat || ''}
-            onChange={handleInputChange}
+            onChange={(e) => {
+              handleInputChange(e)
+              handleMargeChange({ target: { value: marge } }) // Recalculer la marge si prix d'achat modifié
+            }}
             fullWidth
           />
         </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            name="marge"
+            label="Marge (%)"
+            type="number"
+            value={marge}
+            onChange={handleMargeChange}
+            fullWidth
+          />
+        </Grid>
+
         <Grid item xs={12} sm={6}>
           <TextField
             name="prixVente"
@@ -155,8 +186,10 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             value={product.prixVente || ''}
             onChange={handleInputChange}
             fullWidth
+            disabled // Le champ prix de vente est calculé automatiquement
           />
         </Grid>
+
         <Grid item xs={12} sm={6}>
           <TextField
             name="stock"
@@ -167,6 +200,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             fullWidth
           />
         </Grid>
+
         <Grid item xs={12} sm={6}>
           <TextField
             name="gencode"
@@ -176,21 +210,25 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             fullWidth
           />
         </Grid>
+
         <Grid item xs={12} sm={6}>
-          {/* Utilisation de CategorySelect pour la sélection de catégorie */}
           <CategorySelect
-            value={selectedCategoryPath} // Affiche le chemin complet de la catégorie
-            onChange={handleCategoryChange} // Met à jour uniquement la catégorie sélectionnée
+            value={selectedCategoryPath}
+            onChange={handleCategoryChange}
             label="Catégorie"
           />
         </Grid>
+
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <InputLabel>TVA</InputLabel>
             <Select
               name="tva"
               value={product.tva || ''}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                handleInputChange(e)
+                handleMargeChange({ target: { value: marge } }) // Recalculer la marge si TVA modifiée
+              }}
               fullWidth
             >
               {TVA_RATES.map((rate) => (
@@ -201,6 +239,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item xs={12}>
           <Button type="submit" variant="contained" color="primary">
             Enregistrer
