@@ -153,6 +153,65 @@ export const useProductFormLogic = (initialProduct) => {
     setIsCalculatingPrice((prev) => !prev)
   }
 
+  const handleGenerateGencode = () => {
+    const newGencode = generateGencodeFromReferenceAndDate(product.reference)
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      gencode: newGencode,
+    }))
+  }
+
+  const generateGencodeFromReferenceAndDate = (reference) => {
+    // Extraire les consonnes de la référence
+    const extractConsonants = (str) => {
+      return str
+        .replace(/[^a-zA-Z]/g, '') // Supprime les caractères non alphabétiques
+        .replace(/[aeiouyAEIOUY]/g, '') // Supprime les voyelles
+        .toUpperCase()
+    }
+
+    let consonants = extractConsonants(reference || '')
+
+    // Si pas de consonnes, utiliser 'XXX'
+    if (consonants.length === 0) {
+      consonants = 'XXX'
+    }
+
+    // Déterminer la taille des lots (entre 3 et 6)
+    const batchSize = Math.min(
+      Math.max(Math.floor(consonants.length / 2), 3),
+      6,
+    )
+
+    const batch1 = consonants.substring(0, batchSize)
+    const batch2 = consonants.substring(batchSize, batchSize * 2)
+
+    // Compléter avec 'X' si nécessaire
+    const padWithX = (str, size) => {
+      return str.padEnd(size, 'X')
+    }
+
+    const finalBatch1 = padWithX(batch1, batchSize)
+    const finalBatch2 = padWithX(batch2, batchSize)
+
+    // Utiliser la date de création pour la partie numérique
+    const date = initialProduct.dateSoumission
+      ? new Date(initialProduct.dateSoumission)
+      : new Date()
+
+    const datePart =
+      date.getFullYear().toString().substr(-2) + // Deux derniers chiffres de l'année
+      ('0' + (date.getMonth() + 1)).slice(-2) + // Mois avec zéro devant
+      ('0' + date.getDate()).slice(-2) // Jour avec zéro devant
+
+    // Utiliser les 4 derniers chiffres de la date
+    const numericalPart = datePart.substr(-4)
+
+    // Combiner toutes les parties
+    const gencode = `${finalBatch1}-${finalBatch2}-${numericalPart}`
+    return gencode
+  }
+
   return {
     product,
     marge,
@@ -164,5 +223,6 @@ export const useProductFormLogic = (initialProduct) => {
     handleTVAChange,
     handleCategoryChange,
     toggleCalculationMode,
+    handleGenerateGencode,
   }
 }

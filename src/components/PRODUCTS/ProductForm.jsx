@@ -9,7 +9,11 @@ import {
   FormControl,
   FormControlLabel,
   Switch,
+  InputAdornment,
+  IconButton,
+  Tooltip,
 } from '@mui/material'
+import AutorenewIcon from '@mui/icons-material/Autorenew'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useSuppliers } from '../../contexts/SupplierContext'
 import { TVA_RATES } from '../../utils/constants'
@@ -28,6 +32,7 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
     handleTVAChange,
     handleCategoryChange,
     toggleCalculationMode,
+    handleGenerateGencode,
   } = useProductFormLogic(initialProduct)
 
   const { getCategoryPath } = useCategoryContext()
@@ -240,6 +245,30 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             onChange={handleInputChange}
             fullWidth
             variant="outlined"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Tooltip
+                    title={
+                      !product.reference
+                        ? 'Veuillez remplir le champ Référence pour générer le gencode'
+                        : 'Générer le gencode à partir de la référence'
+                    }
+                  >
+                    <span>
+                      {/* Le span est nécessaire pour que le Tooltip fonctionne avec un bouton désactivé */}
+                      <IconButton
+                        onClick={handleGenerateGencode}
+                        edge="end"
+                        disabled={!product.reference}
+                      >
+                        <AutorenewIcon />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                </InputAdornment>
+              ),
+            }}
           />
         </Grid>
 
