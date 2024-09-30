@@ -54,6 +54,11 @@ const useProductManagerColumns = ({
       },
       { field: 'reference', headerName: 'Référence', width: 200 },
       {
+        field: 'designation',
+        headerName: 'Désignation',
+        width: 200,
+      },
+      {
         field: 'prixAchat',
         headerName: 'Px Achat',
         width: 80,

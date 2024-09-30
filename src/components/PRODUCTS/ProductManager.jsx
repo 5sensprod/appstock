@@ -20,6 +20,12 @@ import 'jspdf-autotable'
 import { formatPriceFrench } from '../../utils/priceUtils'
 import { formatDateFrench } from '../../utils/dateUtils'
 import { useUI } from '../../contexts/UIContext'
+import GenerateCodesForm from './GenerateCodesForm'
+import html2canvas from 'html2canvas'
+
+import JsBarcode from 'jsbarcode'
+import { QRCodeCanvas } from 'qrcode.react'
+import { createRoot } from 'react-dom/client'
 
 const ProductManager = ({ selectedCategoryId }) => {
   const { products } = useProductContextSimplified() // Récupération des produits depuis le contexte
@@ -28,6 +34,17 @@ const ProductManager = ({ selectedCategoryId }) => {
   const { gridPreferences, updatePreferences } = useGridPreferences() // Récupérer et mettre à jour les préférences de grille
   const { showToast } = useUI()
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)
+
+  const [isGenerateCodesModalOpen, setIsGenerateCodesModalOpen] =
+    useState(false)
+
+  const handleGenerateCodesModalOpen = () => {
+    setIsGenerateCodesModalOpen(true)
+  }
+
+  const handleGenerateCodesModalClose = () => {
+    setIsGenerateCodesModalOpen(false)
+  }
 
   const handleExportModalOpen = () => {
     setIsExportModalOpen(true)
@@ -182,6 +199,105 @@ const ProductManager = ({ selectedCategoryId }) => {
     handleExportModalClose()
   }
 
+  const handleGenerateCodesSubmit = async ({ codeType, height }) => {
+    const heightInPixels = height * 3.7795275591
+
+    // Récupérer les produits sélectionnés
+    const selectedProducts = products.filter((product) =>
+      rowSelectionModel.includes(product._id),
+    )
+
+    let codesGenerated = false
+
+    for (const product of selectedProducts) {
+      const gencode = product.gencode || ''
+      if (!gencode) {
+        continue
+      }
+
+      codesGenerated = true
+
+      const fileName = `${product.reference || 'produit'}_${gencode}_${codeType}.png`
+
+      let codeElement
+
+      if (codeType === 'barcode') {
+        // Créer un canvas pour le code-barres
+        const canvas = document.createElement('canvas')
+        JsBarcode(canvas, gencode, {
+          format: 'CODE128',
+          height: heightInPixels,
+          displayValue: true,
+        })
+        codeElement = canvas
+      } else {
+        // Utiliser QRCodeCanvas pour le QR code
+        codeElement = (
+          <QRCodeCanvas
+            id="qrCode"
+            value={gencode}
+            size={heightInPixels}
+            includeMargin={true}
+          />
+        )
+      }
+
+      // Convertir l'élément en image
+      await generateImageFromElement(codeElement, fileName)
+    }
+
+    if (codesGenerated) {
+      showToast('Images générées avec succès', 'success')
+    } else {
+      showToast(
+        "Aucun code généré : les produits sélectionnés n'ont pas de gencode",
+        'warning',
+      )
+    }
+
+    // Fermer le modal
+    handleGenerateCodesModalClose()
+  }
+
+  const generateImageFromElement = async (element, fileName) => {
+    // Créer un conteneur div pour l'élément
+    const container = document.createElement('div')
+    container.style.position = 'fixed'
+    container.style.top = '-10000px' // Hors de la vue
+    document.body.appendChild(container)
+
+    // Ajouter l'élément au conteneur
+    if (element instanceof HTMLCanvasElement) {
+      container.appendChild(element)
+    } else {
+      // Rendre l'élément React dans le conteneur
+      const root = createRoot(container)
+      root.render(element)
+      // Attendre que le composant soit rendu
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+
+    // Utiliser html2canvas pour convertir en image
+    const canvas = await html2canvas(container, {
+      backgroundColor: null,
+      scale: 2, // Meilleure résolution
+    })
+
+    // Convertir le canvas en Data URL
+    const dataUrl = canvas.toDataURL('image/png')
+
+    // Créer un lien pour le téléchargement
+    const link = document.createElement('a')
+    link.href = dataUrl
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    // Nettoyer le conteneur
+    document.body.removeChild(container)
+  }
+
   const availableFields = {
     reference: 'Référence',
     prixAchat: "Prix d'Achat",
@@ -225,6 +341,16 @@ const ProductManager = ({ selectedCategoryId }) => {
           style={{ marginLeft: 16 }}
         >
           Exporter
+        </Button>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleGenerateCodesModalOpen}
+          disabled={rowSelectionModel.length < 1}
+          style={{ marginLeft: 16 }}
+        >
+          Générer Codes
         </Button>
       </Box>
 
@@ -302,6 +428,16 @@ const ProductManager = ({ selectedCategoryId }) => {
           onSubmit={handleExportSubmit}
           onCancel={handleExportModalClose}
           availableFields={availableFields}
+        />
+      </ReusableModal>
+
+      <ReusableModal
+        open={isGenerateCodesModalOpen}
+        onClose={handleGenerateCodesModalClose}
+      >
+        <GenerateCodesForm
+          onSubmit={handleGenerateCodesSubmit}
+          onCancel={handleGenerateCodesModalClose}
         />
       </ReusableModal>
     </Box>

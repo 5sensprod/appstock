@@ -71,6 +71,18 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
             variant="outlined"
           />
         </Grid>
+        {/* Champ Désignation */}
+        <Grid item xs={12}>
+          <TextField
+            name="designation"
+            label="Désignation"
+            value={product.designation || ''}
+            onChange={handleInputChange}
+            fullWidth
+            // required
+            variant="outlined"
+          />
+        </Grid>
 
         {/* Deuxième ligne */}
         <Grid item xs={12} sm={6}>
