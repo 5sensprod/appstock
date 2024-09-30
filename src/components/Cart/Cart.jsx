@@ -58,13 +58,18 @@ const Cart = () => {
       const lastItem = cartItems[cartItems.length - 1]
       console.log('lastItem:', lastItem)
       console.log('lastItem.prixVente:', lastItem.prixVente)
+
+      const quantity = lastItem.quantity || 1
       let prixVente = parseFloat(lastItem.prixVente)
       if (isNaN(prixVente)) {
         prixVente = 0
       }
 
-      // Formater le prix sans séparateur de milliers
-      const formattedPrice = prixVente
+      // Calculer le sous-total (prix unitaire * quantité)
+      const subtotal = prixVente * quantity
+
+      // Formater le sous-total sans séparateur de milliers
+      const formattedSubtotal = subtotal
         .toLocaleString('fr-FR', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
@@ -72,21 +77,52 @@ const Cart = () => {
         })
         .replace('.', ',') // Remplace le point décimal par une virgule
 
-      // Envoyer les données brutes sans supprimer les accents
+      // Préparer le texte de la quantité
+      const quantityText = ` X${quantity}` // Avec un espace avant pour la lisibilité
+
+      // Calculer l'espace disponible pour la référence du produit
+      const maxLineLength = 20
+      let productReference = lastItem.reference || 'Produit'
+      const availableSpace = maxLineLength - quantityText.length
+
+      // Tronquer la référence du produit si nécessaire
+      if (productReference.length > availableSpace) {
+        productReference = productReference.substring(0, availableSpace)
+      }
+
+      // Construire la première ligne avec la référence du produit et la quantité
+      const line1 = productReference + quantityText
+
+      // Centrer le prix sur la deuxième ligne
+      const priceText = `${formattedSubtotal} EUR`
+      const priceTextLength = priceText.length
+      const totalPadding = maxLineLength - priceTextLength
+
+      // S'assurer que le totalPadding n'est pas négatif
+      const safeTotalPadding = totalPadding > 0 ? totalPadding : 0
+
+      const paddingLeft = Math.floor(safeTotalPadding / 2)
+      const paddingRight = safeTotalPadding - paddingLeft
+
+      const line2 =
+        ' '.repeat(paddingLeft) + priceText + ' '.repeat(paddingRight)
+
+      // Préparer les données à envoyer à l'écran LCD
       const data = {
-        line1: lastItem.reference || 'Produit',
-        line2: `Prix : ${formattedPrice} EUR`,
+        line1: line1,
+        line2: line2,
       }
       console.log("Données envoyées à l'écran LCD:", data)
       updateLcdDisplay(data)
     } else {
       const data = {
-        line1: 'Panier vide',
-        line2: '',
+        line1: 'AXE MUSIQUE',
+        line2: 'Panier vide',
       }
       updateLcdDisplay(data)
     }
   }, [cartItems])
+
   return (
     <>
       <Grid container spacing={2}>

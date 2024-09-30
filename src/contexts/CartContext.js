@@ -188,12 +188,15 @@ export const CartProvider = ({ children }) => {
         const newItems = [...currentItems]
         newItems[existingItemIndex] = {
           ...newItems[existingItemIndex],
-          quantity: newItems[existingItemIndex].quantity + 1, // Assurez-vous que la quantité est mise à jour
+          quantity: newItems[existingItemIndex].quantity + 1, // Mise à jour de la quantité
         }
         return newItems.map((item) => enrichCartItem(item)) // Re-enrichissement des articles
       } else {
         // Nouvel article, définir la quantité à 1
-        return [...currentItems, enrichCartItem({ ...product, quantity: 1 })] // Ajouter l'article avec la quantité initialisée à 1
+        return [
+          ...currentItems,
+          enrichCartItem({ ...product, quantity: 1 }), // Ajout de l'article avec quantité initiale à 1
+        ]
       }
     })
     setHasChanges(true)
