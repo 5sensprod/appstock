@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { CartContext } from '../../contexts/CartContext'
 import CartItem from './CartItem'
 import OrderSummary from '../OrderSummary/OrderSummary'
@@ -12,6 +12,7 @@ import { useHoldInvoiceContext } from '../../contexts/HoldInvoiceContext'
 import InvoiceConfirmationModal from '../invoice/InvoiceConfirmationModal'
 import { useQuoteLogic } from '../../hooks/useQuoteLogic'
 import { useUI } from '../../contexts/UIContext'
+import { updateLcdDisplay } from '../../ipcHelper'
 
 const Cart = () => {
   const {
@@ -51,6 +52,41 @@ const Cart = () => {
     showToast('Facture mise en attente avec succès.', 'success')
   }
 
+  // Utiliser useEffect pour envoyer les données à l'écran LCD lorsque le panier change
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      const lastItem = cartItems[cartItems.length - 1]
+      console.log('lastItem:', lastItem)
+      console.log('lastItem.prixVente:', lastItem.prixVente)
+      let prixVente = parseFloat(lastItem.prixVente)
+      if (isNaN(prixVente)) {
+        prixVente = 0
+      }
+
+      // Formater le prix sans séparateur de milliers
+      const formattedPrice = prixVente
+        .toLocaleString('fr-FR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+          useGrouping: false, // Désactive le séparateur de milliers
+        })
+        .replace('.', ',') // Remplace le point décimal par une virgule
+
+      // Envoyer les données brutes sans supprimer les accents
+      const data = {
+        line1: lastItem.reference || 'Produit',
+        line2: `Prix : ${formattedPrice} EUR`,
+      }
+      console.log("Données envoyées à l'écran LCD:", data)
+      updateLcdDisplay(data)
+    } else {
+      const data = {
+        line1: 'Panier vide',
+        line2: '',
+      }
+      updateLcdDisplay(data)
+    }
+  }, [cartItems])
   return (
     <>
       <Grid container spacing={2}>

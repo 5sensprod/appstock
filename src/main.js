@@ -15,9 +15,9 @@ let mainWindow
 const logToFile = require('./logger')
 const config = require('../config.json')
 const schedule = require('node-schedule')
+const { SerialPort } = require('serialport')
 
 const SftpClient = require('electron-ssh2-sftp-client')
-
 const formatDate = () => {
   const date = new Date()
   return date.toISOString().split('T')[0].replace(/-/g, '')
@@ -161,6 +161,58 @@ const scheduleExport = () => {
   })
 }
 
+ipcMain.on('update-lcd', (event, data) => {
+  // Appeler la fonction pour envoyer les données à l'écran LCD
+  sendToLcd(data)
+})
+
+let port // Assurez-vous que le port série est accessible globalement
+
+function sendToLcd(data) {
+  if (port && port.isOpen) {
+    // Formater le message pour l'écran LCD
+    const message = formatLcdMessage(data)
+    console.log("Message formaté pour l'écran LCD:", message)
+    // Envoyer la commande pour effacer l'écran
+    const clearCommand = Buffer.from([0x0c]) // Commande pour effacer l'écran
+    port.write(clearCommand, function (err) {
+      if (err) {
+        return console.log(
+          "Erreur lors de l'envoi de la commande d'effacement : ",
+          err.message,
+        )
+      }
+      // Attendre un court instant avant d'envoyer le message
+      setTimeout(() => {
+        port.write(message, function (err) {
+          if (err) {
+            return console.log(
+              "Erreur lors de l'écriture sur le port série : ",
+              err.message,
+            )
+          }
+          console.log("Message envoyé à l'écran LCD : ", message)
+        })
+      }, 100) // Délai de 100ms
+    })
+  } else {
+    console.log("Le port série n'est pas ouvert.")
+  }
+}
+
+function removeAccents(str) {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
+
+function formatLcdMessage(data) {
+  // Supprimer les accents des lignes
+  const line1Clean = removeAccents(data.line1)
+  const line2Clean = removeAccents(data.line2)
+  // Limiter les lignes à 20 caractères
+  const line1 = line1Clean.padEnd(20).substring(0, 20)
+  const line2 = line2Clean.padEnd(20).substring(0, 20)
+  return `${line1}${line2}`
+}
 async function initializeApp() {
   // Récupération de l'adresse IP actuelle
   const currentIp = await getLocalIPv4Address()
@@ -201,6 +253,57 @@ async function initializeApp() {
     mainWindow.webContents.send('localIp', currentIp)
   })
 
+  // Ouvrir le port série COM10 et envoyer un message à l'écran LCD
+  port = new SerialPort({
+    path: 'COM10',
+    baudRate: 9600,
+    dataBits: 8,
+    parity: 'none',
+    stopBits: 1,
+    flowControl: false,
+    autoOpen: false, // Contrôle manuel de l'ouverture du port
+  })
+
+  // Gestion des erreurs du port série
+  port.on('error', function (err) {
+    console.log('Erreur du port série : ', err.message)
+  })
+
+  // Ouvrir le port série
+  port.open(function (err) {
+    if (err) {
+      return console.log("Erreur lors de l'ouverture du port : ", err.message)
+    }
+    console.log('Port série ouvert sur COM10')
+
+    // Envoi de la commande pour effacer l'écran
+    const clearCommand = Buffer.from([0x0c]) // Commande pour effacer l'écran, ajustez en fonction de votre écran
+
+    port.write(clearCommand, function (err) {
+      if (err) {
+        return console.log(
+          "Erreur lors de l'envoi de la commande d'effacement : ",
+          err.message,
+        )
+      }
+      console.log("Commande d'effacement envoyée à l'écran LCD")
+
+      // Attendre un court instant pour que l'écran ait le temps de se nettoyer
+      setTimeout(() => {
+        const message = 'AXE MUSIQUE \r\nBIENVENUE'
+        port.write(message, function (err) {
+          if (err) {
+            return console.log(
+              "Erreur lors de l'écriture sur le port série : ",
+              err.message,
+            )
+          }
+          console.log("Message envoyé à l'écran LCD : ", message)
+        })
+      }, 100) // Délai de 100ms
+    })
+  })
+
   scheduleExport()
 }
 
@@ -230,6 +333,18 @@ app.on('ready', () => {
     initializeApp().catch((error) => {
       console.error("Erreur lors de l'initialisation de l'application:", error)
     })
+  }
+})
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow()
   }
 })
 

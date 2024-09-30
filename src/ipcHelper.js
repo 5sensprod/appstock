@@ -56,3 +56,17 @@ export const openExternalLink = (url) => {
     )
   }
 }
+
+export const updateLcdDisplay = (data) => {
+  if (window.electron) {
+    try {
+      window.electron.ipcRenderer.send('update-lcd', data)
+    } catch (error) {
+      console.error("Erreur lors de l'envoi des données à l'écran LCD :", error)
+    }
+  } else {
+    console.log(
+      "Contexte Electron non disponible. Impossible d'envoyer les données à l'écran LCD.",
+    )
+  }
+}
