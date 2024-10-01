@@ -1,9 +1,9 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
-const path = require('path')
+const { app, BrowserWindow, dialog } = require('electron')
+// const path = require('path')
 const { setupIpcHandlers } = require('./main/ipcHandlers')
 const { initializeApp } = require('./main/appInitialization')
-const Store = require('electron-store')
-const store = new Store()
+// const Store = require('electron-store')
+// const store = new Store()
 let mainWindow
 
 function createWindow() {

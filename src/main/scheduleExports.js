@@ -15,7 +15,7 @@ function getDatabasePaths() {
 }
 
 function scheduleExport() {
-  schedule.scheduleJob('35 23 * * 1-6', async () => {
+  schedule.scheduleJob('30 18 * * 1-6', async () => {
     try {
       const dbPaths = getDatabasePaths()
       for (const [dbName, dbPath] of Object.entries(dbPaths)) {
