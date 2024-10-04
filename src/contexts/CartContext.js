@@ -5,6 +5,7 @@ import {
   calculateTax,
   applyCartDiscountOrMarkup,
 } from '../utils/priceUtils'
+import { updateLcdDisplay } from '../ipcHelper'
 
 export const CartContext = createContext()
 
@@ -230,6 +231,60 @@ export const CartProvider = ({ children }) => {
     )
     setHasChanges(true)
   }
+
+  // Utiliser useEffect dans le contexte pour surveiller les modifications du panier
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      const lastItem = cartItems[cartItems.length - 1]
+      const quantity = lastItem.quantity || 1
+      let prixVente = parseFloat(lastItem.prixVente)
+      if (isNaN(prixVente)) {
+        prixVente = 0
+      }
+
+      const subtotal = prixVente * quantity
+      const formattedSubtotal = subtotal
+        .toLocaleString('fr-FR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+          useGrouping: false,
+        })
+        .replace('.', ',')
+
+      const quantityText = ` X${quantity}`
+      const maxLineLength = 20
+      let productReference = lastItem.reference || 'Produit'
+      const availableSpace = maxLineLength - quantityText.length
+
+      if (productReference.length > availableSpace) {
+        productReference = productReference.substring(0, availableSpace)
+      }
+
+      const line1 = productReference + quantityText
+      const priceText = `${formattedSubtotal} EUR`
+      const priceTextLength = priceText.length
+      const totalPadding = maxLineLength - priceTextLength
+      const safeTotalPadding = totalPadding > 0 ? totalPadding : 0
+      const paddingLeft = Math.floor(safeTotalPadding / 2)
+      const paddingRight = safeTotalPadding - paddingLeft
+
+      const line2 =
+        ' '.repeat(paddingLeft) + priceText + ' '.repeat(paddingRight)
+
+      const data = {
+        line1: line1,
+        line2: line2,
+      }
+
+      updateLcdDisplay(data)
+    } else {
+      const data = {
+        line1: 'AXE MUSIQUE',
+        line2: 'Panier vide',
+      }
+      updateLcdDisplay(data)
+    }
+  }, [cartItems])
 
   // Vider panier
   const clearCart = () => {
