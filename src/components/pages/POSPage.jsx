@@ -1,6 +1,6 @@
 import React from 'react'
 import { Grid, Typography, Box } from '@mui/material'
-import ProductPOS from '../product/ProductPOS'
+import ProductPOS from '../productPOS/ProductPOS'
 import Cart from '../Cart/Cart'
 import { useQuotes } from '../../contexts/QuoteContext'
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Box, Stack, Pagination, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useProductContext } from '../../contexts/ProductContext'
@@ -49,7 +49,7 @@ const CustomPagination = ({
   )
 }
 
-const ProductGallery = ({ products }) => {
+const ProductCatalog = ({ products }) => {
   const { baseUrl } = useConfig()
   const { getParentCategoryName } = useProductContext()
   const navigate = useNavigate()
@@ -131,4 +131,4 @@ const ProductGallery = ({ products }) => {
   )
 }
 
-export default ProductGallery
+export default ProductCatalog

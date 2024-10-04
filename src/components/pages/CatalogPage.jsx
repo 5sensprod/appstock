@@ -1,15 +1,15 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useProductContext } from '../../contexts/ProductContext'
-import ProductSearch from '../product/ProductSearch'
+import ProductSearch from '../productPOS/ProductSearch'
 import SelectCategory from '../category/SelectCategory'
 import useSearch from '../hooks/useSearch'
-import ProductGallery from '../product/ProductGallery'
+import ProductCatalog from '../productPOS/ProductCatalog'
 import { Box } from '@mui/material'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 
-const CatalogPageSimple = () => {
+const CatalogPage = () => {
   const { products, searchTerm, selectedCategoryId, handleCategoryChange } =
     useProductContext()
 
@@ -48,7 +48,7 @@ const CatalogPageSimple = () => {
           <ProductSearch />
         </Box>
       </Box>
-      <ProductGallery
+      <ProductCatalog
         products={filteredProducts}
         redirectToEdit={redirectToEdit}
       />
@@ -56,4 +56,4 @@ const CatalogPageSimple = () => {
   )
 }
 
-export default CatalogPageSimple
+export default CatalogPage
