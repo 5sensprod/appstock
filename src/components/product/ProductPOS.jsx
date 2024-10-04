@@ -7,7 +7,7 @@ import { useProductContext } from '../../contexts/ProductContext'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { Box, Typography } from '@mui/material'
 
-const ProductManager = () => {
+const ProductPOS = () => {
   const {
     searchTerm,
     selectedCategoryId,
@@ -59,4 +59,4 @@ const ProductManager = () => {
   )
 }
 
-export default ProductManager
+export default ProductPOS

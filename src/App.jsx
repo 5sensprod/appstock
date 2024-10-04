@@ -13,9 +13,7 @@ import CategoryPage from './components/pages/CategoryPage'
 import ClientPage from './components/pages/ClientPage'
 import InvoicePage from './components/pages/InvoicePage'
 import MainLayout from './components/layout/MainLayout'
-import CreateProductPage from './components/pages/CreateProductPage'
 import EditProductPage from './components/pages/EditProductPage'
-import MobilPage from './components/pages/MobilPage'
 import ProductPage from './components/pages/ProductPage'
 import { LicenseManager } from 'ag-grid-enterprise'
 import { LicenseInfo } from '@mui/x-data-grid-pro'
@@ -82,10 +80,6 @@ const App = () => {
                                       <Route
                                         path="/invoice"
                                         element={<InvoicePage />}
-                                      />
-                                      <Route
-                                        path="/create-product"
-                                        element={<CreateProductPage />}
                                       />
                                       <Route
                                         path="/edit-product/:id"

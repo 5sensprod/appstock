@@ -1,6 +1,6 @@
 import React from 'react'
 import { Grid, Typography, Box } from '@mui/material'
-import ProductManager from '../product/ProductManager'
+import ProductPOS from '../product/ProductPOS'
 import Cart from '../Cart/Cart'
 import { useQuotes } from '../../contexts/QuoteContext'
 
@@ -10,7 +10,7 @@ const POSPage = () => {
   return (
     <Grid container spacing={1} mt={1}>
       <Grid item xs={12} md={6}>
-        <ProductManager />
+        <ProductPOS />
       </Grid>
       <Grid item xs={12} md={6}>
         {isActiveQuote && (
