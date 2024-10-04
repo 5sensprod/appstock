@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext } from 'react'
 import { CartContext } from '../../contexts/CartContext'
 import { DataGridPro, frFR, GridToolbar } from '@mui/x-data-grid-pro'
 import { Box } from '@mui/material'
@@ -25,47 +25,6 @@ const ProductTable = ({ products }) => {
   const { baseUrl } = useConfig()
   const preparedProducts = prepareProductDataForDisplay(products, baseUrl)
   const { addToCart } = useContext(CartContext)
-
-  const PREF_KEY = 'productTablePreferences'
-
-  const loadPreferences = () => {
-    const savedPrefs = localStorage.getItem(PREF_KEY)
-    return savedPrefs
-      ? JSON.parse(savedPrefs)
-      : {
-          columnsVisibility: {},
-          density: 'standard',
-          paginationModel: { pageSize: 25, page: 0 },
-        }
-  }
-
-  const [gridPreferences, setGridPreferences] = useState(loadPreferences())
-
-  useEffect(() => {
-    localStorage.setItem(PREF_KEY, JSON.stringify(gridPreferences))
-  }, [gridPreferences])
-
-  // Sauvegarder les préférences dans localStorage
-  const savePreferences = (newPreferences) => {
-    setGridPreferences((prevPreferences) => {
-      const updatedPreferences = { ...prevPreferences, ...newPreferences }
-      localStorage.setItem(PREF_KEY, JSON.stringify(updatedPreferences))
-      return updatedPreferences
-    })
-  }
-
-  // Gestion des changements de préférences
-  const handleColumnVisibilityChange = (newModel) => {
-    savePreferences({ ...gridPreferences, columnsVisibility: newModel })
-  }
-
-  const handlePaginationModelChange = (newModel) => {
-    savePreferences({ ...gridPreferences, paginationModel: newModel })
-  }
-
-  const handleDensityChange = (newDensity) => {
-    savePreferences({ ...gridPreferences, density: newDensity })
-  }
 
   const columns = [
     {
@@ -136,25 +95,8 @@ const ProductTable = ({ products }) => {
     <Box my={3}>
       <DataGridPro
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-        columnVisibilityModel={gridPreferences.columnsVisibility}
-        onColumnVisibilityModelChange={handleColumnVisibilityChange}
-        density={gridPreferences.density}
-        onDensityChange={(params) => handleDensityChange(params.value)}
         rows={preparedProducts}
         columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: gridPreferences.paginationModel,
-          },
-        }}
-        pageSize={gridPreferences.paginationModel.pageSize}
-        onPageSizeChange={(newPageSize) => {
-          handlePaginationModelChange({
-            ...gridPreferences.paginationModel,
-            pageSize: newPageSize,
-          })
-        }}
-        onPaginationModelChange={handlePaginationModelChange}
         pageSizeOptions={[10, 25, 50]}
         pagination
         onRowClick={handleRowClick}
