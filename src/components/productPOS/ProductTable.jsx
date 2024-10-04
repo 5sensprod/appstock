@@ -4,12 +4,11 @@ import { DataGridPro, frFR, GridToolbar } from '@mui/x-data-grid-pro'
 import { Box } from '@mui/material'
 import { formatNumberFrench } from '../../utils/priceUtils'
 import { useConfig } from '../../contexts/ConfigContext'
-import { formatNumberWithComma } from '../../utils/formatUtils'
 
 const prepareProductDataForDisplay = (products, baseUrl) => {
   const defaultImageUrl = `${baseUrl}/catalogue/default/default.png`
 
-  return products.map((product) => {
+  const preparedProducts = products.map((product) => {
     const isDefaultImage = !product.featuredImage
     return {
       ...product,
@@ -19,6 +18,9 @@ const prepareProductDataForDisplay = (products, baseUrl) => {
       isDefaultImage,
     }
   })
+
+  // Trier les produits pour que ceux avec une image s'affichent en premier
+  return preparedProducts.sort((a, b) => a.isDefaultImage - b.isDefaultImage)
 }
 
 const ProductTable = ({ products }) => {
@@ -36,17 +38,17 @@ const ProductTable = ({ products }) => {
           src={params.row.photoUrl}
           alt={params.row.reference}
           sx={{
-            width: 100,
+            maxWidth: 100,
             height: 'auto',
             opacity: params.row.isDefaultImage ? 0.06 : 1,
           }}
         />
       ),
-      flex: 1,
+      width: 100,
       disableColumnMenu: true,
       sortable: false,
     },
-    { field: 'reference', headerName: 'Référence', flex: 1 },
+    { field: 'reference', headerName: 'Référence', flex: 2 },
     {
       field: 'prixVente',
       headerName: 'Prix Vente',
@@ -65,26 +67,6 @@ const ProductTable = ({ products }) => {
       headerAlign: 'left',
       align: 'left',
     },
-    {
-      field: 'tva',
-      headerName: 'TVA',
-      type: 'number',
-      flex: 1,
-      valueFormatter: (params) => {
-        return `${formatNumberWithComma(params.value)}`
-      },
-      headerAlign: 'left',
-      align: 'left',
-      disableColumnMenu: true,
-    },
-    { field: 'marque', headerName: 'Marque', flex: 1 },
-    {
-      field: 'gencode',
-      headerName: 'Gencode',
-      flex: 1,
-      sortable: false,
-      disableColumnMenu: true,
-    },
   ]
 
   const handleRowClick = (params) => {
@@ -97,8 +79,13 @@ const ProductTable = ({ products }) => {
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
         rows={preparedProducts}
         columns={columns}
-        pageSizeOptions={[10, 25, 50]}
         pagination
+        pageSizeOptions={[5, 10, 25, 50]}
+        initialState={{
+          pagination: {
+            paginationModel: { pageSize: 5, page: 0 },
+          },
+        }}
         onRowClick={handleRowClick}
         getRowId={(row) => row._id}
         style={{ width: '100%' }}
