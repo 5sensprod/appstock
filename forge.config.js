@@ -1,31 +1,16 @@
+// forge.config.js
+
 module.exports = {
   packagerConfig: {
-    asar: true,
+    asar: false,
+    extraResource: ['./node_modules/serialport'],
   },
   rebuildConfig: {},
   makers: [
-    {
-      name: '@electron-forge/maker-squirrel',
-      config: {},
-    },
-    {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
-    },
-    {
-      name: '@electron-forge/maker-deb',
-      config: {},
-    },
-    {
-      name: '@electron-forge/maker-rpm',
-      config: {},
-    },
+    // Vos configurations de makers
   ],
   plugins: [
-    {
-      name: '@electron-forge/plugin-auto-unpack-natives',
-      config: {},
-    },
+    // Plugin-auto-unpack-natives retiré précédemment
     {
       name: '@electron-forge/plugin-webpack',
       config: {
@@ -47,16 +32,6 @@ module.exports = {
     },
   ],
   publishers: [
-    {
-      name: '@electron-forge/publisher-github',
-      config: {
-        repository: {
-          owner: '5sensprod',
-          name: 'appstock',
-        },
-        prerelease: false,
-        draft: true,
-      },
-    },
+    // Vos configurations de publishers
   ],
 }

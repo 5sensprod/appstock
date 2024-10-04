@@ -1,5 +1,8 @@
 module.exports = [
-  // ... vos autres règles existantes
+  {
+    test: /\.node$/,
+    use: 'node-loader',
+  },
   {
     test: /native_modules[/\\].+\.node$/,
     use: 'node-loader',
