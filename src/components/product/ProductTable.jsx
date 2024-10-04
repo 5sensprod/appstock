@@ -25,7 +25,6 @@ const ProductTable = ({ products }) => {
   const { baseUrl } = useConfig()
   const preparedProducts = prepareProductDataForDisplay(products, baseUrl)
   const { addToCart } = useContext(CartContext)
-  const defaultImageUrl = `${baseUrl}/catalogue/default/default.png`
 
   const PREF_KEY = 'productTablePreferences'
 
@@ -37,7 +36,6 @@ const ProductTable = ({ products }) => {
           columnsVisibility: {},
           density: 'standard',
           paginationModel: { pageSize: 25, page: 0 },
-          // ... autres préférences
         }
   }
 

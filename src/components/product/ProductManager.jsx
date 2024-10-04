@@ -1,21 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import useSearch from '../hooks/useSearch'
-import useWebSocketConnection from '../hooks/useWebSocketConnection'
-import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
-import CreateProductShort from './CreateProductShort'
 import ProductTable from './ProductTable'
 import SelectCategory from '../category/SelectCategory'
-import NoMatchButton from '../ui/NoMatchButton'
 import ProductSearch from './ProductSearch'
 import { useProductContext } from '../../contexts/ProductContext'
 import { useCategoryContext } from '../../contexts/CategoryContext'
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 
 const ProductManager = () => {
   const {
     searchTerm,
     selectedCategoryId,
-    // categories,
     setSelectedCategoryId,
     setSearchTerm,
     products,
@@ -25,9 +20,6 @@ const ProductManager = () => {
 
   const { categories } = useCategoryContext()
 
-  const [showAddProductForm, setShowAddProductForm] = useState(false)
-  const isGencode = !isNaN(searchTerm) && searchTerm.trim() !== ''
-
   const filteredProducts = useSearch(
     products,
     searchTerm,
@@ -35,69 +27,24 @@ const ProductManager = () => {
     categories,
   )
 
-  const isSearchingByReferenceOnly =
-    searchTerm.trim() !== '' && selectedCategoryId === ''
-
-  const showAddProductButton =
-    !showAddProductForm &&
-    filteredProducts.length === 0 &&
-    isSearchingByReferenceOnly
-
-  const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
-
-  useGlobalScannedDataHandler(setSearchTerm)
-
-  useWebSocketConnection(setSearchTerm)
-
   useEffect(() => {
     if (searchTerm.trim() === '') {
-      setShowAddProductForm(false)
+      setSearchTerm('')
     }
   }, [searchTerm])
 
-  const handleScanClick = () => {
-    if (window.Android && isAndroidWebView) {
-      window.Android.performScan()
-    }
-  }
-
-  const handleProductSubmit = () => {
-    setShowAddProductForm(false)
-    setSearchTerm('')
-  }
-
-  const handleShowAddForm = () => {
-    setShowAddProductForm(true)
-  }
-
-  const handleCancel = () => {
-    setShowAddProductForm(false)
-    setSearchTerm('')
-  }
-
   return (
     <>
-      <Box />
-      {isAndroidWebView && (
-        <Button variant="contained" onClick={handleScanClick}>
-          Scanner un code-barres
-        </Button>
-      )}
-
-      {!showAddProductForm && (
-        <>
-          <Box mb={2}>
-            <ProductSearch />
-          </Box>
-          <Box mb={2}>
-            <SelectCategory
-              categories={categories}
-              selectedCategoryId={selectedCategoryId}
-              onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
-            />
-          </Box>
-        </>
-      )}
+      <Box mb={2}>
+        <ProductSearch />
+      </Box>
+      <Box mb={2}>
+        <SelectCategory
+          categories={categories}
+          selectedCategoryId={selectedCategoryId}
+          onCategoryChange={(e) => setSelectedCategoryId(e.target.value)}
+        />
+      </Box>
 
       {filteredProducts.length > 0 ? (
         <ProductTable
@@ -106,28 +53,8 @@ const ProductManager = () => {
           selectedProducts={selectedProducts}
         />
       ) : (
-        <>
-          {showAddProductForm ? (
-            <p>Ajouter un nouveau produit</p>
-          ) : (
-            <Typography variant="h6">Aucun produit trouvé</Typography>
-          )}
-          <NoMatchButton
-            show={!showAddProductForm && showAddProductButton}
-            buttonText="Ajouter"
-            onClick={handleShowAddForm}
-          />
-        </>
+        <Typography variant="h6">Aucun produit trouvé</Typography>
       )}
-      {showAddProductForm && (
-        <CreateProductShort
-          initialGencode={isGencode ? searchTerm : ''}
-          initialReference={!isGencode ? searchTerm : ''}
-          onProductAdd={handleProductSubmit}
-          onCancel={handleCancel}
-        />
-      )}
-      <Box />
     </>
   )
 }
