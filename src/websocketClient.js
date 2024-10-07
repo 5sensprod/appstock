@@ -1,23 +1,23 @@
+// src/websocketClient.js
 import axios from 'axios'
-import { isRunningInElectron } from './utils/environmentUtils' // Import de la fonction isRunningInElectron
-import { getLocalIp } from './ipcHelper' // Import de la fonction getLocalIp pour Electron
+import { isRunningInElectron } from './utils/environmentUtils'
+import { getLocalIp } from './ipcHelper'
+import { displayTotalOnLcd } from './utils/lcdDisplayUtils' // Importer la fonction depuis lcdDisplayUtils
 
 let websocket = null
-let reconnectInterval = 5000 // Intervalle de reconnexion en cas de déconnexion
+let reconnectInterval = 5000
 let serverUrl = ''
-let messageQueue = [] // File d'attente pour les messages à envoyer quand la connexion est établie
-let isWebSocketOpen = false // Nouveau flag pour vérifier l'état de la connexion
+let messageQueue = []
+let isWebSocketOpen = false
 
 export const initializeWebSocket = async (onMessageCallback) => {
   try {
-    // Obtenez l'URL du serveur WebSocket en fonction de l'environnement (Electron ou navigateur)
     serverUrl = await getWebSocketBaseUrl()
-
     websocket = new WebSocket(serverUrl)
 
     websocket.onopen = () => {
       console.log('WebSocket client connected to server:', serverUrl)
-      isWebSocketOpen = true // Mettre à jour l'état de la connexion
+      isWebSocketOpen = true
 
       while (messageQueue.length > 0) {
         const queuedMessage = messageQueue.shift()
@@ -39,7 +39,10 @@ export const initializeWebSocket = async (onMessageCallback) => {
         console.log('Message received from server:', parsedMessage)
 
         if (parsedMessage.type === 'DISPLAY_TOTAL') {
-          displayTotalOnLcd() // Appeler la fonction pour afficher le total sur l'écran LCD
+          displayTotalOnLcd(
+            parsedMessage.cartTotals,
+            parsedMessage.adjustmentAmount,
+          ) // Passer les paramètres requis
         }
 
         if (onMessageCallback && typeof onMessageCallback === 'function') {
@@ -85,11 +88,11 @@ export const sendMessage = (message) => {
 
 // Fonction utilitaire pour obtenir l'URL du serveur WebSocket
 const getWebSocketBaseUrl = async () => {
-  let localIp = 'localhost' // Valeur par défaut
+  let localIp = 'localhost'
 
   if (!isRunningInElectron()) {
     try {
-      const response = await axios.get('/api/getLocalIp') // Utiliser la route API pour obtenir l'IP
+      const response = await axios.get('/api/getLocalIp')
       localIp = response.data.ip || localIp
       console.log('IP locale obtenue pour WebSocket (navigateur) :', localIp)
     } catch (error) {
@@ -99,7 +102,7 @@ const getWebSocketBaseUrl = async () => {
       )
     }
   } else {
-    localIp = await getLocalIp() // Fonction utilisée si on est dans Electron
+    localIp = await getLocalIp()
     console.log('IP locale obtenue pour WebSocket (Electron) :', localIp)
   }
 

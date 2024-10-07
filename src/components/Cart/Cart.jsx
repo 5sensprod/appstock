@@ -54,8 +54,8 @@ const Cart = () => {
   }
 
   const handlePaymentClick = () => {
-    displayTotalOnLcd() // Afficher le total final sur l'écran LCD
-    sendMessage({ type: 'DISPLAY_TOTAL' }) // Synchroniser le total via WebSocket
+    displayTotalOnLcd(cartTotals, adjustmentAmount) // Afficher le total directement
+    sendMessage({ type: 'DISPLAY_TOTAL', cartTotals, adjustmentAmount }) // Synchroniser le total via WebSocket
     setIsInvoiceModalOpen(true)
   }
 

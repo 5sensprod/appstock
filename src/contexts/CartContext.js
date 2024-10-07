@@ -261,8 +261,13 @@ export const CartProvider = ({ children }) => {
       adjustmentAmount !== 0
         ? cartTotals.modifiedTotal
         : cartTotals.originalTotal
-    const formattedTotal = `${total.toFixed(2)} EUR`
-    updateLcdDisplay({ line1: 'Total à payer', line2: formattedTotal })
+    const formattedTotal = total.toLocaleString('fr-FR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      useGrouping: false, // Ne pas afficher les séparateurs de milliers
+    })
+
+    updateLcdDisplay({ line1: 'Total à payer', line2: `${formattedTotal} EUR` })
   }
 
   const displayThankYouMessage = () => {
