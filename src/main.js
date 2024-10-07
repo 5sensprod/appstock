@@ -1,7 +1,10 @@
 // src/main.js
-const { app, BrowserWindow, dialog } = require('electron')
+const { app, BrowserWindow, dialog, ipcMain } = require('electron')
 const { setupIpcHandlers } = require('./main/ipcHandlers')
 const { initializeApp } = require('./main/appInitialization')
+const { SerialPort } = require('serialport')
+const { initializeSerialPort } = require('./main/serialCommunication')
+
 const path = require('path')
 let mainWindow
 
@@ -61,4 +64,21 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
   }
+})
+
+// Handler IPC pour obtenir les ports série disponibles
+ipcMain.handle('get-serial-ports', async () => {
+  try {
+    const ports = await SerialPort.list()
+    return ports.map((port) => port.path)
+  } catch (error) {
+    console.error('Erreur lors de la récupération des ports série :', error)
+    return []
+  }
+})
+
+// Handler IPC pour définir le port série sélectionné
+ipcMain.on('set-serial-port', (event, selectedPort) => {
+  console.log(`Port série sélectionné : ${selectedPort}`)
+  initializeSerialPort(selectedPort) // Réinitialiser le port série avec le port sélectionné
 })

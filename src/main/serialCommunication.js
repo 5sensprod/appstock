@@ -3,9 +3,25 @@ const { removeAccents, formatLcdMessage } = require('./lcdUtils')
 
 let port
 
-function initializeSerialPort() {
+function initializeSerialPort(selectedPort = 'COM10') {
+  // Fermer le port série actuel s'il est ouvert
+  if (port && port.isOpen) {
+    port.close((err) => {
+      if (err) {
+        console.log('Erreur lors de la fermeture du port série :', err.message)
+      } else {
+        console.log('Port série fermé avec succès.')
+        openPort(selectedPort) // Ouvre le nouveau port après avoir fermé l'ancien
+      }
+    })
+  } else {
+    openPort(selectedPort) // Ouvre directement le port si aucun port n'est ouvert
+  }
+}
+
+function openPort(selectedPort) {
   port = new SerialPort({
-    path: 'COM10',
+    path: selectedPort,
     baudRate: 9600,
     dataBits: 8,
     parity: 'none',
@@ -22,10 +38,9 @@ function initializeSerialPort() {
     if (err) {
       return console.log("Erreur lors de l'ouverture du port : ", err.message)
     }
-    console.log('Port série ouvert sur COM10')
+    console.log(`Port série ouvert sur ${selectedPort}`)
 
-    // Envoi de la commande pour effacer l'écran
-    const clearCommand = Buffer.from([0x0c]) // Commande pour effacer l'écran
+    const clearCommand = Buffer.from([0x0c])
 
     port.write(clearCommand, function (err) {
       if (err) {
@@ -36,7 +51,6 @@ function initializeSerialPort() {
       }
       console.log("Commande d'effacement envoyée à l'écran LCD")
 
-      // Attendre un court instant pour que l'écran ait le temps de se nettoyer
       setTimeout(() => {
         const message = 'AXE MUSIQUE \r\nBIENVENUE'
         port.write(message, function (err) {
@@ -48,7 +62,7 @@ function initializeSerialPort() {
           }
           console.log("Message envoyé à l'écran LCD : ", message)
         })
-      }, 100) // Délai de 100ms
+      }, 100)
     })
   })
 }
@@ -58,7 +72,7 @@ function sendToLcd(data) {
     const message = formatLcdMessage(data)
     console.log("Message formaté pour l'écran LCD:", message)
 
-    const clearCommand = Buffer.from([0x0c]) // Commande pour effacer l'écran
+    const clearCommand = Buffer.from([0x0c])
     port.write(clearCommand, function (err) {
       if (err) {
         return console.log(
@@ -66,7 +80,6 @@ function sendToLcd(data) {
           err.message,
         )
       }
-      // Attendre un court instant avant d'envoyer le message
       setTimeout(() => {
         port.write(message, function (err) {
           if (err) {
@@ -77,7 +90,7 @@ function sendToLcd(data) {
           }
           console.log("Message envoyé à l'écran LCD : ", message)
         })
-      }, 100) // Délai de 100ms
+      }, 100)
     })
   } else {
     console.log("Le port série n'est pas ouvert.")

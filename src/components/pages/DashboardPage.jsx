@@ -6,6 +6,8 @@ import DateRangePicker from '../ui/DateRangePicker'
 import Typography from '@mui/material/Typography'
 import QuoteGrid from '../quote/QuoteGrid'
 import ShadowBox from '../ui/ShadowBox'
+import SerialPortSelector from '../SerialPortSelector'
+import { isRunningInElectron } from '../../utils/environmentUtils' // Import de la fonction utilitaire
 
 const DashboardPage = () => {
   const [selectedRange, setSelectedRange] = useState('this_month')
@@ -46,6 +48,14 @@ const DashboardPage = () => {
       <Box my={2} maxWidth={853}>
         <SalesLineChart selectedRange={selectedRange} dateRange={dateRange} />
       </Box>
+
+      {/* Afficher le SerialPortSelector uniquement dans Electron */}
+      {isRunningInElectron() && (
+        <Box my={2} maxWidth={853}>
+          <SerialPortSelector />
+        </Box>
+      )}
+
       <Box id="les-devis" my={2}>
         <Typography
           variant="h5"

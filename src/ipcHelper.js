@@ -71,3 +71,17 @@ export const updateLcdDisplay = (data) => {
     )
   }
 }
+
+export const setSerialPort = (port) => {
+  if (window.electron) {
+    try {
+      window.electron.ipcRenderer.send('set-serial-port', port)
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du port série :', error)
+    }
+  } else {
+    console.log(
+      'Contexte Electron non disponible. Impossible de définir le port série.',
+    )
+  }
+}

@@ -5,6 +5,7 @@ const ConfigContext = createContext()
 
 export const ConfigProvider = ({ children }) => {
   const [baseUrl, setBaseUrl] = useState('')
+  const [selectedPort, setSelectedPort] = useState('COM10') // Valeur par défaut pour le port série
 
   useEffect(() => {
     getApiBaseUrl().then((url) => {
@@ -13,7 +14,7 @@ export const ConfigProvider = ({ children }) => {
   }, [])
 
   return (
-    <ConfigContext.Provider value={{ baseUrl }}>
+    <ConfigContext.Provider value={{ baseUrl, selectedPort, setSelectedPort }}>
       {children}
     </ConfigContext.Provider>
   )
