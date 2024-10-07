@@ -16,6 +16,7 @@ import { useInvoices } from '../../contexts/InvoicesContext'
 import { useUI } from '../../contexts/UIContext'
 import { useQuotes } from '../../contexts/QuoteContext'
 import PaymentTypeSelector from '../Cart/PaymentTypeSelector'
+import { sendMessage } from '../../websocketClient'
 
 const style = {
   position: 'absolute',
@@ -46,6 +47,7 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
     multiplePayment,
     calculateChange,
     setHasChanges,
+    displayThankYouMessage,
   } = useContext(CartContext)
 
   const { showToast } = useUI()
@@ -264,6 +266,9 @@ const InvoiceConfirmationModal = ({ open, onClose }) => {
         showToast('Le ticket a été validé avec succès.', 'success')
       }
 
+      // Appeler la fonction pour afficher le message "Merci, À bientôt !" sur l'écran LCD
+      displayThankYouMessage()
+      sendMessage({ type: 'DISPLAY_THANK_YOU_MESSAGE' })
       // Réinitialisation de l'état et fermeture du modal
       clearCart()
       setCustomerName('')

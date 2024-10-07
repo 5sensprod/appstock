@@ -12,6 +12,7 @@ import { useHoldInvoiceContext } from '../../contexts/HoldInvoiceContext'
 import InvoiceConfirmationModal from '../invoice/InvoiceConfirmationModal'
 import { useQuoteLogic } from '../../hooks/useQuoteLogic'
 import { useUI } from '../../contexts/UIContext'
+import { sendMessage } from '../../websocketClient'
 
 const Cart = () => {
   const {
@@ -25,6 +26,7 @@ const Cart = () => {
     resetPaymentInfo,
     adjustmentAmount,
     cartTotals,
+    displayTotalOnLcd,
   } = useContext(CartContext)
   const { showToast } = useUI()
   const {
@@ -49,6 +51,12 @@ const Cart = () => {
     holdInvoice(cartItems, cartTotals, adjustmentAmount)
     clearCart()
     showToast('Facture mise en attente avec succès.', 'success')
+  }
+
+  const handlePaymentClick = () => {
+    displayTotalOnLcd() // Afficher le total final sur l'écran LCD
+    sendMessage({ type: 'DISPLAY_TOTAL' }) // Synchroniser le total via WebSocket
+    setIsInvoiceModalOpen(true)
   }
 
   return (
@@ -81,7 +89,7 @@ const Cart = () => {
                 my={4}
               >
                 <Button
-                  onClick={() => setIsInvoiceModalOpen(true)}
+                  onClick={handlePaymentClick}
                   variant="contained"
                   color="primary"
                 >

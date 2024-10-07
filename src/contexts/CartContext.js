@@ -24,6 +24,8 @@ export const CartProvider = ({ children }) => {
   const [invoiceData, setInvoiceData] = useState(null)
   const [adjustmentAmount, setAdjustmentAmount] = useState(0)
 
+  let isThankYouMessageDisplayed = false
+
   const [paymentType, setPaymentType] = useState('CB')
   const [amountPaid, setAmountPaid] = useState('')
 
@@ -160,10 +162,13 @@ export const CartProvider = ({ children }) => {
       } else if (message && message.type === 'DISCOUNT_UPDATE') {
         setAdjustmentAmount(message.adjustmentAmount)
         updateCartTotals(cartItems) // Recalcule les totaux avec la remise/majoration reçue
+      } else if (message && message.type === 'DISPLAY_THANK_YOU_MESSAGE') {
+        displayThankYouMessage() // Affiche le message de remerciement sur l'écran LCD
       } else {
         console.warn('Unexpected message type received:', message)
       }
     })
+
     sendMessage({ type: 'REQUEST_CART_SYNC' })
   }, [])
 
@@ -204,7 +209,14 @@ export const CartProvider = ({ children }) => {
     }
   }
 
+  // src/contexts/CartContext.js
+
   const updateLcdDisplayFromCart = (items) => {
+    if (isThankYouMessageDisplayed) {
+      // Ne rien faire si le message de remerciement est affiché
+      return
+    }
+
     if (items.length > 0) {
       const lastItem = items[items.length - 1]
       const quantity = lastItem.quantity || 1
@@ -244,6 +256,28 @@ export const CartProvider = ({ children }) => {
     }
   }
 
+  const displayTotalOnLcd = () => {
+    const total =
+      adjustmentAmount !== 0
+        ? cartTotals.modifiedTotal
+        : cartTotals.originalTotal
+    const formattedTotal = `${total.toFixed(2)} EUR`
+    updateLcdDisplay({ line1: 'Total à payer', line2: formattedTotal })
+  }
+
+  const displayThankYouMessage = () => {
+    isThankYouMessageDisplayed = true
+    updateLcdDisplay({
+      line1: 'Merci',
+      line2: 'À bientôt !',
+    })
+
+    // Après un délai de 5 secondes, réinitialiser la variable de contrôle et effacer l'écran
+    setTimeout(() => {
+      isThankYouMessageDisplayed = false
+      updateLcdDisplay({ line1: '', line2: '' }) // Nettoie l'écran après 5 secondes
+    }, 5000)
+  }
   const applyDiscountOrMarkup = (discountOrMarkupAmount) => {
     setAdjustmentAmount(discountOrMarkupAmount)
     updateCartTotals(cartItems) // Recalcule les totaux avec la remise ou majoration appliquée
@@ -279,6 +313,43 @@ export const CartProvider = ({ children }) => {
     setHasChanges(true)
   }
 
+  // Mettre à jour les totaux chaque fois que le panier est modifié
+  useEffect(() => {
+    const newCartTotals = calculateCartTotals(cartItems)
+    setCartTotals((prevTotals) => ({
+      ...prevTotals,
+      totalHT: newCartTotals.totalHT,
+      totalTTC: newCartTotals.totalTTC,
+      totalTaxes: newCartTotals.totalTaxes,
+      originalTotal: newCartTotals.totalTTC,
+    }))
+
+    // Réappliquer la remise ou la majoration déjà définie si adjustmentAmount n'est pas 0
+    if (adjustmentAmount !== 0 && cartItems.length > 0) {
+      setCartTotals((prevTotals) => {
+        const adjustedTotal = applyCartDiscountOrMarkup(
+          prevTotals.totalTTC,
+          adjustmentAmount,
+        )
+        return {
+          ...prevTotals,
+          modifiedTotal: adjustedTotal,
+        }
+      })
+    } else {
+      // Réinitialiser modifiedTotal si aucune remise ou majoration n'est appliquée
+      setCartTotals((prevTotals) => ({
+        ...prevTotals,
+        modifiedTotal: newCartTotals.totalTTC,
+      }))
+    }
+
+    // Réinitialiser adjustmentAmount si le panier est vide
+    if (cartItems.length === 0) {
+      setAdjustmentAmount(0)
+    }
+  }, [cartItems, adjustmentAmount])
+
   const updateQuantity = (productId, newQuantity) => {
     setCartItems((currentItems) => {
       const updatedCartItems = currentItems.map((item) =>
@@ -286,9 +357,18 @@ export const CartProvider = ({ children }) => {
           ? enrichCartItem({ ...item, quantity: newQuantity })
           : item,
       )
-      sendMessage({ type: 'CART_UPDATE', cartItems: updatedCartItems })
+
+      // Mettre à jour les totaux après avoir mis à jour l'état local
       updateCartTotals(updatedCartItems)
+
+      // Utiliser un délai court pour garantir la cohérence du state avant d'envoyer via WebSocket
+      setTimeout(() => {
+        sendMessage({ type: 'CART_UPDATE', cartItems: updatedCartItems })
+      }, 50) // 50 ms delay to ensure state consistency
+
+      // Mettre à jour l'affichage LCD
       updateLcdDisplayFromCart(updatedCartItems)
+
       return updatedCartItems
     })
   }
@@ -378,6 +458,8 @@ export const CartProvider = ({ children }) => {
         setHasChanges,
         handleItemChange,
         // applyDiscountOrMarkup,
+        displayTotalOnLcd,
+        displayThankYouMessage,
       }}
     >
       {children}

@@ -37,6 +37,11 @@ export const initializeWebSocket = async (onMessageCallback) => {
       try {
         const parsedMessage = JSON.parse(messageData)
         console.log('Message received from server:', parsedMessage)
+
+        if (parsedMessage.type === 'DISPLAY_TOTAL') {
+          displayTotalOnLcd() // Appeler la fonction pour afficher le total sur l'écran LCD
+        }
+
         if (onMessageCallback && typeof onMessageCallback === 'function') {
           onMessageCallback(parsedMessage)
         }
