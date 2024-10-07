@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Card,
   CardContent,
@@ -31,6 +31,15 @@ const CartItem = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { baseUrl } = useConfig()
 
+  useEffect(() => {
+    // Met à jour priceInput lorsque item.prixModifie ou item.prixVente change
+    setPriceInput(
+      item.prixModifie
+        ? formatPrice(item.prixModifie)
+        : formatPrice(originalPrice),
+    )
+  }, [item.prixModifie, originalPrice])
+
   const handleModalOpen = () => {
     setIsModalOpen(true)
   }
@@ -44,7 +53,6 @@ const CartItem = ({
 
   const handlePriceChange = (event) => {
     const value = event.target.value
-    // Autorise uniquement les nombres, +, -, % et remplace les virgules par des points.
     const validValue = value.replace(',', '.').match(/^[-+]?[0-9]*\.?[0-9]*%?$/)
     if (validValue) {
       setPriceInput(value)
@@ -57,38 +65,30 @@ const CartItem = ({
     const isPercentageChange = priceInput.includes('%')
     const numericValue = parseFloat(priceInput.replace(/[^0-9.-]/g, ''))
 
-    // Convertir la valeur saisie au format numérique pour une comparaison précise
     const formattedInputValue = parseFloat(priceInput.replace(',', '.'))
-
-    // Obtenir le prix actuel pour la comparaison
     const currentPrice = item.prixModifie
       ? parseFloat(item.prixModifie)
       : parseFloat(originalPrice)
 
-    // Vérifie si l'utilisateur a effectivement modifié le prix
     if (formattedInputValue === currentPrice) {
-      // Si la valeur n'a pas changé, simplement retourner sans mettre à jour
       return
     }
 
-    if (isNaN(numericValue)) return // Sortie si la valeur n'est pas un nombre
+    if (isNaN(numericValue)) return
 
     if (isPercentageChange) {
-      // Calcule le nouveau prix en fonction du pourcentage
       const percentage = numericValue / 100
       newPrice = originalPrice + originalPrice * percentage
     } else if (priceInput.startsWith('+') || priceInput.startsWith('-')) {
-      // Ajoute ou soustrait la valeur directement si elle commence par + ou -
       newPrice = originalPrice + numericValue
     } else {
-      // Sinon, utilise la valeur comme nouveau prix
       newPrice = numericValue
     }
 
     if (newPrice >= 0) {
       updatePrice(item._id, newPrice)
       setPriceInput(formatPrice(newPrice))
-      onItemChange() // S'assurer que ceci est appelé après la mise à jour
+      onItemChange()
     }
   }
 
@@ -96,6 +96,7 @@ const CartItem = ({
     setPriceInput(formatPrice(originalPrice))
     updatePrice(item._id, originalPrice)
   }
+
   const handleQuantityChange = (event) => {
     const newQuantity = parseInt(event.target.value, 10)
     if (newQuantity > 0) {

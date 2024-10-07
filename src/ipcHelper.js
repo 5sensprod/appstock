@@ -5,6 +5,7 @@ export const getLocalIp = async () => {
     try {
       // Utiliser la méthode IPC exposée pour récupérer l'adresse IP stockée
       const storedIp = await window.electron.getStoredIp()
+      console.log('Local IP retrieved from Electron:', storedIp)
       return storedIp || 'default-local-ip' // Utiliser une valeur par défaut si 'storedIp' est null ou undefined
     } catch (error) {
       console.error(

@@ -1,9 +1,8 @@
+// src/main.js
 const { app, BrowserWindow, dialog } = require('electron')
-// const path = require('path')
 const { setupIpcHandlers } = require('./main/ipcHandlers')
 const { initializeApp } = require('./main/appInitialization')
-// const Store = require('electron-store')
-// const store = new Store()
+const path = require('path')
 let mainWindow
 
 function createWindow() {
@@ -15,10 +14,12 @@ function createWindow() {
     },
   })
 
+  console.log('Creating main window...')
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
 }
 
 app.on('ready', () => {
+  console.log('Electron app is ready. Initializing...')
   const gotTheLock = app.requestSingleInstanceLock()
 
   if (!gotTheLock) {
@@ -35,9 +36,12 @@ app.on('ready', () => {
       }
     })
 
-    createWindow()
+    // Démarrage du serveur avant de créer la fenêtre Electron
+    console.log('Starting the server...')
+    require('../src/server/server.js') // Démarrer le serveur WebSocket
 
-    require('../src/server/server.js') // Démarrer le serveur
+    console.log('Server started successfully. Creating Electron window...')
+    createWindow()
 
     initializeApp(mainWindow).catch((error) => {
       console.error("Erreur lors de l'initialisation de l'application:", error)
