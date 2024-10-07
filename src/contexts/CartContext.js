@@ -211,7 +211,15 @@ export const CartProvider = ({ children }) => {
 
   // src/contexts/CartContext.js
 
+  let idleTimer = null // Timer pour détecter l'inactivité
+
   const updateLcdDisplayFromCart = (items) => {
+    // Effacer le timer existant si une nouvelle action est détectée
+    if (idleTimer) {
+      clearTimeout(idleTimer)
+      idleTimer = null
+    }
+
     if (isThankYouMessageDisplayed) {
       // Ne rien faire si le message de remerciement est affiché
       return
@@ -253,6 +261,14 @@ export const CartProvider = ({ children }) => {
         line1: 'AXE MUSIQUE',
         line2: 'Panier vide',
       })
+
+      // Démarrer un timer pour afficher "AXE MUSIQUE" et "BONJOUR" après un délai si le panier reste vide
+      idleTimer = setTimeout(() => {
+        updateLcdDisplay({
+          line1: 'AXE MUSIQUE',
+          line2: 'Bonjour',
+        })
+      }, 5000) // 5000 ms (5 secondes) avant de revenir au message par défaut
     }
   }
 
@@ -277,11 +293,14 @@ export const CartProvider = ({ children }) => {
       line2: 'À bientôt !',
     })
 
-    // Après un délai de 5 secondes, réinitialiser la variable de contrôle et effacer l'écran
+    // Après un délai de 5 secondes, réinitialiser la variable de contrôle et afficher "AXE MUSIQUE" et "BONJOUR"
     setTimeout(() => {
       isThankYouMessageDisplayed = false
-      updateLcdDisplay({ line1: '', line2: '' }) // Nettoie l'écran après 5 secondes
-    }, 5000)
+      updateLcdDisplay({
+        line1: 'AXE MUSIQUE',
+        line2: 'Bonjour',
+      })
+    }, 5000) // Attendre 5 secondes avant d'afficher "AXE MUSIQUE" et "BONJOUR"
   }
   const applyDiscountOrMarkup = (discountOrMarkupAmount) => {
     setAdjustmentAmount(discountOrMarkupAmount)
