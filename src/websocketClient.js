@@ -1,6 +1,6 @@
-// src/websocketClient.js
-import { getLocalIp } from './ipcHelper' // Import de la fonction getLocalIp
+import axios from 'axios'
 import { isRunningInElectron } from './utils/environmentUtils' // Import de la fonction isRunningInElectron
+import { getLocalIp } from './ipcHelper' // Import de la fonction getLocalIp pour Electron
 
 let websocket = null
 let reconnectInterval = 5000 // Intervalle de reconnexion en cas de déconnexion
@@ -13,14 +13,12 @@ export const initializeWebSocket = async (onMessageCallback) => {
     // Obtenez l'URL du serveur WebSocket en fonction de l'environnement (Electron ou navigateur)
     serverUrl = await getWebSocketBaseUrl()
 
-    // Utilise l'objet WebSocket natif du navigateur pour le processus de rendu (Electron inclus)
     websocket = new WebSocket(serverUrl)
 
     websocket.onopen = () => {
       console.log('WebSocket client connected to server:', serverUrl)
       isWebSocketOpen = true // Mettre à jour l'état de la connexion
 
-      // Envoyer les messages en attente lorsque la connexion est établie
       while (messageQueue.length > 0) {
         const queuedMessage = messageQueue.shift()
         websocket.send(JSON.stringify(queuedMessage))
@@ -30,19 +28,17 @@ export const initializeWebSocket = async (onMessageCallback) => {
 
     websocket.onmessage = async (event) => {
       let messageData
-      // Vérifiez si les données reçues sont de type Blob
       if (event.data instanceof Blob) {
-        // Convertir le Blob en texte
         messageData = await event.data.text()
       } else {
         messageData = event.data
       }
 
       try {
-        const parsedMessage = JSON.parse(messageData) // Analyse des données JSON reçues
+        const parsedMessage = JSON.parse(messageData)
         console.log('Message received from server:', parsedMessage)
         if (onMessageCallback && typeof onMessageCallback === 'function') {
-          onMessageCallback(parsedMessage) // Propagation du message vers le callback fourni
+          onMessageCallback(parsedMessage)
         }
       } catch (error) {
         console.error('Error parsing WebSocket message data:', error)
@@ -55,8 +51,7 @@ export const initializeWebSocket = async (onMessageCallback) => {
         reconnectInterval / 1000,
         'seconds',
       )
-      isWebSocketOpen = false // Mettre à jour l'état de la connexion
-      // Reconnexion automatique après un délai défini
+      isWebSocketOpen = false
       setTimeout(
         () => initializeWebSocket(onMessageCallback),
         reconnectInterval,
@@ -65,8 +60,8 @@ export const initializeWebSocket = async (onMessageCallback) => {
 
     websocket.onerror = (error) => {
       console.error('WebSocket error:', error)
-      isWebSocketOpen = false // Mettre à jour l'état de la connexion
-      websocket.close() // Ferme la connexion en cas d'erreur pour déclencher une tentative de reconnexion
+      isWebSocketOpen = false
+      websocket.close()
     }
   } catch (error) {
     console.error('Failed to initialize WebSocket:', error)
@@ -79,16 +74,29 @@ export const sendMessage = (message) => {
     console.log('Message sent:', message)
   } else {
     console.warn('WebSocket is not open. Queuing message:', message)
-    messageQueue.push(message) // Ajouter le message à la file d'attente s'il n'est pas encore envoyé
+    messageQueue.push(message)
   }
 }
 
 // Fonction utilitaire pour obtenir l'URL du serveur WebSocket
 const getWebSocketBaseUrl = async () => {
-  if (isRunningInElectron()) {
-    const localIp = await getLocalIp() // Cette fonction est utilisée uniquement si nous sommes dans Electron
-    return `ws://${localIp}:5000`
+  let localIp = 'localhost' // Valeur par défaut
+
+  if (!isRunningInElectron()) {
+    try {
+      const response = await axios.get('/api/getLocalIp') // Utiliser la route API pour obtenir l'IP
+      localIp = response.data.ip || localIp
+      console.log('IP locale obtenue pour WebSocket (navigateur) :', localIp)
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération de l'IP du serveur :",
+        error,
+      )
+    }
   } else {
-    return `ws://localhost:5000` // Pour les navigateurs, nous utilisons simplement localhost
+    localIp = await getLocalIp() // Fonction utilisée si on est dans Electron
+    console.log('IP locale obtenue pour WebSocket (Electron) :', localIp)
   }
+
+  return `ws://${localIp}:5000`
 }
