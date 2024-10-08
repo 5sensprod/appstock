@@ -1,5 +1,5 @@
 const { SerialPort } = require('serialport')
-const { removeAccents, formatLcdMessage } = require('./lcdUtils')
+const { formatLcdMessage } = require('./lcdUtils')
 
 let port
 
@@ -39,31 +39,6 @@ function openPort(selectedPort) {
       return console.log("Erreur lors de l'ouverture du port : ", err.message)
     }
     console.log(`Port série ouvert sur ${selectedPort}`)
-
-    const clearCommand = Buffer.from([0x0c])
-
-    port.write(clearCommand, function (err) {
-      if (err) {
-        return console.log(
-          "Erreur lors de l'envoi de la commande d'effacement : ",
-          err.message,
-        )
-      }
-      console.log("Commande d'effacement envoyée à l'écran LCD")
-
-      setTimeout(() => {
-        const message = 'AXE MUSIQUE \r\nBIENVENUE'
-        port.write(message, function (err) {
-          if (err) {
-            return console.log(
-              "Erreur lors de l'écriture sur le port série : ",
-              err.message,
-            )
-          }
-          console.log("Message envoyé à l'écran LCD : ", message)
-        })
-      }, 100)
-    })
   })
 }
 

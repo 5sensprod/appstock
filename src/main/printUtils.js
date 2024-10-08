@@ -7,7 +7,7 @@ async function printContent(content) {
   win.webContents.on('did-finish-load', async () => {
     const printers = await win.webContents.getPrintersAsync()
     const posPrinter = printers.find((printer) =>
-      printer.name.includes('POS-80'),
+      printer.name.includes('POS80'),
     )
 
     if (posPrinter) {

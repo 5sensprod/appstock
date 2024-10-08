@@ -3,7 +3,10 @@ const { app, BrowserWindow, dialog, ipcMain } = require('electron')
 const { setupIpcHandlers } = require('./main/ipcHandlers')
 const { initializeApp } = require('./main/appInitialization')
 const { SerialPort } = require('serialport')
-const { initializeSerialPort } = require('./main/serialCommunication')
+const {
+  initializeSerialPort,
+  sendToLcd,
+} = require('./main/serialCommunication')
 
 const path = require('path')
 let mainWindow
@@ -52,6 +55,20 @@ app.on('ready', () => {
 
     setupIpcHandlers(mainWindow) // Configurer les handlers IPC
   }
+})
+
+// Ajouter le gestionnaire d'événement pour afficher le message "Déconnexion"
+app.on('before-quit', () => {
+  console.log(
+    'Application is closing, displaying disconnection message on LCD...',
+  )
+  sendToLcd({ line1: 'Déconnexion', line2: 'À bientôt !' })
+
+  // Effacer l'écran après 3 secondes
+  setTimeout(() => {
+    sendToLcd({ line1: '', line2: '' }) // Efface l'écran LCD
+    console.log('LCD screen cleared.')
+  }, 3000)
 })
 
 app.on('window-all-closed', () => {
