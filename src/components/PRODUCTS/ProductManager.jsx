@@ -300,6 +300,7 @@ const ProductManager = ({ selectedCategoryId }) => {
 
   const availableFields = {
     reference: 'Référence',
+    designation: 'Désignation',
     prixAchat: "Prix d'Achat",
     marge: 'Marge (%)',
     prixVente: 'Prix de Vente',
