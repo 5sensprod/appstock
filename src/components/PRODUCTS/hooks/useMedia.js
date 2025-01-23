@@ -65,16 +65,28 @@ export const useMedia = (productId, baseUrl, showToast) => {
   useEffect(() => {
     if (!productId || !baseUrl) return
 
-    const pollInterval = setInterval(async () => {
-      await fetchPhotos()
-      await fetchFeaturedImage()
-    }, 2000)
+    const ws = new WebSocket(`ws://${window.location.hostname}:5000`)
+    let isConnected = false
 
-    fetchPhotos()
-    fetchFeaturedImage()
+    ws.onopen = () => {
+      isConnected = true
+      fetchPhotos()
+      fetchFeaturedImage()
+    }
 
-    return () => clearInterval(pollInterval)
+    ws.onmessage = async (event) => {
+      const data = JSON.parse(event.data)
+      if (data.productId === productId) {
+        await fetchPhotos()
+        await fetchFeaturedImage()
+      }
+    }
+
+    return () => {
+      if (isConnected) ws.close()
+    }
   }, [productId, baseUrl])
+
   // Modifier fetchFeaturedImage pour utiliser updateFeaturedImage
   const fetchFeaturedImage = useCallback(async () => {
     try {
