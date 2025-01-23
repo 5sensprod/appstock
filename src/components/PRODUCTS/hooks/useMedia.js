@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   uploadPhoto,
   uploadPhotoFromUrl,
@@ -12,96 +12,101 @@ export const useMedia = (productId, baseUrl, showToast) => {
   const [open, setOpen] = useState(false)
   const [newPhoto, setNewPhoto] = useState([])
   const [imageUrl, setImageUrl] = useState('')
-  const [featuredImageName, setFeaturedImageName] = useState(null)
-
-  useEffect(() => {
-    fetchPhotos()
-    fetchFeaturedImage()
-  }, [productId, baseUrl])
-
-  const fetchFeaturedImage = async () => {
+  const [featuredImageName, setFeaturedImageName] = useState(() => {
     try {
-      const response = await getFeaturedImage(productId)
-      if (response && response.featuredImage) {
-        setFeaturedImageName(response.featuredImage)
-      }
-    } catch (error) {
-      console.error(
-        `Erreur lors de la récupération de l'image mise en avant pour le produit ${productId}:`,
-        error,
-      )
+      const storedFeatured = localStorage.getItem(`featured_${productId}`)
+      return storedFeatured || null
+    } catch {
+      return null
+    }
+  })
+  const [isLoading, setIsLoading] = useState(true)
+
+  const updateFeaturedImage = (newValue) => {
+    setFeaturedImageName(newValue)
+    if (newValue) {
+      localStorage.setItem(`featured_${productId}`, newValue)
+    } else {
+      localStorage.removeItem(`featured_${productId}`)
     }
   }
 
-  useEffect(() => {
-    const eventSource = new EventSource(`${baseUrl}/api/events`)
-    console.log('Event Source URL useMedia:', eventSource)
+  const fetchPhotos = useCallback(async () => {
+    if (!productId) return
 
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-
-      if (data.type === 'photo-added' && data.productId === productId) {
-        fetchPhotos()
-      }
-
-      if (
-        data.type === 'featured-image-updated' &&
-        data.productId === productId
-      ) {
-        setFeaturedImageName(data.featuredImage)
-        console.log(
-          'Featured image updated for product:',
-          data.productId,
-          'with image:',
-          data.featuredImage,
-        )
-      }
-
-      // Nouveau cas pour gérer l'événement 'photo-deleted'
-      if (data.type === 'photo-deleted' && data.productId === productId) {
-        // Mettre à jour l'état des photos en enlevant la photo supprimée
-        setPhotos((currentPhotos) =>
-          currentPhotos.filter((photoUrl) => !photoUrl.endsWith(data.photo)),
-        )
-      }
-    }
-
-    return () => {
-      eventSource.close()
-    }
-  }, [productId, baseUrl, setFeaturedImageName])
-
-  const fetchPhotos = async () => {
     try {
       const response = await fetch(
         `${baseUrl}/api/products/${productId}/photos`,
       )
       if (!response.ok) {
-        throw new Error('Erreur de réponse du serveur')
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
       const photoFilenames = await response.json()
 
-      // Gère le cas où aucun fichier n'est retourné (répertoire vide ou inexistant)
-      if (!Array.isArray(photoFilenames) || photoFilenames.length === 0) {
-        setPhotos([]) // Initialise à un tableau vide si aucun fichier n'est trouvé
-        return
-      }
+      const photoUrls = Array.isArray(photoFilenames)
+        ? photoFilenames.map(
+            (filename) => `${baseUrl}/catalogue/${productId}/${filename}`,
+          )
+        : []
 
-      setPhotos(
-        photoFilenames.map(
-          (filename) => `${baseUrl}/catalogue/${productId}/${filename}`,
-        ),
-      )
+      setPhotos(photoUrls)
     } catch (error) {
-      console.error(
-        `Erreur lors de la récupération des photos pour le produit ${productId}:`,
-        error,
-      )
-      // Ici, vous pourriez choisir de gérer l'erreur de manière utilisateur-friendly
-      setPhotos([]) // Éviter que l'application se brise, initialiser à vide ou gérer autrement
+      console.error(`Erreur lors de la récupération des photos:`, error)
+      setPhotos([])
+      showToast('Erreur lors du chargement des photos', 'error')
+    } finally {
+      setIsLoading(false)
     }
-  }
+  }, [productId, baseUrl, showToast])
 
+  // Fonction fetchFeaturedImage avec gestion d'erreurs améliorée
+
+  // Effet pour le chargement initial
+  useEffect(() => {
+    if (!productId || !baseUrl) return
+    const eventSource = new EventSource(`${baseUrl}/api/events`)
+
+    eventSource.onmessage = (event) => {
+      console.log('SSE received in Electron:', event.data)
+      const data = JSON.parse(event.data)
+      if (data.productId === productId) {
+        switch (data.type) {
+          case 'featured-image-updated':
+            updateFeaturedImage(data.featuredImage)
+            fetchPhotos()
+            break
+          case 'photo-added':
+            console.log('Photo added event detected')
+            const newPhotoUrl = `${baseUrl}/catalogue/${productId}/${data.photo}`
+            setPhotos((currentPhotos) => [...currentPhotos, newPhotoUrl])
+            break
+          case 'photo-deleted':
+            if (data.photo === featuredImageName) {
+              updateFeaturedImage(null)
+            }
+            setPhotos((currentPhotos) =>
+              currentPhotos.filter((url) => !url.includes(data.photo)),
+            )
+            break
+        }
+      }
+    }
+
+    fetchFeaturedImage()
+    fetchPhotos()
+
+    return () => eventSource.close()
+  }, [productId, baseUrl, featuredImageName])
+
+  // Modifier fetchFeaturedImage pour utiliser updateFeaturedImage
+  const fetchFeaturedImage = useCallback(async () => {
+    try {
+      const response = await getFeaturedImage(productId)
+      updateFeaturedImage(response.featuredImage)
+    } catch (error) {
+      console.error('Erreur:', error)
+    }
+  }, [productId])
   const handleOpen = (photoUrl) => {
     setSelectedPhoto(photoUrl)
     setOpen(true)
@@ -112,8 +117,9 @@ export const useMedia = (productId, baseUrl, showToast) => {
   }
 
   const resetSelectedFileNames = (fileInputRef) => {
-    if (fileInputRef.current) {
+    if (fileInputRef?.current) {
       fileInputRef.current.value = ''
+      setNewPhoto([])
     }
   }
   const handleUpload = async (filesToSubmit, fileInputRef) => {
@@ -126,22 +132,20 @@ export const useMedia = (productId, baseUrl, showToast) => {
 
         const response = await uploadPhoto(formData, productId)
 
-        // Afficher un toast en cas de succès
         if (response.files) {
           showToast('Image(s) ajoutée(s) avec succès', 'success')
+          fetchPhotos() // Force le rechargement des photos
         }
       } catch (error) {
         console.error("Erreur lors de l'upload", error)
         showToast("Erreur lors de l'ajout de l'image", 'error')
       } finally {
-        // Réinitialiser fileInputRef après le téléchargement
         if (fileInputRef.current) {
           fileInputRef.current.value = ''
         }
       }
     }
   }
-
   const handleUploadFromUrl = async () => {
     if (!imageUrl) {
       showToast("Veuillez saisir une URL d'image.", 'info')
@@ -173,33 +177,27 @@ export const useMedia = (productId, baseUrl, showToast) => {
   }
 
   const handleDeleteSelected = async () => {
-    const filenamesToDelete = selectedPhotos.map((photo) =>
-      photo.split('/').pop(),
-    )
+    const filenamesToDelete = selectedPhotos.map((p) => p.split('/').pop())
 
     try {
       const response = await fetch(
         `${baseUrl}/api/products/${productId}/delete-photos`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ photosToDelete: filenamesToDelete }),
         },
       )
 
-      if (!response.ok) {
-        throw new Error('Erreur lors de la suppression des photos')
-      }
+      if (!response.ok) throw new Error('Erreur suppression')
 
-      // Mise à jour de l'état après la suppression réussie
+      // Attendre légèrement pour la propagation SSE
+      await new Promise((resolve) => setTimeout(resolve, 100))
       setSelectedPhotos([])
       fetchPhotos()
-      showToast('Photo(s) supprimée(s) avec succès', 'success')
+      showToast('Photos supprimées', 'success')
     } catch (error) {
-      console.error('Erreur lors de la suppression des photos:', error)
-      showToast('Erreur lors de la suppression des images', 'error')
+      showToast('Erreur suppression', 'error')
     }
   }
   return {
@@ -214,15 +212,17 @@ export const useMedia = (productId, baseUrl, showToast) => {
     setNewPhoto,
     imageUrl,
     setImageUrl,
+    isLoading,
+    featuredImageName,
+    setFeaturedImageName,
     fetchPhotos,
+    fetchFeaturedImage,
     handleOpen,
     handleClose,
-    resetSelectedFileNames,
     handleUpload,
     handleUploadFromUrl,
     onToggleSelect,
     handleDeleteSelected,
-    featuredImageName,
-    setFeaturedImageName,
+    resetSelectedFileNames,
   }
 }
