@@ -64,40 +64,17 @@ export const useMedia = (productId, baseUrl, showToast) => {
   // Effet pour le chargement initial
   useEffect(() => {
     if (!productId || !baseUrl) return
-    const eventSource = new EventSource(`${baseUrl}/api/events`)
 
-    eventSource.onmessage = (event) => {
-      console.log('SSE received in Electron:', event.data)
-      const data = JSON.parse(event.data)
-      if (data.productId === productId) {
-        switch (data.type) {
-          case 'featured-image-updated':
-            updateFeaturedImage(data.featuredImage)
-            fetchPhotos()
-            break
-          case 'photo-added':
-            console.log('Photo added event detected')
-            const newPhotoUrl = `${baseUrl}/catalogue/${productId}/${data.photo}`
-            setPhotos((currentPhotos) => [...currentPhotos, newPhotoUrl])
-            break
-          case 'photo-deleted':
-            if (data.photo === featuredImageName) {
-              updateFeaturedImage(null)
-            }
-            setPhotos((currentPhotos) =>
-              currentPhotos.filter((url) => !url.includes(data.photo)),
-            )
-            break
-        }
-      }
-    }
+    const pollInterval = setInterval(async () => {
+      await fetchPhotos()
+      await fetchFeaturedImage()
+    }, 2000)
 
-    fetchFeaturedImage()
     fetchPhotos()
+    fetchFeaturedImage()
 
-    return () => eventSource.close()
-  }, [productId, baseUrl, featuredImageName])
-
+    return () => clearInterval(pollInterval)
+  }, [productId, baseUrl])
   // Modifier fetchFeaturedImage pour utiliser updateFeaturedImage
   const fetchFeaturedImage = useCallback(async () => {
     try {
