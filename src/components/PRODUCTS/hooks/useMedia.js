@@ -65,26 +65,12 @@ export const useMedia = (productId, baseUrl, showToast) => {
   useEffect(() => {
     if (!productId || !baseUrl) return
 
-    const ws = new WebSocket(`ws://${window.location.hostname}:5000`)
-    let isConnected = false
-
-    ws.onopen = () => {
-      isConnected = true
-      fetchPhotos()
-      fetchFeaturedImage()
+    const loadData = async () => {
+      await fetchPhotos()
+      await fetchFeaturedImage()
     }
 
-    ws.onmessage = async (event) => {
-      const data = JSON.parse(event.data)
-      if (data.productId === productId) {
-        await fetchPhotos()
-        await fetchFeaturedImage()
-      }
-    }
-
-    return () => {
-      if (isConnected) ws.close()
-    }
+    loadData()
   }, [productId, baseUrl])
 
   // Modifier fetchFeaturedImage pour utiliser updateFeaturedImage
