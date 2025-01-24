@@ -27,7 +27,6 @@ function createWindow() {
 
 function setupAutoUpdater() {
   if (require('electron-squirrel-startup')) return
-
   if (process.platform !== 'win32') return
 
   const server = 'https://update.electronjs.org'
@@ -35,14 +34,38 @@ function setupAutoUpdater() {
 
   autoUpdater.setFeedURL({ url })
 
-  autoUpdater.on('error', (err) => {
-    console.log('Erreur AutoUpdater:', err)
+  autoUpdater.on('checking-for-update', () => {
+    console.log('Vérification des mises à jour...')
   })
 
-  // Vérifier les mises à jour toutes les 30 minutes
+  autoUpdater.on('update-available', () => {
+    console.log('Mise à jour disponible.')
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'Mise à jour',
+      message: 'Une mise à jour est disponible. Téléchargement en cours...',
+    })
+  })
+
+  autoUpdater.on('update-downloaded', () => {
+    dialog
+      .showMessageBox({
+        type: 'info',
+        title: 'Installation',
+        message: 'La mise à jour va être installée.',
+      })
+      .then(() => autoUpdater.quitAndInstall())
+  })
+
+  autoUpdater.on('error', (err) => {
+    console.error('Erreur AutoUpdater:', err)
+  })
+
+  // Vérification immédiate + toutes les 5 minutes
+  autoUpdater.checkForUpdates()
   setInterval(() => {
     autoUpdater.checkForUpdates()
-  }, 1800000)
+  }, 300000)
 }
 
 app.on('ready', () => {
