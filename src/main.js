@@ -29,6 +29,42 @@ function createWindow() {
   })
 }
 
+app.on('ready', () => {
+  console.log('Electron app is ready. Initializing...')
+  const gotTheLock = app.requestSingleInstanceLock()
+
+  if (!gotTheLock) {
+    app.quit()
+    return
+  }
+
+  // Démarrage du serveur
+  console.log('Starting the server...')
+  require('../src/server/server.js')
+  console.log('Server started successfully.')
+
+  // Création de la fenêtre et initialisation
+  createWindow()
+  initializeApp(mainWindow).catch((error) => {
+    console.error("Erreur lors de l'initialisation de l'application:", error)
+  })
+  setupIpcHandlers(mainWindow)
+  setupAutoUpdater()
+
+  // Gestion de la seconde instance
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      dialog.showMessageBox({
+        type: 'info',
+        title: 'Application déjà ouverte',
+        message: "Une instance est déjà en cours d'exécution.",
+      })
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+    }
+  })
+})
+
 function setupAutoUpdater() {
   if (require('electron-squirrel-startup')) return
   if (process.platform !== 'win32') return
@@ -38,72 +74,57 @@ function setupAutoUpdater() {
 
   autoUpdater.setFeedURL({ url })
 
-  autoUpdater.on('checking-for-update', () => {
-    console.log('Vérification des mises à jour...')
-  })
+  let updateDownloaded = false
 
   autoUpdater.on('update-available', () => {
-    console.log('Mise à jour disponible.')
-    dialog.showMessageBox({
-      type: 'info',
-      title: 'Mise à jour',
-      message: 'Une mise à jour est disponible. Téléchargement en cours...',
-    })
+    if (!updateDownloaded) {
+      dialog
+        .showMessageBox({
+          type: 'info',
+          title: 'Mise à jour',
+          message: 'Une mise à jour est disponible.',
+          buttons: ['Installer maintenant', 'Plus tard'],
+          defaultId: 0,
+          cancelId: 1,
+        })
+        .then(({ response }) => {
+          if (response === 0) {
+            autoUpdater.downloadUpdate()
+          }
+        })
+    }
   })
 
   autoUpdater.on('update-downloaded', () => {
+    updateDownloaded = true
     dialog
       .showMessageBox({
         type: 'info',
         title: 'Installation',
-        message: 'La mise à jour va être installée.',
+        message: 'Voulez-vous installer la mise à jour ?',
+        buttons: ['Installer et redémarrer', 'Plus tard'],
+        defaultId: 0,
+        cancelId: 1,
       })
-      .then(() => autoUpdater.quitAndInstall())
+      .then(({ response }) => {
+        if (response === 0) {
+          autoUpdater.quitAndInstall()
+        }
+      })
   })
 
   autoUpdater.on('error', (err) => {
     console.error('Erreur AutoUpdater:', err)
   })
 
-  autoUpdater.checkForUpdates()
+  setTimeout(() => {
+    autoUpdater.checkForUpdates()
+  }, 2000) // Délai pour éviter le conflit avec la vérification d'instance
+
   setInterval(() => {
     autoUpdater.checkForUpdates()
   }, 300000)
 }
-
-app.on('ready', () => {
-  console.log('Electron app is ready. Initializing...')
-  const gotTheLock = app.requestSingleInstanceLock()
-
-  if (!gotTheLock) {
-    dialog.showErrorBox(
-      "Instance déjà en cours d'exécution",
-      "Une autre instance de cette application est déjà en cours d'exécution. Veuillez la fermer avant d'en ouvrir une nouvelle.",
-    )
-    app.quit()
-  } else {
-    app.on('second-instance', () => {
-      if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore()
-        mainWindow.focus()
-      }
-    })
-
-    // Démarrage du serveur avant de créer la fenêtre Electron
-    console.log('Starting the server...')
-    require('../src/server/server.js') // Démarrer le serveur WebSocket
-
-    console.log('Server started successfully. Creating Electron window...')
-    createWindow()
-
-    initializeApp(mainWindow).catch((error) => {
-      console.error("Erreur lors de l'initialisation de l'application:", error)
-    })
-
-    setupIpcHandlers(mainWindow) // Configurer les handlers IPC
-  }
-  setupAutoUpdater()
-})
 
 // Ajouter le gestionnaire d'événement pour afficher le message "Déconnexion"
 app.on('before-quit', () => {
