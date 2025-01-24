@@ -1,4 +1,5 @@
 // forge.config.js
+require('dotenv').config()
 
 module.exports = {
   packagerConfig: {
@@ -13,7 +14,24 @@ module.exports = {
   },
   rebuildConfig: {},
   makers: [
-    // Vos configurations de makers
+    {
+      name: '@electron-forge/maker-squirrel',
+      config: {
+        name: 'appstock',
+      },
+    },
+    {
+      name: '@electron-forge/maker-zip',
+      platforms: ['darwin', 'linux'],
+    },
+    {
+      name: '@electron-forge/maker-deb',
+      config: {},
+    },
+    {
+      name: '@electron-forge/maker-rpm',
+      config: {},
+    },
   ],
   plugins: [
     // Plugin-auto-unpack-natives retiré précédemment

@@ -26,29 +26,23 @@ function createWindow() {
 }
 
 function setupAutoUpdater() {
+  if (require('electron-squirrel-startup')) return
+
+  if (process.platform !== 'win32') return
+
   const server = 'https://update.electronjs.org'
-  const feed = `${server}/5sensprod/appstock/${process.platform}-${process.arch}/${app.getVersion()}`
+  const url = `${server}/5sensprod/appstock/${process.platform}-${process.arch}/${app.getVersion()}`
 
-  autoUpdater.setFeedURL(feed)
+  autoUpdater.setFeedURL({ url })
 
-  autoUpdater.on('checking-for-update', () => {
-    console.log('Vérification des mises à jour...')
+  autoUpdater.on('error', (err) => {
+    console.log('Erreur AutoUpdater:', err)
   })
 
-  autoUpdater.on('update-available', () => {
-    console.log('Mise à jour disponible.')
-  })
-
-  autoUpdater.on('update-downloaded', () => {
-    dialog
-      .showMessageBox({
-        title: 'Mise à jour',
-        message: 'Une nouvelle version va être installée.',
-      })
-      .then(() => autoUpdater.quitAndInstall())
-  })
-
-  autoUpdater.checkForUpdates()
+  // Vérifier les mises à jour toutes les 30 minutes
+  setInterval(() => {
+    autoUpdater.checkForUpdates()
+  }, 1800000)
 }
 
 app.on('ready', () => {
