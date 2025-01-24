@@ -8,12 +8,9 @@ const {
   sendToLcd,
 } = require('./main/serialCommunication')
 const { autoUpdater } = require('electron')
-const Store = require('electron-store')
-const store = new Store()
 
 const path = require('path')
 let mainWindow
-let updateCheckScheduled = false
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -32,6 +29,42 @@ function createWindow() {
   })
 }
 
+app.on('ready', () => {
+  console.log('Electron app is ready. Initializing...')
+  const gotTheLock = app.requestSingleInstanceLock()
+
+  if (!gotTheLock) {
+    app.quit()
+    return
+  }
+
+  // Démarrage du serveur
+  console.log('Starting the server...')
+  require('../src/server/server.js')
+  console.log('Server started successfully.')
+
+  // Création de la fenêtre et initialisation
+  createWindow()
+  initializeApp(mainWindow).catch((error) => {
+    console.error("Erreur lors de l'initialisation de l'application:", error)
+  })
+  setupIpcHandlers(mainWindow)
+  setupAutoUpdater()
+
+  // Gestion de la seconde instance
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      dialog.showMessageBox({
+        type: 'info',
+        title: 'Application déjà ouverte',
+        message: "Une instance est déjà en cours d'exécution.",
+      })
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+    }
+  })
+})
+
 function setupAutoUpdater() {
   if (require('electron-squirrel-startup')) return
   if (process.platform !== 'win32') return
@@ -41,51 +74,35 @@ function setupAutoUpdater() {
 
   autoUpdater.setFeedURL({ url })
 
-  // Vérifier si une mise à jour a été reportée
-  const postponedUpdate = store.get('postponedUpdate')
-  const lastUpdateCheck = store.get('lastUpdateCheck')
-  const now = Date.now()
+  let updateDownloaded = false
 
   autoUpdater.on('update-available', () => {
-    // Si une mise à jour a été reportée et qu'on est dans une nouvelle session
-    if (postponedUpdate && now - lastUpdateCheck > 86400000) {
-      // 24h
-      autoUpdater.downloadUpdate()
-      return
+    if (!updateDownloaded) {
+      dialog
+        .showMessageBox({
+          type: 'info',
+          title: 'Mise à jour',
+          message: 'Une mise à jour est disponible.',
+          buttons: ['Installer maintenant', 'Installer Plus tard'],
+          defaultId: 0,
+          cancelId: 1,
+        })
+        .then(({ response }) => {
+          if (response === 0) {
+            autoUpdater.downloadUpdate()
+          }
+        })
     }
-
-    dialog
-      .showMessageBox(mainWindow, {
-        type: 'info',
-        title: 'Mise à jour disponible',
-        message:
-          "Une nouvelle version est disponible. Souhaitez-vous l'installer ?",
-        buttons: [
-          'Installer maintenant',
-          'Me le rappeler au prochain démarrage',
-        ],
-        defaultId: 0,
-        cancelId: 1,
-      })
-      .then(({ response }) => {
-        if (response === 0) {
-          autoUpdater.downloadUpdate()
-        } else {
-          // Sauvegarder l'information que l'utilisateur souhaite reporter la mise à jour
-          store.set('postponedUpdate', true)
-          store.set('lastUpdateCheck', now)
-        }
-      })
   })
 
   autoUpdater.on('update-downloaded', () => {
+    updateDownloaded = true
     dialog
-      .showMessageBox(mainWindow, {
+      .showMessageBox({
         type: 'info',
         title: 'Installation',
-        message:
-          "La mise à jour va être installée au redémarrage de l'application.",
-        buttons: ['Redémarrer maintenant', 'Plus tard'],
+        message: 'Voulez-vous installer la mise à jour ?',
+        buttons: ['Installer et redémarrer', 'Plus tard'],
         defaultId: 0,
         cancelId: 1,
       })
@@ -99,45 +116,15 @@ function setupAutoUpdater() {
   autoUpdater.on('error', (err) => {
     console.error('Erreur AutoUpdater:', err)
   })
+
+  setTimeout(() => {
+    autoUpdater.checkForUpdates()
+  }, 2000) // Délai pour éviter le conflit avec la vérification d'instance
+
+  setInterval(() => {
+    autoUpdater.checkForUpdates()
+  }, 300000)
 }
-
-app.on('ready', async () => {
-  console.log('Electron app is ready. Initializing...')
-  const gotTheLock = app.requestSingleInstanceLock()
-
-  if (!gotTheLock) {
-    console.log('Another instance is already running. Quitting...')
-    app.quit()
-    return
-  }
-
-  // Création de la fenêtre et initialisation
-  createWindow()
-  await initializeApp(mainWindow).catch((error) => {
-    console.error("Erreur lors de l'initialisation de l'application:", error)
-  })
-
-  setupIpcHandlers(mainWindow)
-
-  // Démarrage du serveur
-  console.log('Starting the server...')
-  require('../src/server/server.js')
-  console.log('Server started successfully.')
-
-  // Configuration de l'auto-updater après la création de la fenêtre
-  if (!updateCheckScheduled) {
-    updateCheckScheduled = true
-    setTimeout(() => {
-      setupAutoUpdater()
-      autoUpdater.checkForUpdates()
-    }, 5000) // Délai plus long pour éviter les conflits
-
-    // Vérification périodique des mises à jour
-    setInterval(() => {
-      autoUpdater.checkForUpdates()
-    }, 300000)
-  }
-})
 
 // Ajouter le gestionnaire d'événement pour afficher le message "Déconnexion"
 app.on('before-quit', () => {
