@@ -7,6 +7,7 @@ const {
   initializeSerialPort,
   sendToLcd,
 } = require('./main/serialCommunication')
+const { autoUpdater } = require('electron')
 
 const path = require('path')
 let mainWindow
@@ -22,6 +23,32 @@ function createWindow() {
 
   console.log('Creating main window...')
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+}
+
+function setupAutoUpdater() {
+  const server = 'https://update.electronjs.org'
+  const feed = `${server}/5sensprod/appstock/${process.platform}-${process.arch}/${app.getVersion()}`
+
+  autoUpdater.setFeedURL(feed)
+
+  autoUpdater.on('checking-for-update', () => {
+    console.log('Vérification des mises à jour...')
+  })
+
+  autoUpdater.on('update-available', () => {
+    console.log('Mise à jour disponible.')
+  })
+
+  autoUpdater.on('update-downloaded', () => {
+    dialog
+      .showMessageBox({
+        title: 'Mise à jour',
+        message: 'Une nouvelle version va être installée.',
+      })
+      .then(() => autoUpdater.quitAndInstall())
+  })
+
+  autoUpdater.checkForUpdates()
 }
 
 app.on('ready', () => {
@@ -55,6 +82,7 @@ app.on('ready', () => {
 
     setupIpcHandlers(mainWindow) // Configurer les handlers IPC
   }
+  setupAutoUpdater()
 })
 
 // Ajouter le gestionnaire d'événement pour afficher le message "Déconnexion"

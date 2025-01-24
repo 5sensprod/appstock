@@ -38,7 +38,16 @@ module.exports = {
     },
   ],
   publishers: [
-    // Vos configurations de publishers
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: '5sensprod',
+          name: 'appstock',
+        },
+        prerelease: false,
+      },
+    },
   ],
   hooks: {
     packageAfterCopy: async (
