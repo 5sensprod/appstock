@@ -83,7 +83,7 @@ function setupAutoUpdater() {
           type: 'info',
           title: 'Mise à jour',
           message: 'Une mise à jour est disponible.',
-          buttons: ['Installer maintenant', 'Installer Plus tard'],
+          buttons: ['Installer maintenant', 'Plus tard'],
           defaultId: 0,
           cancelId: 1,
         })
