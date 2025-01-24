@@ -1,7 +1,7 @@
 {
   "name": "appstock",
   "productName": "appstock",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "My Electron application description",
   "main": ".webpack/main",
   "scripts": {
