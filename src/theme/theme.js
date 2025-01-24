@@ -11,18 +11,42 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           height: '70px',
-          // backgroundColor: 'rgb(255, 255, 255)', // Paramètres spécifiques pour AppBar
+          backgroundColor: 'rgb(255, 255, 255)', // Paramètres spécifiques pour AppBar
+        },
+      },
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#ff0000',
+        },
+        gutters: {
+          '&.MuiTablePagination-toolbar': {
+            backgroundColor: 'white',
+          },
         },
       },
     },
     MuiDataGrid: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgb(255, 255, 255)', // Couleur de fond pour DataGrid
+          backgroundColor: 'rgb(255, 255, 255)',
         },
         columnHeader: {
           backgroundColor: 'rgb(240, 240, 240)',
-          // color: 'black',
+        },
+        toolbar: {
+          backgroundColor: '#1976d2',
+        },
+        footerContainer: {
+          // backgroundColor: '#1976d2',
+        },
+      },
+    },
+    MuiTablePagination: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#1976d2',
         },
       },
     },
