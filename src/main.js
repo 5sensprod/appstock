@@ -26,6 +26,39 @@ function createWindow() {
 }
 
 function setupAutoUpdater() {
+  if (process.env.NODE_ENV === 'development') {
+    // Mode développement
+    console.log('AutoUpdater: Mode développement')
+    console.log('Version actuelle:', app.getVersion())
+    console.log(
+      'URL de mise à jour:',
+      `https://update.electronjs.org/5sensprod/appstock/${process.platform}-${process.arch}/${app.getVersion()}`,
+    )
+
+    // Liste les releases disponibles
+    fetch(`https://api.github.com/repos/5sensprod/appstock/releases`)
+      .then((res) => res.json())
+      .then((releases) => {
+        console.log('Releases disponibles:', releases)
+      })
+      .catch((err) => console.error('Erreur fetch releases:', err))
+    setTimeout(() => {
+      dialog
+        .showMessageBox({
+          type: 'info',
+          title: 'Test Update',
+          message: 'Mise à jour simulée disponible',
+        })
+        .then(() => {
+          console.log("Simulation: Relancement de l'application")
+          app.relaunch()
+          app.exit()
+        })
+    }, 5000)
+    return
+  }
+
+  // Mode production
   if (require('electron-squirrel-startup')) return
   if (process.platform !== 'win32') return
 
