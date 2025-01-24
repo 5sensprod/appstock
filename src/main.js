@@ -16,6 +16,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 980,
     height: 600,
+    title: `appstock v${app.getVersion()}`,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -23,6 +24,9 @@ function createWindow() {
 
   console.log('Creating main window...')
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+  mainWindow.on('page-title-updated', (event) => {
+    event.preventDefault()
+  })
 }
 
 function setupAutoUpdater() {
