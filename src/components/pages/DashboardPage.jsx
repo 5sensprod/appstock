@@ -10,7 +10,7 @@ import SerialPortSelector from '../SerialPortSelector'
 import { isRunningInElectron } from '../../utils/environmentUtils' // Import de la fonction utilitaire
 
 const DashboardPage = () => {
-  const [selectedRange, setSelectedRange] = useState('this_month')
+  const [selectedRange, setSelectedRange] = useState('custom')
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null })
 
   const handleRangeChange = (event) => {
@@ -50,11 +50,11 @@ const DashboardPage = () => {
       </Box>
 
       {/* Afficher le SerialPortSelector uniquement dans Electron */}
-      {isRunningInElectron() && (
+      {/* {isRunningInElectron() && (
         <Box my={2} maxWidth={853}>
           <SerialPortSelector />
         </Box>
-      )}
+      )} */}
 
       <Box id="les-devis" my={2}>
         <Typography
