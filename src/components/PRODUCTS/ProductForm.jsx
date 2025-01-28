@@ -52,6 +52,9 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
   const availableBrands =
     suppliers.find((supplier) => supplier._id === product.supplierId)?.brands ||
     []
+  const sortedBrands = [...availableBrands].sort((a, b) =>
+    a.localeCompare(b, 'fr'),
+  )
 
   const isPrixAchatEmpty =
     !product.prixAchat || parseFloat(product.prixAchat) === 0
@@ -110,25 +113,18 @@ const ProductForm = ({ initialProduct, onSubmit, onCancel }) => {
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <FormControl
-            fullWidth
-            variant="outlined"
-            disabled={!availableBrands.length}
-          >
-            <InputLabel shrink={product.marque ? true : undefined}>
-              Marque
-            </InputLabel>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Marque</InputLabel>
             <Select
-              name="marque"
-              value={product.marque || ''}
+              name="brand"
+              value={product.brand || ''}
               onChange={handleInputChange}
-              fullWidth
               label="Marque"
             >
               <MenuItem value="">
-                <em>Aucun</em>
+                <em>Aucune</em>
               </MenuItem>
-              {availableBrands.map((brand) => (
+              {sortedBrands.map((brand) => (
                 <MenuItem key={brand} value={brand}>
                   {brand}
                 </MenuItem>

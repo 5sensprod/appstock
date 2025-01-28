@@ -20,14 +20,17 @@ export const SupplierProvider = ({ children }) => {
     setLoading(true)
     try {
       const data = await getSuppliers()
-      setSuppliers(data)
+      // Tri des fournisseurs avant de les stocker dans le state
+      const sortedData = [...data].sort((a, b) =>
+        a.name.localeCompare(b.name, 'fr'),
+      )
+      setSuppliers(sortedData)
     } catch (error) {
       console.error('Erreur lors de la récupération des fournisseurs:', error)
     } finally {
       setLoading(false)
     }
   }
-
   useEffect(() => {
     const eventSource = new EventSource(`${baseUrl}/api/events`)
 

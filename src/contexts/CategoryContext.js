@@ -31,19 +31,21 @@ export const CategoryProvider = ({ children }) => {
   const loadCategoriesAndCounts = async () => {
     try {
       const fetchedCategories = await getCategories(baseUrl)
-      setCategories(fetchedCategories)
+      // Tri des catégories par ordre alphabétique avant de les stocker
+      const sortedCategories = [...fetchedCategories].sort((a, b) =>
+        a.name.localeCompare(b.name, 'fr'),
+      )
+      setCategories(sortedCategories)
 
       const subCounts = await fetchSubCategoryCounts(baseUrl)
       setSubCategoryCounts(subCounts)
 
-      // Chargement du comptage des produits par catégorie
       const productCounts = await fetchProductCountByCategory(baseUrl)
       setProductCountByCategory(productCounts)
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error)
     }
   }
-
   useEffect(() => {
     loadCategoriesAndCounts() // Charge initialement les catégories et les comptages
 
@@ -87,9 +89,14 @@ export const CategoryProvider = ({ children }) => {
   const addCategoryToContext = async (categoryData) => {
     try {
       const newCategory = await addCategory(categoryData, baseUrl)
-      setCategories((prevCategories) => [...prevCategories, newCategory])
+      setCategories((prevCategories) => {
+        const updatedCategories = [...prevCategories, newCategory]
+        return updatedCategories.sort((a, b) =>
+          a.name.localeCompare(b.name, 'fr'),
+        )
+      })
     } catch (error) {
-      console.error('Erreur lors de l’ajout de la catégorie:', error)
+      console.error("Erreur lors de l'ajout de la catégorie:", error)
       throw error
     }
   }
