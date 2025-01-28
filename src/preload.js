@@ -10,4 +10,12 @@ contextBridge.exposeInMainWorld('electron', {
   },
   getLocalIp: () => ipcRenderer.invoke('get-local-ip'),
   getStoredIp: () => ipcRenderer.invoke('get-stored-ip'),
+
+  // Ajouter les méthodes WooCommerce
+  woocommerce: {
+    testConnection: () => ipcRenderer.invoke('test-woo-connection'),
+    getStatus: () => ipcRenderer.invoke('get-woo-status'),
+    syncProduct: (product) =>
+      ipcRenderer.invoke('sync-product-to-woo', product),
+  },
 })
