@@ -63,21 +63,24 @@ const useProductManagerColumns = ({
         headerName: 'Px Achat',
         width: 80,
         type: 'number',
-        valueGetter: (params) => formatPriceFrench(params.row.prixAchat), // Formater le prix d'achat
+        valueGetter: (params) => params.row.prixAchat, // Pour le tri
+        renderCell: (params) => formatPriceFrench(params.row.prixAchat), // Pour l'affichage
       },
       {
         field: 'marge',
         headerName: 'Marge (%)',
         width: 80,
         type: 'number',
-        valueGetter: (params) => formatMargeFrench(params.row.marge), // Formater la marge avec une virgule
+        valueGetter: (params) => params.row.marge, // Pour le tri
+        renderCell: (params) => formatMargeFrench(params.row.marge), // Pour l'affichage
       },
       {
         field: 'prixVente',
         headerName: 'Px Vente',
         width: 80,
         type: 'number',
-        valueGetter: (params) => formatPriceFrench(params.row.prixVente), // Formater le prix de vente
+        valueGetter: (params) => params.row.prixVente, // Pour le tri
+        renderCell: (params) => formatPriceFrench(params.row.prixVente), // Pour l'affichage
       },
       { field: 'stock', headerName: 'Stock', width: 90, type: 'number' },
       {
