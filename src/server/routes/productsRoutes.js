@@ -5,6 +5,7 @@ const fs = require('fs')
 const path = require('path')
 const { cataloguePath } = require('../server')
 const axios = require('axios')
+const { getLocalIPv4Address } = require('../networkUtils')
 
 module.exports = (db, sendSseEvent) => {
   const { products, categories } = db
@@ -185,7 +186,17 @@ module.exports = (db, sendSseEvent) => {
   router.get('/', (req, res) => {
     products.find({}, (err, docs) => {
       if (err) res.status(500).send(err)
-      else res.status(200).json(docs)
+      else {
+        const localIp = getLocalIPv4Address()
+        const productsWithFullUrls = docs.map((product) => ({
+          ...product,
+          photos: product.photos?.map(
+            (photo) =>
+              `http://${localIp}:5000/api/products/images/${product._id}/${path.basename(photo)}`,
+          ),
+        }))
+        res.status(200).json(productsWithFullUrls)
+      }
     })
   })
 

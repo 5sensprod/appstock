@@ -16,6 +16,16 @@ const cataloguePath = path.join(userDataPath, 'catalogue')
 module.exports.cataloguePath = cataloguePath
 
 app.use('/catalogue', express.static(cataloguePath))
+app.get('/api/products/images/:productId/:imageName', (req, res) => {
+  const { productId, imageName } = req.params
+  const imagePath = path.join(cataloguePath, productId, imageName)
+
+  if (fs.existsSync(imagePath)) {
+    res.sendFile(imagePath)
+  } else {
+    res.status(404).send('Image non trouvée')
+  }
+})
 app.use(express.json())
 app.use(express.static(staticFilesPath))
 app.use(
