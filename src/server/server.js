@@ -100,6 +100,18 @@ app.get('/api/getLocalIp', (req, res) => {
   res.json({ ip: localIp })
 })
 
+// Route pour obtenir url image
+app.get('/api/config', (req, res) => {
+  const localIp = getLocalIPv4Address()
+  res.json({
+    ip: localIp,
+    images: {
+      basePath: cataloguePath,
+      imageUrlPattern: `http://localhost:${port}/api/products/images/{id}/{filename}`,
+    },
+  })
+})
+
 const server = http.createServer(app)
 
 // Importer la fonction d'initialisation WebSocket
