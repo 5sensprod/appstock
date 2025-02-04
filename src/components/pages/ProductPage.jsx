@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import Grid from '@mui/material/Grid'
-import ProductManager from '../PRODUCTS/ProductManager'
+import ProductManager from '../products/ProductManager'
 import CategoryFilter from '../CATEGORIES/CategoryFilter'
 import { CategoryTreeSelectContext } from '../../contexts/CategoryTreeSelectContext'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'

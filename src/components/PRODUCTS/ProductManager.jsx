@@ -1,10 +1,5 @@
 import React, { useState } from 'react'
-import {
-  DataGridPremium,
-  frFR,
-  GridToolbarQuickFilter,
-} from '@mui/x-data-grid-premium'
-import { Box, Typography, Button } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useSuppliers } from '../../contexts/SupplierContext'
 import useProductManagerColumns from './hooks/useProductManagerColumns'
@@ -22,6 +17,8 @@ import { formatDateFrench } from '../../utils/dateUtils'
 import { useUI } from '../../contexts/UIContext'
 import GenerateCodesForm from './GenerateCodesForm'
 import html2canvas from 'html2canvas'
+import ProductToolbar from './toolbar/ProductToolbar'
+import ProductGrid from './grid/ProductGrid'
 
 import JsBarcode from 'jsbarcode'
 import { QRCodeCanvas } from 'qrcode.react'
@@ -326,77 +323,27 @@ const ProductManager = ({ selectedCategoryId }) => {
 
   return (
     <Box>
-      <Box mb={2} mt={1}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleOpenModal()}
-        >
-          Créer un produit
-        </Button>
-
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleBulkEditModalOpen}
-          disabled={rowSelectionModel.length < 2}
-          style={{ marginLeft: 16 }}
-        >
-          Modifier en masse
-        </Button>
-
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleExportModalOpen}
-          disabled={rowSelectionModel.length < 1}
-          style={{ marginLeft: 16 }}
-        >
-          Exporter
-        </Button>
-
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleGenerateCodesModalOpen}
-          disabled={rowSelectionModel.length < 1}
-          style={{ marginLeft: 16 }}
-        >
-          Générer Codes
-        </Button>
-      </Box>
+      <ProductToolbar
+        onCreateClick={() => handleOpenModal()}
+        onBulkEditClick={handleBulkEditModalOpen}
+        onExportClick={handleExportModalOpen}
+        onGenerateCodesClick={handleGenerateCodesModalOpen}
+        hasSelection={rowSelectionModel.length > 0}
+        hasMultipleSelection={rowSelectionModel.length > 1}
+      />
 
       {filteredProducts.length === 0 ? (
         <Typography variant="h6">Aucun produit trouvé</Typography>
       ) : (
-        <DataGridPremium
-          rows={filteredProducts}
+        <ProductGrid
+          products={filteredProducts}
           columns={columns}
-          paginationModel={gridPreferences.paginationModel} // Utilisation des préférences pour la pagination
-          onPaginationModelChange={handlePaginationModelChange} // Met à jour les préférences dans le contexte
-          pageSize={gridPreferences.paginationModel.pageSize} // Taille de page depuis les préférences
-          onPageSizeChange={(newPageSize) => {
-            handlePaginationModelChange({
-              ...gridPreferences.paginationModel,
-              pageSize: newPageSize,
-            })
-          }}
-          pageSizeOptions={[10, 25, 50, 100]} // Options de taille de page
-          localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
-          slots={{ toolbar: GridToolbarQuickFilter }}
-          getRowId={(row) => row._id}
-          pagination
-          checkboxSelection
-          disableRowSelectionOnClick // Désactiver la sélection des lignes lors du clic
-          onRowSelectionModelChange={(newSelection) =>
+          paginationModel={gridPreferences.paginationModel}
+          onPaginationModelChange={handlePaginationModelChange}
+          onSelectionChange={(newSelection) =>
             setRowSelectionModel(newSelection)
           }
-          rowSelectionModel={rowSelectionModel}
-          initialState={{
-            sorting: {
-              sortModel: [{ field: 'dateSoumission', sort: 'desc' }], // Trier par défaut par date décroissante
-            },
-          }}
+          selectionModel={rowSelectionModel}
         />
       )}
 
