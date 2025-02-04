@@ -381,7 +381,7 @@ const ProductManager = ({ selectedCategoryId }) => {
               pageSize: newPageSize,
             })
           }}
-          pageSizeOptions={[10, 25, 50]} // Options de taille de page
+          pageSizeOptions={[10, 25, 50, 100]} // Options de taille de page
           localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
           slots={{ toolbar: GridToolbarQuickFilter }}
           getRowId={(row) => row._id}
