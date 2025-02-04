@@ -5,7 +5,15 @@ const cleanData = (data) => {
   const cleanedData = {}
   for (const key in data) {
     if (typeof data[key] === 'string') {
-      cleanedData[key] = data[key].replace(/^\s+/, '') // Supprimer les espaces avant
+      const cleaned = data[key].replace(/^\s+/, '')
+      cleanedData[key] =
+        key === 'name'
+          ? cleaned
+              .toLowerCase()
+              .split(' ')
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ')
+          : cleaned
     } else {
       cleanedData[key] = data[key]
     }
@@ -15,13 +23,20 @@ const cleanData = (data) => {
 
 async function getCategories() {
   try {
-    return await fetchApi('categories')
+    const categories = await fetchApi('categories')
+    return categories.map((cat) => ({
+      ...cat,
+      name: cat.name
+        .toLowerCase()
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' '),
+    }))
   } catch (error) {
     console.error('Erreur lors de la récupération des catégories:', error)
     return []
   }
 }
-
 async function addCategory(categoryData) {
   try {
     const cleanedData = cleanData(categoryData)

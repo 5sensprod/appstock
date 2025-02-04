@@ -119,7 +119,17 @@ const ProductManager = ({ selectedCategoryId }) => {
   }
 
   const exportToPdf = (data) => {
-    const doc = new jsPDF()
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4',
+      margins: {
+        top: 5,
+        right: 5,
+        bottom: 5,
+        left: 5,
+      },
+    })
 
     // Ajouter un titre au PDF
     doc.setFontSize(18)
@@ -142,7 +152,8 @@ const ProductManager = ({ selectedCategoryId }) => {
 
     // Ajouter le tableau au PDF
     doc.autoTable({
-      startY: 35, // Positionner le tableau en dessous du titre
+      startY: 25,
+      margin: { top: 5, right: 5, bottom: 5, left: 5 },
       head: headers,
       body: rows,
     })
