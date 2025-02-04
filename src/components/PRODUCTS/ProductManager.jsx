@@ -29,7 +29,7 @@ import { createRoot } from 'react-dom/client'
 
 const ProductManager = ({ selectedCategoryId }) => {
   const { products } = useProductContextSimplified() // Récupération des produits depuis le contexte
-  const { categories } = useCategoryContext()
+  const { categories, getCategoryPath } = useCategoryContext()
   const { suppliers } = useSuppliers()
   const { gridPreferences, updatePreferences } = useGridPreferences() // Récupérer et mettre à jour les préférences de grille
   const { showToast } = useUI()
