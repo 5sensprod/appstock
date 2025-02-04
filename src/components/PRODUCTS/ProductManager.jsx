@@ -10,25 +10,21 @@ import { useProductManagerLogic } from './hooks/useProductManagerLogic'
 import { useProductContextSimplified } from '../../contexts/ProductContextSimplified'
 import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 import ExportForm from './ExportForm'
-import 'jspdf-autotable'
 import { useUI } from '../../contexts/UIContext'
 import GenerateCodesForm from './GenerateCodesForm'
-import html2canvas from 'html2canvas'
 import ProductToolbar from './toolbar/ProductToolbar'
 import ProductGrid from './grid/ProductGrid'
 import { useModals } from './hooks/useModals'
 import { useProductExport } from './hooks/useProductExport'
-
-import JsBarcode from 'jsbarcode'
-import { QRCodeCanvas } from 'qrcode.react'
-import { createRoot } from 'react-dom/client'
+import { useCodeGeneration } from './hooks/useCodeGeneration'
 
 const ProductManager = ({ selectedCategoryId }) => {
-  const { products } = useProductContextSimplified() // Récupération des produits depuis le contexte
+  const { products } = useProductContextSimplified()
   const { categories, getCategoryPath } = useCategoryContext()
   const { suppliers } = useSuppliers()
-  const { gridPreferences, updatePreferences } = useGridPreferences() // Récupérer et mettre à jour les préférences de grille
+  const { gridPreferences, updatePreferences } = useGridPreferences()
   const { showToast } = useUI()
+  const { generateCodesForProducts } = useCodeGeneration()
 
   const {
     isExportModalOpen,
@@ -97,102 +93,24 @@ const ProductManager = ({ selectedCategoryId }) => {
   }
 
   const handleGenerateCodesSubmit = async ({ codeType, height }) => {
-    const heightInPixels = height * 3.7795275591
-
-    // Récupérer les produits sélectionnés
     const selectedProducts = products.filter((product) =>
       rowSelectionModel.includes(product._id),
     )
 
-    let codesGenerated = false
+    const codesGenerated = await generateCodesForProducts(
+      selectedProducts,
+      codeType,
+      height,
+    )
 
-    for (const product of selectedProducts) {
-      const gencode = product.gencode || ''
-      if (!gencode) {
-        continue
-      }
+    showToast(
+      codesGenerated
+        ? 'Images générées avec succès'
+        : "Aucun code généré : les produits sélectionnés n'ont pas de gencode",
+      codesGenerated ? 'success' : 'warning',
+    )
 
-      codesGenerated = true
-
-      const fileName = `${product.reference || 'produit'}_${gencode}_${codeType}.png`
-
-      let codeElement
-
-      if (codeType === 'barcode') {
-        // Créer un canvas pour le code-barres
-        const canvas = document.createElement('canvas')
-        JsBarcode(canvas, gencode, {
-          format: 'CODE128',
-          height: heightInPixels,
-          displayValue: true,
-        })
-        codeElement = canvas
-      } else {
-        // Utiliser QRCodeCanvas pour le QR code
-        codeElement = (
-          <QRCodeCanvas
-            id="qrCode"
-            value={gencode}
-            size={heightInPixels}
-            includeMargin={true}
-          />
-        )
-      }
-
-      // Convertir l'élément en image
-      await generateImageFromElement(codeElement, fileName)
-    }
-
-    if (codesGenerated) {
-      showToast('Images générées avec succès', 'success')
-    } else {
-      showToast(
-        "Aucun code généré : les produits sélectionnés n'ont pas de gencode",
-        'warning',
-      )
-    }
-
-    // Fermer le modal
     handleGenerateCodesModalClose()
-  }
-
-  const generateImageFromElement = async (element, fileName) => {
-    // Créer un conteneur div pour l'élément
-    const container = document.createElement('div')
-    container.style.position = 'fixed'
-    container.style.top = '-10000px' // Hors de la vue
-    document.body.appendChild(container)
-
-    // Ajouter l'élément au conteneur
-    if (element instanceof HTMLCanvasElement) {
-      container.appendChild(element)
-    } else {
-      // Rendre l'élément React dans le conteneur
-      const root = createRoot(container)
-      root.render(element)
-      // Attendre que le composant soit rendu
-      await new Promise((resolve) => setTimeout(resolve, 100))
-    }
-
-    // Utiliser html2canvas pour convertir en image
-    const canvas = await html2canvas(container, {
-      backgroundColor: null,
-      scale: 2, // Meilleure résolution
-    })
-
-    // Convertir le canvas en Data URL
-    const dataUrl = canvas.toDataURL('image/png')
-
-    // Créer un lien pour le téléchargement
-    const link = document.createElement('a')
-    link.href = dataUrl
-    link.setAttribute('download', fileName)
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-
-    // Nettoyer le conteneur
-    document.body.removeChild(container)
   }
 
   const availableFields = {
