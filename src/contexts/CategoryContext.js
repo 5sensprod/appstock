@@ -101,10 +101,6 @@ export const CategoryProvider = ({ children }) => {
     }
   }
 
-  const handleCategoryChange = (event) => {
-    setSelectedCategoryId(event.target.value)
-  }
-
   // Fonction pour obtenir le chemin complet de la catégorie
   const getCategoryPath = (categoryId) => {
     const categoryPath = []

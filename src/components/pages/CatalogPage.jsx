@@ -1,30 +1,35 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useProductContext } from '../../contexts/ProductContext'
 import ProductSearch from '../productPOS/ProductSearch'
-import SelectCategory from '../category/SelectCategory'
 import useSearch from '../hooks/useSearch'
 import ProductCatalog from '../productPOS/ProductCatalog'
 import { Box, Button, Snackbar, Alert } from '@mui/material'
 import { useCategoryContext } from '../../contexts/CategoryContext'
-import { useGridPreferences } from '../../contexts/GridPreferenceContext'
 import WooCommerceConfig from '../woocommerce/WooCommerceConfig'
+import CategoryFilter from '../CATEGORIES/CategoryFilter'
+import { CategoryTreeSelectContext } from '../../contexts/CategoryTreeSelectContext'
 
 const CatalogPage = () => {
-  const { products, searchTerm, selectedCategoryId, handleCategoryChange } =
-    useProductContext()
-  const { resetCurrentPage } = useGridPreferences()
+  const { products, searchTerm } = useProductContext()
+
   const { categories } = useCategoryContext()
   const [wooStatus, setWooStatus] = useState(null)
   const [showAlert, setShowAlert] = useState(false)
   const [showWooConfig, setShowWooConfig] = useState(false)
 
+  const { selectedCategory } = useContext(CategoryTreeSelectContext)
+
   const filteredProducts = useSearch(
     products,
     searchTerm,
-    selectedCategoryId,
+    null,
     categories,
-  )
+  ).filter((product) => {
+    if (!selectedCategory?.categoryId) return true
+    return selectedCategory.selectedCategoryIds.includes(product.categorie)
+  })
+
   const navigate = useNavigate()
 
   const testWoo = async () => {
@@ -53,10 +58,6 @@ const CatalogPage = () => {
     navigate(`/edit-product/${productId}`)
   }
 
-  const handleCategoryChangeWithReset = (event) => {
-    handleCategoryChange(event, resetCurrentPage)
-  }
-
   const handleCloseAlert = () => {
     setShowAlert(false)
   }
@@ -71,12 +72,7 @@ const CatalogPage = () => {
     <div style={{ width: '100%' }}>
       <Box display="flex" alignItems="center" gap={2} my={2}>
         <Box width={'30%'}>
-          <SelectCategory
-            categories={categories}
-            selectedCategoryId={selectedCategoryId}
-            onCategoryChange={handleCategoryChangeWithReset}
-            onFocus={resetCurrentPage}
-          />
+          <CategoryFilter />
         </Box>
         <Box width={'60%'}>
           <ProductSearch />
