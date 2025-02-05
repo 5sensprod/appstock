@@ -62,11 +62,12 @@ export const ProductProviderSimplified = ({ children }) => {
     try {
       await deleteProduct(productId)
       setProducts((currentProducts) =>
-        currentProducts.filter((product) => product.id !== productId),
+        currentProducts.filter((product) => product._id !== productId),
       )
       EventEmitter.dispatch('PRODUCT_CRUD_OPERATION')
     } catch (error) {
       console.error('Erreur lors de la suppression du produit:', error)
+      throw error // Propager l'erreur
     }
   }
 
