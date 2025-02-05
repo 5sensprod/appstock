@@ -56,13 +56,11 @@ const useProductManagerColumns = ({
         field: 'reference',
         headerName: 'Référence',
         width: 200,
-        aggregable: false,
       },
       {
         field: 'designation',
         headerName: 'Désignation',
         width: 200,
-        availableAggregationFunctions: ['size'],
       },
       {
         field: 'prixAchat',
