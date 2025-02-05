@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Box, Typography } from '@mui/material'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useSuppliers } from '../../contexts/SupplierContext'
@@ -17,6 +17,7 @@ import ProductGrid from './grid/ProductGrid'
 import { useModals } from './hooks/useModals'
 import { useProductExport } from './hooks/useProductExport'
 import { useCodeGeneration } from './hooks/useCodeGeneration'
+import { CategoryTreeSelectContext } from '../../contexts/CategoryTreeSelectContext'
 
 const ProductManager = ({ selectedCategoryId }) => {
   const { products } = useProductContextSimplified()
@@ -25,6 +26,7 @@ const ProductManager = ({ selectedCategoryId }) => {
   const { gridPreferences, updatePreferences } = useGridPreferences()
   const { showToast } = useUI()
   const { generateCodesForProducts } = useCodeGeneration()
+  const { selectedCategory } = useContext(CategoryTreeSelectContext)
 
   const {
     isExportModalOpen,
@@ -64,7 +66,7 @@ const ProductManager = ({ selectedCategoryId }) => {
 
   const filteredProducts = products.filter((product) => {
     if (!selectedCategoryId) return true
-    return product.categorie === selectedCategoryId
+    return selectedCategory.selectedCategoryIds.includes(product.categorie)
   })
 
   const handlePaginationModelChange = (model) => {

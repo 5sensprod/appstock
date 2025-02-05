@@ -6,10 +6,24 @@ export const CategoryTreeSelectProvider = ({ children }) => {
   const [selectedCategory, setSelectedCategory] = useState({
     categoryId: null,
     categoryName: '',
+    selectedCategoryIds: [],
   })
 
-  const handleCategorySelect = (categoryId, categoryName) => {
-    setSelectedCategory({ categoryId, categoryName })
+  const getChildCategoryIds = (categoryId, categories) => {
+    const childIds = [categoryId]
+    categories
+      .filter((cat) => cat.parentId === categoryId)
+      .forEach((child) => {
+        childIds.push(...getChildCategoryIds(child._id, categories))
+      })
+    return childIds
+  }
+
+  const handleCategorySelect = (categoryId, categoryName, categories) => {
+    const selectedCategoryIds = categoryId
+      ? getChildCategoryIds(categoryId, categories)
+      : []
+    setSelectedCategory({ categoryId, categoryName, selectedCategoryIds })
   }
 
   const resetSelectedCategory = () => {

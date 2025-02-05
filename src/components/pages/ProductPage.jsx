@@ -19,6 +19,7 @@ const ProductPage = () => {
         <Box>
           <ProductManager
             selectedCategoryId={selectedCategory.categoryId}
+            selectedCategory={selectedCategory} // Ajout de cette prop
             searchTerm={searchTerm}
           />
         </Box>

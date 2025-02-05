@@ -52,11 +52,11 @@ const CategoryFilter = () => {
     if (event.target.closest('.MuiTreeItem-iconContainer')) {
       return
     }
-
     const selectedCategory = categories.find((cat) => cat._id === categoryId)
     handleCategorySelect(
       categoryId,
       selectedCategory ? selectedCategory.name : '',
+      categories, // Passons les catégories
     )
     handleClose()
   }

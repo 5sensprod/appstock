@@ -29,16 +29,10 @@ const CategoryTreeGrid = () => {
   const gridApi = useRef(null)
 
   const handleProductCountClick = (categoryId) => {
-    // Trouvez le nom de la catégorie correspondant à categoryId
     const categoryName = categories.find((cat) => cat._id === categoryId)?.name
-
-    // Mettez à jour le contexte avec l'ID et le nom de la catégorie sélectionnée
-    handleCategorySelect(categoryId, categoryName)
-
-    // Naviguez vers la page des produits
+    handleCategorySelect(categoryId, categoryName, categories) // Ajout de categories
     navigate('/products')
   }
-
   const onCellValueChanged = async ({ data, oldValue, newValue, colDef }) => {
     if (colDef.field === 'name' && oldValue !== newValue) {
       // Extrait uniquement le nom de la catégorie de la nouvelle valeur
