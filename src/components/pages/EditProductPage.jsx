@@ -11,6 +11,7 @@ import { useProductContext } from '../../contexts/ProductContext'
 import { useConfig } from '../../contexts/ConfigContext'
 import { formatPrice } from '../../utils/priceUtils'
 import ShadowBox from '../ui/ShadowBox'
+import { useSuppliers } from '../../contexts/SupplierContext'
 
 const EditProductPage = () => {
   const { id: productId } = useParams()
@@ -27,6 +28,8 @@ const EditProductPage = () => {
   const [brandName, setBrandName] = useState('')
   const [salePrice, setSalePrice] = useState('')
   const [gencode, setGencode] = useState('')
+  const { suppliers } = useSuppliers()
+  const [supplierName, setSupplierName] = useState('')
 
   useEffect(() => {
     const product = products.find((p) => p._id === productId)
@@ -39,11 +42,13 @@ const EditProductPage = () => {
       })
       const path = getCategoryPath(product.categorie)
       setCategoryPath(path)
+      const supplier = suppliers.find((s) => s._id === product.supplierId)
+      setSupplierName(supplier?.name || 'Non spécifié')
       setBrandName(product.marque || 'Non spécifiée')
       setSalePrice(formatPrice(product.prixVente))
       setGencode(product.gencode || 'Gencode non spécifié')
     }
-  }, [products, productId, getCategoryPath])
+  }, [products, productId, getCategoryPath, suppliers])
 
   const toggleEditMode = () => {
     setIsEditable((prev) => !prev)
@@ -85,6 +90,9 @@ const EditProductPage = () => {
           </Box>
           <Typography variant="subtitle2" component="h2">
             {categoryPath}
+          </Typography>
+          <Typography variant="subtitle2" component="h2">
+            Fournisseur : {supplierName}
           </Typography>
           <Typography variant="subtitle2" component="h2">
             Marque : {brandName}
