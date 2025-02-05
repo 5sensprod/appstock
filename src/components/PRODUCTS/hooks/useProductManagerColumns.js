@@ -127,7 +127,7 @@ const useProductManagerColumns = ({
         },
         aggregable: false,
       },
-      { field: 'marque', headerName: 'Marque', width: 150, aggregable: false },
+      { field: 'brand', headerName: 'Marque', width: 150, aggregable: false },
       {
         field: 'gencode',
         headerName: 'Gencode',

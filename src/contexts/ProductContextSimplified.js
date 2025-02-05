@@ -4,10 +4,10 @@ import {
   addProduct,
   updateProduct,
   deleteProduct,
+  updateProductsBulk,
 } from '../api/productService'
 import { useConfig } from './ConfigContext'
 import { EventEmitter } from '../utils/eventEmitter'
-import { updateProductsBulk } from '../api/productService'
 
 const ProductContextSimplified = createContext()
 
@@ -50,7 +50,7 @@ export const ProductProviderSimplified = ({ children }) => {
   const updateProductInContext = async (productId, productData) => {
     try {
       await updateProduct(productId, productData)
-      loadProducts()
+      await loadProducts()
       EventEmitter.dispatch('PRODUCT_CRUD_OPERATION')
     } catch (error) {
       console.error('Erreur lors de la mise à jour du produit:', error)
