@@ -44,7 +44,7 @@ const EditProductPage = () => {
       setCategoryPath(path)
       const supplier = suppliers.find((s) => s._id === product.supplierId)
       setSupplierName(supplier?.name || 'Non spécifié')
-      setBrandName(product.marque || 'Non spécifiée')
+      setBrandName(product.brand || 'Non spécifiée')
       setSalePrice(formatPrice(product.prixVente))
       setGencode(product.gencode || 'Gencode non spécifié')
     }
