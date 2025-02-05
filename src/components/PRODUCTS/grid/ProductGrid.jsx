@@ -44,11 +44,6 @@ const ProductGrid = ({
           },
         },
       }}
-      slotProps={{
-        footer: {
-          showTotalAggregationFooter: true,
-        },
-      }}
       sx={{
         '& [data-field="actions"] .MuiDataGrid-aggregationColumnHeaderLabel': {
           display: 'none',

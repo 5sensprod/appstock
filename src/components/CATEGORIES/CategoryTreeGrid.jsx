@@ -72,7 +72,7 @@ const CategoryTreeGrid = () => {
       {
         headerName: 'Produits',
         field: 'productCount',
-        cellRendererFramework: (params) => {
+        cellRenderer: (params) => {
           const productCount = productCountByCategory[params.data._id] || 0
           return (
             <Button onClick={() => handleProductCountClick(params.data._id)}>
@@ -85,7 +85,7 @@ const CategoryTreeGrid = () => {
       {
         headerName: 'Actions',
         field: 'actions',
-        cellRendererFramework: (params) => (
+        cellRenderer: (params) => (
           <Button
             onClick={() => handleDeleteCategory(params.data._id)}
             color="error"
