@@ -78,7 +78,7 @@ const CatalogPage = () => {
           <ProductSearch />
         </Box>
         <Box width={'10%'}>
-          <Button
+          {/* <Button
             variant="contained"
             color="primary"
             onClick={testWoo}
@@ -86,7 +86,7 @@ const CatalogPage = () => {
             sx={{ whiteSpace: 'nowrap' }}
           >
             Test WooCommerce
-          </Button>
+          </Button> */}
         </Box>
       </Box>
 
