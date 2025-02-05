@@ -13,6 +13,8 @@ const ProductGrid = ({
   onPaginationModelChange,
   onSelectionChange,
   selectionModel,
+  sortModel,
+  onSortModelChange,
 }) => {
   if (products.length === 0) {
     return <Typography variant="h6">Aucun produit trouvé</Typography>
@@ -35,6 +37,8 @@ const ProductGrid = ({
       onRowSelectionModelChange={onSelectionChange}
       rowSelectionModel={selectionModel}
       experimentalFeatures={{ aggregation: true }}
+      sortModel={sortModel}
+      onSortModelChange={onSortModelChange}
       sortingOrder={['desc', 'asc']}
       initialState={{
         sorting: {

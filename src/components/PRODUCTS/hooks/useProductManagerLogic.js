@@ -34,7 +34,7 @@ export const useProductManagerLogic = () => {
     setBulkEditModalOpen(false)
   }
 
-  const handleProductSubmit = async (productData) => {
+  const handleProductSubmit = async (productData, setSortModel) => {
     try {
       if (editingProduct) {
         await updateProductInContext(editingProduct._id, productData)
@@ -43,6 +43,7 @@ export const useProductManagerLogic = () => {
         await addProductToContext(productData)
         showToast('Produit ajouté avec succès', 'success')
       }
+      setSortModel([{ field: 'dateSoumission', sort: 'desc' }])
       handleCloseModal()
     } catch (error) {
       showToast(

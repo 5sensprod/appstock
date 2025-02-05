@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import { useCategoryContext } from '../../contexts/CategoryContext'
 import { useSuppliers } from '../../contexts/SupplierContext'
@@ -27,6 +27,9 @@ const ProductManager = ({ selectedCategoryId }) => {
   const { showToast } = useUI()
   const { generateCodesForProducts } = useCodeGeneration()
   const { selectedCategory } = useContext(CategoryTreeSelectContext)
+  const [sortModel, setSortModel] = useState([
+    { field: 'dateSoumission', sort: 'desc' },
+  ])
 
   const {
     isExportModalOpen,
@@ -115,6 +118,10 @@ const ProductManager = ({ selectedCategoryId }) => {
     handleGenerateCodesModalClose()
   }
 
+  const handleSubmit = (productData) => {
+    handleProductSubmit(productData, setSortModel)
+  }
+
   const normalizedProducts = filteredProducts.map((product) => ({
     ...product,
     dateSoumission: product.dateSoumission?.$$date
@@ -152,6 +159,8 @@ const ProductManager = ({ selectedCategoryId }) => {
         <Typography variant="h6">Aucun produit trouvé</Typography>
       ) : (
         <ProductGrid
+          sortModel={sortModel}
+          onSortModelChange={setSortModel}
           products={normalizedProducts}
           columns={columns}
           paginationModel={gridPreferences.paginationModel}
@@ -181,7 +190,7 @@ const ProductManager = ({ selectedCategoryId }) => {
               tva: 20,
             }
           }
-          onSubmit={handleProductSubmit}
+          onSubmit={handleSubmit}
           onCancel={handleCloseModal}
         />
       </ReusableModal>
