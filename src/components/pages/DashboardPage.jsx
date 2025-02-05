@@ -6,8 +6,7 @@ import DateRangePicker from '../ui/DateRangePicker'
 import Typography from '@mui/material/Typography'
 import QuoteGrid from '../quote/QuoteGrid'
 import ShadowBox from '../ui/ShadowBox'
-import SerialPortSelector from '../SerialPortSelector'
-import { isRunningInElectron } from '../../utils/environmentUtils' // Import de la fonction utilitaire
+import { isRunningInElectron } from '../../utils/environmentUtils'
 
 const DashboardPage = () => {
   const [selectedRange, setSelectedRange] = useState('custom')
@@ -23,20 +22,18 @@ const DashboardPage = () => {
 
   return (
     <Box>
-      <Box mb={4} width={'fit-content'}>
+      <Box mb={4} width="fit-content">
         <ShadowBox>
           <UserDetails />
         </ShadowBox>
       </Box>
+
       <Box my={2}>
-        <Typography
-          variant="h5"
-          component="h2"
-          style={{ textTransform: 'uppercase' }}
-        >
+        <Typography variant="h5" component="h2" className="uppercase">
           Les ventes
         </Typography>
       </Box>
+
       <Box my={2}>
         <DateRangePicker
           selectedRange={selectedRange}
@@ -49,22 +46,16 @@ const DashboardPage = () => {
         <SalesLineChart selectedRange={selectedRange} dateRange={dateRange} />
       </Box>
 
-      {/* Afficher le SerialPortSelector uniquement dans Electron */}
-      {/* {isRunningInElectron() && (
-        <Box my={2} maxWidth={853}>
-          <SerialPortSelector />
-        </Box>
-      )} */}
-
       <Box id="les-devis" my={2}>
         <Typography
           variant="h5"
           component="h2"
           id="les-devis"
-          style={{ textTransform: 'uppercase' }}
+          className="uppercase"
         >
           Les devis
         </Typography>
+
         <Box my={2}>
           <QuoteGrid />
         </Box>

@@ -21,21 +21,15 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
     if (active && payload && payload.length) {
       const dateStr = moment(payload[0].payload.date).format('DD/MM/YYYY')
       return (
-        <div
-          style={{
-            backgroundColor: '#fff',
-            padding: '5px',
-            border: '1px solid #ccc',
-          }}
-        >
-          <p>{dateStr}</p>
-          <p>C.A TTC : {formatPrice(payload[0].value)}</p>
+        <div className="bg-white p-2 border border-gray-200 rounded shadow">
+          <p className="text-sm font-medium">{dateStr}</p>
+          <p className="text-sm">C.A TTC : {formatPrice(payload[0].value)}</p>
         </div>
       )
     }
-
     return null
   }
+
   const convertRangeToDate = (range) => {
     if (range === 'custom' && dateRange.startDate && dateRange.endDate) {
       return {
@@ -43,6 +37,7 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
         endDate: moment(dateRange.endDate).toISOString(),
       }
     }
+
     switch (range) {
       case 'this_week':
         return {
@@ -71,17 +66,16 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
         }
     }
   }
+
   useEffect(() => {
     const processSalesData = () => {
       const { startDate, endDate } = convertRangeToDate(selectedRange)
 
-      // Fusionner et filtrer les factures et les tickets
       const allDocuments = [...invoices, ...tickets].filter((doc) => {
         const docDate = moment(doc.date)
         return docDate.isBetween(startDate, endDate, null, '[]')
       })
 
-      // Agréger les données de vente par date
       const salesByDate = allDocuments.reduce((acc, doc) => {
         const date = moment(doc.date).format('YYYY-MM-DD')
         if (!acc[date]) {
@@ -91,7 +85,6 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
         return acc
       }, {})
 
-      // Convertir en tableau pour le graphique
       const formattedData = Object.entries(salesByDate)
         .map(([date, totalSales]) => ({
           date,
@@ -125,7 +118,7 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
           height={60}
           tick={{ dy: 10 }}
         />
-        <YAxis />
+        <YAxis width={80} tickFormatter={(value) => formatPrice(value)} />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
         <Line
@@ -133,7 +126,7 @@ const SalesLineChart = ({ selectedRange, dateRange }) => {
           dataKey="totalSales"
           stroke="#8884d8"
           activeDot={{ r: 8 }}
-          legendType="none"
+          name="Chiffre d'affaires"
         />
       </LineChart>
     </ResponsiveContainer>
