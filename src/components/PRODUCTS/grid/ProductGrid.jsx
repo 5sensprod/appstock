@@ -34,9 +34,20 @@ const ProductGrid = ({
       disableRowSelectionOnClick
       onRowSelectionModelChange={onSelectionChange}
       rowSelectionModel={selectionModel}
+      experimentalFeatures={{ aggregation: true }}
       initialState={{
-        sorting: {
-          sortModel: [{ field: 'dateSoumission', sort: 'desc' }],
+        ...paginationModel.initialState,
+        aggregation: {
+          model: {
+            prixAchat: 'sum',
+            marge: 'avg',
+            prixVente: 'sum',
+          },
+        },
+      }}
+      slotProps={{
+        footer: {
+          showTotalAggregationFooter: true,
         },
       }}
     />

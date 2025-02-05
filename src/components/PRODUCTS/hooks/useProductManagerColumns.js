@@ -4,7 +4,6 @@ import { useCategoryContext } from '../../../contexts/CategoryContext'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { IconButton } from '@mui/material'
-import { formatPriceFrench } from '../../../utils/priceUtils' // Importer la fonction de formatage
 
 const useProductManagerColumns = ({
   suppliers,
@@ -27,15 +26,10 @@ const useProductManagerColumns = ({
     </IconButton>
   )
 
-  // Fonction pour formater la marge avec une virgule
-  const formatMargeFrench = (marge) => {
-    return (
-      marge?.toLocaleString('fr-FR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }) || '0,00'
-    )
-  }
+  const priceFormatter = new Intl.NumberFormat('fr-FR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
 
   const columns = useMemo(
     () => [
@@ -63,24 +57,49 @@ const useProductManagerColumns = ({
         headerName: 'Px Achat',
         width: 80,
         type: 'number',
-        valueGetter: (params) => params.row.prixAchat, // Pour le tri
-        renderCell: (params) => formatPriceFrench(params.row.prixAchat), // Pour l'affichage
+        valueGetter: (params) => {
+          const rawValue = params.row.prixAchat
+          if (!rawValue) return 0
+          // Convertir le prix format français en nombre pour le tri et l'agrégation
+          return Number(rawValue.toString().replace(',', '.'))
+        },
+        valueFormatter: (params) => {
+          if (!params.value) return '0,00'
+          return priceFormatter.format(params.value)
+        },
+        aggregation: 'sum',
       },
       {
         field: 'marge',
         headerName: 'Marge (%)',
         width: 80,
         type: 'number',
-        valueGetter: (params) => params.row.marge, // Pour le tri
-        renderCell: (params) => formatMargeFrench(params.row.marge), // Pour l'affichage
+        valueGetter: (params) => {
+          const rawValue = params.row.marge
+          if (!rawValue) return 0
+          return Number(rawValue.toString().replace(',', '.'))
+        },
+        valueFormatter: (params) => {
+          if (!params.value) return '0,00'
+          return priceFormatter.format(params.value)
+        },
+        aggregation: 'avg', // Utilisation de la moyenne pour la marge
       },
       {
         field: 'prixVente',
         headerName: 'Px Vente',
         width: 80,
         type: 'number',
-        valueGetter: (params) => params.row.prixVente, // Pour le tri
-        renderCell: (params) => formatPriceFrench(params.row.prixVente), // Pour l'affichage
+        valueGetter: (params) => {
+          const rawValue = params.row.prixVente
+          if (!rawValue) return 0
+          return Number(rawValue.toString().replace(',', '.'))
+        },
+        valueFormatter: (params) => {
+          if (!params.value) return '0,00'
+          return priceFormatter.format(params.value)
+        },
+        aggregation: 'sum',
       },
       { field: 'stock', headerName: 'Stock', width: 90, type: 'number' },
       {
