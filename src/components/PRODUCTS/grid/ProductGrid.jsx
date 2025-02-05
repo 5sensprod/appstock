@@ -40,12 +40,18 @@ const ProductGrid = ({
         aggregation: {
           model: {
             prixAchat: 'sum',
+            actions: 'size',
           },
         },
       }}
       slotProps={{
         footer: {
           showTotalAggregationFooter: true,
+        },
+      }}
+      sx={{
+        '& [data-field="actions"] .MuiDataGrid-aggregationColumnHeaderLabel': {
+          display: 'none',
         },
       }}
     />

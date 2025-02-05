@@ -4,6 +4,7 @@ import { useCategoryContext } from '../../../contexts/CategoryContext'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { IconButton } from '@mui/material'
+import { Box } from '@mui/material'
 
 const useProductManagerColumns = ({
   suppliers,
@@ -37,30 +38,42 @@ const useProductManagerColumns = ({
         field: 'actions',
         headerName: 'Actions',
         width: 130,
-        renderCell: (params) => (
-          <>
-            {renderEditButton(params)}
-            {renderDeleteButton(params)}
-          </>
-        ),
+        renderCell: (params) => {
+          if (params.aggregation) {
+            return null
+          }
+          return (
+            <>
+              {renderEditButton(params)}
+              {renderDeleteButton(params)}
+            </>
+          )
+        },
         sortable: false,
-        filterable: false,
+        disableColumnMenu: true,
       },
-      { field: 'reference', headerName: 'Référence', width: 200 },
+      {
+        field: 'reference',
+        headerName: 'Référence',
+        width: 200,
+        aggregable: false,
+      },
       {
         field: 'designation',
         headerName: 'Désignation',
         width: 200,
+        availableAggregationFunctions: ['size'],
       },
       {
         field: 'prixAchat',
-        headerName: 'Px Achat',
+        headerName: 'P.A HT',
         width: 80,
         type: 'number',
         valueFormatter: (params) => {
           if (!params.value) return ''
           return priceFormatter.format(params.value)
         },
+        availableAggregationFunctions: ['min', 'max', 'sum', 'avg'],
       },
       {
         field: 'marge',
@@ -71,23 +84,32 @@ const useProductManagerColumns = ({
           if (!params.value) return ''
           return priceFormatter.format(params.value)
         },
+        availableAggregationFunctions: ['avg'],
       },
       {
         field: 'prixVente',
-        headerName: 'Px Vente',
+        headerName: 'P.V TTC',
         width: 80,
         type: 'number',
         valueFormatter: (params) => {
           if (!params.value) return ''
           return priceFormatter.format(params.value)
         },
+        availableAggregationFunctions: ['min', 'max', 'sum', 'avg'],
       },
-      { field: 'stock', headerName: 'Stock', width: 90, type: 'number' },
+      {
+        field: 'stock',
+        headerName: 'Stock',
+        width: 90,
+        type: 'number',
+        availableAggregationFunctions: ['min', 'max', 'sum'],
+      },
       {
         field: 'categorie',
         headerName: 'Catégorie',
         width: 200,
         renderCell: (params) => getCategoryPath(params.value) || '',
+        aggregable: false,
       },
       {
         field: 'supplierId',
@@ -106,10 +128,22 @@ const useProductManagerColumns = ({
               : false
           }
         },
+        aggregable: false,
       },
-      { field: 'marque', headerName: 'Marque', width: 150 },
-      { field: 'gencode', headerName: 'Gencode', width: 150 },
-      { field: 'tva', headerName: 'TVA', width: 70, type: 'number' },
+      { field: 'marque', headerName: 'Marque', width: 150, aggregable: false },
+      {
+        field: 'gencode',
+        headerName: 'Gencode',
+        width: 150,
+        aggregable: false,
+      },
+      {
+        field: 'tva',
+        headerName: 'TVA',
+        width: 70,
+        type: 'number',
+        aggregable: false,
+      },
       {
         field: 'dateSoumission',
         headerName: 'Date Ajout',
@@ -117,6 +151,7 @@ const useProductManagerColumns = ({
         type: 'date',
         valueGetter: (params) =>
           params.value ? moment(params.value).toDate() : null,
+        aggregable: false,
       },
     ],
     [getCategoryPath, suppliers, handleOpenModal, handleDeleteProduct],
