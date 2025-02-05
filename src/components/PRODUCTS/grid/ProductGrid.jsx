@@ -40,8 +40,6 @@ const ProductGrid = ({
         aggregation: {
           model: {
             prixAchat: 'sum',
-            marge: 'avg',
-            prixVente: 'sum',
           },
         },
       }}

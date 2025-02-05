@@ -57,49 +57,30 @@ const useProductManagerColumns = ({
         headerName: 'Px Achat',
         width: 80,
         type: 'number',
-        valueGetter: (params) => {
-          const rawValue = params.row.prixAchat
-          if (!rawValue) return 0
-          // Convertir le prix format français en nombre pour le tri et l'agrégation
-          return Number(rawValue.toString().replace(',', '.'))
-        },
         valueFormatter: (params) => {
-          if (!params.value) return '0,00'
+          if (!params.value) return ''
           return priceFormatter.format(params.value)
         },
-        aggregation: 'sum',
       },
       {
         field: 'marge',
         headerName: 'Marge (%)',
         width: 80,
         type: 'number',
-        valueGetter: (params) => {
-          const rawValue = params.row.marge
-          if (!rawValue) return 0
-          return Number(rawValue.toString().replace(',', '.'))
-        },
         valueFormatter: (params) => {
-          if (!params.value) return '0,00'
+          if (!params.value) return ''
           return priceFormatter.format(params.value)
         },
-        aggregation: 'avg', // Utilisation de la moyenne pour la marge
       },
       {
         field: 'prixVente',
         headerName: 'Px Vente',
         width: 80,
         type: 'number',
-        valueGetter: (params) => {
-          const rawValue = params.row.prixVente
-          if (!rawValue) return 0
-          return Number(rawValue.toString().replace(',', '.'))
-        },
         valueFormatter: (params) => {
-          if (!params.value) return '0,00'
+          if (!params.value) return ''
           return priceFormatter.format(params.value)
         },
-        aggregation: 'sum',
       },
       { field: 'stock', headerName: 'Stock', width: 90, type: 'number' },
       {
