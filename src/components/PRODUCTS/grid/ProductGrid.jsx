@@ -35,7 +35,11 @@ const ProductGrid = ({
       onRowSelectionModelChange={onSelectionChange}
       rowSelectionModel={selectionModel}
       experimentalFeatures={{ aggregation: true }}
+      sortingOrder={['desc', 'asc']}
       initialState={{
+        sorting: {
+          sortModel: [{ field: 'dateSoumission', sort: 'desc' }],
+        },
         ...paginationModel.initialState,
         aggregation: {
           model: {

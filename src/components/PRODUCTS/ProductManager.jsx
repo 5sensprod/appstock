@@ -115,6 +115,13 @@ const ProductManager = ({ selectedCategoryId }) => {
     handleGenerateCodesModalClose()
   }
 
+  const normalizedProducts = filteredProducts.map((product) => ({
+    ...product,
+    dateSoumission: product.dateSoumission?.$$date
+      ? new Date(product.dateSoumission.$$date)
+      : new Date(product.dateSoumission),
+  }))
+
   const availableFields = {
     reference: 'Référence',
     designation: 'Désignation',
@@ -145,7 +152,7 @@ const ProductManager = ({ selectedCategoryId }) => {
         <Typography variant="h6">Aucun produit trouvé</Typography>
       ) : (
         <ProductGrid
-          products={filteredProducts}
+          products={normalizedProducts}
           columns={columns}
           paginationModel={gridPreferences.paginationModel}
           onPaginationModelChange={handlePaginationModelChange}
