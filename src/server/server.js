@@ -1,87 +1,31 @@
 const express = require('express')
 const electron = require('electron')
 const app = express()
-const port = 5000
+const config = require('./config/server.config')
 const path = require('path')
-const initializeDatabases = require('../database/database')
+const staticFilesPath = config.paths.static
+const cataloguePath = config.paths.catalogue
+const upload = require('./config/multer.config')
 const http = require('http')
-const cors = require('cors')
-const { getLocalIPv4Address } = require('./networkUtils')
-const staticFilesPath = path.join(__dirname, '..', 'renderer', 'main_window')
 const fs = require('fs')
+const { getLocalIPv4Address } = require('./networkUtils')
 const { dialog } = electron
 
-const userDataPath = (electron.app || electron.remote.app).getPath('userData')
-const cataloguePath = path.join(userDataPath, 'catalogue')
-module.exports.cataloguePath = cataloguePath
+// Exports nécessaires
+module.exports = { cataloguePath, upload }
 
-app.use('/catalogue', express.static(cataloguePath))
-app.get('/api/products/images/:productId/:imageName', (req, res) => {
-  const { productId, imageName } = req.params
-  const imagePath = path.join(cataloguePath, productId, imageName)
+const initializeMiddleware = require('./middleware')
+initializeMiddleware(app)
 
-  if (fs.existsSync(imagePath)) {
-    res.sendFile(imagePath)
-  } else {
-    res.status(404).send('Image non trouvée')
-  }
-})
-app.use(express.json())
-app.use(express.static(staticFilesPath))
-app.use(
-  cors({
-    origin: '*',
-  }),
-)
-
-const multer = require('multer')
-
-// Configuration de multer pour stocker les fichiers dans des dossiers spécifiques à chaque produit
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const productId = req.params.productId
-    const productFolderPath = path.join(cataloguePath, productId)
-    if (!fs.existsSync(productFolderPath)) {
-      fs.mkdirSync(productFolderPath, { recursive: true })
-    }
-    cb(null, productFolderPath)
-  },
-  filename: function (req, file, cb) {
-    // Vérifiez l'extension ici
-    const extension = path.extname(file.originalname).toLowerCase()
-    if (
-      extension === '.png' ||
-      extension === '.jpg' ||
-      extension === '.jpeg' ||
-      extension === '.webp'
-    ) {
-      // Définissez uniqueSuffix ici, à l'intérieur de la fonction filename
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
-      cb(null, file.fieldname + '-' + uniqueSuffix + extension)
-    } else {
-      cb(new Error('Type de fichier non autorisé'), null)
-    }
-  },
-})
-
-const upload = multer({ storage: storage })
-module.exports.upload = upload
-
+// SSE
 const sseClients = new Map()
-
 app.get('/api/events', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream')
   res.setHeader('Cache-Control', 'no-cache')
   res.setHeader('Connection', 'keep-alive')
-
-  // Générer un ID unique pour chaque client
   const clientId = Date.now()
-  const newClient = {
-    id: clientId,
-    res,
-  }
+  const newClient = { id: clientId, res }
   sseClients.set(clientId, newClient)
-
   req.on('close', () => {
     console.log(`Client ${clientId} déconnecté`)
     sseClients.delete(clientId)
@@ -94,124 +38,36 @@ const sendSseEvent = (data) => {
   })
 }
 
-// Route pour obtenir l'IP locale
-app.get('/api/getLocalIp', (req, res) => {
-  const localIp = getLocalIPv4Address()
-  res.json({ ip: localIp })
-})
-
-// Route pour obtenir url image
-app.get('/api/config', (req, res) => {
-  const localIp = getLocalIPv4Address()
-  res.json({
-    ip: localIp,
-    images: {
-      basePath: cataloguePath,
-      imageUrlPattern: `http://localhost:${port}/api/products/images/{id}/{filename}`,
-    },
-  })
-})
-
+// Serveur et WebSocket
 const server = http.createServer(app)
-
-// Importer la fonction d'initialisation WebSocket
 const initializeWebSocket = require('./websocket')
 initializeWebSocket(server)
 
-// Middleware d'erreur
-const errorHandler = require('./errorHandler')
-
-// Routeurs
-const usersRoutes = require('./routes/usersRoutes')
-const productsRoutes = require('./routes/productsRoutes')
-const categoriesRoutes = require('./routes/categoriesRoutes')
-const invoicesRoutes = require('./routes/invoicesRoutes')
-const quotesRoutes = require('./routes/quotesRoutes')
-const ticketsRoutes = require('./routes/ticketsRoutes')
-const printRoutes = require('./routes/printRoutes')
-const suppliersRoutes = require('./routes/suppliersRoutes')
-
-app.use('/api/print', printRoutes)
-
-initializeDatabases().then((db) => {
-  app.use('/api/users', usersRoutes(db))
-  app.use('/api/products', productsRoutes(db, sendSseEvent))
-  app.use('/api/categories', categoriesRoutes(db, sendSseEvent))
-  app.use('/api/invoices', invoicesRoutes(db, sendSseEvent))
-  app.use('/api/quotes', quotesRoutes(db, sendSseEvent))
-  app.use('/api/tickets', ticketsRoutes(db, sendSseEvent))
-  app.use('/api/suppliers', suppliersRoutes(db, sendSseEvent)) // Utilisation des routes des fournisseurs
-  // Routes de corrections marges
-  app.post('/api/products/correct-margins', async (req, res) => {
-    try {
-      const products = await new Promise((resolve, reject) => {
-        db.products.find({}, (err, docs) => (err ? reject(err) : resolve(docs)))
-      })
-
-      const updates = products
-        .map((product) => {
-          if (!product.prixAchat || !product.prixVente) return null
-
-          const tvaRate = product.tva ?? 0
-          const isOccasion = product.categorie?.includes('occasion')
-          const prixVenteHT = isOccasion
-            ? product.prixVente
-            : product.prixVente / (1 + tvaRate / 100)
-          const newMarge =
-            ((prixVenteHT - product.prixAchat) / prixVenteHT) * 100
-
-          if (isNaN(newMarge)) return null
-
-          return new Promise((resolve, reject) => {
-            db.products.update(
-              { _id: product._id },
-              { $set: { marge: parseFloat(newMarge.toFixed(2)) } },
-              {},
-              (err) => (err ? reject(err) : resolve()),
-            )
-          })
-        })
-        .filter(Boolean)
-
-      await Promise.all(updates)
-      res.json({ success: true, updatedCount: updates.length })
-    } catch (error) {
-      console.error('Erreur correction marges:', error)
-      res.status(500).json({ error: error.message })
-    }
-  })
-})
-
-app.use(errorHandler)
-
+// Routes statiques
 app.get('/main_window/index.js', (req, res) => {
   res.sendFile(path.join(staticFilesPath, 'index.js'))
 })
 
-// Simuler un état de "préparation" du serveur qui devient vrai après un certain délai
-let serverReady = false
-setTimeout(() => {
-  serverReady = true
-}, 1000) // Par exemple, après 10 secondes pour la simulation
+// Routes API
+const initializeRoutes = require('./routes')
+const initializeDatabases = require('../database/database')
+const { errorHandler } = require('./middleware/errorHandler')
 
-app.get('/api/serverStatus', (req, res) => {
-  if (serverReady) {
-    res.json({ status: 'ready' })
-  } else {
-    res.status(503).json({ status: 'not ready' })
-  }
+initializeDatabases().then((db) => {
+  initializeRoutes(app, db, sendSseEvent)
+  app.use(errorHandler)
 })
 
 server
-  .listen(port, '0.0.0.0', () => {
-    console.log(`Server running on http://${getLocalIPv4Address()}:${port}`)
+  .listen(config.port, '0.0.0.0', () => {
+    console.log(
+      `Server running on http://${getLocalIPv4Address()}:${config.port}`,
+    )
   })
   .on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
-      console.error(`Port ${port} est déjà utilisé.`)
-      // Affiche une boîte de dialogue avec le message personnalisé avant de quitter
-      dialog.showMessageBox("Instance déjà en cours d'exécution").then(() => {
-        electron.app.quit()
-      })
+      dialog
+        .showMessageBox("Instance déjà en cours d'exécution")
+        .then(() => electron.app.quit())
     }
   })
