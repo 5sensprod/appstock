@@ -1,6 +1,6 @@
 import { fetchApi } from './axiosConfig'
 
-// Fonction existante pour récupérer les informations des utilisateurs
+// Técupérer les informations des utilisateurs
 async function getCompanyInfo() {
   try {
     return await fetchApi('users')
@@ -10,7 +10,7 @@ async function getCompanyInfo() {
   }
 }
 
-// Nouvelle fonction pour mettre à jour un utilisateur
+// Mettre à jour un utilisateur
 async function updateUser(userInfo) {
   try {
     const updatedUser = await fetchApi(`users/${userInfo._id}`, 'PUT', userInfo)
@@ -29,7 +29,7 @@ async function getUserInfo(userId) {
       `Erreur lors de la récupération de l'utilisateur ${userId}:`,
       error,
     )
-    throw error // Relancer pour permettre une gestion d'erreur plus spécifique dans le composant
+    throw error
   }
 }
 

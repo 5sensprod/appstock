@@ -40,12 +40,9 @@ export const deleteTicket = async (id) => {
 
 export const incrementPdfGenerationCount = async (id) => {
   try {
-    // Note: Pas besoin de capturer response ici, sauf si vous attendez un contenu spécifique en retour
     await fetchApi(`tickets/incrementPdfGeneration/${id}`, 'PUT')
   } catch (error) {
-    // Ici, error devrait inclure toutes les informations pertinentes sur l'échec de la requête
     console.error("Erreur lors de l'appel à l'API:", error)
-    // L'exception est relancée pour indiquer un échec dans l'opération d'incrémentation
     throw error
   }
 }

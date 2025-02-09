@@ -24,7 +24,6 @@ export const addQuote = async (quoteData) => {
 }
 
 // Mettre à jour un devis
-// Assurez-vous d'avoir un endpoint correspondant dans votre backend
 export const updateQuote = async (id, quoteData) => {
   try {
     const url = `quotes/${id}`
@@ -36,7 +35,6 @@ export const updateQuote = async (id, quoteData) => {
 }
 
 // Supprimer un devis
-// Assurez-vous d'avoir un endpoint correspondant dans votre backend
 export const deleteQuote = async (id) => {
   try {
     const url = `quotes/${id}`
@@ -50,11 +48,11 @@ export const deleteQuote = async (id) => {
 // Ajout de la fonction pour récupérer les détails d'un devis par son ID
 export const getQuoteDetailsById = async (id) => {
   try {
-    const url = `quotes/${id}` // Assurez-vous que cette URL correspond à l'endpoint de votre API
+    const url = `quotes/${id}`
     const response = await fetchApi(url)
-    return response // Supposons que fetchApi gère déjà la conversion en JSON
+    return response
   } catch (error) {
     console.error('Erreur lors de la récupération des détails du devis:', error)
-    throw error // Propager l'erreur pour une gestion plus fine
+    throw error
   }
 }
