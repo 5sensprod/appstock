@@ -27,6 +27,8 @@ export const fetchApi = async (endpoint, method = 'GET', data = null) => {
   }
 
   if (data instanceof FormData) {
+    // FormData pour l'upload de fichiers, pas besoin de définir le Content-Type
+    // Axios et le navigateur s'en chargeront automatiquement
   } else if (data) {
     // Pour les données JSON
     config.headers['Content-Type'] = 'application/json'

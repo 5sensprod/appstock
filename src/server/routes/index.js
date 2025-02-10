@@ -3,6 +3,12 @@ const path = require('path')
 const config = require('../config/server.config')
 const fs = require('fs')
 const { getLocalIPv4Address } = require('../networkUtils')
+const { getWooConfig } = require('../config/woocommerce')
+
+// Configuration WooCommerce
+const WooCommerceAPI = require('@woocommerce/woocommerce-rest-api').default
+const CategoryRepository = require('../../database/repositories/CategoryRepository')
+const CategoryService = require('../../services/CategoryService')
 
 function initializeRoutes(app, db, sendSseEvent) {
   const router = express.Router()
@@ -12,11 +18,6 @@ function initializeRoutes(app, db, sendSseEvent) {
   router.get('/products/images/:productId/:imageName', (req, res) => {
     try {
       const { productId, imageName } = req.params
-      console.log('Debug - Paramètres:', {
-        productId,
-        imageName,
-        cataloguePath,
-      })
 
       if (!productId || !imageName || !cataloguePath) {
         console.error('Valeurs manquantes:', {
@@ -28,7 +29,6 @@ function initializeRoutes(app, db, sendSseEvent) {
       }
 
       const imagePath = path.join(cataloguePath, productId, imageName)
-      console.log('Chemin image:', imagePath)
 
       if (fs.existsSync(imagePath)) {
         res.sendFile(imagePath)
@@ -77,6 +77,23 @@ function initializeRoutes(app, db, sendSseEvent) {
     })
   })
 
+  router.get('/v2/woo-test', async (req, res) => {
+    try {
+      const response = await wooCommerceClient.get('products/categories')
+      res.json({
+        success: true,
+        message: 'Connexion WooCommerce réussie',
+        categories: response.data,
+      })
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Erreur de connexion WooCommerce',
+        error: error.response ? error.response.data : error.message,
+      })
+    }
+  })
+
   // Routes API
   router.use('/users', require('./usersRoutes')(db))
   router.use('/products', require('./productsRoutes')(db, sendSseEvent))
@@ -86,6 +103,27 @@ function initializeRoutes(app, db, sendSseEvent) {
   router.use('/tickets', require('./ticketsRoutes')(db, sendSseEvent))
   router.use('/suppliers', require('./suppliersRoutes')(db, sendSseEvent))
   router.use('/print', require('./printRoutes'))
+
+  // Routes API V2
+  // Initialisation API WooCommerce et services pour nouvelle version
+  const wooConfig = getWooConfig()
+  const wooCommerceClient = new WooCommerceAPI({
+    url: wooConfig.url,
+    consumerKey: wooConfig.consumerKey,
+    consumerSecret: wooConfig.consumerSecret,
+    version: wooConfig.version,
+  })
+
+  const categoryRepository = new CategoryRepository(db)
+  const categoryService = new CategoryService(
+    categoryRepository,
+    wooCommerceClient,
+  )
+
+  router.use(
+    '/v2/categories',
+    require('./categories')(categoryService, sendSseEvent),
+  )
 
   app.use('/api', router)
 }

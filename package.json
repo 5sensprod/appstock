@@ -72,6 +72,7 @@
     "formik": "^2.4.5",
     "fs-extra": "^11.2.0",
     "html2canvas": "^1.4.1",
+    "joi": "^17.13.3",
     "jsbarcode": "^3.11.6",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.1",

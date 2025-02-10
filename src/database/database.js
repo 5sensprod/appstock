@@ -34,7 +34,20 @@ module.exports = function initializeDatabases() {
       filename: path.join(userDataPath, 'suppliers.db'),
       autoload: true,
     })
+    const categoriesV2 = new Datastore({
+      filename: path.join(userDataPath, 'categoriesV2.db'),
+      autoload: true,
+    })
 
-    return { users, products, categories, invoices, quotes, tickets, suppliers }
+    return {
+      users,
+      products,
+      categories,
+      invoices,
+      quotes,
+      tickets,
+      suppliers,
+      categoriesV2,
+    }
   })
 }
