@@ -32,7 +32,6 @@ class CategoryService {
               }
             : null,
           website_url: wooCat.permalink,
-          // On ne définit pas encore parent_id et level
           parent_id: null,
           level: 0,
         }
@@ -57,10 +56,10 @@ class CategoryService {
           const localParentId = wooToLocalMap.get(wooCat.parent)
 
           if (localCategoryId && localParentId) {
-            const level = await this.calculateLevel(localParentId)
+            // Simplification du calcul du level
             await this.categoryRepository.update(localCategoryId, {
               parent_id: localParentId,
-              level: level + 1,
+              level: 1, // Si a un parent, alors niveau 1
             })
           }
         }
@@ -69,6 +68,8 @@ class CategoryService {
       throw new Error(`Sync failed: ${error.message}`)
     }
   }
+
+  // La méthode calculateLevel n'est plus nécessaire pour la synchronisation
 
   async calculateLevel(localParentId) {
     if (!localParentId) return 0
