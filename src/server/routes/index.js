@@ -4,8 +4,6 @@ const config = require('../config/server.config')
 const fs = require('fs')
 const { getLocalIPv4Address } = require('../networkUtils')
 const { getWooConfig } = require('../config/woocommerce')
-
-// Configuration WooCommerce
 const WooCommerceAPI = require('@woocommerce/woocommerce-rest-api').default
 const CategoryRepository = require('../../database/repositories/CategoryRepository')
 const CategoryService = require('../../services/CategoryService')
@@ -64,6 +62,7 @@ function initializeRoutes(app, db, sendSseEvent) {
 
   // Autres routes...
   router.get('/serverStatus', (req, res) => res.json({ status: 'ready' }))
+
   router.get('/getLocalIp', (req, res) =>
     res.json({ ip: getLocalIPv4Address() }),
   )
@@ -77,6 +76,7 @@ function initializeRoutes(app, db, sendSseEvent) {
     })
   })
 
+  // test get woo cat
   router.get('/v2/woo-test', async (req, res) => {
     try {
       const response = await wooCommerceClient.get('products/categories')
@@ -124,6 +124,8 @@ function initializeRoutes(app, db, sendSseEvent) {
     '/v2/categories',
     require('./categories')(categoryService, sendSseEvent),
   )
+
+  router.use('/v2/sync', require('./sync')(categoryService, sendSseEvent))
 
   app.use('/api', router)
 }
