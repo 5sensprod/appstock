@@ -56,10 +56,14 @@ class CategoryService {
           const localParentId = wooToLocalMap.get(wooCat.parent)
 
           if (localCategoryId && localParentId) {
-            // Simplification du calcul du level
+            // Récupérer le parent pour avoir son niveau
+            const parentCategory =
+              await this.categoryRepository.findById(localParentId)
+            const parentLevel = parentCategory ? parentCategory.level : 0
+
             await this.categoryRepository.update(localCategoryId, {
               parent_id: localParentId,
-              level: 1, // Si a un parent, alors niveau 1
+              level: parentLevel + 1, // Le niveau sera celui du parent + 1
             })
           }
         }
