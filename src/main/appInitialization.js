@@ -1,7 +1,7 @@
 const { app, session, dialog } = require('electron')
 const Store = require('electron-store')
 const store = new Store()
-const { getLocalIPv4Address } = require('../server/networkUtils')
+const { getLocalIPv4Address } = require('../server/utils/networkUtils')
 const { initializeSerialPort } = require('./serialCommunication')
 const { scheduleExport } = require('./scheduleExports')
 

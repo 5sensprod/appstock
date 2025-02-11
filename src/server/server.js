@@ -8,7 +8,7 @@ const cataloguePath = config.paths.catalogue
 const upload = require('./config/multer.config')
 const http = require('http')
 const fs = require('fs')
-const { getLocalIPv4Address } = require('./networkUtils')
+const { getLocalIPv4Address } = require('./utils/networkUtils')
 const { dialog } = electron
 
 // Exports nécessaires

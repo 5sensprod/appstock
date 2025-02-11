@@ -4,7 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const { upload } = require('../../server')
 const { cataloguePath } = require('../../server')
-const { getLocalIPv4Address } = require('../../networkUtils')
+const { getLocalIPv4Address } = require('../../utils/networkUtils')
 
 module.exports = (db, sendSseEvent) => {
   const { products, categories } = db
