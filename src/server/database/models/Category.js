@@ -1,4 +1,4 @@
-// src/database/models/Category.js
+// src/server/database/models/Category.js
 const Joi = require('joi')
 
 const imageSchema = Joi.object({

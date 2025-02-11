@@ -7,7 +7,6 @@ const staticFilesPath = config.paths.static
 const cataloguePath = config.paths.catalogue
 const upload = require('./config/multer.config')
 const http = require('http')
-const fs = require('fs')
 const { getLocalIPv4Address } = require('./utils/networkUtils')
 const { dialog } = electron
 
@@ -50,7 +49,7 @@ app.get('/main_window/index.js', (req, res) => {
 
 // Routes API
 const initializeRoutes = require('./routes')
-const initializeDatabases = require('../database/database')
+const initializeDatabases = require('./database')
 const { errorHandler } = require('./middleware/errorHandler')
 
 initializeDatabases().then((db) => {

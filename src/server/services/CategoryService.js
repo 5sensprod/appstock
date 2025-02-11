@@ -1,5 +1,5 @@
 // src/server/services/CategoryService.js
-const { Category } = require('../../database/models/Category')
+const { Category } = require('../database/models/Category')
 
 class CategoryService {
   constructor(categoryRepository, wooCommerceClient) {
