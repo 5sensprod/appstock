@@ -18,7 +18,7 @@ function categoriesRoutes(categoryService, sendSseEvent) {
   // Création d'une catégorie
   router.post('/', async (req, res, next) => {
     try {
-      const category = await categoryService.categoryRepository.create(req.body)
+      const category = await categoryService.create(req.body)
       if (req.query.sync === 'true') {
         await categoryService.pushToWooCommerce(category._id)
       }

@@ -1,8 +1,42 @@
 // src/services/CategoryService.js
+const { Category } = require('../database/models/Category')
+
 class CategoryService {
   constructor(categoryRepository, wooCommerceClient) {
     this.categoryRepository = categoryRepository
     this.wooCommerceClient = wooCommerceClient
+  }
+
+  async create(data) {
+    try {
+      // 1. Validation des données avec le modèle
+      const validatedData = Category.sanitize(data)
+
+      // 2. Logique métier : calcul du level
+      if (validatedData.parent_id) {
+        const parentCategory = await this.categoryRepository.findById(
+          validatedData.parent_id,
+        )
+        if (!parentCategory) {
+          throw new Error('Parent category not found')
+        }
+        validatedData.level = parentCategory.level + 1
+      } else {
+        validatedData.level = 0 // Catégorie racine
+      }
+
+      // 3. Création via le repository
+      const createdCategory =
+        await this.categoryRepository.create(validatedData)
+
+      return createdCategory
+    } catch (error) {
+      if (error.details) {
+        // Erreur de validation Joi
+        throw new Error(`Validation error: ${error.details[0].message}`)
+      }
+      throw error
+    }
   }
 
   async syncFromWooCommerce() {
@@ -73,14 +107,6 @@ class CategoryService {
     }
   }
 
-  // La méthode calculateLevel n'est plus nécessaire pour la synchronisation
-
-  async calculateLevel(localParentId) {
-    if (!localParentId) return 0
-    const parent = await this.categoryRepository.findById(localParentId)
-    return parent ? parent.level + 1 : 0
-  }
-
   async pushToWooCommerce(categoryId) {
     const category = await this.categoryRepository.findById(categoryId)
     if (!category) throw new Error('Category not found')
@@ -114,8 +140,14 @@ class CategoryService {
           'products/categories',
           wooData,
         )
+        // Mise à jour avec toutes les données retournées par WooCommerce
         await this.categoryRepository.update(categoryId, {
           woo_id: response.data.id,
+          slug: response.data.slug,
+          description: response.data.description,
+          image: response.data.image,
+          website_url: response.data.permalink,
+          level: category.parent_id ? 1 : 0,
         })
         return response.data
       }
