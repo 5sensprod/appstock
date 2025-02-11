@@ -1,8 +1,7 @@
 // src/server/services/FileService.js
 const path = require('path')
 const fs = require('fs')
-const config = require('../config/server.config')
-const upload = require('../config/multer.config')
+const config = require('../config')
 
 class FileService {
   constructor(cataloguePath) {
@@ -53,4 +52,4 @@ class FileService {
 }
 
 // Export d'une instance unique
-module.exports = new FileService(config.paths.catalogue)
+module.exports = new FileService(config.server.paths.catalogue)

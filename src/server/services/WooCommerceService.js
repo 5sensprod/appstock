@@ -1,19 +1,18 @@
 // src/server/services/WooCommerceService.js
 const WooCommerceAPI = require('@woocommerce/woocommerce-rest-api').default
-const { getWooConfig } = require('../config/woocommerce')
+const config = require('../config')
 
 class WooCommerceService {
   constructor() {
-    const config = getWooConfig()
+    const wooConfig = config.woocommerce.getWooConfig()
     this.client = new WooCommerceAPI({
-      url: config.url,
-      consumerKey: config.consumerKey,
-      consumerSecret: config.consumerSecret,
-      version: config.version,
+      url: wooConfig.url,
+      consumerKey: wooConfig.consumerKey,
+      consumerSecret: wooConfig.consumerSecret,
+      version: wooConfig.version,
     })
   }
 
-  // Pour accéder au client WooCommerce directement si nécessaire
   getClient() {
     return this.client
   }
