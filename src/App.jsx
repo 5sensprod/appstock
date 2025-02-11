@@ -27,6 +27,8 @@ import { InvoicesProvider } from './contexts/InvoicesContext'
 import { HoldInvoiceProvider } from './contexts/HoldInvoiceContext'
 import { SupplierProvider } from './contexts/SupplierContext'
 import SupplierPage from './components/pages/SupplierPage'
+import { CategoryManagerProvider } from './contexts/CategoryManagerContext'
+
 const licenseKey =
   'CompanyName=Equinix Asia Pacific pte ltd,LicensedGroup=equinixMendixPrivateLib,LicenseType=MultipleApplications,LicensedConcurrentDeveloperCount=2,LicensedProductionInstancesCount=0,AssetReference=AG-027567,SupportServicesEnd=18_June_2023_[v2]_MTY4NzA0MjgwMDAwMA==4be2c388f9a8a7443c72842dff53d5b2'
 LicenseManager.setLicenseKey(licenseKey)
@@ -40,70 +42,72 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <ConfigProvider>
         <UIProvider>
-          <CategoryTreeSelectProvider>
-            <CompanyInfoProvider>
-              <InvoicesProvider>
-                <HoldInvoiceProvider>
-                  <QuoteProvider>
-                    <GridPreferenceProvider>
-                      <ProductProvider>
-                        <ProductProviderSimplified>
-                          <CartProvider>
-                            <CategoryProvider>
-                              <SupplierProvider>
-                                {' '}
-                                {/* Ajoutez le Provider pour les fournisseurs */}
-                                <Router>
-                                  <MainLayout>
-                                    <Routes>
-                                      <Route path="/" element={<POSPage />} />
-                                      <Route
-                                        path="/dashboard"
-                                        element={<DashboardPage />}
-                                      />
-                                      <Route
-                                        path="/catalog"
-                                        element={<CatalogPage />}
-                                      />
-                                      <Route
-                                        path="/products"
-                                        element={<ProductPage />}
-                                      />
-                                      <Route
-                                        path="/category"
-                                        element={<CategoryPage />}
-                                      />
-                                      <Route
-                                        path="/client"
-                                        element={<ClientPage />}
-                                      />
-                                      <Route
-                                        path="/invoice"
-                                        element={<InvoicePage />}
-                                      />
-                                      <Route
-                                        path="/edit-product/:id"
-                                        element={<EditProductPage />}
-                                      />
-                                      <Route
-                                        path="/suppliers"
-                                        element={<SupplierPage />}
-                                      />{' '}
-                                      {/* Nouvelle route pour les fournisseurs */}
-                                    </Routes>
-                                  </MainLayout>
-                                </Router>
-                              </SupplierProvider>
-                            </CategoryProvider>
-                          </CartProvider>
-                        </ProductProviderSimplified>
-                      </ProductProvider>
-                    </GridPreferenceProvider>
-                  </QuoteProvider>
-                </HoldInvoiceProvider>
-              </InvoicesProvider>
-            </CompanyInfoProvider>
-          </CategoryTreeSelectProvider>
+          <CategoryManagerProvider>
+            <CategoryTreeSelectProvider>
+              <CompanyInfoProvider>
+                <InvoicesProvider>
+                  <HoldInvoiceProvider>
+                    <QuoteProvider>
+                      <GridPreferenceProvider>
+                        <ProductProvider>
+                          <ProductProviderSimplified>
+                            <CartProvider>
+                              <CategoryProvider>
+                                <SupplierProvider>
+                                  {' '}
+                                  {/* Ajoutez le Provider pour les fournisseurs */}
+                                  <Router>
+                                    <MainLayout>
+                                      <Routes>
+                                        <Route path="/" element={<POSPage />} />
+                                        <Route
+                                          path="/dashboard"
+                                          element={<DashboardPage />}
+                                        />
+                                        <Route
+                                          path="/catalog"
+                                          element={<CatalogPage />}
+                                        />
+                                        <Route
+                                          path="/products"
+                                          element={<ProductPage />}
+                                        />
+                                        <Route
+                                          path="/category"
+                                          element={<CategoryPage />}
+                                        />
+                                        <Route
+                                          path="/client"
+                                          element={<ClientPage />}
+                                        />
+                                        <Route
+                                          path="/invoice"
+                                          element={<InvoicePage />}
+                                        />
+                                        <Route
+                                          path="/edit-product/:id"
+                                          element={<EditProductPage />}
+                                        />
+                                        <Route
+                                          path="/suppliers"
+                                          element={<SupplierPage />}
+                                        />{' '}
+                                        {/* Nouvelle route pour les fournisseurs */}
+                                      </Routes>
+                                    </MainLayout>
+                                  </Router>
+                                </SupplierProvider>
+                              </CategoryProvider>
+                            </CartProvider>
+                          </ProductProviderSimplified>
+                        </ProductProvider>
+                      </GridPreferenceProvider>
+                    </QuoteProvider>
+                  </HoldInvoiceProvider>
+                </InvoicesProvider>
+              </CompanyInfoProvider>
+            </CategoryTreeSelectProvider>
+          </CategoryManagerProvider>
         </UIProvider>
       </ConfigProvider>
     </ThemeProvider>

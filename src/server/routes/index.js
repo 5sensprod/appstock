@@ -2,11 +2,11 @@ const express = require('express')
 const path = require('path')
 const config = require('../config/server.config')
 const fs = require('fs')
-const { getLocalIPv4Address } = require('../networkUtils')
 const { getWooConfig } = require('../config/woocommerce')
 const WooCommerceAPI = require('@woocommerce/woocommerce-rest-api').default
 const CategoryRepository = require('../../database/repositories/CategoryRepository')
 const CategoryService = require('../../services/CategoryService')
+const statusRoutes = require('./status')
 
 function initializeRoutes(app, db, sendSseEvent) {
   const router = express.Router()
@@ -60,21 +60,7 @@ function initializeRoutes(app, db, sendSseEvent) {
     }
   })
 
-  // Autres routes...
-  router.get('/serverStatus', (req, res) => res.json({ status: 'ready' }))
-
-  router.get('/getLocalIp', (req, res) =>
-    res.json({ ip: getLocalIPv4Address() }),
-  )
-  router.get('/config', (req, res) => {
-    res.json({
-      ip: getLocalIPv4Address(),
-      images: {
-        basePath: cataloguePath,
-        imageUrlPattern: `http://localhost:${config.port}/api/products/images/{id}/{filename}`,
-      },
-    })
-  })
+  router.use('/status', statusRoutes)
 
   // test get woo cat
   router.get('/v2/woo-test', async (req, res) => {
