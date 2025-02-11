@@ -100,4 +100,5 @@ out/
 project/
 
 # wooconfig
-src/config/woocommerce.js
+src/config/
+src/server/config/woocommerce.js
