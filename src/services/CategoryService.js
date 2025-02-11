@@ -44,7 +44,10 @@ class CategoryService {
       // Récupérer les catégories de WooCommerce
       const response = await this.wooCommerceClient.get('products/categories')
       const wooCategories = response.data
-
+      console.log(
+        'WooCommerce category example:',
+        JSON.stringify(wooCategories[0], null, 2),
+      )
       // Première passe : créer ou mettre à jour toutes les catégories
       const wooToLocalMap = new Map() // Pour stocker la correspondance woo_id -> _id local
 
@@ -65,7 +68,7 @@ class CategoryService {
                 local_path: null,
               }
             : null,
-          website_url: wooCat.permalink,
+          website_url: `${this.wooCommerceClient.url}/categorie-produit/${wooCat.slug}/`,
           parent_id: null,
           level: 0,
         }
@@ -140,13 +143,17 @@ class CategoryService {
           'products/categories',
           wooData,
         )
+        console.log(
+          'WooCommerce response:',
+          JSON.stringify(response.data, null, 2),
+        )
         // Mise à jour avec toutes les données retournées par WooCommerce
         await this.categoryRepository.update(categoryId, {
           woo_id: response.data.id,
           slug: response.data.slug,
           description: response.data.description,
           image: response.data.image,
-          website_url: response.data.permalink,
+          website_url: `${this.wooCommerceClient.url}/categorie-produit/${response.data.slug}/`,
           level: category.parent_id ? 1 : 0,
         })
         return response.data

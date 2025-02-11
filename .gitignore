@@ -98,3 +98,6 @@ out/
 
 # Requirements
 project/
+
+# wooconfig
+src/config/woocommerce.js
