@@ -16,16 +16,16 @@ class CategoryRepository {
           }
           // Ne retourner que les données pertinentes
           const cleanedDocuments = documents.map((doc) => ({
-            _id: doc._id,
+            _id: doc._id, // Correction de la syntaxe
             name: doc.name,
-            parent_id: doc.parent_id,
+            parent_id: doc.parent_id || null, // Normalisation à null si undefined
             level: doc.level,
             woo_id: doc.woo_id,
             slug: doc.slug,
             description: doc.description,
             image: doc.image,
             created_at: doc.created_at,
-            website_url: doc.website_url,
+            website_url: doc.website_url || null, // Aussi normalisé
             last_sync: doc.last_sync,
           }))
           resolve(cleanedDocuments)

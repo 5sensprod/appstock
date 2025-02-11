@@ -164,12 +164,21 @@ class CategoryService {
 
   async getHierarchy() {
     const categories = await this.categoryRepository.list()
-    return this.buildHierarchyTree(categories)
+    console.log('Categories from DB:', categories)
+    const tree = this.buildHierarchyTree(categories)
+    console.log('Built tree:', tree)
+    return tree
   }
 
   buildHierarchyTree(categories, parentId = null) {
     return categories
-      .filter((cat) => cat.parent_id === parentId)
+      .filter((cat) => {
+        // Gérer à la fois null et undefined comme catégorie racine
+        if (parentId === null) {
+          return !cat.parent_id
+        }
+        return cat.parent_id === parentId
+      })
       .map((cat) => ({
         ...cat,
         children: this.buildHierarchyTree(categories, cat._id),
