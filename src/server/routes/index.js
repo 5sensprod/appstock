@@ -7,6 +7,7 @@ const WooCommerceAPI = require('@woocommerce/woocommerce-rest-api').default
 const CategoryRepository = require('../../database/repositories/CategoryRepository')
 const CategoryService = require('../../services/CategoryService')
 const statusRoutes = require('./status')
+const apiRoutes = require('./v1')
 
 function initializeRoutes(app, db, sendSseEvent) {
   const router = express.Router()
@@ -80,16 +81,7 @@ function initializeRoutes(app, db, sendSseEvent) {
     }
   })
 
-  // Routes API
-  router.use('/users', require('./usersRoutes')(db))
-  router.use('/products', require('./productsRoutes')(db, sendSseEvent))
-  router.use('/categories', require('./categoriesRoutes')(db, sendSseEvent))
-  router.use('/invoices', require('./invoicesRoutes')(db, sendSseEvent))
-  router.use('/quotes', require('./quotesRoutes')(db, sendSseEvent))
-  router.use('/tickets', require('./ticketsRoutes')(db, sendSseEvent))
-  router.use('/suppliers', require('./suppliersRoutes')(db, sendSseEvent))
-  router.use('/print', require('./printRoutes'))
-
+  router.use('/', apiRoutes(db, sendSseEvent))
   // Routes API V2
   // Initialisation API WooCommerce et services pour nouvelle version
   const wooConfig = getWooConfig()
