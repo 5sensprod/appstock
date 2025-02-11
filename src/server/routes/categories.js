@@ -1,10 +1,5 @@
 // src/server/routes/categories.js
 const express = require('express')
-const path = require('path')
-const fs = require('fs')
-const upload = require('../config/multer.config')
-const config = require('../config/server.config')
-
 const router = express.Router()
 
 // Changement de la signature pour recevoir categoryService au lieu de db
@@ -117,40 +112,6 @@ function categoriesRoutes(categoryService, sendSseEvent) {
       next(error)
     }
   })
-
-  // Upload d'une image pour une catégorie spécifique
-  router.post('/:id/upload', upload.single('image'), async (req, res, next) => {
-    try {
-      const categoryId = req.params.id
-      if (!req.file) {
-        return res.status(400).json({ error: 'Aucun fichier envoyé' })
-      }
-
-      const localPath = `/catalogue/categories/${categoryId}/${req.file.filename}`
-
-      // Mettre à jour la catégorie avec le chemin de l'image
-      const updatedCategory = await categoryService.categoryRepository.update(
-        categoryId,
-        {
-          image: { local_path: localPath },
-        },
-      )
-
-      if (!updatedCategory) {
-        return res.status(404).json({ message: 'Catégorie non trouvée' })
-      }
-
-      res.json({ message: 'Image uploadée avec succès', image: localPath })
-    } catch (error) {
-      next(error)
-    }
-  })
-
-  // Servir les images stockées localement pour les catégories
-  router.use(
-    '/images',
-    express.static(path.join(config.paths.catalogue, 'categories')),
-  )
 
   return router
 }
