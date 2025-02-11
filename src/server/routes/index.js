@@ -6,6 +6,7 @@ const wooCommerceService = require('../services/WooCommerceService')
 const statusRoutes = require('./status')
 const v1Routes = require('./v1')
 const v2Routes = require('./v2')
+const systemRoutes = require('./system')
 
 function initializeRoutes(app, db, sendSseEvent) {
   const router = express.Router()
@@ -37,6 +38,7 @@ function initializeRoutes(app, db, sendSseEvent) {
 
   // Routes API
   router.use('/status', statusRoutes)
+  router.use('/system', systemRoutes)
   router.use('/', v1Routes(db, sendSseEvent))
 
   // Initialisation des services pour l'API V2
