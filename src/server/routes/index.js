@@ -2,22 +2,21 @@ const express = require('express')
 const path = require('path')
 const config = require('../config/server.config')
 const fs = require('fs')
-const { getWooConfig } = require('../config/woocommerce')
-const WooCommerceAPI = require('@woocommerce/woocommerce-rest-api').default
 const CategoryRepository = require('../../database/repositories/CategoryRepository')
-const CategoryService = require('../../services/CategoryService')
+const CategoryService = require('../services/CategoryService')
+const wooCommerceService = require('../services/WooCommerceService')
 const statusRoutes = require('./status')
-const apiRoutes = require('./v1')
+const v1Routes = require('./v1')
+const v2Routes = require('./v2')
 
 function initializeRoutes(app, db, sendSseEvent) {
   const router = express.Router()
-  const cataloguePath = config.paths.catalogue // Ajout explicite du chemin
+  const cataloguePath = config.paths.catalogue
 
   // Route images produits
   router.get('/products/images/:productId/:imageName', (req, res) => {
     try {
       const { productId, imageName } = req.params
-
       if (!productId || !imageName || !cataloguePath) {
         console.error('Valeurs manquantes:', {
           productId,
@@ -28,7 +27,6 @@ function initializeRoutes(app, db, sendSseEvent) {
       }
 
       const imagePath = path.join(cataloguePath, productId, imageName)
-
       if (fs.existsSync(imagePath)) {
         res.sendFile(imagePath)
       } else {
@@ -61,50 +59,18 @@ function initializeRoutes(app, db, sendSseEvent) {
     }
   })
 
+  // Routes API
   router.use('/status', statusRoutes)
+  router.use('/', v1Routes(db, sendSseEvent))
 
-  // test get woo cat
-  router.get('/v2/woo-test', async (req, res) => {
-    try {
-      const response = await wooCommerceClient.get('products/categories')
-      res.json({
-        success: true,
-        message: 'Connexion WooCommerce réussie',
-        categories: response.data,
-      })
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Erreur de connexion WooCommerce',
-        error: error.response ? error.response.data : error.message,
-      })
-    }
-  })
-
-  router.use('/', apiRoutes(db, sendSseEvent))
-  // Routes API V2
-  // Initialisation API WooCommerce et services pour nouvelle version
-  const wooConfig = getWooConfig()
-  const wooCommerceClient = new WooCommerceAPI({
-    url: wooConfig.url,
-    consumerKey: wooConfig.consumerKey,
-    consumerSecret: wooConfig.consumerSecret,
-    version: wooConfig.version,
-  })
-
+  // Initialisation des services pour l'API V2
   const categoryRepository = new CategoryRepository(db)
   const categoryService = new CategoryService(
     categoryRepository,
-    wooCommerceClient,
+    wooCommerceService.getClient(),
   )
 
-  router.use(
-    '/v2/categories',
-    require('./categories')(categoryService, sendSseEvent),
-  )
-
-  router.use('/v2/sync', require('./sync')(categoryService, sendSseEvent))
-
+  router.use('/v2', v2Routes(categoryService, sendSseEvent))
   app.use('/api', router)
 }
 

@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-module.exports = (categoryService, sendSseEvent) => {
+function syncRoutes(categoryService, sendSseEvent) {
   // Synchroniser depuis WooCommerce vers la base locale
   router.post('/from-woo', async (req, res) => {
     try {
@@ -40,3 +40,5 @@ module.exports = (categoryService, sendSseEvent) => {
 
   return router
 }
+
+module.exports = syncRoutes

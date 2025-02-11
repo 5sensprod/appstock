@@ -1,4 +1,4 @@
-// src/server/routes/categories.js
+// src/server/routes/v2/categories.js
 const express = require('express')
 const router = express.Router()
 
