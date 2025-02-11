@@ -4,14 +4,16 @@ const app = express()
 const config = require('./config/server.config')
 const path = require('path')
 const staticFilesPath = config.paths.static
-const cataloguePath = config.paths.catalogue
-const upload = require('./config/multer.config')
 const http = require('http')
 const { getLocalIPv4Address } = require('./utils/networkUtils')
 const { dialog } = electron
+const fileService = require('./services/FileService')
 
 // Exports nécessaires
-module.exports = { cataloguePath, upload }
+module.exports = {
+  cataloguePath: fileService.cataloguePath,
+  upload: fileService.getUploadMiddleware(),
+}
 
 const initializeMiddleware = require('./middleware')
 initializeMiddleware(app)

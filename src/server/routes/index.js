@@ -1,7 +1,5 @@
 const express = require('express')
-const path = require('path')
-const config = require('../config/server.config')
-const fs = require('fs')
+const fileService = require('../services/FileService')
 const CategoryRepository = require('../database/repositories/CategoryRepository')
 const CategoryService = require('../services/CategoryService')
 const wooCommerceService = require('../services/WooCommerceService')
@@ -11,47 +9,25 @@ const v2Routes = require('./v2')
 
 function initializeRoutes(app, db, sendSseEvent) {
   const router = express.Router()
-  const cataloguePath = config.paths.catalogue
 
   // Route images produits
   router.get('/products/images/:productId/:imageName', (req, res) => {
     try {
       const { productId, imageName } = req.params
-      if (!productId || !imageName || !cataloguePath) {
-        console.error('Valeurs manquantes:', {
-          productId,
-          imageName,
-          cataloguePath,
-        })
-        return res.status(400).send('Paramètres manquants')
-      }
-
-      const imagePath = path.join(cataloguePath, productId, imageName)
-      if (fs.existsSync(imagePath)) {
-        res.sendFile(imagePath)
-      } else {
-        res.status(404).send('Image non trouvée')
-      }
+      const imagePath = fileService.getProductImage(productId, imageName)
+      res.sendFile(imagePath)
     } catch (error) {
       console.error('Erreur:', error)
-      res.status(500).send(error.message)
+      res
+        .status(error.message === 'Image non trouvée' ? 404 : 500)
+        .send(error.message)
     }
   })
 
   app.get('/api/products/:productId/photos', (req, res) => {
-    const { productId } = req.params
-    const productDir = path.join(cataloguePath, productId)
-
-    if (!fs.existsSync(productDir)) {
-      return res.json([])
-    }
-
     try {
-      const files = fs.readdirSync(productDir)
-      const photos = files.filter((file) => {
-        const ext = path.extname(file).toLowerCase()
-        return ['.jpg', '.jpeg', '.png', '.webp'].includes(ext)
-      })
+      const { productId } = req.params
+      const photos = fileService.getProductPhotos(productId)
       res.json(photos)
     } catch (error) {
       console.error('Erreur lecture photos:', error)
