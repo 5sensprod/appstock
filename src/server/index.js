@@ -1,13 +1,14 @@
 const express = require('express')
 const electron = require('electron')
-const app = express()
-const config = require('./config/server.config')
-const path = require('path')
-const staticFilesPath = config.paths.static
 const http = require('http')
-const { getLocalIPv4Address } = require('./utils/networkUtils')
+const path = require('path')
 const { dialog } = electron
+
+const config = require('./config/server.config')
+const { getLocalIPv4Address } = require('./utils/networkUtils')
 const fileService = require('./services/FileService')
+const sseService = require('./services/SSEService')
+const webSocketService = require('./services/WebSocketService')
 
 // Exports nécessaires
 module.exports = {
@@ -15,50 +16,36 @@ module.exports = {
   upload: fileService.getUploadMiddleware(),
 }
 
+// Initialisation de l'application
+const app = express()
+const server = http.createServer(app)
+
+// Configuration des middlewares
 const initializeMiddleware = require('./middleware')
 initializeMiddleware(app)
 
-// SSE
-const sseClients = new Map()
-app.get('/api/events', (req, res) => {
-  res.setHeader('Content-Type', 'text/event-stream')
-  res.setHeader('Cache-Control', 'no-cache')
-  res.setHeader('Connection', 'keep-alive')
-  const clientId = Date.now()
-  const newClient = { id: clientId, res }
-  sseClients.set(clientId, newClient)
-  req.on('close', () => {
-    console.log(`Client ${clientId} déconnecté`)
-    sseClients.delete(clientId)
-  })
-})
+// Configuration SSE
+app.get('/api/events', (req, res) => sseService.handleConnection(req, res))
 
-const sendSseEvent = (data) => {
-  sseClients.forEach((client) => {
-    client.res.write(`data: ${JSON.stringify(data)}\n\n`)
-  })
-}
-
-// Serveur et WebSocket
-const server = http.createServer(app)
-const initializeWebSocket = require('./websocket')
-initializeWebSocket(server)
+// Initialisation WebSocket
+webSocketService.initialize(server)
 
 // Routes statiques
 app.get('/main_window/index.js', (req, res) => {
-  res.sendFile(path.join(staticFilesPath, 'index.js'))
+  res.sendFile(path.join(config.paths.static, 'index.js'))
 })
 
-// Routes API
+// Initialisation des routes et de la base de données
 const initializeRoutes = require('./routes')
 const initializeDatabases = require('./database')
 const { errorHandler } = require('./middleware/errorHandler')
 
 initializeDatabases().then((db) => {
-  initializeRoutes(app, db, sendSseEvent)
+  initializeRoutes(app, db, sseService.broadcast.bind(sseService))
   app.use(errorHandler)
 })
 
+// Démarrage du serveur
 server
   .listen(config.port, '0.0.0.0', () => {
     console.log(

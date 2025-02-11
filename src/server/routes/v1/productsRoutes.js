@@ -2,8 +2,8 @@ const express = require('express')
 const router = express.Router()
 const fs = require('fs')
 const path = require('path')
-const { upload } = require('../../server')
-const { cataloguePath } = require('../../server')
+const { upload } = require('../..')
+const { cataloguePath } = require('../..')
 const { getLocalIPv4Address } = require('../../utils/networkUtils')
 
 module.exports = (db, sendSseEvent) => {
