@@ -1,8 +1,10 @@
 const express = require('express')
-const fileService = require('../services/FileService')
+const {
+  FileService,
+  CategoryService,
+  WooCommerceService,
+} = require('../services')
 const CategoryRepository = require('../database/repositories/CategoryRepository')
-const CategoryService = require('../services/CategoryService')
-const wooCommerceService = require('../services/WooCommerceService')
 const statusRoutes = require('./status')
 const v1Routes = require('./v1')
 const v2Routes = require('./v2')
@@ -15,7 +17,7 @@ function initializeRoutes(app, db, sendSseEvent) {
   router.get('/products/images/:productId/:imageName', (req, res) => {
     try {
       const { productId, imageName } = req.params
-      const imagePath = fileService.getProductImage(productId, imageName)
+      const imagePath = FileService.getProductImage(productId, imageName)
       res.sendFile(imagePath)
     } catch (error) {
       console.error('Erreur:', error)
@@ -28,7 +30,7 @@ function initializeRoutes(app, db, sendSseEvent) {
   app.get('/api/products/:productId/photos', (req, res) => {
     try {
       const { productId } = req.params
-      const photos = fileService.getProductPhotos(productId)
+      const photos = FileService.getProductPhotos(productId)
       res.json(photos)
     } catch (error) {
       console.error('Erreur lecture photos:', error)
@@ -45,7 +47,7 @@ function initializeRoutes(app, db, sendSseEvent) {
   const categoryRepository = new CategoryRepository(db)
   const categoryService = new CategoryService(
     categoryRepository,
-    wooCommerceService.getClient(),
+    WooCommerceService.getClient(),
   )
 
   router.use('/v2', v2Routes(categoryService, sendSseEvent))
