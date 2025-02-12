@@ -1,11 +1,11 @@
 // src/services/CategoryService.js
-const { Category } = require('../server/database/models/Category')
+const { Category } = require('../database/models/Category')
 const fs = require('fs')
 const path = require('path')
-const axios = require('axios')
+// const axios = require('axios')
 const FormData = require('form-data')
 const { getWooConfig } = require('../config/woocommerce')
-const config = require('../server/config/server.config')
+const config = require('../config/server.config')
 
 class CategoryService {
   constructor(categoryRepository, wooCommerceClient) {
