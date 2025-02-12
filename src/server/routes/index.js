@@ -1,7 +1,5 @@
 const express = require('express')
-const path = require('path')
 const config = require('../config/server.config')
-const fs = require('fs')
 const { getWooConfig } = require('../config/woocommerce')
 const WooCommerceAPI = require('@woocommerce/woocommerce-rest-api').default
 const CategoryRepository = require('../database/repositories/CategoryRepository')
@@ -9,6 +7,7 @@ const CategoryService = require('../services/CategoryService')
 const statusRoutes = require('./status')
 const v1Routes = require('./v1')
 const productImagesRoutes = require('./product-images-routes')
+const wooTestRoutes = require('./woo-test-routes')
 
 function initializeRoutes(app, db, sendSseEvent) {
   const router = express.Router()
@@ -16,26 +15,7 @@ function initializeRoutes(app, db, sendSseEvent) {
 
   // Route images produits
   router.use('/products/images', productImagesRoutes(cataloguePath))
-
   router.use('/status', statusRoutes)
-
-  // test get woo cat
-  router.get('/v2/woo-test', async (req, res) => {
-    try {
-      const response = await wooCommerceClient.get('products/categories')
-      res.json({
-        success: true,
-        message: 'Connexion WooCommerce réussie',
-        categories: response.data,
-      })
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Erreur de connexion WooCommerce',
-        error: error.response ? error.response.data : error.message,
-      })
-    }
-  })
 
   // Utilisation des routes v1
   router.use('/', v1Routes(db, sendSseEvent))
@@ -54,6 +34,9 @@ function initializeRoutes(app, db, sendSseEvent) {
     categoryRepository,
     wooCommerceClient,
   )
+
+  // Test route WooCommerce
+  router.use('/v2/woo-test', wooTestRoutes(wooCommerceClient))
 
   router.use(
     '/v2/categories',
