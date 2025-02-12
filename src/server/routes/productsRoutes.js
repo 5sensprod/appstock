@@ -5,7 +5,7 @@ const fs = require('fs')
 const path = require('path')
 const { cataloguePath } = require('../server')
 const axios = require('axios')
-const { getLocalIPv4Address } = require('../networkUtils')
+const { getLocalIPv4Address } = require('../utils/networkUtils')
 
 module.exports = (db, sendSseEvent) => {
   const { products, categories } = db

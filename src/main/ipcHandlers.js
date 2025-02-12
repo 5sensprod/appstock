@@ -2,7 +2,7 @@ const { ipcMain, BrowserWindow, shell } = require('electron')
 const { sendToLcd } = require('./serialCommunication')
 const { exportBackupToSftp } = require('./sftpBackup')
 const { printContent } = require('./printUtils')
-const { getLocalIPv4Address } = require('../server/networkUtils')
+const { getLocalIPv4Address } = require('../server/utils/networkUtils')
 const Store = require('electron-store')
 const store = new Store()
 
