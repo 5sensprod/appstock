@@ -1,4 +1,4 @@
-// src/server/database/repositories/CategoryRepository.js
+// src/database/repositories/CategoryRepository.js
 class CategoryRepository {
   constructor(db) {
     this.db = db.categoriesV2

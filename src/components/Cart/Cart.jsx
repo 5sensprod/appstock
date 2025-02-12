@@ -80,6 +80,7 @@ const Cart = () => {
               <Box my={2}>
                 <CartTotal />
               </Box>
+              {/* <PaymentTypeSelector isActiveQuote={isActiveQuote} /> */}
               <Box
                 sx={{
                   display: 'flex',

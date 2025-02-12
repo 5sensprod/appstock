@@ -8,6 +8,7 @@ const {
   sendToLcd,
 } = require('./main/serialCommunication')
 const { autoUpdater } = require('electron')
+const { initializeWooCommerce } = require('./main/wooManager')
 
 const path = require('path')
 let mainWindow
@@ -38,9 +39,18 @@ app.on('ready', () => {
     return
   }
 
+  // Initialiser WooCommerce
+  try {
+    console.log('Initialisation de WooCommerce...')
+    initializeWooCommerce()
+    console.log('WooCommerce initialisé avec succès')
+  } catch (error) {
+    console.error('Erreur initialisation WooCommerce:', error)
+  }
+
   // Démarrage du serveur
   console.log('Starting the server...')
-  require('../src/server')
+  require('../src/server/server.js')
   console.log('Server started successfully.')
 
   // Création de la fenêtre et initialisation

@@ -3,7 +3,7 @@ const { formatLcdMessage } = require('./lcdUtils')
 
 let port
 
-function initializeSerialPort(selectedPort = 'COM3') {
+function initializeSerialPort(selectedPort = 'COM10') {
   // Fermer le port série actuel s'il est ouvert
   if (port && port.isOpen) {
     port.close((err) => {

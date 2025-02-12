@@ -2,9 +2,11 @@ const { ipcMain, BrowserWindow, shell } = require('electron')
 const { sendToLcd } = require('./serialCommunication')
 const { exportBackupToSftp } = require('./sftpBackup')
 const { printContent } = require('./printUtils')
-const { getLocalIPv4Address } = require('../server/utils/networkUtils')
+const { getLocalIPv4Address } = require('../server/networkUtils')
 const Store = require('electron-store')
 const store = new Store()
+// Importer le gestionnaire WooCommerce
+const { initializeWooCommerce, testConnection } = require('./wooManager')
 
 function setupIpcHandlers(mainWindow) {
   // Handlers existants...
@@ -40,6 +42,39 @@ function setupIpcHandlers(mainWindow) {
 
   ipcMain.handle('get-stored-ip', (event) => {
     return store.get('localIp')
+  })
+
+  // Nouveaux handlers WooCommerce
+  ipcMain.handle('test-woo-connection', async () => {
+    return await testConnection()
+  })
+
+  ipcMain.handle('get-woo-status', () => {
+    return {
+      isInitialized: initializeWooCommerce(),
+      config: store.get('woocommerce'),
+    }
+  })
+
+  // Handler pour synchroniser un produit
+  ipcMain.handle('sync-product-to-woo', async (event, product) => {
+    try {
+      const wooApi = await getApi()
+      if (!wooApi) throw new Error('WooCommerce non initialisé')
+
+      const result = await wooApi.post('products', {
+        name: product.name,
+        regular_price: product.prixVente.toString(),
+        description: product.description || '',
+        stock_quantity: product.stock || 0,
+        manage_stock: true,
+      })
+
+      return result.data
+    } catch (error) {
+      console.error('Erreur de synchronisation:', error)
+      throw error
+    }
   })
 }
 

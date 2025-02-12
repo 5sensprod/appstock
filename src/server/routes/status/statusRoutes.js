@@ -1,5 +1,5 @@
 const express = require('express')
-const { getLocalIPv4Address } = require('../../utils/networkUtils')
+const { getLocalIPv4Address } = require('../../networkUtils')
 
 const router = express.Router()
 

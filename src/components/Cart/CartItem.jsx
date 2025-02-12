@@ -32,6 +32,7 @@ const CartItem = ({
   const { baseUrl } = useConfig()
 
   useEffect(() => {
+    // Met à jour priceInput lorsque item.prixModifie ou item.prixVente change
     setPriceInput(
       item.prixModifie
         ? formatPrice(item.prixModifie)

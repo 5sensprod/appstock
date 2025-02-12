@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
+const { upload } = require('../server')
 const fs = require('fs')
 const path = require('path')
-const { upload } = require('../..')
-const { cataloguePath } = require('../..')
-const { getLocalIPv4Address } = require('../../utils/networkUtils')
+const { cataloguePath } = require('../server')
+const axios = require('axios')
+const { getLocalIPv4Address } = require('../networkUtils')
 
 module.exports = (db, sendSseEvent) => {
   const { products, categories } = db
