@@ -4,7 +4,7 @@ const config = require('../config/server.config')
 const fs = require('fs')
 const { getWooConfig } = require('../config/woocommerce')
 const WooCommerceAPI = require('@woocommerce/woocommerce-rest-api').default
-const CategoryRepository = require('../../database/repositories/CategoryRepository')
+const CategoryRepository = require('../database/repositories/CategoryRepository')
 const CategoryService = require('../../services/CategoryService')
 const statusRoutes = require('./status')
 

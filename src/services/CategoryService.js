@@ -1,5 +1,5 @@
 // src/services/CategoryService.js
-const { Category } = require('../database/models/Category')
+const { Category } = require('../server/database/models/Category')
 const fs = require('fs')
 const path = require('path')
 const axios = require('axios')

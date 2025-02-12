@@ -50,7 +50,7 @@ app.get('/main_window/index.js', (req, res) => {
 
 // Routes API
 const initializeRoutes = require('./routes')
-const initializeDatabases = require('../database/database')
+const initializeDatabases = require('./database/database')
 const { errorHandler } = require('./middleware/errorHandler')
 
 initializeDatabases().then((db) => {
