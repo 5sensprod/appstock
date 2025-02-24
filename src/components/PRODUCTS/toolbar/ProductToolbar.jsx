@@ -6,6 +6,7 @@ const ProductToolbar = ({
   onBulkEditClick,
   onExportClick,
   onGenerateCodesClick,
+  onDuplicateClick,
   hasSelection,
   hasMultipleSelection,
 }) => {
@@ -43,6 +44,15 @@ const ProductToolbar = ({
         style={{ marginLeft: 16 }}
       >
         Générer Codes
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={onDuplicateClick}
+        disabled={!hasSelection || hasMultipleSelection}
+        style={{ marginLeft: 16 }}
+      >
+        Dupliquer
       </Button>
     </Box>
   )

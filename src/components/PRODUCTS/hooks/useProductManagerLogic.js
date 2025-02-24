@@ -4,6 +4,7 @@ import { useUI } from '../../../contexts/UIContext'
 
 export const useProductManagerLogic = () => {
   const {
+    products,
     addProductToContext,
     updateProductInContext,
     bulkUpdateProductsInContext,
@@ -78,6 +79,25 @@ export const useProductManagerLogic = () => {
     )
   }
 
+  const handleDuplicateProduct = async () => {
+    const productToDuplicate = products.find(
+      (product) => product._id === rowSelectionModel[0],
+    )
+
+    if (productToDuplicate) {
+      const duplicatedProduct = {
+        ...productToDuplicate,
+        _id: undefined,
+        reference: `${productToDuplicate.reference}-COPY`,
+        gencode: '', // Réinitialiser le gencode
+        dateSoumission: new Date(),
+        stock: 0, // Réinitialiser le stock
+      }
+
+      handleOpenModal(duplicatedProduct)
+    }
+  }
+
   return {
     isModalOpen,
     isBulkEditModalOpen,
@@ -91,5 +111,6 @@ export const useProductManagerLogic = () => {
     handleBulkEditSubmit,
     handleDeleteProduct,
     setRowSelectionModel,
+    handleDuplicateProduct,
   }
 }

@@ -53,6 +53,7 @@ const ProductManager = ({ selectedCategoryId }) => {
     handleBulkEditSubmit,
     handleDeleteProduct,
     setRowSelectionModel,
+    handleDuplicateProduct,
   } = useProductManagerLogic()
 
   const columns = useProductManagerColumns({
@@ -151,6 +152,7 @@ const ProductManager = ({ selectedCategoryId }) => {
         onBulkEditClick={handleBulkEditModalOpen}
         onExportClick={handleExportModalOpen}
         onGenerateCodesClick={handleGenerateCodesModalOpen}
+        onDuplicateClick={handleDuplicateProduct}
         hasSelection={rowSelectionModel.length > 0}
         hasMultipleSelection={rowSelectionModel.length > 1}
       />
