@@ -1,7 +1,7 @@
 {
   "name": "appstock",
   "productName": "AppStock",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "AppStock",
   "main": ".webpack/main",
   "scripts": {
