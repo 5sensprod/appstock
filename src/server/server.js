@@ -54,6 +54,49 @@ const initializeDatabases = require('./database/database')
 const { errorHandler } = require('./middleware/errorHandler')
 
 initializeDatabases().then((db) => {
+  // Correction marge
+  app.post('/api/products/correct-margins', async (req, res) => {
+    try {
+      const products = await new Promise((resolve, reject) => {
+        db.products.find({}, (err, docs) => (err ? reject(err) : resolve(docs)))
+      })
+
+      const updates = products
+        .map((product) => {
+          if (!product.prixAchat || !product.prixVente) return null
+
+          const tvaRate = product.tva ?? 0
+          const isOccasion = product.categorie?.includes('occasion')
+
+          // Prix de vente HT
+          const prixVenteHT = isOccasion
+            ? product.prixVente
+            : product.prixVente / (1 + tvaRate / 100)
+
+          // Calcul de la marge commerciale (et non du taux de marque)
+          const newMarge =
+            ((prixVenteHT - product.prixAchat) / product.prixAchat) * 100
+
+          if (isNaN(newMarge)) return null
+
+          return new Promise((resolve, reject) => {
+            db.products.update(
+              { _id: product._id },
+              { $set: { marge: parseFloat(newMarge.toFixed(2)) } },
+              {},
+              (err) => (err ? reject(err) : resolve()),
+            )
+          })
+        })
+        .filter(Boolean)
+
+      await Promise.all(updates)
+      res.json({ success: true, updatedCount: updates.length })
+    } catch (error) {
+      console.error('Erreur correction marges:', error)
+      res.status(500).json({ error: error.message })
+    }
+  })
   initializeRoutes(app, db, sendSseEvent)
   app.use(errorHandler)
 })
