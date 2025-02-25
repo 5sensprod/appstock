@@ -5,7 +5,7 @@ import CategoryWooManager from '../category/CategoryManager'
 const CategoryPage = () => {
   return (
     <div>
-      <CategoryWooManager />
+      {/* <CategoryWooManager /> */}
       <CategoryManager />
     </div>
   )
